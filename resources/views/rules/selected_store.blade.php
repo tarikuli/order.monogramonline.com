@@ -1,0 +1,1 @@
+{!! Form::select('trigger_value[]', $store, $value, [ 'class' => 'form-control' ]) !!}

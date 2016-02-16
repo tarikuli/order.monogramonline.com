@@ -1,0 +1,1 @@
+{!! Form::select('trigger_value[]',$domestic, $value, ['class' => 'form-control']) !!}

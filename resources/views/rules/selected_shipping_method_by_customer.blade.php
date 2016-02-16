@@ -1,0 +1,1 @@
+{!! Form::select('trigger_value[]', $selected_shipping_method_by_customer, $value, ['class' => 'form-control']) !!}

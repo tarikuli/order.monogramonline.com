@@ -1,0 +1,1 @@
+{!! Form::select('action_value[]',$insurance, $value, ['class' => 'form-control']) !!}

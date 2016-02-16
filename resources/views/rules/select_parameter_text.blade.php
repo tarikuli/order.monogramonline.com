@@ -1,0 +1,1 @@
+{!! Form::text('trigger_value[]',$value , ['id'=>'add_trigger', 'class' => 'form-control']) !!}
