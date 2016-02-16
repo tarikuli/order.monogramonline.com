@@ -41,6 +41,7 @@ class ProductController extends Controller
 
 		$batch_routes = BatchRoute::where('is_deleted', 0)
 								  ->lists('batch_route_name', 'id');
+
 		$searchInRoutes = Collection::make($batch_routes);
 		$searchInRoutes->prepend('All', '0');
 

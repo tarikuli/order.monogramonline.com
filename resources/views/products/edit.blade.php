@@ -49,9 +49,9 @@
 			</div>
 		</div>
 		<div class = "form-group">
-			{!!Form::label('product_model','Product model: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			{!!Form::label('product_model','Product model(SKU): ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
-				{!! Form::text('product_model', $product->product_model, ['id' => 'product_model','class'=>'form-control']) !!}
+				{!! Form::text('product_model', $product->product_model, ['id' => 'product_model','class'=>'form-control', 'readonly' => 'readonly']) !!}
 			</div>
 		</div>
 		<div class = "form-group">

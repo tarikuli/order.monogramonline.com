@@ -33,7 +33,7 @@
                     <td>{{$product->product_name}}</td>
                 </tr>
                 <tr>
-                    <td>Model</td>
+                    <td>SKU</td>
                     <td>{{$product->product_model}}</td>
                 </tr>
                 <tr class = "success">

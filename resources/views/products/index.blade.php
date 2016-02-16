@@ -57,6 +57,10 @@
 					<label for = "product_name">Search in name</label>
 					{!! Form::text('product_name', $request->get('product_name'), ['id'=>'product_name', 'class' => 'form-control', 'placeholder' => 'Search in product name']) !!}
 				</div>
+				<div class = "form-group col-xs-3">
+					<label for = "route">Search in route</label>
+					{!! Form::select('route', $searchInRoutes, $request->get('route') ?: 'all', ['id'=>'route', 'class' => 'form-control']) !!}
+				</div>
 			</div>
 			<div class="col-md-12">
 				<div class = "form-group col-xs-3">
@@ -80,7 +84,7 @@
 		</div>
 		@if(count($products) > 0)
 			<h3 class = "page-header">
-				Products
+				Products ({{ $products->total() }} items found / {{$products->currentPage()}} of {{$products->lastPage()}} pages)
 				<a style = "margin-bottom:20px" class = "btn btn-success btn-sm pull-right"
 				   href = "{{url('/products/create')}}">Create product</a>
 			</h3>
