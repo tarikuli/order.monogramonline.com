@@ -23,7 +23,7 @@ class CreateProductsTable extends Migration
 			$table->double('product_sale_price')->default(0);
 			$table->string('product_thumb')->nullable();
 			$table->integer('batch_route_id')->nullable();
-			$table->string('batch_route_code')->nullable();
+			#$table->string('batch_route_code')->nullable();
 			$table->text('product_keywords')->nullable();
 			$table->text('product_description')->nullable();
 			$table->double('height')->default(0.0);

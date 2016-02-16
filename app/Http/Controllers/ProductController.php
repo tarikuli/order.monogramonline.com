@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\MessageBag;
 use League\Csv\Reader;
 use League\Csv\Writer;
+use Monogram\Helper;
 
 class ProductController extends Controller
 {
@@ -288,13 +289,40 @@ class ProductController extends Controller
 		$products = Product::with('batch_route')
 						   ->where('is_deleted', 0)
 						   ->whereNull('batch_route_id')
+						   ->orWhere('batch_route_id', Helper::getDefaultRouteId())
 						   ->searchIdCatalog($request->get('id_catalog'))
 						   ->searchProductModel($request->get('product_model'))
 						   ->searchProductName($request->get('product_name'))
 						   ->latest()
 						   ->paginate(50);
-
 		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->lists('batch_route_name', 'id');
+
+		$searchInRoutes = Collection::make($batch_routes);
+		$searchInRoutes->prepend('All', '0');
+
+		$batch_routes->prepend('Not selected', 'null');
+
+		$product_master_category = Product::groupBy('product_master_category')
+										  ->lists('product_master_category', 'product_master_category')
+										  ->prepend('Select a master category', 'all');
+
+		$product_category = Product::groupBy('product_category')
+								   ->lists('product_category', 'product_category')
+								   ->prepend('Select a category', 'all');
+
+		$product_sub_category = Product::groupBy('product_sub_category')
+									   ->lists('product_sub_category', 'product_sub_category')
+									   ->prepend('Select a sub category', 'all');
+
+		$sub_categories = SubCategory::where('is_deleted', 0)
+									 ->lists('sub_category_description', 'id')
+									 ->prepend('All', 0);
+		$count = 1;
+
+		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category'));
+
+		/*$batch_routes = BatchRoute::where('is_deleted', 0)
 								  ->lists('batch_route_name', 'id');
 		$searchInRoutes = Collection::make($batch_routes);
 		$searchInRoutes->prepend('All', '0');
@@ -307,9 +335,11 @@ class ProductController extends Controller
 		$sub_categories = SubCategory::where('is_deleted', 0)
 									 ->lists('sub_category_description', 'id')
 									 ->prepend('All', 0);
+
 		$count = 1;
 
-		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'categories', 'sub_categories'));
+
+		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'categories', 'sub_categories'));*/
 
 		/*$batch_routes = BatchRoute::where('is_deleted', 0)
 								  ->lists('batch_route_name', 'id');
@@ -385,13 +415,15 @@ class ProductController extends Controller
 					continue;
 				} elseif ( $column == 'is_taxable' ) {
 					$product->is_taxable = strtolower($row['is_taxable']) == 'yes' ? 1 : 0;
-				} elseif ( $column == 'batch_code' ) {
+				} elseif ( $column == 'batch_route_id' ) {
 					/*$batch_route = BatchRoute::where('batch_code', 'LIKE', sprintf("%%%s%%", trim($row['batch_route_id'])))
 											 ->first();*/
 					$batch_route = BatchRoute::where('batch_code', 'LIKE', sprintf("%s", trim($row['batch_route_id'])))
 											 ->first();
 					if ( $batch_route ) {
 						$product->batch_route_id = $batch_route->id;
+					} else {
+						$product->batch_route_id = Helper::getDefaultRouteId();
 					}
 				} elseif ( $column == 'is_deleted' ) {
 					$product->is_deleted = $row['is_deleted'] ? 1 : 0;
@@ -423,21 +455,6 @@ class ProductController extends Controller
 
 	public function export ()
 	{
-		/*$columns = [
-			'store_id',
-			'id_catalog',
-			'product_name',
-			'product_model',
-			'product_keywords',
-			'product_description',
-			'product_category',
-			'product_sub_category',
-			'product_price',
-			'product_url',
-			'product_thumb',
-			'batch_route_id',
-			'is_taxable',
-		];*/
 		$columns = Product::getTableColumns();
 		$products = Product::with('batch_route')
 						   ->get($columns);

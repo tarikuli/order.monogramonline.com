@@ -204,6 +204,11 @@ class Helper
 		return Setting::first()->supervisor_station;
 	}
 
+	public static function getDefaultRouteId ()
+	{
+		return Setting::first()->default_route_id;
+	}
+
 	public static function validateSkuImportFile ($store_id, $row)
 	{
 		$parameters = Parameter::where('store_id', $store_id)

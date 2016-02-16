@@ -12,7 +12,8 @@ class SettingsTableSeeder extends Seeder
 	{
 		$setting = new \App\Setting();
 		$setting->supervisor_station = 'S-SUP';
-		$setting->default_shipping_rule = '38';
+		$setting->default_shipping_rule = 38;
+		$setting->default_route_id = 115;
 		$setting->save();
 	}
 }

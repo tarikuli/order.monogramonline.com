@@ -60,9 +60,9 @@
 			<h3 class = "page-header">
 				Items
 				<span style = "font-size: 14px; padding-left: 10px;"
-				      class = "text-info text-center">{{$unassigned}} items are unassigned to batch.</span>
+				      class = "text-info text-center">{{$unassigned}} items batch ready to create.</span>
 				<a href = "{{url('products/unassigned')}}"
-				   style = "font-size: 14px; padding-left: 10px;">{{$unassignedProductCount}} products don't have Routes assigned</a>
+				   style = "font-size: 14px; padding-left: 10px;">{{$unassignedProductCount}} products Routes not assigned yet.</a>
 				<a class = "btn btn-success btn-sm" style = "float: right;"
 				   href = "{{url('/items/batch')}}">Create batch preview</a>
 			</h3>

@@ -10,6 +10,8 @@ class DatabaseSeeder extends Seeder
 		UsersTableSeeder::class,
 		StationsTableSeeder::class,
 		#CustomersTableSeeder::class,
+		#Items
+		#Notes
 		#OrdersTableSeeder::class,
 		#ProductsTableSeeder::class,
 		TemplatesTableSeeder::class,

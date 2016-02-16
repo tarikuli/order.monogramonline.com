@@ -14,8 +14,8 @@ class CreateSettingsTable extends Migration
 		Schema::create('settings', function (Blueprint $table) {
 			$table->increments('id');
 			$table->string('supervisor_station');
-			$table->string('default_shipping_rule')
-				  ->nullable();
+			$table->integer('default_shipping_rule')->default(0);
+			$table->integer('default_route_id')->default(0);
 			$table->timestamps();
 		});
 	}

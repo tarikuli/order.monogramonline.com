@@ -42,6 +42,7 @@ class ItemController extends Controller
 						  ->where('is_deleted', 0)
 						  ->count();
 		$unassignedProductCount = Product::whereNull('batch_route_id')
+										 ->orWhere('batch_route_id', Helper::getDefaultRouteId())
 										 ->where('is_deleted', 0)
 										 ->count();
 		$search_in = [
