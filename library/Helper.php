@@ -4,6 +4,7 @@ use App\BatchRoute;
 use App\Customer;
 use App\Item;
 use App\Parameter;
+use App\Product;
 use App\Rule;
 use App\RuleAction;
 use App\RuleTrigger;
@@ -282,9 +283,20 @@ class Helper
 
 		$actions = RuleAction::where('rule_id', $rule_id)
 							 ->get();
+
+		$product = Product::where('product_model', $sku)
+						  ->first();
+
+		$product_weight = 0.0;
+		$final_weight = 0.0;
+		$add_weight = 0.0;
+
+		if ( $product ) {
+			$product_weight = $product->ship_weight;
+		}
+
 		$mail_class = '';
 		$package_shape = '';
-		$add_weight = 0;
 		$tracking_type = '';
 		$carrier = 'carrier';
 
@@ -300,6 +312,8 @@ class Helper
 				$package_shape = static::$package_shape[$action->rule_action_value];
 			}
 		}
+
+		$final_weight = $add_weight + $product_weight;
 
 		$order_number = $item->order_id;
 		$customer = Customer::where('order_id', $order_number)
@@ -335,6 +349,8 @@ class Helper
 		$ship->city = $city;
 		$ship->state_city = $state_city;
 		$ship->postal_code = $postal_code;
+		$ship->actual_weight = $product_weight;
+		$ship->billed_weight = $final_weight;
 		$ship->country = $country;
 		$ship->email = $email;
 		$ship->phone = $phone;
