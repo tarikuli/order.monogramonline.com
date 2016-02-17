@@ -15,7 +15,7 @@
 	<div class = "container">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
-			<li><a href = "{{url('/products')}}">Products</a></li>
+			<li>Shipping list</li>
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
