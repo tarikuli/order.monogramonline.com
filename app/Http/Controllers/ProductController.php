@@ -94,106 +94,37 @@ class ProductController extends Controller
 
 	public function store (ProductAddRequest $request)
 	{
+		$id_catalog = trim($request->get('id_catalog'));
+		$product_model = trim($request->get('product_model'));
+		$checkExisting = Product::where('id_catalog', $id_catalog)
+								->orWhere('product_model', $product_model)
+								->first();
+		if ( $checkExisting ) {
+			return redirect()
+				->back()
+				->withInput()
+				->withErrors([
+					'error' => 'Product already exists either with id catalog or model',
+				]);
+		}
+
 		$product = new Product();
-		$product->store_id = $request->get('store_id');
-		$product->id_catalog = $request->get('id_catalog');
-		$product->product_name = $request->get('product_name');
-		$product->product_model = $request->get('product_model');
-		$product->product_keywords = $request->get('product_keywords');
-		$product->product_description = $request->get('product_description');
-		$product->product_category = $request->get('product_category');
-		$product->product_price = $request->get('product_price');
-		$product->product_url = $request->get('product_url');
-		$product->product_thumb = $request->get('product_thumb');
-		$product->batch_route_id = $request->get('batch_route_id');
-		$product->is_taxable = $request->get('is_taxable');
-		$product->product_master_category = $request->get('master_category');
-		$product->product_category = $request->get('category');
-		$product->product_sub_category = $request->get('sub_category');
-		/*$product->sale_price = $request->get('sale_price');
-		$product->wPrice = $request->get('wPrice');
-		$product->taxable = $request->get('taxable');
-		$product->upc = $request->get('upc');
-		$product->brand = $request->get('brand');
-		$product->ASIN = $request->get('ASIN');
-		$product->su_code = $request->get('su_code');
-		$product->acct_code = $request->get('acct_code');
-		$product->product_condition = $request->get('product_condition');
-		$product->image_url_4P = $request->get('image_url_4P');
-		$product->inset_url = $request->get('inset_url');*/
-		$product->save();
-
-		return redirect(url('products'));
-	}
-
-	public function show ($id)
-	{
-		// if searching for inactive or deleted product
-		$product = Product::with('batch_route')
-						  ->where('is_deleted', 0)
-						  ->find($id);
-		if ( !$product ) {
-			return view('errors.404');
-		}
-
-		#return $product;
-		return view('products.show', compact('product'));
-	}
-
-	public function edit ($id)
-	{
-		// if searching for inactive or deleted product
-		$product = Product::with('batch_route')
-						  ->where('is_deleted', 0)
-						  ->find($id);
-		if ( !$product ) {
-			return view('errors.404');
-		}
-
-		$batch_routes = BatchRoute::where('is_deleted', 0)
-								  ->lists('batch_code', 'id');
-		$master_categories = MasterCategory::where('is_deleted', 0)
-										   ->lists('master_category_description', 'master_category_code')
-										   ->prepend('Select category', '');
-
-		$categories = Category::where('is_deleted', 0)
-							  ->lists('category_description', 'category_code')
-							  ->prepend('Select sub category 1', '');
-
-		$sub_categories = SubCategory::where('is_deleted', 0)
-									 ->lists('sub_category_description', 'sub_category_code')
-									 ->prepend('Select sub category 2', '');
-		$is_taxable = [
-			'1' => 'Yes',
-			'0' => 'No',
-		];
-
-		return view('products.edit', compact('product', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories'));
-	}
-
-	public function update (ProductUpdateRequest $request, $id)
-	{
-		$product = Product::where('is_deleted', 0)
-						  ->find($id);
-		if ( !$product ) {
-			return view('errors.404');
-		}
-		$is_error = false;
-		$error_messages = [ ];
+		$product->id_catalog = $id_catalog;
+		$product->product_model = $product_model;
 		if ( $request->exists('store_id') ) {
 			$product->store_id = $request->get('store_id');
 		}
+		if ( $request->exists('vendor_id') ) {
+			$product->vendor_id = $request->get('vendor_id');
+		}
+		if ( $request->exists('product_url') ) {
+			$product->product_url = $request->get('product_url');
+		}
 		if ( $request->exists('product_name') ) {
-			$product->product_name = $request->get('product_name');
+			$product->product_name = trim($request->get('product_name'));
 		}
-		if ( $request->exists('product_model') ) {
-			$product->product_model = $request->get('product_model');
-		}
-		if ( $request->exists('product_keywords') ) {
-			$product->product_keywords = $request->get('product_keywords');
-		}
-		if ( $request->exists('product_description') ) {
-			$product->product_description = $request->get('product_description');
+		if ( $request->exists('ship_weight') ) {
+			$product->ship_weight = floatval($request->get('ship_weight'));
 		}
 		if ( $request->exists('product_master_category') ) {
 			$product->product_master_category = $request->get('product_master_category');
@@ -205,10 +136,10 @@ class ProductController extends Controller
 			$product->product_sub_category = $request->get('product_sub_category');
 		}
 		if ( $request->exists('product_price') ) {
-			$product->product_price = $request->get('product_price');
+			$product->product_price = floatval($request->get('product_price'));
 		}
-		if ( $request->exists('product_url') ) {
-			$product->product_url = $request->get('product_url');
+		if ( $request->exists('product_sale_price') ) {
+			$product->product_sale_price = floatval($request->get('product_sale_price'));
 		}
 		if ( $request->exists('product_thumb') ) {
 			$product->product_thumb = $request->get('product_thumb');
@@ -230,12 +161,156 @@ class ProductController extends Controller
 			if ( $batch_route ) {
 				$product->batch_route_id = $batch_route->id;
 			} else {
+				$product->batch_route_id = Helper::getDefaultRouteId();
 				$is_error = true;
 				$error_messages[] = [ 'batch_code' => 'Batch code is not correct' ];
 			}
 		}
 		if ( $request->exists('is_taxable') ) {
-			$product->is_taxable = $request->get('is_taxable');
+			$product->is_taxable = $request->get('is_taxable') ? 1 : 0;
+		}
+		if ( $request->exists('product_keywords') ) {
+			$product->product_keywords = trim($request->get('product_keywords'));
+		}
+		if ( $request->exists('product_description') ) {
+			$product->product_description = trim($request->get('product_description'));
+		}
+		if ( $request->exists('height') ) {
+			$product->height = floatval($request->get('height'));
+		}
+		if ( $request->exists('width') ) {
+			$product->width = floatval($request->get('width'));
+		}
+		$product->save();
+
+		return redirect(url('products'));
+	}
+
+	public function show ($id)
+	{
+		// if searching for inactive or deleted product
+		$product = Product::with('batch_route')
+						  ->where('is_deleted', 0)
+						  ->find($id);
+		if ( !$product ) {
+			return view('errors.404');
+		}
+
+		#return $product;
+		return view('products.show', compact('product'));
+	}
+
+	public function edit ($id)
+	{
+		$stores = Store::where('is_deleted', 0)
+					   ->lists('store_name', 'store_id');
+		// if searching for inactive or deleted product
+		$product = Product::with('batch_route')
+						  ->where('is_deleted', 0)
+						  ->find($id);
+		if ( !$product ) {
+			return view('errors.404');
+		}
+
+		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->lists('batch_route_name', 'id');
+		$master_categories = MasterCategory::where('is_deleted', 0)
+										   ->lists('master_category_description', 'master_category_code')
+										   ->prepend('Select category', '');
+
+		$categories = Category::where('is_deleted', 0)
+							  ->lists('category_description', 'category_code')
+							  ->prepend('Select sub category 1', '');
+
+		$sub_categories = SubCategory::where('is_deleted', 0)
+									 ->lists('sub_category_description', 'sub_category_code')
+									 ->prepend('Select sub category 2', '');
+		$is_taxable = [
+			'1' => 'Yes',
+			'0' => 'No',
+		];
+
+		return view('products.edit', compact('product', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories'));
+	}
+
+	public function update (ProductUpdateRequest $request, $id)
+	{
+		$product = Product::where('is_deleted', 0)
+						  ->find($id);
+		if ( !$product ) {
+			return view('errors.404');
+		}
+		$is_error = false;
+		$error_messages = [ ];
+		if ( $request->exists('store_id') ) {
+			$product->store_id = $request->get('store_id');
+		}
+		if ( $request->exists('vendor_id') ) {
+			$product->vendor_id = $request->get('vendor_id');
+		}
+		if ( $request->exists('product_url') ) {
+			$product->product_url = $request->get('product_url');
+		}
+		if ( $request->exists('product_name') ) {
+			$product->product_name = trim($request->get('product_name'));
+		}
+		if ( $request->exists('ship_weight') ) {
+			$product->ship_weight = floatval($request->get('ship_weight'));
+		}
+		if ( $request->exists('product_master_category') ) {
+			$product->product_master_category = $request->get('product_master_category');
+		}
+		if ( $request->exists('product_category') ) {
+			$product->product_category = $request->get('product_category');
+		}
+		if ( $request->exists('product_sub_category') ) {
+			$product->product_sub_category = $request->get('product_sub_category');
+		}
+		if ( $request->exists('product_price') ) {
+			$product->product_price = floatval($request->get('product_price'));
+		}
+		if ( $request->exists('product_sale_price') ) {
+			$product->product_sale_price = floatval($request->get('product_sale_price'));
+		}
+		if ( $request->exists('product_thumb') ) {
+			$product->product_thumb = $request->get('product_thumb');
+		}
+		if ( $request->exists('batch_route_id') ) {
+			// update request via form for overall change
+			if ( is_numeric($request->get('batch_route_id')) ) {
+				$requested_batch_route_id = $request->get('batch_route_id');
+				$batch_route = BatchRoute::where('is_deleted', 0)
+										 ->find($requested_batch_route_id);
+			} else {
+				// update request from lists
+				// only for batch route
+				$requested_batch_route_text = $request->get('batch_route_id');
+				$batch_route = BatchRoute::where('batch_code', $requested_batch_route_text)
+										 ->first();
+			}
+
+			if ( $batch_route ) {
+				$product->batch_route_id = $batch_route->id;
+			} else {
+				$product->batch_route_id = Helper::getDefaultRouteId();
+				$is_error = true;
+				$error_messages[] = [ 'batch_code' => 'Batch code is not correct' ];
+			}
+		}
+		if ( $request->exists('is_taxable') ) {
+			$product->is_taxable = $request->get('is_taxable') ? 1 : 0;
+		}
+		if ( $request->exists('product_keywords') ) {
+			$product->product_keywords = trim($request->get('product_keywords'));
+		}
+		if ( $request->exists('product_description') ) {
+			$product->product_description = trim($request->get('product_description'));
+		}
+		if ( $request->exists('height') ) {
+			$product->height = floatval($request->get('height'));
+		}
+		if ( $request->exists('width') ) {
+			$product->width = floatval($request->get('width'));
 		}
 		$product->save();
 

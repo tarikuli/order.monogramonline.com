@@ -33,13 +33,19 @@
 		<div class = "form-group">
 			{!!Form::label('store_id','Store id:',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
-				{!! Form::text('store_id', $product->store_id, ['id' => 'store_id','class'=>'form-control']) !!}
+				{!! Form::select('store_id', $stores, $product->store_id, ['id' => 'store_id','class'=>'form-control']) !!}
 			</div>
 		</div>
 		<div class = "form-group">
 			{!!Form::label('id_catalog','ID Catalog:',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::text('id_catalog', $product->id_catalog, ['id' => 'id_catalog','class'=>'form-control', 'readonly' => 'readonly']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!!Form::label('vendor_id','Vendor id:',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::text('vendor_id', $product->vendor_id, ['id' => 'vendor_id','class'=>'form-control']) !!}
 			</div>
 		</div>
 		<div class = "form-group">
@@ -52,6 +58,12 @@
 			{!!Form::label('product_model','Product model(SKU): ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::text('product_model', $product->product_model, ['id' => 'product_model','class'=>'form-control', 'readonly' => 'readonly']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!!Form::label('ship_weight','Ship weight: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::number('ship_weight', $product->ship_weight, ['id' => 'ship_weight','class'=>'form-control', 'step' => 'any']) !!}
 			</div>
 		</div>
 		<div class = "form-group">
@@ -87,7 +99,13 @@
 		<div class = "form-group">
 			{!!Form::label('product_price','Product price: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
-				{!! Form::number('product_price', $product->product_price, ['id' => 'product_price','class'=>'form-control']) !!}
+				{!! Form::number('product_price', $product->product_price, ['id' => 'product_price','class'=>'form-control', 'step' => 'any']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!!Form::label('product_sale_price','Product sale price: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::number('product_sale_price', $product->product_sale_price, ['id' => 'product_sale_price','class'=>'form-control', 'step' => 'any']) !!}
 			</div>
 		</div>
 		<div class = "form-group">
@@ -109,9 +127,21 @@
 			</div>
 		</div>
 		<div class = "form-group">
-			{!!Form::label('batch_route_id','Batch route: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			{!!Form::label('batch_route_id','Route: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::select('batch_route_id', $batch_routes, $product->batch_route_id, ['id' => 'batch_route_id','class'=>'form-control']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!!Form::label('height','Product height: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::number('height', $product->height, ['id' => 'height','class'=>'form-control', 'step' => 'any']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!!Form::label('width','Product width: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::number('width', $product->width, ['id' => 'width','class'=>'form-control', 'step' => 'any']) !!}
 			</div>
 		</div>
 		<div class = "form-group">

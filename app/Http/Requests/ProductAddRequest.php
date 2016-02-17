@@ -25,16 +25,11 @@ class ProductAddRequest extends Request
 			"store_id"           => "required",
 			"id_catalog"         => "required",
 			"product_model"      => "required",
-			"product_url"        => "required",
 			"product_name"       => "required",
 			"ship_weight"        => "required",
 			"product_price"      => "required",
-			"product_thumb"      => "required",
-			"batch_route_id"     => "required",
 			"product_sale_price" => "required",
 			"is_taxable"         => "required",
-			"height"             => "required",
-			"weight"             => "required",
 		];
 	}
 }
