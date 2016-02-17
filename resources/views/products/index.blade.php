@@ -128,7 +128,7 @@
 			{!! Form::open(['url' => url('/products/id'), 'method' => 'put', 'id' => 'update-product']) !!}
 			{!! Form::close() !!}
 			<div class = "col-xs-12 text-center">
-				{!! $products->render($request->all()) !!}
+				{!! $products->appends($request->all())->render() !!}
 			</div>
 		@else
 			<div class = "col-xs-12">
