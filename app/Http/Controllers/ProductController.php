@@ -48,21 +48,17 @@ class ProductController extends Controller
 
 		$batch_routes->prepend('Not selected', 'null');
 
-		$product_master_category = Product::groupBy('product_master_category')
-										  ->lists('product_master_category', 'product_master_category')
-										  ->prepend('Select a master category', 'all');
+		$product_master_category = MasterCategory::where('is_deleted', 0)
+												 ->lists('master_category_description', 'id')
+												 ->prepend('All', 0);
 
-		$product_category = Product::groupBy('product_category')
-								   ->lists('product_category', 'product_category')
-								   ->prepend('Select a category', 'all');
+		$product_category = Category::where('is_deleted', 0)
+									->lists('category_description', 'id')
+									->prepend('All', 0);
 
-		$product_sub_category = Product::groupBy('product_sub_category')
-									   ->lists('product_sub_category', 'product_sub_category')
-									   ->prepend('Select a sub category', 'all');
-
-		$sub_categories = SubCategory::where('is_deleted', 0)
-									 ->lists('sub_category_description', 'id')
-									 ->prepend('All', 0);
+		$product_sub_category = SubCategory::where('is_deleted', 0)
+										   ->lists('sub_category_description', 'id')
+										   ->prepend('All', 0);
 		$count = 1;
 
 		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category'));
@@ -303,21 +299,17 @@ class ProductController extends Controller
 
 		$batch_routes->prepend('Not selected', 'null');
 
-		$product_master_category = Product::groupBy('product_master_category')
-										  ->lists('product_master_category', 'product_master_category')
-										  ->prepend('Select a master category', 'all');
+		$product_master_category = MasterCategory::where('is_deleted', 0)
+												 ->lists('master_category_description', 'id')
+												 ->prepend('All', 0);
 
-		$product_category = Product::groupBy('product_category')
-								   ->lists('product_category', 'product_category')
-								   ->prepend('Select a category', 'all');
+		$product_category = Category::where('is_deleted', 0)
+									->lists('category_description', 'id')
+									->prepend('All', 0);
 
-		$product_sub_category = Product::groupBy('product_sub_category')
-									   ->lists('product_sub_category', 'product_sub_category')
-									   ->prepend('Select a sub category', 'all');
-
-		$sub_categories = SubCategory::where('is_deleted', 0)
-									 ->lists('sub_category_description', 'id')
-									 ->prepend('All', 0);
+		$product_sub_category = SubCategory::where('is_deleted', 0)
+										   ->lists('sub_category_description', 'id')
+										   ->prepend('All', 0);
 		$count = 1;
 
 		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category'));

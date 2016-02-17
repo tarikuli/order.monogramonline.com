@@ -64,15 +64,15 @@
 			</div>
 			<div class="col-md-12">
 				<div class = "form-group col-xs-3">
-					<label for = "product_master_category">Search in master category</label>
+					<label for = "product_master_category">Search in category</label>
 					{!! Form::select('product_master_category', $product_master_category, $request->get('product_master_category') ?: 'all', ['id'=>'product_master_category', 'class' => 'form-control']) !!}
 				</div>
 				<div class = "form-group col-xs-3">
-					<label for = "product_category">Search in category</label>
+					<label for = "product_category">Search in sub category 1</label>
 					{!! Form::select('product_category', $product_category, $request->get('product_category') ?: 'all', ['id'=>'product_category', 'class' => 'form-control']) !!}
 				</div>
 				<div class = "form-group col-xs-3">
-					<label for = "product_sub_category">Search in sub category</label>
+					<label for = "product_sub_category">Search in sub category 2</label>
 					{!! Form::select('product_sub_category', $product_sub_category, $request->get('product_sub_category') ?: 'all', ['id'=>'product_sub_category', 'class' => 'form-control']) !!}
 				</div>
 				<div class = "form-group col-xs-2">
