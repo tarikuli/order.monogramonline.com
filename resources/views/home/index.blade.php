@@ -47,6 +47,7 @@
 					<li><a href = "/items/grouped">Batch list</a></li>
 					<li><a href = "/stations/supervisor">Supervisor</a></li>
 					<li><a href = "/rules">Shipping Rules</a></li>
+					<li><a href = "/shipping">Shipping list</a></li>
 				</ul>
 				<hr />
 				<ul>

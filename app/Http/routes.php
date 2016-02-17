@@ -124,6 +124,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		'except' => [ 'create' ],
 	]);
 
+	resource('shipping', 'ShippingController');
+
 	get('rules/parameter', 'RuleController@parameter_option');
 	get('rules/actions', 'RuleController@rule_action');
 
