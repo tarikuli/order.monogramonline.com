@@ -69,6 +69,13 @@ class Item extends Model
 		return explode(",", str_replace(" ", "", $this->commaTrimmer($string)));
 	}
 
+	public function shipInfo ()
+	{
+		return $this->hasOne('App\Ship', 'item_id', 'id');
+	}
+
+	/* Scope Search methods */
+
 	public function scopeSearch ($query, $search_for, $search_in)
 	{
 		if ( !$search_for ) {
@@ -117,8 +124,6 @@ class Item extends Model
 			return;
 		}
 	}
-
-	/* Scope Search methods */
 
 	public function scopeSearchBatch ($query, $batch_number)
 	{

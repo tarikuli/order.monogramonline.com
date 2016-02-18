@@ -234,6 +234,11 @@
 					<td></td>
 					@setvar($ind++)
 				</tr>
+				@if($item->shipInfo && $item->shipInfo->tracking_number)
+					<tr>
+						<td colspan = "8">Shipped on {{date("m/d/y", strtotime($item->shipInfo->postmark_date ?: "now" ))}} by {{$item->shipInfo->tracking_type}} , Trk# {{$item->shipInfo->tracking_number}}</td>
+					</tr>
+				@endif
 			@endforeach
 		</table>
 		<hr style = "width: 100%; color: black; background-color:black;margin-top:  10px" size = "1" />

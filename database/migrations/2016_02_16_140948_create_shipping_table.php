@@ -14,7 +14,8 @@ class CreateShippingTable extends Migration
     {
         Schema::create('shipping', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('order_number')->nullable();
+            $table->string('order_number');
+			$table->string('item_id');
             $table->string('mail_class')->nullable();
             $table->string('package_shape')->nullable();
             $table->float('postage_amount')->default(0);

@@ -284,12 +284,12 @@ class OrderController extends Controller
 
 	public function details ($order_id)
 	{
-		$order = Order::with('customer', 'items', 'order_sub_total', 'notes.user')
+		$order = Order::with('customer', 'items.shipInfo', 'order_sub_total', 'notes.user')
 					  ->where('is_deleted', 0)
 					  ->where('order_id', $order_id)
 					  ->latest()
 					  ->first();
-
+		#return $order;
 		if ( !$order ) {
 			return view('errors.404');
 		}

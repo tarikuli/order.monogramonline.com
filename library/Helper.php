@@ -334,9 +334,11 @@ class Helper
 		$country = trim($customer->ship_country) ? $customer->ship_country : $customer->bill_country;
 		$email = trim($customer->ship_email) ? $customer->ship_email : $customer->bill_email;
 		$phone = trim($customer->ship_phone) ? $customer->ship_phone : $customer->bill_phone;
+		$item_id = $item->id;
 
 		$ship = new Ship();
 		$ship->order_number = $order_number;
+		$ship->item_id = $item_id;
 		$ship->mail_class = $mail_class;
 		$ship->package_shape = $package_shape;
 		$ship->tracking_type = $tracking_type;
