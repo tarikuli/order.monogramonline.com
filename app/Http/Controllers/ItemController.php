@@ -48,11 +48,18 @@ class ItemController extends Controller
 							 ->leftJoin('products', 'items.item_code', '=', 'products.product_model')
 							 ->select(DB::raw('count(*) as count'))
 							 ->get();*/
+		//todo:: we'll use in future
+		//$unassignedItems = DB::select(DB::raw(sprintf("SELECT COUNT(*) as aggregate FROM items LEFT JOIN products ON items.item_code = products.product_model WHERE items.batch_number = 0 AND items.is_deleted = '0' AND products.batch_route_id != %d", Helper::getDefaultRouteId())));
 
-		$unassignedItems = DB::select(DB::raw(sprintf("SELECT COUNT(*) as aggregate FROM items LEFT JOIN products ON items.item_code = products.product_model WHERE items.batch_number = 0 AND items.is_deleted = '0' AND products.batch_route_id != %d", Helper::getDefaultRouteId())));
-		//SELECT * FROM items LEFT JOIN products ON items.item_code = products.product_model WHERE items.batch_number = 0 AND items.is_deleted = '0' AND products.batch_route_id != 115
+		$unassignedItems = DB::table('items')
+							 ->select(DB::raw('count(*) as aggregate'))
+							 ->join('products', 'items.item_code', '=', 'products.product_model')
+							 ->where('items.batch_number', '=', 0)
+							 ->where('items.is_deleted', '=', 0)
+							 ->where('products.batch_route_id', '!=', Helper::getDefaultRouteId())
+							 ->get();
 
-		$unassigned = isset( $unassignedItems[0] ) ? $unassignedItems[0]->aggregate : 0;
+		$unassigned = count($unassignedItems) > 0 ? $unassignedItems[0]->aggregate : 0;
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
