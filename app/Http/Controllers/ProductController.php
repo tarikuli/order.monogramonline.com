@@ -579,11 +579,11 @@ class ProductController extends Controller
 				} elseif ( $column == 'is_taxable' ) {
 					$row[] = ( $product->is_taxable == 1 ) ? 'Yes' : 'No';
 				} elseif ( $column == 'product_master_category' ) {
-					$row[] = $product->master_category ?: '';
+					$row[] = $product->master_category ? $product->master_category->master_category_code : '';
 				} elseif ( $column == 'product_category' ) {
-					$row[] = $product->category ?: '';
+					$row[] = $product->category ? $product->category->category_code : '';
 				} elseif ( $column == 'product_sub_category' ) {
-					$row[] = $product->sub_category ?: '';
+					$row[] = $product->sub_category ? $product->sub_category->sub_category_code : '';
 				} else {
 					$row[] = $product->$column;
 				}
