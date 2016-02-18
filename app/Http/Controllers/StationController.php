@@ -157,16 +157,19 @@ class StationController extends Controller
 		if ( !$item ) {
 			return view('errors.404');
 		}
-		if ( $action == 'done' ) {
-			$batch_route_id = $item->batch_route_id;
-			$current_station_name = $item->station_name;
 
-			$next_station_name = Helper::getNextStationName($batch_route_id, $current_station_name);
+		$batch_route_id = $item->batch_route_id;
+		$current_station_name = $item->station_name;
+		$next_station_name = Helper::getNextStationName($batch_route_id, $current_station_name);
+
+		if ( $action == 'done' ) {
+
 			if ( in_array($next_station_name, Helper::$shippingStations) ) {
 				Helper::populateShippingData($item);
 			}
 			$item->station_name = $next_station_name;
 			$item->save();
+
 		} elseif ( $action == 'reject' ) {
 			$item->previous_station = $item->station_name;
 			$item->station_name = Helper::getSupervisorStationName();
