@@ -274,6 +274,9 @@ class ItemController extends Controller
 
 	public function getBatchItems ($batch_number, $station_name)
 	{
+		if ( $station_name == Helper::getSupervisorStationName() ) {
+			return redirect()->back();
+		}
 		$items = Item::with('order')
 					 ->where('batch_number', $batch_number)
 					 ->where('station_name', $station_name)
