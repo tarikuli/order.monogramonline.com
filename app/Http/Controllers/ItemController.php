@@ -39,7 +39,7 @@ class ItemController extends Controller
 					 ->paginate(50);
 
 		$unassigned = Item::where('batch_number', '0')
-						  ->orWhere('batch_route_id', Helper::getDefaultRouteId())
+						  ->orWhere('batch_route_id', '!=', Helper::getDefaultRouteId())
 						  ->where('is_deleted', 0)
 						  ->count();
 		$unassignedProductCount = Product::whereNull('batch_route_id')
