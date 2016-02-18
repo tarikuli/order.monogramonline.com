@@ -38,11 +38,21 @@ class ItemController extends Controller
 					 ->latest()
 					 ->paginate(50);
 
-		$unassignedItem = DB::raw(sprintf("SELECT * FROM items LEFT JOIN products ON items.item_code = products.product_model WHERE items.batch_number = 0 AND items.is_deleted = '0' AND products.batch_route_id != %d", Helper::getDefaultRouteId()));
-		$unassignedProductCount = Product::whereNull('batch_route_id')
-										 ->orWhere('batch_route_id', Helper::getDefaultRouteId())
-										 ->where('is_deleted', 0)
-										 ->count();
+		$unassignedProducts = Product::whereNull('batch_route_id')
+									 ->orWhere('batch_route_id', Helper::getDefaultRouteId())
+									 ->where('is_deleted', 0)
+									 ->get();
+		$unassignedProductCount = $unassignedProducts->count();
+
+		/*$unassignedItems = DB::table('items')
+							 ->leftJoin('products', 'items.item_code', '=', 'products.product_model')
+							 ->select(DB::raw('count(*) as count'))
+							 ->get();*/
+
+		$unassignedItems = DB::select(DB::raw(sprintf("SELECT COUNT(*) as aggregate FROM items LEFT JOIN products ON items.item_code = products.product_model WHERE items.batch_number = 0 AND items.is_deleted = '0' AND products.batch_route_id != %d", Helper::getDefaultRouteId())));
+		//SELECT * FROM items LEFT JOIN products ON items.item_code = products.product_model WHERE items.batch_number = 0 AND items.is_deleted = '0' AND products.batch_route_id != 115
+
+		$unassigned = isset( $unassignedItems[0] ) ? $unassignedItems[0]->aggregate : 0;
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
