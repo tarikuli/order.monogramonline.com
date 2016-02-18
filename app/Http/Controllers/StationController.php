@@ -177,11 +177,22 @@ class StationController extends Controller
 			$item->save();
 		}
 
-		if ( $next_station_name && $action != 'reject' ) {
+		$batch_item_count = Item::where('batch_route_id', $batch_route_id)
+								->where('station_name', $current_station_name)
+								->where('is_deleted', 0)
+								->count();
+
+		if ( $batch_item_count ) {
 			return redirect()->back();
 		} else {
 			return redirect(url('items/grouped'));
 		}
+
+		/*if ( $next_station_name && $action != 'reject' ) {
+			return redirect()->back();
+		} else {
+			return redirect(url('items/grouped'));
+		}*/
 	}
 
 	public function supervisor (Request $request)
