@@ -215,15 +215,15 @@ class ProductController extends Controller
 		$batch_routes = BatchRoute::where('is_deleted', 0)
 								  ->lists('batch_route_name', 'id');
 		$master_categories = MasterCategory::where('is_deleted', 0)
-										   ->lists('master_category_description', 'master_category_code')
+										   ->lists('master_category_description', 'id')
 										   ->prepend('Select category', '');
 
 		$categories = Category::where('is_deleted', 0)
-							  ->lists('category_description', 'category_code')
+							  ->lists('category_description', 'id')
 							  ->prepend('Select sub category 1', '');
 
 		$sub_categories = SubCategory::where('is_deleted', 0)
-									 ->lists('sub_category_description', 'sub_category_code')
+									 ->lists('sub_category_description', 'id')
 									 ->prepend('Select sub category 2', '');
 		$is_taxable = [
 			'1' => 'Yes',

@@ -17,6 +17,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use DNS1D;
+use Illuminate\Support\Facades\Session;
 use League\Csv\Writer;
 use Monogram\Helper;
 
@@ -174,11 +175,15 @@ class ItemController extends Controller
 
 	public function getGroupedBatch (Request $request)
 	{
+		if ( $request->has('station') ) {
+			Session::put('station', $request->get('station'));
+		}
+
 		$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
 					 ->where('batch_number', '!=', '0')
 					 ->searchBatch($request->get('batch'))
 					 ->searchRoute($request->get('route'))
-					 ->searchStation($request->get('station'))
+					 ->searchStation(session('station', 'all'))
 					 ->searchStatus($request->get('status'))
 					 ->groupBy('batch_number')
 					 ->latest('batch_creation_date')

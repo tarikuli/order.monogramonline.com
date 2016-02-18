@@ -46,7 +46,6 @@
 				</tr>
 				<tr class = "success">
 					<td>Product master category</td>
-					<td>{{$product->product_master_category}}</td>
 					<td>{{$product->master_category ? $product->master_category->master_category_description : ""}}</td>
 				</tr>
 				<tr>
