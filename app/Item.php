@@ -114,7 +114,7 @@ class Item extends Model
 
 		} elseif ( $search_in == 'batch' ) {
 
-			return $query->where('batch', 'REGEXP', implode("|", $values));
+			return $query->where('batch_number', 'REGEXP', implode("|", $values));
 
 		} elseif ( $search_in == 'batch_creation_date' ) {
 
