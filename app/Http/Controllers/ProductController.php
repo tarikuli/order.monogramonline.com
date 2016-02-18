@@ -189,7 +189,7 @@ class ProductController extends Controller
 	public function show ($id)
 	{
 		// if searching for inactive or deleted product
-		$product = Product::with('batch_route')
+		$product = Product::with('batch_route', 'master_category', 'category', 'sub_category')
 						  ->where('is_deleted', 0)
 						  ->find($id);
 		if ( !$product ) {
@@ -516,9 +516,9 @@ class ProductController extends Controller
 					}
 				} elseif ( $column == 'product_sub_category' ) {
 					$sub_category_from_file = trim($row['product_sub_category']);
-					$sub_category_from_table = MasterCategory::where('sub_category_code', $sub_category_from_file)
-															 ->where('is_deleted', 0)
-															 ->first();
+					$sub_category_from_table = SubCategory::where('sub_category_code', $sub_category_from_file)
+														  ->where('is_deleted', 0)
+														  ->first();
 					if ( $sub_category_from_table ) {
 						$product->product_sub_category = $sub_category_from_table->id;
 					} else {
@@ -555,7 +555,7 @@ class ProductController extends Controller
 		$columns = Product::getTableColumns();
 		$products = Product::with('batch_route', 'master_category', 'category', 'sub_category')
 						   ->get($columns);
-		
+
 		$file_path = sprintf("%s/assets/exports/products/", public_path());
 		$file_name = sprintf("products-%s-%s.csv", date("y-m-d", strtotime('now')), str_random(5));
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
