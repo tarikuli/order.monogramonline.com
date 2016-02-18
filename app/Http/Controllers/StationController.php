@@ -187,12 +187,6 @@ class StationController extends Controller
 		} else {
 			return redirect(url('items/grouped'));
 		}
-
-		/*if ( $next_station_name && $action != 'reject' ) {
-			return redirect()->back();
-		} else {
-			return redirect(url('items/grouped'));
-		}*/
 	}
 
 	public function supervisor (Request $request)

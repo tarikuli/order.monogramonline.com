@@ -127,13 +127,13 @@ class ProductController extends Controller
 			$product->ship_weight = floatval($request->get('ship_weight'));
 		}
 		if ( $request->exists('product_master_category') ) {
-			$product->product_master_category = $request->get('product_master_category');
+			$product->product_master_category = intval($request->get('product_master_category'));
 		}
 		if ( $request->exists('product_category') ) {
-			$product->product_category = $request->get('product_category');
+			$product->product_category = intval($request->get('product_category'));
 		}
 		if ( $request->exists('product_sub_category') ) {
-			$product->product_sub_category = $request->get('product_sub_category');
+			$product->product_sub_category = intval($request->get('product_sub_category'));
 		}
 		if ( $request->exists('product_price') ) {
 			$product->product_price = floatval($request->get('product_price'));
@@ -458,7 +458,7 @@ class ProductController extends Controller
 			'is_taxable',
 		];*/
 		$table_columns = Product::getTableColumns();
-		$csv_columns = $reader->fetchOne();
+		$csv_columns = array_filter($reader->fetchOne());
 
 		if ( count(array_intersect($table_columns, $csv_columns)) != count($table_columns) ) {
 			return redirect()
@@ -494,6 +494,36 @@ class ProductController extends Controller
 					}
 				} elseif ( $column == 'is_deleted' ) {
 					$product->is_deleted = $row['is_deleted'] ? 1 : 0;
+				} elseif ( $column == 'product_master_category' ) {
+					$master_category_from_file = trim($row['product_master_category']);
+					$master_category_from_table = MasterCategory::where('master_category_code', $master_category_from_file)
+																->where('is_deleted', 0)
+																->first();
+					if ( $master_category_from_table ) {
+						$product->product_master_category = $master_category_from_table->id;
+					} else {
+						$product->product_master_category = null;
+					}
+				} elseif ( $column == 'product_category' ) {
+					$category_from_file = trim($row['product_category']);
+					$category_from_table = Category::where('category_code', $category_from_file)
+												   ->where('is_deleted', 0)
+												   ->first();
+					if ( $category_from_table ) {
+						$product->product_category = $category_from_table->id;
+					} else {
+						$product->product_category = null;
+					}
+				} elseif ( $column == 'product_sub_category' ) {
+					$sub_category_from_file = trim($row['product_sub_category']);
+					$sub_category_from_table = MasterCategory::where('sub_category_code', $sub_category_from_file)
+															 ->where('is_deleted', 0)
+															 ->first();
+					if ( $sub_category_from_table ) {
+						$product->product_sub_category = $sub_category_from_table->id;
+					} else {
+						$product->product_sub_category = null;
+					}
 				} else {
 					$product->$column = trim($row[$column]);
 				}
@@ -523,8 +553,10 @@ class ProductController extends Controller
 	public function export ()
 	{
 		$columns = Product::getTableColumns();
-		$products = Product::with('batch_route')
+		$products = Product::with('batch_route', 'master_category', 'category', 'sub_category')
 						   ->get($columns);
+
+		return $products;
 		$file_path = sprintf("%s/assets/exports/products/", public_path());
 		$file_name = sprintf("products-%s-%s.csv", date("y-m-d", strtotime('now')), str_random(5));
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
@@ -547,6 +579,12 @@ class ProductController extends Controller
 					continue;
 				} elseif ( $column == 'is_taxable' ) {
 					$row[] = ( $product->is_taxable == 1 ) ? 'Yes' : 'No';
+				} elseif ( $column == 'product_master_category' ) {
+					$row[] = $product->master_category ?: '';
+				} elseif ( $column == 'product_category' ) {
+					$row[] = $product->category ?: '';
+				} elseif ( $column == 'product_sub_category' ) {
+					$row[] = $product->sub_category ?: '';
 				} else {
 					$row[] = $product->$column;
 				}

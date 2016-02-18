@@ -31,6 +31,21 @@ class Product extends Model
 		return $this->hasOne('App\BatchRoute', 'id', 'batch_route_id');
 	}
 
+	public function master_category ()
+	{
+		return $this->belongsTo('App\MasterCategory', 'product_master_category', 'id');
+	}
+
+	public function category ()
+	{
+		return $this->belongsTo('App\Category', 'product_category', 'id');
+	}
+
+	public function sub_category ()
+	{
+		return $this->belongsTo('App\SubCategory', 'product_sub_category', 'id');
+	}
+
 	public function groupedItems ()
 	{
 		/*return $this->hasMany('App\Item', 'item_id', 'id_catalog')
