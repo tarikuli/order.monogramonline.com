@@ -86,7 +86,9 @@
 													<td></td>
 													<td>{{$serial++}}</td>
 													<td>{!! Form::checkbox('batches[]', sprintf("%s|%s|%s", $count, $batch_route->id, /*$item->product_table_id, */$item->item_table_id) ,false, ['class' => 'checkable']) !!}</td>
-													<td>{{$item->order_id}}</td>
+													<td>
+														<a href = "{{url("orders/details/$item->order_id")}}">{{explode("-", $item->order_id)[2]}}</a>
+													</td>
 													<td>{{substr($item->order_date, 0, 10)}}</td>
 													<td>{{$item->item_code}}</td>
 													<td>{{$item->item_quantity}}</td>
