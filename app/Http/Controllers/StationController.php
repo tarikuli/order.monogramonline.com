@@ -177,7 +177,7 @@ class StationController extends Controller
 			$item->save();
 		}
 
-		if ( $next_station_name ) {
+		if ( $next_station_name && $action != 'reject' ) {
 			return redirect()->back();
 		} else {
 			return redirect(url('items/grouped'));
