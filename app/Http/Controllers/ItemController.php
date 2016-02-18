@@ -38,10 +38,7 @@ class ItemController extends Controller
 					 ->latest()
 					 ->paginate(50);
 
-		$unassigned = Item::where('batch_number', '0')
-						  ->orWhere('batch_route_id', '!=', Helper::getDefaultRouteId())
-						  ->where('is_deleted', 0)
-						  ->count();
+		$unassignedItem = DB::raw(sprintf("SELECT * FROM items LEFT JOIN products ON items.item_code = products.product_model WHERE items.batch_number = 0 AND items.is_deleted = '0' AND products.batch_route_id != %d", Helper::getDefaultRouteId()));
 		$unassignedProductCount = Product::whereNull('batch_route_id')
 										 ->orWhere('batch_route_id', Helper::getDefaultRouteId())
 										 ->where('is_deleted', 0)
