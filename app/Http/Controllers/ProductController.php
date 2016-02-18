@@ -555,8 +555,7 @@ class ProductController extends Controller
 		$columns = Product::getTableColumns();
 		$products = Product::with('batch_route', 'master_category', 'category', 'sub_category')
 						   ->get($columns);
-
-		return $products;
+		
 		$file_path = sprintf("%s/assets/exports/products/", public_path());
 		$file_name = sprintf("products-%s-%s.csv", date("y-m-d", strtotime('now')), str_random(5));
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
