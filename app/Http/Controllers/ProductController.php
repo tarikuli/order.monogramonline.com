@@ -6,6 +6,7 @@ use App\BatchRoute;
 use App\Category;
 use App\MasterCategory;
 use App\Product;
+use App\ProductionCategory;
 use App\Store;
 use App\SubCategory;
 use Illuminate\Database\Eloquent\Collection;
@@ -34,6 +35,7 @@ class ProductController extends Controller
 						   ->searchProductModel($request->get('product_model'))
 						   ->searchProductName($request->get('product_name'))
 						   ->searchRoute($request->get('route'))
+						   ->searchProductionCategory($request->get('product_production_category'))
 						   ->searchMasterCategory($request->get('product_master_category'))
 						   ->searchCategory($request->get('product_category'))
 						   ->searchSubCategory($request->get('product_sub_category'))
@@ -59,9 +61,13 @@ class ProductController extends Controller
 		$product_sub_category = SubCategory::where('is_deleted', 0)
 										   ->lists('sub_category_description', 'id')
 										   ->prepend('All', 0);
+
+		$production_categories = ProductionCategory::where('is_deleted', 0)
+												   ->lists('production_category_description', 'id')
+												   ->prepend('Select production category', '');
 		$count = 1;
 
-		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category'));
+		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'));
 	}
 
 	public function create ()
@@ -78,18 +84,22 @@ class ProductController extends Controller
 		];
 
 		$master_categories = MasterCategory::where('is_deleted', 0)
-										   ->lists('master_category_description', 'master_category_code')
+										   ->lists('master_category_description', 'id')
 										   ->prepend('Select category', '');
 
 		$categories = Category::where('is_deleted', 0)
-							  ->lists('category_description', 'category_code')
+							  ->lists('category_description', 'id')
 							  ->prepend('Select sub category 1', '');
 
 		$sub_categories = SubCategory::where('is_deleted', 0)
-									 ->lists('sub_category_description', 'sub_category_code')
+									 ->lists('sub_category_description', 'id')
 									 ->prepend('Select sub category 2', '');
 
-		return view('products.create', compact('title', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories'));
+		$production_categories = ProductionCategory::where('is_deleted', 0)
+												   ->lists('production_category_description', 'id')
+												   ->prepend('Select production category', '');
+
+		return view('products.create', compact('title', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'));
 	}
 
 	public function store (ProductAddRequest $request)
@@ -134,6 +144,9 @@ class ProductController extends Controller
 		}
 		if ( $request->exists('product_sub_category') ) {
 			$product->product_sub_category = intval($request->get('product_sub_category'));
+		}
+		if ( $request->exists('product_production_category') ) {
+			$product->product_production_category = intval($request->get('product_production_category'));
 		}
 		if ( $request->exists('product_price') ) {
 			$product->product_price = floatval($request->get('product_price'));
@@ -189,7 +202,7 @@ class ProductController extends Controller
 	public function show ($id)
 	{
 		// if searching for inactive or deleted product
-		$product = Product::with('batch_route', 'master_category', 'category', 'sub_category')
+		$product = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category')
 						  ->where('is_deleted', 0)
 						  ->find($id);
 		if ( !$product ) {
@@ -225,12 +238,16 @@ class ProductController extends Controller
 		$sub_categories = SubCategory::where('is_deleted', 0)
 									 ->lists('sub_category_description', 'id')
 									 ->prepend('Select sub category 2', '');
+
+		$production_categories = ProductionCategory::where('is_deleted', 0)
+												   ->lists('production_category_description', 'id')
+												   ->prepend('Select production category', '');
 		$is_taxable = [
 			'1' => 'Yes',
 			'0' => 'No',
 		];
 
-		return view('products.edit', compact('product', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories'));
+		return view('products.edit', compact('product', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'));
 	}
 
 	public function update (ProductUpdateRequest $request, $id)
@@ -265,6 +282,9 @@ class ProductController extends Controller
 		}
 		if ( $request->exists('product_sub_category') ) {
 			$product->product_sub_category = $request->get('product_sub_category');
+		}
+		if ( $request->exists('product_production_category') ) {
+			$product->product_production_category = intval($request->get('product_production_category'));
 		}
 		if ( $request->exists('product_price') ) {
 			$product->product_price = floatval($request->get('product_price'));
@@ -385,40 +405,13 @@ class ProductController extends Controller
 		$product_sub_category = SubCategory::where('is_deleted', 0)
 										   ->lists('sub_category_description', 'id')
 										   ->prepend('All', 0);
+
+		$production_categories = ProductionCategory::where('is_deleted', 0)
+												   ->lists('production_category_description', 'id')
+												   ->prepend('Select production category', '');
 		$count = 1;
 
-		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category'));
-
-		/*$batch_routes = BatchRoute::where('is_deleted', 0)
-								  ->lists('batch_route_name', 'id');
-		$searchInRoutes = Collection::make($batch_routes);
-		$searchInRoutes->prepend('All', '0');
-
-		$batch_routes->prepend('Not selected', 'null');
-
-		$categories = Category::where('is_deleted', 0)
-							  ->lists('category_description', 'id')
-							  ->prepend('All', 0);
-		$sub_categories = SubCategory::where('is_deleted', 0)
-									 ->lists('sub_category_description', 'id')
-									 ->prepend('All', 0);
-
-		$count = 1;
-
-
-		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'categories', 'sub_categories'));*/
-
-		/*$batch_routes = BatchRoute::where('is_deleted', 0)
-								  ->lists('batch_route_name', 'id');
-		#->lists('batch_code', 'id');
-
-	    $searchInRoutes = Collection::make($batch_routes);
-		$searchInRoutes->prepend('All', '0');
-
-		$batch_routes->prepend('Not selected', 'null');
-		$count = 1;
-
-		return view('products.index', compact('products', 'count', 'batch_routes', 'request'));*/
+		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'));
 	}
 
 	public function import (Request $request)
@@ -442,21 +435,6 @@ class ProductController extends Controller
 
 		$file->move($file_path, $file_name);
 		$reader = Reader::createFromPath($fully_specified_file_name);
-		/*$columns = [
-			'store_id',
-			'id_catalog',
-			'product_name',
-			'product_model',
-			'product_keywords',
-			'product_description',
-			'product_category',
-			'product_sub_category',
-			'product_price',
-			'product_url',
-			'product_thumb',
-			'batch_route_id',
-			'is_taxable',
-		];*/
 		$table_columns = Product::getTableColumns();
 		$csv_columns = array_filter($reader->fetchOne());
 
@@ -524,6 +502,16 @@ class ProductController extends Controller
 					} else {
 						$product->product_sub_category = null;
 					}
+				} elseif ( $column == 'product_production_category' ) {
+					$production_category_from_file = trim($row['product_production_category']);
+					$production_category_from_table = ProductionCategory::where('production_category_code', $production_category_from_file)
+																		->where('is_deleted', 0)
+																		->first();
+					if ( $production_category_from_table ) {
+						$product->product_production_category = $production_category_from_table->id;
+					} else {
+						$product->product_production_category = null;
+					}
 				} else {
 					$product->$column = trim($row[$column]);
 				}
@@ -553,7 +541,7 @@ class ProductController extends Controller
 	public function export ()
 	{
 		$columns = Product::getTableColumns();
-		$products = Product::with('batch_route', 'master_category', 'category', 'sub_category')
+		$products = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category')
 						   ->get($columns);
 
 		$file_path = sprintf("%s/assets/exports/products/", public_path());
@@ -584,6 +572,8 @@ class ProductController extends Controller
 					$row[] = $product->category ? $product->category->category_code : '';
 				} elseif ( $column == 'product_sub_category' ) {
 					$row[] = $product->sub_category ? $product->sub_category->sub_category_code : '';
+				} elseif ( $column == 'product_production_category' ) {
+					$row[] = $product->production_category ? $product->production_category->production_category_code : '';
 				} else {
 					$row[] = $product->$column;
 				}

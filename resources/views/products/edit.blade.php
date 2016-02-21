@@ -97,6 +97,12 @@
 			</div>
 		</div>
 		<div class = "form-group">
+			{!!Form::label('product_production_category','Product production category: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::select('product_production_category', $production_categories, $product->product_production_category, ['id' => 'product_production_category','class'=>'form-control']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
 			{!!Form::label('product_price','Product price: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::number('product_price', $product->product_price, ['id' => 'product_price','class'=>'form-control', 'step' => 'any']) !!}

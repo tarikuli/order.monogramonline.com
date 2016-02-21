@@ -75,6 +75,10 @@
 					<label for = "product_sub_category">Search in sub category 2</label>
 					{!! Form::select('product_sub_category', $product_sub_category, $request->get('product_sub_category') ?: 'all', ['id'=>'product_sub_category', 'class' => 'form-control']) !!}
 				</div>
+				<div class = "form-group col-xs-3">
+					<label for = "product_production_category">Search in production category</label>
+					{!! Form::select('product_production_category', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control']) !!}
+				</div>
 				<div class = "form-group col-xs-2">
 					<label for = "" class = ""></label>
 					{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}

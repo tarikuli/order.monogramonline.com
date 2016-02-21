@@ -46,6 +46,11 @@ class Product extends Model
 		return $this->belongsTo('App\SubCategory', 'product_sub_category', 'id');
 	}
 
+	public function production_category ()
+	{
+		return $this->belongsTo('App\ProductionCategory', 'product_production_category', 'id');
+	}
+
 	public function groupedItems ()
 	{
 		/*return $this->hasMany('App\Item', 'item_id', 'id_catalog')
@@ -132,5 +137,13 @@ class Product extends Model
 		}
 
 		return $query->where('product_sub_category', $sub_category);
+	}
+	public function scopeSearchProductionCategory ($query, $production_category)
+	{
+		if ( !$production_category || $production_category == 'all' ) {
+			return;
+		}
+
+		return $query->where('product_production_category', intval($production_category));
 	}
 }

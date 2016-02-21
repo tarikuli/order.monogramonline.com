@@ -30,7 +30,6 @@ class ProductionCategoryController extends Controller
 		return view('production_categories.create');
 	}
 
-
 	public function store (ProductionCategoryCreateRequest $request)
 	{
 		$production_categories = new ProductionCategory();
@@ -43,7 +42,6 @@ class ProductionCategoryController extends Controller
 		return redirect(url('production_categories'));
 	}
 
-
 	public function show ($id)
 	{
 		$production_categories = ProductionCategory::where('is_deleted', 0)
@@ -55,7 +53,6 @@ class ProductionCategoryController extends Controller
 		return view('production_categories.show', compact('category'));
 	}
 
-
 	public function edit ($id)
 	{
 		$production_categories = ProductionCategory::where('is_deleted', 0)
@@ -66,7 +63,6 @@ class ProductionCategoryController extends Controller
 
 		return view('production_categories.edit', compact('category'));
 	}
-
 
 	public function update (ProductionCategoryUpdateRequest $request, $id)
 	{
@@ -84,7 +80,6 @@ class ProductionCategoryController extends Controller
 
 		return redirect(url('production_categories'));
 	}
-
 
 	public function destroy ($id)
 	{

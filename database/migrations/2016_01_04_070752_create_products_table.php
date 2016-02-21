@@ -19,6 +19,7 @@ class CreateProductsTable extends Migration
 			$table->string('product_master_category')->nullable();
 			$table->string('product_category')->nullable();
 			$table->string('product_sub_category')->nullable();
+			$table->string('product_production_category')->nullable();
 			$table->double('product_price')->default(0);
 			$table->double('product_sale_price')->default(0);
 			$table->string('product_thumb')->nullable();
