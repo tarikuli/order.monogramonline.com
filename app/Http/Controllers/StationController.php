@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\BatchRoute;
 use App\Department;
 use App\Item;
+use App\Order;
 use App\Status;
 use Illuminate\Http\Request;
 use App\Station;
@@ -168,6 +169,9 @@ class StationController extends Controller
 				Helper::populateShippingData($item);
 			}
 			$item->station_name = $next_station_name;
+			if ( $next_station_name == '' ) {
+				$item->item_order_status_2 = 3;
+			}
 			$item->save();
 
 		} elseif ( $action == 'reject' ) {
@@ -203,7 +207,7 @@ class StationController extends Controller
 
 		$statuses = (new Collection($this->statuses))->prepend('Select status', 'all');
 		$item_statuses = Status::where('is_deleted', 0)
-							   ->lists('status_name', 'status_code');
+							   ->lists('status_name', 'id');
 
 		$items = null;
 		if ( count($request->all()) ) {
@@ -227,14 +231,32 @@ class StationController extends Controller
 		return view('stations.supervisor', compact('items', 'request', 'routes', 'stations', 'statuses', 'item_statuses'));
 	}
 
-	public function assign_to_station (Request $request)
+	public function on_change_apply (Request $request)
 	{
 		$item_id = $request->get('item_id');
-		$station_name = $request->get('station_name');
 		$item = Item::find($item_id);
-		$item->station_name = $station_name;
-		$item->rejection_message = null;
-		$item->save();
+		if ( !$item ) {
+			return redirect()->back();
+		}
+		if ( $request->has('station_name') ) {
+			$station_name = $request->get('station_name');
+			$item->station_name = $station_name;
+			$item->rejection_message = null;
+			$item->save();
+		} elseif ( $request->has('order_status') ) {
+			$order_status = $request->get('order_status');
+			$order = Order::where('order_id', $item->order_id)
+						  ->first();
+			if ( $order ) {
+				$order->order_status = $order_status;
+				$order->save();
+			}
+
+		} elseif ( $request->has('item_order_status_2') ) {
+			$item_order_status_2 = $request->get('item_order_status_2');
+			$item->item_order_status_2 = $item_order_status_2;
+			$item->save();
+		}
 
 		return redirect()->back();
 	}

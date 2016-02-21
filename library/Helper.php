@@ -153,6 +153,11 @@ class Helper
 		"ON"  => 'YES',
 		"ADL" => 'Adult (UPS/FedEx)',
 	];
+	private static $statuses = [
+		'1' => 'To be processed',
+		'2' => 'In progress',
+		'3' => 'Complete',
+	];
 
 	public static $shippingStations = [
 		'J-SHP',
@@ -358,5 +363,15 @@ class Helper
 		$ship->phone = $phone;
 		$ship->carrier = $carrier;
 		$ship->save();
+	}
+
+	public static function getItemOrderStatusArray ()
+	{
+		return static::$statuses;
+	}
+
+	public static function getItemOrderStatus ($index)
+	{
+		return $index && array_key_exists($index, static::$statuses) ? static::$statuses[$index] : null;
 	}
 }

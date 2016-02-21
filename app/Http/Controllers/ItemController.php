@@ -39,6 +39,8 @@ class ItemController extends Controller
 					 ->latest()
 					 ->paginate(50);
 
+		#return $items;
+
 		$unassignedProducts = Product::whereNull('batch_route_id')
 									 ->orWhere('batch_route_id', Helper::getDefaultRouteId())
 									 ->where('is_deleted', 0)
@@ -68,7 +70,7 @@ class ItemController extends Controller
 			'store_id'            => 'Store',
 			'state'               => 'State',
 			'description'         => 'Description',
-			'item_id'             => 'SKU',
+			'item_code'           => 'SKU',
 			'batch'               => 'Batch',
 			'batch_creation_date' => 'Batch Creation date',
 		];
@@ -158,6 +160,7 @@ class ItemController extends Controller
 				$item->station_name = $station_name;
 				$item->item_order_status = 'active';
 				$item->batch_creation_date = date('Y-m-d H:i:s', strtotime('now'));
+				$item->item_order_status_2 = 2;
 				$item->save();
 
 				$station_log = new StationLog();
@@ -360,9 +363,13 @@ class ItemController extends Controller
 								 ->get();
 					Helper::populateShippingData($items);
 				}
+				$updates = [ 'station_name' => $next_station_name ];
+				if ( $next_station_name == '' ) {
+					$updates['item_order_status_2'] = 3;
+				}
 				$items = Item::where('batch_number', $batch_number)
 							 ->where('station_name', $station_name)
-							 ->update([ 'station_name' => $next_station_name ]);
+							 ->update($updates);
 
 				break;
 			case 'reject':

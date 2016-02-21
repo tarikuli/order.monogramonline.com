@@ -8,6 +8,12 @@
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<style>
+		td {
+			width: 1px;
+			white-space: nowrap;
+		}
+	</style>
 </head>
 <body>
 	@include('includes.header_menu')
@@ -86,10 +92,12 @@
 						<td class = "text-center">{{$item->rejection_message ?: " - "}}</td>
 						<td>{{$item->batch_creation_date ? substr($item->batch_creation_date, 0, 10) : "N/A"}}</td>
 						<td>
-							{!! Form::select('next_station', $item->route ? $item->route->stations_list->lists('station_description', 'station_name')->prepend('Select a next station', '') : [], $item->station_name, ['class' => 'form-control next_station']) !!}
+							{!! Form::select('next_station', $item->route ? $item->route->stations_list->lists('station_description', 'station_name')->prepend('Select a next station', '') : [], $item->station_name, ['class' => 'next_station']) !!}
 						</td>
-						<td>{{$item->item_order_status ?: "N/A"}}</td>
-						<td>{!! Form::select('item_order_status', $item_statuses, $item->item_status, ['id'=>'status', 'class' => 'form-control']) !!}</td>
+						{{-- order_status = status from order_table --}}
+						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['class' => 'order_status'])  !!}</td>
+						{{-- Items status = order_item_status --}}
+						<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['class' => 'item_order_status_2'])  !!}</td>
 					</tr>
 					<tr>
 						<td colspan = "13" class = "text-center">
@@ -99,7 +107,7 @@
 						</td>
 					</tr>
 				@endforeach
-				{!! Form::open(['url' => url('stations/assign_to_station'), 'method' => 'post', 'id' => 'assign-to-station']) !!}
+				{!! Form::open(['url' => url('stations/on_change_apply'), 'method' => 'post', 'id' => 'on-change-apply']) !!}
 				{!! Form::close() !!}
 			</table>
 			<div class = "col-xs-12 text-center">
@@ -125,13 +133,47 @@
 			$("<input type='hidden' value='' />")
 					.attr("name", "item_id")
 					.attr("value", item_id)
-					.appendTo($("form#assign-to-station"));
+					.appendTo($("form#on-change-apply"));
 			$("<input type='hidden' value='' />")
 					.attr("name", "station_name")
 					.attr("value", station_name)
-					.appendTo($("form#assign-to-station"));
+					.appendTo($("form#on-change-apply"));
 
-			$("form#assign-to-station").submit();
+			$("form#on-change-apply").submit();
+		});
+
+		$("select.order_status").on('change', function ()
+		{
+			$(this).prop('disabled', 'disabled');
+			var order_status = $(this).val();
+			var item_id = $(this).closest('tr').attr('data-id');
+
+			$("<input type='hidden' value='' />")
+					.attr("name", "item_id")
+					.attr("value", item_id)
+					.appendTo($("form#on-change-apply"));
+			$("<input type='hidden' value='' />")
+					.attr("name", "order_status")
+					.attr("value", order_status)
+					.appendTo($("form#on-change-apply"));
+			$("form#on-change-apply").submit();
+		});
+
+		$("select.item_order_status_2").on('change', function ()
+		{
+			$(this).prop('disabled', 'disabled');
+			var item_order_status_2 = $(this).val();
+			var item_id = $(this).closest('tr').attr('data-id');
+
+			$("<input type='hidden' value='' />")
+					.attr("name", "item_id")
+					.attr("value", item_id)
+					.appendTo($("form#on-change-apply"));
+			$("<input type='hidden' value='' />")
+					.attr("name", "item_order_status_2")
+					.attr("value", item_order_status_2)
+					.appendTo($("form#on-change-apply"));
+			$("form#on-change-apply").submit();
 		});
 	</script>
 </body>

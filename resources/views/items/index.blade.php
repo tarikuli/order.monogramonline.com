@@ -10,6 +10,13 @@
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+
+	<style>
+		td {
+			width: 1px;
+			white-space: nowrap;
+		}
+	</style>
 </head>
 <body>
 	@include('includes.header_menu')
@@ -24,13 +31,13 @@
 			{!! Form::open(['method' => 'get', 'url' => url('items'), 'id' => 'search-order']) !!}
 			<div class = "form-group col-xs-5">
 				<label for = "search_for">Search for</label>
-				{!! Form::text('search_for', null, ['id'=>'search_for', 'class' => 'form-control', 'placeholder' => 'Comma delimited']) !!}
+				{!! Form::text('search_for', $request->get('search_for'), ['id'=>'search_for', 'class' => 'form-control', 'placeholder' => 'Comma delimited']) !!}
 			</div>
 			<div class = "form-group col-xs-5">
 				<label for = "search_in">Search in</label>
 				{!! Form::select('search_in', $search_in, $request->get('search_in'), ['id'=>'search_in', 'class' => 'form-control']) !!}
 			</div>
-			<br/>
+			<br />
 
 			<div class = "form-group col-xs-3">
 				<label for = "start_date">Start date</label>
@@ -70,7 +77,9 @@
 				<tr>
 					<th>Order#</th>
 					<th>Order date</th>
-					<th>Store id</th>
+					<th>Order status</th>
+					<th>Item status</th>
+					<th>Trk#</th>
 					<th>Customer</th>
 					<th>State</th>
 					<th>Description</th>
@@ -86,7 +95,9 @@
 						<td><a href = "{{ url("orders/details/".$item->order_id) }}"
 						       class = "btn btn-link">{{$item->order->short_order}}</a></td>
 						<td>{{substr($item->order->order_date, 0, 10)}}</td>
-						<td>{{$item->store->store_name}}</td>
+						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['id' => 'order_status_id','disabled' => 'disabled'])  !!}</td>
+						<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['id' => 'item_order_status_2_id','disabled' => 'disabled'])  !!}</td>
+						<td>{{$item->shipInfo ? ($item->shipInfo->tracking_number ?: "Not shipped") : "N/A"}}</td>
 						<td><a href = "{{ url("customers/".$item->order->customer->id) }}" title = "This is customer id"
 						       class = "btn btn-link">{{ !empty($item->order->customer->ship_full_name) ? $item->order->customer->ship_full_name : $item->order->customer->bill_full_name }}</a>
 						</td>
@@ -100,8 +111,10 @@
 						<td>
 							@if(is_null($item->route))
 								N/A
+							@elseif($item->item_order_status_2 == 3)
+								Completed
 							@else
-								{!! Form::select('routes', $item->route->stations_list->lists('station_description', 'station_name'), $item->station_name, ['class' => 'form-control']) !!}
+								{!! Form::select('routes', $item->route->stations_list->lists('station_description', 'station_name'), $item->station_name, ['disabled' => 'disabled']) !!}
 							@endif
 						</td>
 					</tr>

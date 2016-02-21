@@ -18,6 +18,7 @@ class Item extends Model
 						'order_date',
 						'short_order',
 						'store_id',
+						'order_status',
 					]);
 	}
 
@@ -108,9 +109,9 @@ class Item extends Model
 
 			return $query->where('item_description', 'REGEXP', implode("|", $values));
 
-		} elseif ( $search_in == 'item_id' ) {
+		} elseif ( $search_in == 'item_code' ) {
 
-			return $query->where('item_id', 'REGEXP', implode("|", $values));
+			return $query->where('item_code', 'REGEXP', implode("|", $values));
 
 		} elseif ( $search_in == 'batch' ) {
 

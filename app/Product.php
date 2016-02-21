@@ -138,6 +138,7 @@ class Product extends Model
 
 		return $query->where('product_sub_category', $sub_category);
 	}
+
 	public function scopeSearchProductionCategory ($query, $production_category)
 	{
 		if ( !$production_category || $production_category == 'all' ) {

@@ -107,7 +107,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	post('stations/change', 'StationController@change');
 	get('stations/status', 'StationController@status');
 	get('stations/supervisor', 'StationController@supervisor');
-	post('stations/assign_to_station', 'StationController@assign_to_station');
+	post('stations/on_change_apply', 'StationController@on_change_apply');
 	get('stations/my_station', 'StationController@my_station');
 
 	resource('departments', 'DepartmentController');

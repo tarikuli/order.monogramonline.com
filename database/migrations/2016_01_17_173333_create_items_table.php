@@ -27,6 +27,7 @@ class CreateItemsTable extends Migration
 			$table->string('station_name')->nullable();
 			$table->string('previous_station')->nullable();
 			$table->string('item_order_status')->nullable();
+			$table->integer('item_order_status_2')->nullable();
             $table->string('data_parse_type')->nullable();
 			$table->string('item_status')->nullable();
 			$table->text('rejection_message')->nullable();
