@@ -16,6 +16,7 @@ class CreateShippingTable extends Migration
             $table->increments('id');
             $table->string('order_number');
 			$table->string('item_id');
+			$table->string('shipping_id')->nullable();
             $table->string('mail_class')->nullable();
             $table->string('package_shape')->nullable();
             $table->float('postage_amount')->default(0);
