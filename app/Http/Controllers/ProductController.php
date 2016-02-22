@@ -64,7 +64,7 @@ class ProductController extends Controller
 
 		$production_categories = ProductionCategory::where('is_deleted', 0)
 												   ->lists('production_category_description', 'id')
-												   ->prepend('Select production category', '');
+												   ->prepend('All', 0);
 		$count = 1;
 
 		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'));
@@ -408,7 +408,7 @@ class ProductController extends Controller
 
 		$production_categories = ProductionCategory::where('is_deleted', 0)
 												   ->lists('production_category_description', 'id')
-												   ->prepend('Select production category', '');
+												   ->prepend('All', 0);
 		$count = 1;
 
 		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'));
