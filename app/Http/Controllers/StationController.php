@@ -291,8 +291,11 @@ class StationController extends Controller
 										->orderBy('order_date', 'asc')
 										->first()->order_date;
 
-			$summary['station_description'] = Station::where('station_name', $station_name)
-													 ->first()->station_description;
+			$station = Station::where('station_name', $station_name)
+							  ->first();
+
+			$summary['station_id'] = $station->id;
+			$summary['station_description'] = $station->station_description;
 			$summary['station_name'] = $station_name;
 			$summary['items_count'] = $items_count;
 			$summary['earliest_batch_creation_date'] = substr($earliest_batch_creation_date, 0, 10);
