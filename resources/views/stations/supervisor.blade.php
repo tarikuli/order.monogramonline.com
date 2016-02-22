@@ -94,10 +94,10 @@
 						<td>
 							{!! Form::select('next_station', $item->route ? $item->route->stations_list->lists('station_description', 'station_name')->prepend('Select a next station', '') : [], $item->station_name, ['class' => 'next_station']) !!}
 						</td>
-						{{-- order_status = status from order_table --}}
-						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['class' => 'order_status'])  !!}</td>
 						{{-- Items status = order_item_status --}}
 						<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['class' => 'item_order_status_2'])  !!}</td>
+						{{-- order_status = status from order_table --}}
+						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['class' => 'order_status'])  !!}</td>
 					</tr>
 					<tr>
 						<td colspan = "13" class = "text-center">

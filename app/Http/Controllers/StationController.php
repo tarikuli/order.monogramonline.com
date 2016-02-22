@@ -20,8 +20,8 @@ use Monogram\Helper;
 class StationController extends Controller
 {
 	private $statuses = [
-		'active'      => 'Active',
 		'not started' => 'Not started',
+		'active'      => 'Active',
 		'completed'   => 'Completed',
 	];
 
