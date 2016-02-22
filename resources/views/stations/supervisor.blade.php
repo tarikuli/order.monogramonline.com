@@ -75,8 +75,8 @@
 					<th>Rejection message</th>
 					<th>Batch creation date</th>
 					<th>Station</th>
-					<th>Order status</th>
 					<th>Item status</th>
+					<th>Order status</th>
 				</tr>
 				@foreach($items as $item)
 					<tr data-id = "{{$item->id}}" class = "text-center">
