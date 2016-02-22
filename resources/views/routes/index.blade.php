@@ -86,7 +86,7 @@
 							<td><span data-toggle = "tooltip" data-placement = "top"
 							          title = "{{ $row['next_station_description'] }}">{{ $row['next_station_name'] }}</span>
 							</td>
-							<td>Active</td>
+							<td>{{$row['batch_status']}}</td>
 							<td>{{$row['min_order_date']}}</td>
 						</tr>
 					@endforeach

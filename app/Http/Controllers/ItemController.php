@@ -158,7 +158,7 @@ class ItemController extends Controller
 				$station_id = $batch->stations_list[0]->station_id;
 				$station_name = $batch->stations_list[0]->station_name;
 				$item->station_name = $station_name;
-				$item->item_order_status = 'active';
+				$item->item_order_status = Helper::getBatchStatus();
 				$item->batch_creation_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->item_order_status_2 = 2;
 				$item->save();
@@ -222,6 +222,7 @@ class ItemController extends Controller
 				$checker[] = $previous_station == $singleRow->station_name;
 				$working_stations[] = $singleRow->station_name;
 			}
+
 			$current_station_name = '';
 			$current_station_description = '';
 
@@ -230,6 +231,18 @@ class ItemController extends Controller
 
 			$station_list = $item->route->stations_list;
 			$grab_next = false;
+			$batch_statuses = array_keys(array_flip($item->groupedItems->lists('item_order_status')
+																	   ->toArray()));
+			# Flip the values to keys
+			# then get the keys,
+			# Faster than array_unique
+			if ( in_array("active", $batch_statuses) ) {
+				$batch_status = Helper::getBatchStatus("active");
+			} elseif ( in_array("not started", $batch_statuses) ) {
+				$batch_status = Helper::getBatchStatus("not started");
+			} else {
+				$batch_status = Helper::getBatchStatus("complete");
+			}
 
 			if ( count(array_unique($checker)) == 1 ) {
 				foreach ( $station_list as $station ) {
@@ -271,11 +284,13 @@ class ItemController extends Controller
 			$row['next_station_name'] = $next_station_name;
 			$row['next_station_description'] = $next_station_description;
 			$row['min_order_date'] = substr($item->lowest_order_date->order_date, 0, 10);
+			$row['batch_status'] = $batch_status;
 
 			$rows[] = $row;
 		}
 
-		$statuses = (new Collection($this->statuses))->prepend('Select status', 'all');
+		#$statuses = (new Collection($this->statuses))->prepend('Select status', 'all');
+		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
 
 		return view('routes.index', compact('rows', 'items', 'request', 'routes', 'stations', 'statuses'));
 	}
@@ -293,7 +308,8 @@ class ItemController extends Controller
 			return view('errors.404');
 		}
 		$bar_code = DNS1D::getBarcodeHTML($batch_number, "C39");
-		$statuses = $this->statuses;
+		#$statuses = $this->statuses;
+		$statuses = Helper::getBatchStatusList();
 		$route = BatchRoute::with('stations')
 						   ->find($items[0]->batch_route_id);
 
@@ -323,7 +339,10 @@ class ItemController extends Controller
 
 		if ( $request->has('status') ) {
 			$status = $request->get('status');
-			if ( !count($items) || !$status || !array_key_exists($status, $this->statuses) ) {
+			/*if ( !count($items) || !$status || !array_key_exists($status, $this->statuses) ) {
+				return redirect()->back();
+			}*/
+			if ( !count($items) || !$status || !array_key_exists($status, Helper::getBatchStatusList()) ) {
 				return redirect()->back();
 			}
 
@@ -366,6 +385,9 @@ class ItemController extends Controller
 				$updates = [ 'station_name' => $next_station_name ];
 				if ( $next_station_name == '' ) {
 					$updates['item_order_status_2'] = 3;
+					$updates['item_order_status'] = 'complete';
+				} else {
+					$updates['item_order_status'] = 'active';
 				}
 				$items = Item::where('batch_number', $batch_number)
 							 ->where('station_name', $station_name)

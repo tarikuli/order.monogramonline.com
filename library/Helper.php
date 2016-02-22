@@ -158,6 +158,11 @@ class Helper
 		'2' => 'In progress',
 		'3' => 'Complete',
 	];
+	private static $batchStatuses = [
+		'not started' => 'Not started',
+		'active'      => 'Active',
+		'complete'    => "Complete",
+	];
 
 	public static $shippingStations = [
 		'J-SHP',
@@ -165,6 +170,16 @@ class Helper
 		'S-SHP',
 		'H-SHP',
 	];
+
+	public static function getBatchStatusList ()
+	{
+		return static::$batchStatuses;
+	}
+
+	public static function getBatchStatus ($index = null)
+	{
+		return $index && array_key_exists($index, static::$batchStatuses) ? static::$batchStatuses[$index] : 'not started';
+	}
 
 	public static function jsonTransformer ($json, $separator = null)
 	{

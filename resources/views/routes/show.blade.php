@@ -36,7 +36,7 @@
 					<a href = "{{url('exports/batch/'.$batch_number)}}">Export batch</a>
 					<p>Batch creation date: <span>{{substr($items[0]->batch_creation_date, 0, 10)}}</span></p>
 					<div class = "col-xs-12">
-						<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, []) !!}</p>
+						<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>
 						{{--{!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
 						<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, []) !!}</p>
 						{!! Form::submit('Change status', ['id' => 'change-status',]) !!}

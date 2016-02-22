@@ -169,8 +169,11 @@ class StationController extends Controller
 				Helper::populateShippingData($item);
 			}
 			$item->station_name = $next_station_name;
+			$item->item_order_status = "active";
+
 			if ( $next_station_name == '' ) {
 				$item->item_order_status_2 = 3;
+				$item->item_order_status = "complete";
 			}
 			$item->save();
 
@@ -205,7 +208,8 @@ class StationController extends Controller
 						   ->lists('station_description', 'id')
 						   ->prepend('Select a station', 'all');
 
-		$statuses = (new Collection($this->statuses))->prepend('Select status', 'all');
+		#$statuses = (new Collection($this->statuses))->prepend('Select status', 'all');
+		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
 		$item_statuses = Status::where('is_deleted', 0)
 							   ->lists('status_name', 'id');
 
