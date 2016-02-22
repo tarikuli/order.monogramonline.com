@@ -295,6 +295,31 @@ class ItemController extends Controller
 		return view('routes.index', compact('rows', 'items', 'request', 'routes', 'stations', 'statuses'));
 	}
 
+	public function batch_details ($batch_number)
+	{
+		$items = Item::with('order', 'station_details')
+					 ->where('batch_number', $batch_number)
+					 ->get();
+		if ( !count($items) ) {
+			return view('errors.404');
+		}
+		$bar_code = DNS1D::getBarcodeHTML($batch_number, "C39");
+		$statuses = Helper::getBatchStatusList();
+		$route = BatchRoute::with('stations')
+						   ->find($items[0]->batch_route_id);
+
+		#$department_id = DB::table('department_station')->where('station_id', Station::where('station_name', $station_name)->first()->id)->first()->department_id;
+
+		#$department = Department::find($department_id);
+		#$department_name = $department ? $department->department_name : '';
+		$stations = Helper::routeThroughStations($items[0]->batch_route_id);
+
+		#return $items;
+		$count = 1;
+
+		return view('routes.batch_details', compact('items', 'bar_code', 'batch_number', 'statuses', 'route', 'stations', 'count', 'department_name'));
+	}
+
 	public function getBatchItems ($batch_number, $station_name)
 	{
 		if ( $station_name == Helper::getSupervisorStationName() ) {

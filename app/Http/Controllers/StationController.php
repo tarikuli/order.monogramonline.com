@@ -169,7 +169,11 @@ class StationController extends Controller
 				Helper::populateShippingData($item);
 			}
 			$item->station_name = $next_station_name;
-			$item->item_order_status = "active";
+			Item::where('batch_number', $item->batch_number)
+				->update([
+					'item_order_status' => 'active',
+				]);
+			#$item->item_order_status = "active";
 
 			if ( $next_station_name == '' ) {
 				$item->item_order_status_2 = 3;

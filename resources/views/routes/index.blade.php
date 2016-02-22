@@ -59,6 +59,7 @@
 				<table class = "table">
 					<tr>
 						<th>Batch#</th>
+						<th>View batch</th>
 						<th>Batch creation date</th>
 						<th>Route</th>
 						<th>Lines</th>
@@ -72,6 +73,9 @@
 						<tr>
 							<td>
 								<a href = "{{url(sprintf('batches/%d/%s',$row['batch_number'], $row['current_station_name']))}}">{{$row['batch_number']}}</a>
+							</td>
+							<td>
+								<a href = "{{url(sprintf('batch_details/%d',$row['batch_number']))}}">View batch</a>
 							</td>
 							<td>{{$row['batch_creation_date']}}</td>
 							<td><span data-toggle = "tooltip" data-placement = "top"

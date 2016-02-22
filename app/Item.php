@@ -75,6 +75,11 @@ class Item extends Model
 		return $this->hasOne('App\Ship', 'item_id', 'id');
 	}
 
+	public function station_details ()
+	{
+		return $this->belongsTo('App\Station', 'station_name', 'station_name');
+	}
+
 	/* Scope Search methods */
 
 	public function scopeSearch ($query, $search_for, $search_in)
