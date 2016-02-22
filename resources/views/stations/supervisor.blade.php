@@ -88,7 +88,15 @@
 						<td>{{$item->item_quantity}}</td>
 						<td>{{$item->batch_number ?: "N/A" }}</td>
 						<td>{{ $item->route ? $item->route->batch_route_name : "-"}}</td>
-						<td>{{$item->previous_station ?: "-"}}</td>
+						@if($item->previous_station)
+							<td><span data-toggle = "tooltip" data-tooltip-placement = "top"
+							          title = "{{ \App\Station::where('station_name', $item->previous_station)->first() ->station_description}}">
+									{{$item->previous_station}}
+								</span>
+							</td>
+						@else
+							<td>-</td>
+						@endif
 						<td class = "text-center">{{$item->rejection_message ?: " - "}}</td>
 						<td>{{$item->batch_creation_date ? substr($item->batch_creation_date, 0, 10) : "N/A"}}</td>
 						<td>
@@ -102,7 +110,7 @@
 					<tr>
 						<td colspan = "13" class = "text-center">
 							@if($item->route)
-								{{$item->route->batch_route_name}} => {!! \Monogram\Helper::routeThroughStations($item->route->id) !!}
+								{{$item->route->batch_route_name}} => {!! str_replace($item->previous_station, sprintf("<b>%s</b>", $item->previous_station), \Monogram\Helper::routeThroughStations($item->route->id)) !!}
 							@endif
 						</td>
 					</tr>
@@ -123,6 +131,12 @@
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script type = "text/javascript">
+		$(function ()
+		{
+			$('[data-toggle="tooltip"]').tooltip();
+		});
+	</script>
 	<script type = "text/javascript">
 		$("select.next_station").on('change', function ()
 		{
