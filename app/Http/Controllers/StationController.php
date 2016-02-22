@@ -275,7 +275,8 @@ class StationController extends Controller
 			$station_name = $item->station_name;
 
 			$items_count = Item::where('station_name', $station_name)
-							   ->first([ DB::raw('count(*) as items_count') ])->items_count;
+							   ->groupBy('station_name')
+							   ->first([ DB::raw('SUM(item_quantity) as items_count') ])->items_count;
 			$earliest_batch_creation_date = Item::where('station_name', $station_name)
 												->orderBy('batch_creation_date', 'asc')
 												->first()->batch_creation_date;
