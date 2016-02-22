@@ -260,4 +260,42 @@ class StationController extends Controller
 
 		return redirect()->back();
 	}
+
+	public function summary ()
+	{
+		$items = Item::where('station_name', '!=', '')
+					 ->groupBy('station_name')
+					 ->get();
+
+		$summaries = [ ];
+
+		foreach ( $items as $item ) {
+			$summary = [ ];
+
+			$station_name = $item->station_name;
+
+			$items_count = Item::where('station_name', $station_name)
+							   ->first([ DB::raw('count(*) as items_count') ])->items_count;
+			$earliest_batch_creation_date = Item::where('station_name', $station_name)
+												->orderBy('batch_creation_date', 'asc')
+												->first()->batch_creation_date;
+			$order_ids = Item::where('station_name', $station_name)
+							 ->get();
+			$earliest_order_date = Order::whereIn('order_id', $order_ids->lists('order_id')
+																		->toArray())
+										->orderBy('order_date', 'asc')
+										->first()->order_date;
+
+			$summary['station_description'] = Station::where('station_name', $station_name)
+													 ->first()->station_description;
+			$summary['station_name'] = $station_name;
+			$summary['items_count'] = $items_count;
+			$summary['earliest_batch_creation_date'] = substr($earliest_batch_creation_date, 0, 10);
+			$summary['earliest_order_date'] = substr($earliest_order_date, 0, 10);
+
+			$summaries[] = $summary;
+		}
+
+		return view('stations.summary', compact('summaries'));
+	}
 }
