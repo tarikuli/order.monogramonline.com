@@ -69,6 +69,7 @@
 					<th>Store id</th>
 					<th>SKU</th>
 					<th>Qty.</th>
+					<th>Release</th>
 					<th>Batch</th>
 					<th>Route</th>
 					<th>From station</th>
@@ -86,6 +87,7 @@
 						<td>{{$item->store->store_name}}</td>
 						<td>{{$item->item_code}}</td>
 						<td>{{$item->item_quantity}}</td>
+						<td>{!! $item->batch_number ? sprintf("<a href='%s/%d'>Release</a>", url('items/release'), $item->id) : "N/A" !!}</td>
 						<td>{{$item->batch_number ?: "N/A" }}</td>
 						<td>{{ $item->route ? $item->route->batch_route_name : "-"}}</td>
 						@if($item->previous_station)

@@ -93,7 +93,7 @@
 								<td>{{$item->item_quantity}}</td>
 								<td>{{$item->item_code}}</td>
 								<td>{{$item->item_description}}</td>
-								<td>{{\Monogram\Helper::jsonTransformer($item->item_option)}}</td>
+								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', "style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"]) !!}</td>
 								<td>{{--<a href = "#" class = "btn btn-danger reject">Reject</a> |--}} <a href = "#"
 								                                                                          class = "btn btn-success done">Done</a>
 								</td>

@@ -82,7 +82,7 @@
 								<td>{{$count++}}</td>
 								<td>
 									@if($item->station_details)
-										<a href="{{ url(sprintf("/batches/%s/%s", $item->batch_number, $item->station_details->station_name)) }}" data-toggle="tooltip" data-placement="top" title="{{ $item->station_details->station_description }}">Jump to: {{$item->station_details->station_name}}</a>
+										<a href="{{ url(sprintf("/batches/%s/%s", $item->batch_number, $item->station_details->station_name)) }}" data-toggle="tooltip" data-placement="top" title="{{ $item->station_details->station_description }}">{{$item->station_details->station_name}}</a>
 									@else
 										-
 									@endif

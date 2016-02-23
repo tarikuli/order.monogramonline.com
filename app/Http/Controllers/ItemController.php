@@ -214,7 +214,7 @@ class ItemController extends Controller
 			$start = true;
 			$checker = [ ];
 			$working_stations = [ ];
-			$items_on_station = [];
+			$items_on_station = [ ];
 			foreach ( $item->groupedItems as $singleRow ) {
 				if ( $start ) {
 					$start = false;
@@ -501,5 +501,24 @@ class ItemController extends Controller
 		}
 
 		return response()->download($fully_specified_path);
+	}
+
+	public function release ($item_id)
+	{
+		$item = Item::find($item_id);
+		if ( !$item ) {
+			return redirect()->back()->withError(['error' => 'Not a valid batch id']);
+		}
+		$item->batch_number = 0;
+		$item->batch_route_id = DB::raw('Null');
+		$item->station_name = null;
+		$item->item_order_status = null;
+		$item->batch_creation_date = null;
+		$item->item_order_status_2 = null;
+		$item->previous_station = null;
+		$item->rejection_message = null;
+		$item->save();
+
+		return redirect()->back();
 	}
 }

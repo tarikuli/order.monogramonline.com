@@ -93,6 +93,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	get('batch_details/{batch_number}', 'ItemController@batch_details');
 	post('items/batch', 'ItemController@postBatch');
 	get('items/grouped', 'ItemController@getGroupedBatch');
+	get('items/release/{item_id}', 'ItemController@release');
 	resource('items', 'ItemController');
 
 	resource('orders', 'OrderController');
