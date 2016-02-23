@@ -27,13 +27,13 @@
 				<div class = "form-group col-xs-12">
 					{!! Form::label('department_id', 'Department', ['class' => 'col-xs-2 control-label']) !!}
 					<div class = "col-sm-4">
-						{!! Form::select('department_id', $departments_list, null, ['id' => 'department_id', 'class' => "form-control"]) !!}
+						{!! Form::select('department_id', $departments_list, null, ['id' => 'department_id', 'class' => "form-control departments-drop-down"]) !!}
 					</div>
 				</div>
 				<div class = "form-group col-xs-12">
 					{!! Form::label('station_id', 'Station', ['class' => 'col-xs-2 control-label']) !!}
 					<div class = "col-sm-4">
-						{!! Form::select('station_id', [] , null, ['id' => 'station_id', 'class' => "form-control"]) !!}
+						{!! Form::select('station_id', [] , null, ['id' => 'station_id', 'class' => "form-control stations-drop-down"]) !!}
 					</div>
 				</div>
 				<div class = "form-group col-xs-12">
@@ -75,17 +75,20 @@
 								<input class = "form-control" name = "category_display_order" type = "text"
 								       value = "{{$rejection_message->rejection_message}}">
 							</td>--}}
-							<td>{!! Form::text('update_able_department_id', $rejection_message->department_id, ['class' => 'form-control']) !!}</td>
-							<td>{!! Form::text('update_able_station_id', $rejection_message->station_id, ['class' => 'form-control']) !!}</td>
+							<td>{!! Form::select('update_able_department_id', $departments_list, $rejection_message->department_id, ['class' => 'form-control departments-drop-down']) !!}</td>
+							<td>{!! Form::select('update_able_station_id', $stations_list->get($rejection_message->department_id, []), $rejection_message->station_id, ['class' => 'form-control stations-drop-down']) !!}</td>
 							<td>{!! Form::text('update_able_rejection_message', $rejection_message->rejection_message, ['class' => 'form-control']) !!}</td>
 							<td>
 								<a href = "#" class = "update" data-toggle = "tooltip" data-placement = "top"
-								   title = "Edit this item"><i class = "fa fa-pencil-square-o text-success"></i> </a>
-								| <a href = "#" class = "delete"
-								     data-toggle = "tooltip"
-								     data-placement = "top"
-								     title = "Delete this item"><i
-											class = "fa fa-times text-danger"></i> </a>
+								   title = "Edit this item"><i class = "fa fa-pencil-square-o text-success"></i>
+								</a>
+								|
+								<a href = "#" class = "delete"
+								   data-toggle = "tooltip"
+								   data-placement = "top"
+								   title = "Delete this item"><i
+											class = "fa fa-times text-danger"></i>
+								</a>
 							</td>
 						</tr>
 					@endforeach
@@ -94,13 +97,13 @@
 			<div class = "col-xs-12 text-center">
 				{!! $rejection_messages->render() !!}
 			</div>
-			{!! Form::open(['url' => url('/categories/id'), 'method' => 'delete', 'id' => 'delete-category']) !!}
+			{!! Form::open(['url' => url('/rejection_messages/id'), 'method' => 'delete', 'id' => 'delete-rejection-message']) !!}
 			{!! Form::close() !!}
 
-			{!! Form::open(['url' => url('/categories/id'), 'method' => 'put', 'id' => 'update-category']) !!}
-			{!! Form::hidden('category_code', null, ['id' => 'update_category_code']) !!}
-			{!! Form::hidden('category_description', null, ['id' => 'update_category_description']) !!}
-			{!! Form::hidden('category_display_order', null, ['id' => 'update_category_display_order']) !!}
+			{!! Form::open(['url' => url('/rejection_messages/id'), 'method' => 'put', 'id' => 'update-rejection-message']) !!}
+			{!! Form::hidden('updated_department_id', null, ['id' => 'updated_department_id']) !!}
+			{!! Form::hidden('updated_station_id', null, ['id' => 'updated_station_id']) !!}
+			{!! Form::hidden('updated_rejection_message', null, ['id' => 'updated_rejection_message']) !!}
 			{!! Form::close() !!}
 		@else
 			<div class = "col-xs-12">
@@ -120,23 +123,43 @@
 			$('[data-toggle="tooltip"]').tooltip();
 		});
 
-		$("select#department_id").on('change', function (event)
+		$("select.departments-drop-down").on('change', function (event)
 		{
 			var selected = $(this).val();
+			// get the next stations dropdown
+			var tr = $(this).closest('tr');
+			var node = null;
+			if ( tr.length ) {
+				node = tr;
+			} else {
+				var form = $(this).closest('form');
+				if ( form.length ) {
+					node = form;
+				}
+			}
+			if ( node == null ) {
+				alert("Sorry, something went wrong!");
+				return false;
+			}
+			truncate_station_list(node);
 			if ( selected == 0 ) {
-				truncate_station_list();
 				return false;
 			}
 			if ( selected in stations_list ) {
-				populate_station_list(selected);
+				populate_station_list(node, selected);
 			}
 		});
 
-		function populate_station_list (key)
+		function find_corresponding_station_drop_down (node)
 		{
-			truncate_station_list();
+			return $(node).find('select.stations-drop-down');
+		}
+
+		function populate_station_list (node, key)
+		{
+			//truncate_station_list(node);
 			var data = stations_list[key];
-			var select_station_field = $("select#station_id");
+			var select_station_field = find_corresponding_station_drop_down(node);
 
 			$.each(data, function (key, value)
 			{
@@ -144,9 +167,9 @@
 			});
 		}
 
-		function truncate_station_list ()
+		function truncate_station_list (node)
 		{
-			$("select#station_id").empty();
+			$(find_corresponding_station_drop_down(node)).empty();
 		}
 
 		var message = {
@@ -158,7 +181,7 @@
 			var id = $(this).closest('tr').attr('data-id');
 			var action = confirm(message.delete);
 			if ( action ) {
-				var form = $("form#delete-category");
+				var form = $("form#delete-rejection-message");
 				var url = form.attr('action');
 				form.attr('action', url.replace('id', id));
 				form.submit();
@@ -171,14 +194,14 @@
 			var tr = $(this).closest('tr');
 			var id = tr.attr('data-id');
 
-			var code = tr.find('input').eq(0).val();
-			var description = tr.find('input').eq(1).val();
-			var order = tr.find('input').eq(2).val();
+			var updated_department_id = tr.find('select').eq(0).val();
+			var updated_station_id = tr.find('select').eq(1).val();
+			var updated_rejection_message = tr.find('input[type="text"]').eq(0).val();
 
-			$("input#update_category_code").val(code);
-			$("input#update_category_description").val(description);
-			$("input#update_category_display_order").val(order);
-			var form = $("form#update-category");
+			$("input#updated_department_id").val(updated_department_id);
+			$("input#updated_station_id").val(updated_station_id);
+			$("input#updated_rejection_message").val(updated_rejection_message);
+			var form = $("form#update-rejection-message");
 			var url = form.attr('action');
 			form.attr('action', url.replace('id', id));
 			form.submit();
