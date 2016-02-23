@@ -81,7 +81,7 @@
 							<td><span data-toggle = "tooltip" data-placement = "top"
 							          title = "{{$row['route_name']}}">{{$row['route_code']}}</span>
 							</td>
-							<td>{{$row['lines']}}</td>
+							<td>{{$row['current_station_item_count']}} out of {{$row['lines']}}</td>
 							<td>
 								<span data-toggle = "tooltip" data-placement = "top"
 								      title = "{{ $row['current_station_description'] }}">{{ $row['current_station_name'] }}</span>

@@ -214,6 +214,7 @@ class ItemController extends Controller
 			$start = true;
 			$checker = [ ];
 			$working_stations = [ ];
+			$items_on_station = [];
 			foreach ( $item->groupedItems as $singleRow ) {
 				if ( $start ) {
 					$start = false;
@@ -221,6 +222,8 @@ class ItemController extends Controller
 				}
 				$checker[] = $previous_station == $singleRow->station_name;
 				$working_stations[] = $singleRow->station_name;
+				$this_station = $singleRow->station_name;
+				$items_on_station[$this_station] = array_key_exists($this_station, $items_on_station) ? ++$items_on_station[$this_station] : 1;
 			}
 
 			$current_station_name = '';
@@ -285,9 +288,11 @@ class ItemController extends Controller
 			$row['next_station_description'] = $next_station_description;
 			$row['min_order_date'] = substr($item->lowest_order_date->order_date, 0, 10);
 			$row['batch_status'] = $batch_status;
+			$row['current_station_item_count'] = $items_on_station[$current_station_name];
 
 			$rows[] = $row;
 		}
+		#return $rows;
 
 		#$statuses = (new Collection($this->statuses))->prepend('Select status', 'all');
 		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
