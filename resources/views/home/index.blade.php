@@ -50,6 +50,7 @@
 					<li><a href = "/rules">Shipping Rules</a></li>
 					<li><a href = "/shipping">Shipping list</a></li>
 					<li><a href = "/summary">Stations summary</a></li>
+					<li><a href = "/rejection_messages">Rejection messages</a></li>
 				</ul>
 				<hr />
 				<ul>

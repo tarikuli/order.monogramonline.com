@@ -69,6 +69,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 	resource('customers', 'CustomerController');
 
+	resource('rejection_messages', 'RejectionMessageController');
+
 	resource('users', 'UserController');
 
 	get('exports/batch/{id}', 'ItemController@export_batch');
