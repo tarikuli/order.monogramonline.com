@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Department;
 use App\RejectionMessage;
+use App\RejectionReason;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -11,7 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 
-class RejectionMessageController extends Controller
+class RejectionReasonController extends Controller
 {
 	public function index ()
 	{
@@ -32,13 +33,13 @@ class RejectionMessageController extends Controller
 			$stations_list->prepend($stations, $department->id);
 		}
 
-		$rejection_messages = RejectionMessage::where('is_deleted', 0)
+		$rejection_reasons = RejectionReason::where('is_deleted', 0)
 											  ->paginate(50);
 
 		#return $stations_list;
 		$count = 1;
 
-		return view('rejection_messages.index', compact('departments_list', 'stations_list', 'rejection_messages', 'count'));
+		return view('rejection_reasons.index', compact('departments_list', 'stations_list', 'rejection_reasons', 'count'));
 	}
 
 	public function create ()
@@ -46,7 +47,7 @@ class RejectionMessageController extends Controller
 		//
 	}
 
-	public function store (Requests\RejectionMessageCreateRequest $request)
+	public function store (Requests\RejectionReasonCreateRequest $request)
 	{
 		$department_id = $request->get('department_id') ?: null;
 		$station_id = $request->get('station_id') ?: null;
@@ -70,13 +71,13 @@ class RejectionMessageController extends Controller
 				->withErrors($validation);
 		}
 
-		$rejection_message = new RejectionMessage();
-		$rejection_message->department_id = $department_id;
-		$rejection_message->station_id = $station_id;
-		$rejection_message->rejection_message = $request->get('rejection_message');
-		$rejection_message->save();
+		$rejection_reason = new RejectionReason();
+		$rejection_reason->department_id = $department_id;
+		$rejection_reason->station_id = $station_id;
+		$rejection_reason->rejection_message = trim($request->get('rejection_message'));
+		$rejection_reason->save();
 
-		return redirect(route('rejection_messages.index'));
+		return redirect(route('rejection_reasons.index'));
 	}
 
 	public function show ($id)
@@ -89,10 +90,10 @@ class RejectionMessageController extends Controller
 		//
 	}
 
-	public function update (Requests\RejectionMessageUpdateRequest $request, $id)
+	public function update (Requests\RejectionReasonUpdateRequest $request, $id)
 	{
-		$rejection_message = RejectionMessage::find($id);
-		if ( !$rejection_message ) {
+		$rejection_reason = RejectionReason::find($id);
+		if ( !$rejection_reason ) {
 			return redirect()
 				->back()
 				->withInput()
@@ -122,18 +123,18 @@ class RejectionMessageController extends Controller
 				->withInput()
 				->withErrors($validation);
 		}
-		$rejection_message->department_id = $department_id;
-		$rejection_message->station_id = $station_id;
-		$rejection_message->rejection_message = $request->get('updated_rejection_message');
-		$rejection_message->save();
+		$rejection_reason->department_id = $department_id;
+		$rejection_reason->station_id = $station_id;
+		$rejection_reason->rejection_message = trim($request->get('updated_rejection_message'));
+		$rejection_reason->save();
 
-		return redirect(route('rejection_messages.index'));
+		return redirect(route('rejection_reasons.index'));
 	}
 
 	public function destroy ($id)
 	{
-		$rejection_message = RejectionMessage::find($id);
-		if ( !$rejection_message ) {
+		$rejection_reason = RejectionReason::find($id);
+		if ( !$rejection_reason ) {
 			return redirect()
 				->back()
 				->withInput()
@@ -141,10 +142,10 @@ class RejectionMessageController extends Controller
 					'invalid' => 'Cannot update. rejection message id invalid',
 				]);
 		}
-		$rejection_message->is_deleted = 1;
-		$rejection_message->save();
+		$rejection_reason->is_deleted = 1;
+		$rejection_reason->save();
 
-		return redirect(route('rejection_messages.index'));
+		return redirect(route('rejection_reasons.index'));
 
 	}
 }

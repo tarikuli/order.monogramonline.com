@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
 
-class RejectionMessageUpdateRequest extends Request
+class RejectionReasonCreateRequest extends Request
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class RejectionMessageUpdateRequest extends Request
 	public function rules ()
 	{
 		return [
-			'updated_rejection_message' => 'required',
+			'rejection_message' => 'required',
 		];
 	}
 }

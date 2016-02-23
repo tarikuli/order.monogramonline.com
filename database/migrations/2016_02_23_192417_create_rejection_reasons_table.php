@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRejectionMessagesTable extends Migration
+class CreateRejectionReasonsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreateRejectionMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('rejection_messages', function (Blueprint $table) {
+        Schema::create('rejection_reasons', function (Blueprint $table) {
             $table->increments('id');
 			$table->integer('department_id')->nullable();
 			$table->integer('station_id')->nullable();
@@ -29,6 +29,6 @@ class CreateRejectionMessagesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('rejection_messages');
+        Schema::drop('rejection_reasons');
     }
 }

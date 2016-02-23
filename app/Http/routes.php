@@ -69,7 +69,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 	resource('customers', 'CustomerController');
 
-	resource('rejection_messages', 'RejectionMessageController');
+	resource('rejection_reasons', 'RejectionReasonController');
 
 	resource('users', 'UserController');
 

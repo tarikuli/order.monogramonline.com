@@ -23,7 +23,7 @@
 			        aria-expanded = "false" aria-controls = "collapsible">Add rejection message
 			</button>
 			<div class = "collapse text-left" id = "collapsible-top">
-				{!! Form::open(['url' => url('/rejection_messages'), 'method' => 'post']) !!}
+				{!! Form::open(['url' => url('/rejection_reasons'), 'method' => 'post']) !!}
 				<div class = "form-group col-xs-12">
 					{!! Form::label('department_id', 'Department', ['class' => 'col-xs-2 control-label']) !!}
 					<div class = "col-sm-4">
@@ -50,7 +50,7 @@
 				{!! Form::close() !!}
 			</div>
 		</div>
-		@if(count($rejection_messages) > 0)
+		@if(count($rejection_reasons) > 0)
 			<div class = "col-xs-12">
 				<table class = "table table-bordered">
 					<tr>
@@ -60,8 +60,8 @@
 						<th>Rejection message</th>
 						<th>Action</th>
 					</tr>
-					@foreach($rejection_messages as $rejection_message)
-						<tr data-id = "{{$rejection_message->id}}">
+					@foreach($rejection_reasons as $rejection_reason)
+						<tr data-id = "{{$rejection_reason->id}}">
 							<td>{{ $count++ }}</td>
 							{{--<td>
 								<input class = "form-control" name = "category_code" type = "text"
@@ -75,9 +75,9 @@
 								<input class = "form-control" name = "category_display_order" type = "text"
 								       value = "{{$rejection_message->rejection_message}}">
 							</td>--}}
-							<td>{!! Form::select('update_able_department_id', $departments_list, $rejection_message->department_id, ['class' => 'form-control departments-drop-down']) !!}</td>
-							<td>{!! Form::select('update_able_station_id', $stations_list->get($rejection_message->department_id, []), $rejection_message->station_id, ['class' => 'form-control stations-drop-down']) !!}</td>
-							<td>{!! Form::text('update_able_rejection_message', $rejection_message->rejection_message, ['class' => 'form-control']) !!}</td>
+							<td>{!! Form::select('update_able_department_id', $departments_list, $rejection_reason->department_id, ['class' => 'form-control departments-drop-down']) !!}</td>
+							<td>{!! Form::select('update_able_station_id', $stations_list->get($rejection_reason->department_id, []), $rejection_reason->station_id, ['class' => 'form-control stations-drop-down']) !!}</td>
+							<td>{!! Form::text('update_able_rejection_message', $rejection_reason->rejection_message, ['class' => 'form-control']) !!}</td>
 							<td>
 								<a href = "#" class = "update" data-toggle = "tooltip" data-placement = "top"
 								   title = "Edit this item"><i class = "fa fa-pencil-square-o text-success"></i>
@@ -95,12 +95,12 @@
 				</table>
 			</div>
 			<div class = "col-xs-12 text-center">
-				{!! $rejection_messages->render() !!}
+				{!! $rejection_reasons->render() !!}
 			</div>
-			{!! Form::open(['url' => url('/rejection_messages/id'), 'method' => 'delete', 'id' => 'delete-rejection-message']) !!}
+				{!! Form::open(['url' => url('rejection_reasons'), 'method' => 'delete', 'id' => 'delete-rejection-reason']) !!}
 			{!! Form::close() !!}
 
-			{!! Form::open(['url' => url('/rejection_messages/id'), 'method' => 'put', 'id' => 'update-rejection-message']) !!}
+			{!! Form::open(['url' => url('/rejection_reasons/id'), 'method' => 'put', 'id' => 'update-rejection-reason']) !!}
 			{!! Form::hidden('updated_department_id', null, ['id' => 'updated_department_id']) !!}
 			{!! Form::hidden('updated_station_id', null, ['id' => 'updated_station_id']) !!}
 			{!! Form::hidden('updated_rejection_message', null, ['id' => 'updated_rejection_message']) !!}
@@ -108,7 +108,7 @@
 		@else
 			<div class = "col-xs-12">
 				<div class = "alert alert-warning text-center">
-					<h3>No rejection message found.</h3>
+					<h3>No rejection reason found.</h3>
 				</div>
 			</div>
 		@endif
@@ -181,7 +181,7 @@
 			var id = $(this).closest('tr').attr('data-id');
 			var action = confirm(message.delete);
 			if ( action ) {
-				var form = $("form#delete-rejection-message");
+				var form = $("form#delete-rejection-reason");
 				var url = form.attr('action');
 				form.attr('action', url.replace('id', id));
 				form.submit();
@@ -201,7 +201,7 @@
 			$("input#updated_department_id").val(updated_department_id);
 			$("input#updated_station_id").val(updated_station_id);
 			$("input#updated_rejection_message").val(updated_rejection_message);
-			var form = $("form#update-rejection-message");
+			var form = $("form#update-rejection-reason");
 			var url = form.attr('action');
 			form.attr('action', url.replace('id', id));
 			form.submit();
