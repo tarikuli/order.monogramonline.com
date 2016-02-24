@@ -537,13 +537,14 @@ class ItemController extends Controller
 				->withError([ 'error' => 'Not a valid batch id' ]);
 		}
 		$item->batch_number = 0;
-		$item->batch_route_id = DB::raw('Null');
+		$item->batch_route_id = null;
 		$item->station_name = null;
 		$item->item_order_status = null;
 		$item->batch_creation_date = null;
 		$item->tracking_number = null;
 		$item->item_order_status_2 = null;
 		$item->previous_station = null;
+		$item->item_status = null;
 		$item->rejection_message = null;
 		$item->rejection_reason = null;
 		$item->save();
