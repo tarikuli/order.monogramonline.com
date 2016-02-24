@@ -99,7 +99,13 @@
 						@else
 							<td>-</td>
 						@endif
-						<td class = "text-center">{{$item->rejection_message ?: " - "}}</td>
+						<td class = "text-center" style = "background-color: #FF0000">
+							@if($item->rejection_message)
+								{{ \App\RejectionReason::find($item->rejection_reason)->rejection_message . " - " . $item->rejection_message }}
+							@else
+								-
+							@endif
+						</td>
 						<td>{{$item->batch_creation_date ? substr($item->batch_creation_date, 0, 10) : "N/A"}}</td>
 						<td>
 							{!! Form::select('next_station', $item->route ? $item->route->stations_list->lists('station_description', 'station_name')->prepend('Select a next station', '') : [], $item->station_name, ['class' => 'next_station']) !!}

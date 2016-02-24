@@ -30,6 +30,7 @@ class CreateItemsTable extends Migration
 			$table->integer('item_order_status_2')->nullable();
             $table->string('data_parse_type')->nullable();
 			$table->string('item_status')->nullable();
+			$table->integer('rejection_reason')->nullable();
 			$table->text('rejection_message')->nullable();
             $table->enum('is_deleted', array(0, 1))->default(0);
             $table->timestamps();

@@ -6,6 +6,7 @@ use App\BatchRoute;
 use App\Department;
 use App\Item;
 use App\Product;
+use App\RejectionReason;
 use App\Setting;
 use App\Station;
 use App\StationLog;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use DNS1D;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use League\Csv\Writer;
 use Monogram\Helper;
 
@@ -347,6 +349,18 @@ class ItemController extends Controller
 						   ->where('station_id', Station::where('station_name', $station_name)
 														->first()->id)
 						   ->first()->department_id;
+		$rejection_reasons = new Collection();
+		if ( $items->count() ) {
+			$station_name = $items[0]->station_name;
+			$current_batch_station = Station::where('station_name', $station_name)
+											->first();
+			$rejection_reasons = RejectionReason::where('station_id', $current_batch_station->id)
+												->orWhereNull('station_id')
+												->where('is_deleted', 0)
+												->orderBy('station_id', 'desc')
+												->lists('rejection_message', 'id')
+												->prepend('Select a reason', 0);
+		}
 
 		$department = Department::find($department_id);
 		$department_name = $department ? $department->department_name : '';
@@ -359,7 +373,7 @@ class ItemController extends Controller
 		#return $items;
 		$count = 1;
 
-		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'statuses', 'route', 'stations', 'count', 'department_name'));
+		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'rejection_reasons', 'statuses', 'route', 'stations', 'count', 'department_name'));
 	}
 
 	public function updateBatchItems (Request $request, $batch_number)
@@ -427,10 +441,21 @@ class ItemController extends Controller
 			case 'reject':
 				$supervisor_station = Helper::getSupervisorStationName();
 
+				$rules = [
+					'rejection_reason'  => 'required|exists:rejection_reasons,id',
+					'rejection_message' => 'required',
+				];
+				$validation = Validator::make($request->all(), $rules);
+				if ( $validation->fails() ) {
+					return redirect()->back()->withErrors($validation);
+				}
+
+
 				$items = Item::where('batch_number', $batch_number)
 							 ->where('station_name', $station_name)
 							 ->update([
 								 'station_name'      => $supervisor_station,
+								 'rejection_reason'  => $request->get('rejection_reason'),
 								 'rejection_message' => trim($request->get('rejection_message')),
 								 'previous_station'  => $station_name,
 							 ]);
@@ -507,16 +532,20 @@ class ItemController extends Controller
 	{
 		$item = Item::find($item_id);
 		if ( !$item ) {
-			return redirect()->back()->withError(['error' => 'Not a valid batch id']);
+			return redirect()
+				->back()
+				->withError([ 'error' => 'Not a valid batch id' ]);
 		}
 		$item->batch_number = 0;
 		$item->batch_route_id = DB::raw('Null');
 		$item->station_name = null;
 		$item->item_order_status = null;
 		$item->batch_creation_date = null;
+		$item->tracking_number = null;
 		$item->item_order_status_2 = null;
 		$item->previous_station = null;
 		$item->rejection_message = null;
+		$item->rejection_reason = null;
 		$item->save();
 
 		return redirect()->back();

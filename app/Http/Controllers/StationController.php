@@ -15,6 +15,7 @@ use App\Http\Requests\StationCreateRequest;
 use App\Http\Requests\StationUpdateRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Monogram\Helper;
 
 class StationController extends Controller
@@ -182,8 +183,19 @@ class StationController extends Controller
 			$item->save();
 
 		} elseif ( $action == 'reject' ) {
+			$rules = [
+				'rejection_reason'  => 'required|exists:rejection_reasons,id',
+				'rejection_message' => 'required',
+			];
+			$validation = Validator::make($request->all(), $rules);
+			if ( $validation->fails() ) {
+				return redirect()
+					->back()
+					->withErrors($validation);
+			}
 			$item->previous_station = $item->station_name;
 			$item->station_name = Helper::getSupervisorStationName();
+			$item->rejection_reason = $request->get('rejection_reason');
 			$item->rejection_message = trim($request->get('rejection_message'));
 			$item->save();
 		}
@@ -250,6 +262,7 @@ class StationController extends Controller
 			$station_name = $request->get('station_name');
 			$item->station_name = $station_name;
 			$item->rejection_message = null;
+			$item->rejection_reason = null;
 			$item->save();
 		} elseif ( $request->has('order_status') ) {
 			$order_status = $request->get('order_status');

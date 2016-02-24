@@ -29,6 +29,7 @@
 			<li><a href = "{{url('/items/grouped')}}">Batch list</a></li>
 			<li class = "active">Batch View</li>
 		</ol>
+		@include('includes.error_div')
 		<div class = "col-xs-12">
 			@if($items)
 				<div class = "col-xs-8">
@@ -129,7 +130,12 @@
 						<h4 class = "modal-title" id = "myModalLabel">Reason to reject?</h4>
 					</div>
 					<div class = "modal-body">
-						{!! Form::textarea('reason_to_reject', null, ['id' => 'reason-to-reject', 'class' => 'form-control', 'placeholder' => 'Write the reason to reject']) !!}
+						<div class = "form-group">
+							{!! Form::select('reason_to_reject', $rejection_reasons?: [], null, ['id' => 'reason-to-reject', 'class' => 'form-control']) !!}
+						</div>
+						<div class = "form-group">
+							{!! Form::textarea('message_to_reject', null, ['id' => 'message-to-reject', 'rows' => 2, 'class' => 'form-control', 'placeholder' => 'Write the message to reject']) !!}
+						</div>
 					</div>
 					<div class = "modal-footer">
 						<button type = "button" class = "btn btn-default" data-dismiss = "modal">Close</button>
@@ -202,11 +208,20 @@
 
 		$("#do-reject").on('click', function ()
 		{
-			var rejection_message = $("#reason-to-reject").val().trim();
+			var rejection_message = $("#message-to-reject").val().trim();
 			if ( !rejection_message ) {
 				alert('Rejection message cannot be empty!');
 				return false;
 			}
+			var rejection_reason = $("#reason-to-reject").val();
+			if ( !rejection_reason || rejection_reason == 0 ) {
+				alert('Rejection reason cannot be unselected!');
+				return false;
+			}
+			$("<input type='hidden' value='' />")
+					.attr("name", "rejection_reason")
+					.attr("value", rejection_reason)
+					.appendTo($(form));
 			$("<input type='hidden' value='' />")
 					.attr("name", "rejection_message")
 					.attr("value", rejection_message)

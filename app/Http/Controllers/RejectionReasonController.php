@@ -34,7 +34,8 @@ class RejectionReasonController extends Controller
 		}
 
 		$rejection_reasons = RejectionReason::where('is_deleted', 0)
-											  ->paginate(50);
+											->latest()
+											->paginate(50);
 
 		#return $stations_list;
 		$count = 1;
