@@ -569,8 +569,10 @@ class ProductController extends Controller
 				} elseif ( $column == 'product_master_category' ) {
 					$row[] = $product->master_category ? $product->master_category->master_category_code : '';
 				} elseif ( $column == 'product_category' ) {
+					continue;
 					$row[] = $product->category ? $product->category->category_code : '';
 				} elseif ( $column == 'product_sub_category' ) {
+					continue;
 					$row[] = $product->sub_category ? $product->sub_category->sub_category_code : '';
 				} elseif ( $column == 'product_production_category' ) {
 					$row[] = $product->production_category ? $product->production_category->production_category_code : '';

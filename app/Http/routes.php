@@ -138,6 +138,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 	put('rules/bulk_update/{id}', 'RuleController@bulk_update');
 
+	get('master_categories/get_next/{parent_category_id}', 'MasterCategoryController@getNext');
 	resource('master_categories', 'MasterCategoryController');
 	resource('rules', 'RuleController', [
 		'except' => [ 'create' ],

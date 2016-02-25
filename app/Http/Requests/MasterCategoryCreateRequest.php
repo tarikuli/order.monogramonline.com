@@ -25,6 +25,7 @@ class MasterCategoryCreateRequest extends Request
 			'master_category_code'          => 'required',
 			'master_category_description'   => 'required',
 			'master_category_display_order' => 'required',
+			'parent_category'               => 'required',
 		];
 	}
 }

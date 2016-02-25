@@ -17,8 +17,14 @@ class Product extends Model
 		$columns = $this->getConnection()
 						->getSchemaBuilder()
 						->getColumnListing($this->getTable());
-
-		return array_slice($columns, 1, -2);
+		$remove_columns = [
+			'updated_at',
+			'created_at',
+			'id',
+			'product_category',
+			'product_sub_category',
+		];
+		return array_diff($columns, $remove_columns);
 	}
 
 	public static function getTableColumns ()

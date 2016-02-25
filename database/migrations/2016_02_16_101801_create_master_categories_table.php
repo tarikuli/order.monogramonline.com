@@ -17,6 +17,7 @@ class CreateMasterCategoriesTable extends Migration
 			$table->string('master_category_code');
 			$table->string('master_category_description');
 			$table->string('master_category_display_order');
+			$table->integer('parent')->default(0);
 			$table->enum('is_deleted', array(0, 1))->default(0);
             $table->timestamps();
         });
