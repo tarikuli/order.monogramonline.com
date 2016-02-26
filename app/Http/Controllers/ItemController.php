@@ -203,6 +203,16 @@ class ItemController extends Controller
 						   ->latest()
 						   ->lists('station_description', 'id')
 						   ->prepend('Select a station', 'all');
+
+		// Get Station List
+		$stations = Station::where('is_deleted', 0)
+						   ->latest()
+						   ->lists('station_description', 'id')
+						   ->prepend('Select a station', 'all');
+		//  Get Station Name by Station Request parameter.
+		$station_name = Station::find($request->get('station'));
+		$current_station_by_url = $station_name['station_name'];
+
 		$rows = [ ];
 		foreach ( $items as $item ) {
 			$row = [ ];
@@ -279,6 +289,10 @@ class ItemController extends Controller
 					}
 				}
 			}
+			if(!empty($current_station_by_url)){
+				$current_station_name = $current_station_by_url;
+			}
+
 			if ( $current_station_name == '' ) {
 				$current_station_name = Helper::getSupervisorStationName();
 				$current_station_description = "Supervisor station";
