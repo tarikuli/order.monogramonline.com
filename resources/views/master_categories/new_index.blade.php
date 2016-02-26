@@ -231,10 +231,10 @@
 		{
 			var node = $(clicked).find('option:selected');
 
-			var new_code = $(node).text().trim();
+			var new_code = $(node).attr('data-code');
 			$("#new_code").val(new_code);
 
-			var new_description = $(node).attr('data-code');
+			var new_description = $(node).text().trim();
 			$("#new_description").val(new_description);
 
 			var new_display_order = $(node).attr('data-display-order');
