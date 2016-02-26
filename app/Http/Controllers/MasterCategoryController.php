@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\MasterCategory;
+use App\Product;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -23,7 +24,18 @@ class MasterCategoryController extends Controller
 									->get();
 		if ( $is_ajax ) {
 			if ( $categories->count() > 0 ) {
-				return view('master_categories.ajax_category_response', compact('categories', 'id'));
+				$count = 1;
+				$select_form_data = view('master_categories.ajax_category_response', compact('categories', 'id'))->render();
+				$tabular_view = view('master_categories.table_view', compact('count'))
+					->with('master_categories', $categories)
+					->render();
+				$data = [
+					'select_form_data' => $select_form_data,
+					'tabular_data'     => $tabular_view,
+				];
+
+				return response()->json($data, 200);
+
 			}
 
 			return response()->json();
@@ -93,9 +105,15 @@ class MasterCategoryController extends Controller
 			return view('errors.404');
 		}
 
-		$master_category->master_category_code = $request->get('modified_code');
-		$master_category->master_category_description = $request->get('modified_description');
-		$master_category->master_category_display_order = intval($request->get('modified_display_order'));
+		if ( $request->has('modified_code') ) {
+			$master_category->master_category_code = $request->get('modified_code');
+			$master_category->master_category_description = $request->get('modified_description');
+			$master_category->master_category_display_order = intval($request->get('modified_display_order'));
+		} else {
+			$master_category->master_category_code = $request->get('master_category_code');
+			$master_category->master_category_description = $request->get('master_category_description');
+			$master_category->master_category_display_order = intval($request->get('master_category_display_order'));
+		}
 
 		$master_category->save();
 
@@ -108,6 +126,25 @@ class MasterCategoryController extends Controller
 										 ->find($id);
 		if ( !$master_category ) {
 			return view('errors.404');
+		}
+		$products_count = Product::where('product_master_category', $master_category->id)
+								 ->count();
+		if ( $products_count ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => sprintf("Cannot delete category. %d products have this category assigned.", $products_count),
+				]);
+		}
+
+		$children_count = $master_category->children->count();
+
+		if ( $children_count ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => sprintf("Cannot delete category. %d children categories available.", $children_count),
+				]);
 		}
 
 		$master_category->is_deleted = 1;

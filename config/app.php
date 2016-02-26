@@ -166,6 +166,9 @@ return [
 		 */
 		Milon\Barcode\BarcodeServiceProvider::class,
 
+		/* Custom validation provider */
+		App\Providers\CustomValidationProvider::class,
+
 	],
 
 	/*

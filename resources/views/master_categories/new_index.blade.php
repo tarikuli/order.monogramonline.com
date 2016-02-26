@@ -7,6 +7,8 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
+	      href = "assets/css/bootstrap-horizon.css" />
+	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -38,8 +40,10 @@
 			</div>
 			<div class = "form-group col-xs-12">
 				{!! Form::label('category', 'category', ['class' => 'col-xs-2 control-label']) !!}
-				<div class = "col-sm-10">
-					@include('master_categories.ajax_category_response')
+				<div class = "col-sm-10" style = "overflow: auto;">
+					<div class = "row row-horizon">
+						@include('master_categories.ajax_category_response')
+					</div>
 				</div>
 			</div>
 			<div class = "form-group col-xs-12">
@@ -67,44 +71,14 @@
 			</div>
 			{!! Form::close() !!}
 		</div>
+
+		<h3 class = "page-header">Sub categories(On select)</h3>
+		<div class = "col-md-12" id = "ajax_loaded">
+		</div>
+		<h3 class = "page-header">Root level categories</h3>
 		@if(count($master_categories) > 0)
-			<div class = "col-xs-12">
-				<table class = "table table-bordered">
-					<tr>
-						<th>#</th>
-						<th>category code</th>
-						<th>category description</th>
-						<th>category display order</th>
-						<th>Action</th>
-					</tr>
-					@foreach($master_categories as $category)
-						<tr data-id = "{{$category->id}}">
-							<td>{{ $count++ }}</td>
-							<td>
-								<input class = "form-control" name = "category_code" type = "text"
-								       value = "{{$category->master_category_code}}">
-							</td>
-							<td>
-								<input class = "form-control" name = "category_description" type = "text"
-								       value = "{{$category->master_category_description}}">
-							</td>
-							<td>
-								<input class = "form-control" name = "category_display_order" type = "text"
-								       value = "{{$category->master_category_display_order}}">
-							</td>
-							{{--<td>{!! Form::text('category_code', $category->category_code, ['class' => 'form-control']) !!}</td>
-							<td>{!! Form::text('category_description', $category->category_description, ['class' => 'form-control']) !!}</td>
-							<td>{!! Form::text('category_display_order', $category->category_display_order, ['class' => 'form-control']) !!}</td>--}}
-							<td>
-								{{--<a href = "{{ url(sprintf("/categories/%d", $category->id)) }}" class = "btn btn-success">View</a> | --}}
-								<a href = "#" class = "update" data-toggle = "tooltip" data-placement = "top"
-								   title = "Edit this item"><i class = "fa fa-pencil-square-o text-success"></i> </a>
-								| <a href = "#" class = "delete" data-toggle = "tooltip" data-placement = "top"
-								     title = "Delete this item"><i class = "fa fa-times text-danger"></i> </a>
-							</td>
-						</tr>
-					@endforeach
-				</table>
+			<div class = "col-md-12" id = "ajax_loaded">
+				@include('master_categories.table_view')
 			</div>
 			<div class = "col-xs-12 text-center">
 				{!! $master_categories->render() !!}
@@ -113,9 +87,9 @@
 			{!! Form::close() !!}
 
 			{!! Form::open(['url' => url('/master_categories/id'), 'method' => 'put', 'id' => 'update-category']) !!}
-			{!! Form::hidden('master_category_code', null, ['id' => 'update_category_code']) !!}
-			{!! Form::hidden('master_category_description', null, ['id' => 'update_category_description']) !!}
-			{!! Form::hidden('master_category_display_order', null, ['id' => 'update_category_display_order']) !!}
+			{!! Form::hidden('modified_code', null, ['id' => 'update_category_code']) !!}
+			{!! Form::hidden('modified_description', null, ['id' => 'update_category_description']) !!}
+			{!! Form::hidden('modified_display_order', null, ['id' => 'update_category_display_order']) !!}
 			{!! Form::close() !!}
 		@else
 			<div class = "col-xs-12">
@@ -160,26 +134,17 @@
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	{{--{!! Form::number('parent_category', 0, ['id' => 'parent_category', 'class' => "form-control", 'readonly' => "readonly"]) !!}
-	{!! Form::text('new_code', null, ['id' => 'modified_code', 'class' => 'form-control']) !!}
-	{!! Form::text('new_description', null, ['id' => 'modified_description', 'class' => 'form-control']) !!}
-	{!! Form::text('new_display_order', null, ['id' => 'modified_display_order', 'class' => 'form-control']) !!}
-	{!! Form::button('Update', ['id' => 'modify_update']) !!}
-
-	{!! Form::open(['url' => url('master_categories/ID/update'), 'id' => 'modify_master_category', 'method' => 'put', 'class' => 'form-horizontal']) !!}
-	{!! Form::hidden('modified_code', null, ['id' => 'modified_code', 'class' => 'form-control']) !!}
-	{!! Form::hidden('modified_description', null, ['id' => 'modified_description', 'class' => 'form-control']) !!}
-	{!! Form::hidden('modified_display_order', null, ['id' => 'modified_display_order', 'class' => 'form-control']) !!}
-	{!! Form::close() !!}--}}
 	<script type = "text/javascript">
 		$(function ()
 		{
 			$('[data-toggle="tooltip"]').tooltip();
+			disable_form();
 		});
 
-		$('form').on('keyup keypress', function(e) {
+		$('form').on('keyup keypress', function (e)
+		{
 			var keyCode = e.keyCode || e.which;
-			if (keyCode === 13) {
+			if ( keyCode === 13 ) {
 				e.preventDefault();
 				return false;
 			}
@@ -244,7 +209,7 @@
 		var message = {
 			delete: 'Are you sure you want to delete?',
 		};
-		$("a.delete").on('click', function (event)
+		$(document).on('click', "a.delete", function (event)
 		{
 			event.preventDefault();
 			var id = $(this).closest('tr').attr('data-id');
@@ -257,7 +222,7 @@
 			}
 		});
 
-		$("a.update").on('click', function (event)
+		$(document).on('click', "a.update", function (event)
 		{
 			event.preventDefault();
 			var tr = $(this).closest('tr');
@@ -281,6 +246,7 @@
 			var node = $(this);
 			var selected_parent_category = parseInt($(this).val());
 			delete_next(node);
+			delete_tabular_data();
 			if ( !selected_parent_category ) {
 				disable_form();
 				var parent_id = $(this).closest('div.col-sm-3').attr('data-parent');
@@ -310,6 +276,21 @@
 			});
 		}
 
+		function delete_tabular_data ()
+		{
+			$("#ajax_loaded").empty();
+		}
+
+		function set_select_form_data (node, data)
+		{
+			$(node).closest('div.col-sm-3').after(data);
+		}
+
+		function set_tabular_data (data)
+		{
+			$("#ajax_loaded").html(data);
+		}
+
 		function ajax_performer (category_id, node)
 		{
 			var url = "/master_categories/get_next/" + category_id;
@@ -317,7 +298,10 @@
 			$.ajax({
 				method: method, url: url, success: function (data, status, xhr)
 				{
-					$(node).closest('div.col-sm-3').after(data);
+					var select_form_data = data.select_form_data;
+					var tabular_data = data.tabular_data;
+					set_select_form_data(node, select_form_data);
+					set_tabular_data(tabular_data);
 				}, error: function (xhr, status, error)
 				{
 					alert("Something going wrong");

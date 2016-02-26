@@ -17,17 +17,25 @@ class MasterCategoryUpdateRequest extends Request
 
 	/**
 	 * Get the validation rules that apply to the request.
+	 *
+	 * @param \App\Http\Requests\Request|\Illuminate\Http\Request $request
+	 *
 	 * @return array
 	 */
-	public function rules ()
+	public function rules (\Illuminate\Http\Request $request)
 	{
+		if ( $request->has('master_category_code') ) {
+			return [
+				'master_category_code'          => 'required|no_space_allowed',
+				'master_category_description'   => 'required',
+				'master_category_display_order' => 'required',
+			];
+		}
+
 		return [
-			'modified_code'          => 'required',
+			'modified_code'          => 'required|no_space_allowed',
 			'modified_description'   => 'required',
 			'modified_display_order' => 'required',
-			/*'master_category_code'          => 'required',
-			'master_category_description'   => 'required',
-			'master_category_display_order' => 'required',*/
 		];
 	}
 }
