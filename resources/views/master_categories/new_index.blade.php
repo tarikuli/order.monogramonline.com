@@ -30,9 +30,9 @@
 				{!! Form::label('parent_category', 'Parent', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-sm-3">
 					{!! Form::number('parent_category', 0, ['id' => 'parent_category', 'class' => "form-control", 'readonly' => "readonly"]) !!}
-					{!! Form::text('new_code', null, ['id' => 'new_code', 'class' => 'form-control']) !!}
-					{!! Form::text('new_description', null, ['id' => 'new_description', 'class' => 'form-control']) !!}
-					{!! Form::text('new_display_order', null, ['id' => 'new_display_order', 'class' => 'form-control']) !!}
+					{!! Form::text('new_code', null, ['id' => 'new_code', 'class' => 'form-control', 'placeholder' => 'Category code']) !!}
+					{!! Form::text('new_description', null, ['id' => 'new_description', 'class' => 'form-control', 'placeholder' => 'Category description']) !!}
+					{!! Form::text('new_display_order', null, ['id' => 'new_display_order', 'class' => 'form-control', 'placeholder' => 'Category display order']) !!}
 					{!! Form::button('Update', ['id' => 'modify_update']) !!}
 				</div>
 			</div>
