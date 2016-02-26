@@ -25,6 +25,20 @@
 			<div class = "collapse text-left" id = "collapsible-top">
 				{!! Form::open(['url' => url('/master_categories'), 'method' => 'post']) !!}
 				<div class = "form-group col-xs-12">
+					{!! Form::label('parent_category', 'Parent', ['class' => 'col-xs-2 control-label']) !!}
+					<div class = "col-sm-4">
+						{!! Form::number('parent_category', 0, ['id' => 'parent_category', 'class' => "form-control", 'readonly' => "readonly"]) !!}
+					</div>
+				</div>
+				<div class = "form-group col-xs-12">
+					{!! Form::label('category', 'category', ['class' => 'col-xs-2 control-label']) !!}
+					<div class="col-sm-10">
+						<div class = "col-sm-3" data-parent="0" style="margin-top: 10px;">
+							{!! Form::select('category', $categories, null, ['id' => 'category', 'class' => "form-control parent-selector", "size" => 12]) !!}
+						</div>
+					</div>
+				</div>
+				<div class = "form-group col-xs-12">
 					{!! Form::label('master_category_code', 'Category code', ['class' => 'col-xs-2 control-label']) !!}
 					<div class = "col-sm-4">
 						{!! Form::text('master_category_code', null, ['id' => 'master_category_code', 'class' => "form-control", 'placeholder' => "Enter category code"]) !!}
@@ -40,18 +54,6 @@
 					{!! Form::label('master_category_display_order', 'Display order', ['class' => 'col-xs-2 control-label']) !!}
 					<div class = "col-sm-4">
 						{!! Form::text('master_category_display_order', 0, ['id' => 'master_category_display_order', 'class' => "form-control", 'placeholder' => "Enter category display order"]) !!}
-					</div>
-				</div>
-				<div class = "form-group col-xs-12">
-					{!! Form::label('parent_category', 'Parent', ['class' => 'col-xs-2 control-label']) !!}
-					<div class = "col-sm-4">
-						{!! Form::number('parent_category', 0, ['id' => 'parent_category', 'class' => "form-control", 'readonly' => "readonly"]) !!}
-					</div>
-				</div>
-				<div class = "form-group col-xs-12" data-parent="0">
-					{!! Form::label('category', 'category', ['class' => 'col-xs-2 control-label']) !!}
-					<div class = "col-sm-4">
-						{!! Form::select('category', $categories, null, ['id' => 'category', 'class' => "form-control parent-selector"]) !!}
 					</div>
 				</div>
 				<div class = "col-xs-12 apply-margin-top-bottom ">
@@ -203,7 +205,7 @@
 			var selected_parent_category = $(this).val();
 			delete_next(node);
 			if ( !selected_parent_category) {
-				var parent_id = $(this).closest('div.form-group').attr('data-parent');
+				var parent_id = $(this).closest('div.col-sm-3').attr('data-parent');
 				set_parent_category(parent_id);
 				return false;
 			}/* else if ( selected_parent_category == 0 ) {
@@ -221,7 +223,7 @@
 
 		function delete_next (node)
 		{
-			$(node).closest('div.form-group').nextAll().not('div.apply-margin-top-bottom').each(function ()
+			$(node).closest('div.col-sm-3').nextAll().each(function ()
 			{
 				$(this).remove();
 			});
@@ -234,7 +236,7 @@
 			$.ajax({
 				method: method, url: url, success: function (data, status, xhr)
 				{
-					$(node).closest('div.form-group').after(data);
+					$(node).closest('div.col-sm-3').after(data);
 				}, error: function (xhr, status, error)
 				{
 					alert("Something going wrong");
