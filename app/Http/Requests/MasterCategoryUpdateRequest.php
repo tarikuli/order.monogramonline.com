@@ -22,9 +22,12 @@ class MasterCategoryUpdateRequest extends Request
 	public function rules ()
 	{
 		return [
-			'master_category_code'          => 'required',
+			'modified_code'          => 'required',
+			'modified_description'   => 'required',
+			'modified_display_order' => 'required',
+			/*'master_category_code'          => 'required',
 			'master_category_description'   => 'required',
-			'master_category_display_order' => 'required',
+			'master_category_display_order' => 'required',*/
 		];
 	}
 }

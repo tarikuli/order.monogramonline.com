@@ -18,51 +18,54 @@
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
-		<div class = "col-xs-12 text-right" style = "margin: 10px 0;">
-			<button class = "btn btn-success" type = "button" data-toggle = "collapse" data-target = "#collapsible-top"
-			        aria-expanded = "false" aria-controls = "collapsible">Create new category
-			</button>
-			<div class = "collapse text-left" id = "collapsible-top">
-				{!! Form::open(['url' => url('/master_categories'), 'method' => 'post']) !!}
-				<div class = "form-group col-xs-12">
-					{!! Form::label('parent_category', 'Parent', ['class' => 'col-xs-2 control-label']) !!}
-					<div class = "col-sm-4">
-						{!! Form::number('parent_category', 0, ['id' => 'parent_category', 'class' => "form-control", 'readonly' => "readonly"]) !!}
-					</div>
+		<div class = "col-xs-12" style = "margin: 10px 0;">
+			{!! Form::open(['url' => url('master_categories/ID'), 'id' => 'modify_master_category', 'method' => 'put', 'class' => 'form-horizontal']) !!}
+			{!! Form::hidden('modified_code', null, ['id' => 'modified_code', 'class' => 'form-control']) !!}
+			{!! Form::hidden('modified_description', null, ['id' => 'modified_description', 'class' => 'form-control']) !!}
+			{!! Form::hidden('modified_display_order', null, ['id' => 'modified_display_order', 'class' => 'form-control']) !!}
+			{!! Form::close() !!}
+
+			{!! Form::open(['url' => url('/master_categories'), 'method' => 'post']) !!}
+			<div class = "form-group col-xs-12">
+				{!! Form::label('parent_category', 'Parent', ['class' => 'col-xs-2 control-label']) !!}
+				<div class = "col-sm-3">
+					{!! Form::number('parent_category', 0, ['id' => 'parent_category', 'class' => "form-control", 'readonly' => "readonly"]) !!}
+					{!! Form::text('new_code', null, ['id' => 'new_code', 'class' => 'form-control']) !!}
+					{!! Form::text('new_description', null, ['id' => 'new_description', 'class' => 'form-control']) !!}
+					{!! Form::text('new_display_order', null, ['id' => 'new_display_order', 'class' => 'form-control']) !!}
+					{!! Form::button('Update', ['id' => 'modify_update']) !!}
 				</div>
-				<div class = "form-group col-xs-12">
-					{!! Form::label('category', 'category', ['class' => 'col-xs-2 control-label']) !!}
-					<div class="col-sm-10">
-						<div class = "col-sm-3" data-parent="0" style="margin-top: 10px;">
-							{!! Form::select('category', $categories, null, ['id' => 'category', 'class' => "form-control parent-selector", "size" => 12]) !!}
-						</div>
-					</div>
-				</div>
-				<div class = "form-group col-xs-12">
-					{!! Form::label('master_category_code', 'Category code', ['class' => 'col-xs-2 control-label']) !!}
-					<div class = "col-sm-4">
-						{!! Form::text('master_category_code', null, ['id' => 'master_category_code', 'class' => "form-control", 'placeholder' => "Enter category code"]) !!}
-					</div>
-				</div>
-				<div class = "form-group col-xs-12">
-					{!! Form::label('master_category_description', 'Description', ['class' => 'col-xs-2 control-label']) !!}
-					<div class = "col-sm-4">
-						{!! Form::text('master_category_description', null, ['id' => 'master_category_description', 'class' => "form-control", 'placeholder' => "Enter category description"]) !!}
-					</div>
-				</div>
-				<div class = "form-group col-xs-12">
-					{!! Form::label('master_category_display_order', 'Display order', ['class' => 'col-xs-2 control-label']) !!}
-					<div class = "col-sm-4">
-						{!! Form::text('master_category_display_order', 0, ['id' => 'master_category_display_order', 'class' => "form-control", 'placeholder' => "Enter category display order"]) !!}
-					</div>
-				</div>
-				<div class = "col-xs-12 apply-margin-top-bottom ">
-					<div class = "col-xs-offset-2 col-xs-4">
-						{!! Form::submit('Create category', ['class' => 'btn btn-primary btn-block']) !!}
-					</div>
-				</div>
-				{!! Form::close() !!}
 			</div>
+			<div class = "form-group col-xs-12">
+				{!! Form::label('category', 'category', ['class' => 'col-xs-2 control-label']) !!}
+				<div class = "col-sm-10">
+					@include('master_categories.ajax_category_response')
+				</div>
+			</div>
+			<div class = "form-group col-xs-12">
+				{!! Form::label('master_category_code', 'Category code', ['class' => 'col-xs-2 control-label']) !!}
+				<div class = "col-sm-4">
+					{!! Form::text('master_category_code', null, ['id' => 'master_category_code', 'class' => "form-control", 'placeholder' => "Enter category code"]) !!}
+				</div>
+			</div>
+			<div class = "form-group col-xs-12">
+				{!! Form::label('master_category_description', 'Description', ['class' => 'col-xs-2 control-label']) !!}
+				<div class = "col-sm-4">
+					{!! Form::text('master_category_description', null, ['id' => 'master_category_description', 'class' => "form-control", 'placeholder' => "Enter category description"]) !!}
+				</div>
+			</div>
+			<div class = "form-group col-xs-12">
+				{!! Form::label('master_category_display_order', 'Display order', ['class' => 'col-xs-2 control-label']) !!}
+				<div class = "col-sm-4">
+					{!! Form::text('master_category_display_order', 0, ['id' => 'master_category_display_order', 'class' => "form-control", 'placeholder' => "Enter category display order"]) !!}
+				</div>
+			</div>
+			<div class = "col-xs-12 apply-margin-top-bottom ">
+				<div class = "col-xs-offset-2 col-xs-4">
+					{!! Form::submit('Create category', ['class' => 'btn btn-primary btn-block']) !!}
+				</div>
+			</div>
+			{!! Form::close() !!}
 		</div>
 		@if(count($master_categories) > 0)
 			<div class = "col-xs-12">
@@ -157,13 +160,87 @@
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	{{--{!! Form::number('parent_category', 0, ['id' => 'parent_category', 'class' => "form-control", 'readonly' => "readonly"]) !!}
+	{!! Form::text('new_code', null, ['id' => 'modified_code', 'class' => 'form-control']) !!}
+	{!! Form::text('new_description', null, ['id' => 'modified_description', 'class' => 'form-control']) !!}
+	{!! Form::text('new_display_order', null, ['id' => 'modified_display_order', 'class' => 'form-control']) !!}
+	{!! Form::button('Update', ['id' => 'modify_update']) !!}
+
+	{!! Form::open(['url' => url('master_categories/ID/update'), 'id' => 'modify_master_category', 'method' => 'put', 'class' => 'form-horizontal']) !!}
+	{!! Form::hidden('modified_code', null, ['id' => 'modified_code', 'class' => 'form-control']) !!}
+	{!! Form::hidden('modified_description', null, ['id' => 'modified_description', 'class' => 'form-control']) !!}
+	{!! Form::hidden('modified_display_order', null, ['id' => 'modified_display_order', 'class' => 'form-control']) !!}
+	{!! Form::close() !!}--}}
 	<script type = "text/javascript">
 		$(function ()
 		{
 			$('[data-toggle="tooltip"]').tooltip();
 		});
 
-		//var previous = [];
+		$('form').on('keyup keypress', function(e) {
+			var keyCode = e.keyCode || e.which;
+			if (keyCode === 13) {
+				e.preventDefault();
+				return false;
+			}
+		});
+
+		$("button#modify_update").on('click', function (event)
+		{
+			event.preventDefault();
+
+			var id = $("#parent_category").val();
+			var url = "master_categories/" + id;
+
+			var form = $("form#modify_master_category");
+			form.attr('action', url);
+
+			var modified_code = $("#new_code").val();
+			$("input#modified_code").val(modified_code);
+
+			var modified_description = $("#new_description").val();
+			$("input#modified_description").val(modified_description);
+
+			var modified_display_order = $("#new_display_order").val();
+			$("input#modified_display_order").val(modified_display_order);
+			$(form).submit();
+		});
+
+		function enable_form ()
+		{
+
+			$("button#modify_update").prop('disabled', false);
+		}
+
+		function disable_form ()
+		{
+			var url = "master_categories/ID";
+			var form = $("form#modify_master_category");
+			form.attr('action', url);
+			$("input#modified_code").val("");
+			$("input#modified_description").val("");
+			$("input#modified_display_order").val("");
+			$("button#modify_update").prop('disabled', true);
+
+			$("input#new_code").val("");
+			$("input#new_description").val("");
+			$("input#new_display_order").val("");
+		}
+
+		function set_form_data (clicked)
+		{
+			var node = $(clicked).find('option:selected');
+
+			var new_code = $(node).text().trim();
+			$("#new_code").val(new_code);
+
+			var new_description = $(node).attr('data-code');
+			$("#new_description").val(new_description);
+
+			var new_display_order = $(node).attr('data-display-order');
+			$("#new_display_order").val(new_display_order);
+		}
+
 		var message = {
 			delete: 'Are you sure you want to delete?',
 		};
@@ -202,22 +279,26 @@
 		$(document).on('change', "select.parent-selector", function (event)
 		{
 			var node = $(this);
-			var selected_parent_category = $(this).val();
+			var selected_parent_category = parseInt($(this).val());
 			delete_next(node);
-			if ( !selected_parent_category) {
+			if ( !selected_parent_category ) {
+				disable_form();
 				var parent_id = $(this).closest('div.col-sm-3').attr('data-parent');
 				set_parent_category(parent_id);
 				return false;
-			}/* else if ( selected_parent_category == 0 ) {
-				set_parent_category(selected_parent_category);
-				return false;
-			}*/
+			}
+			enable_form();
+			set_form_data($(this));
 			set_parent_category(selected_parent_category);
 			ajax_performer(selected_parent_category, node);
 		});
 
 		function set_parent_category (val)
 		{
+			if ( val == 0 ) {
+				var url = "master_categories/ID/update";
+				$("form#modify_master_category").attr('action', url);
+			}
 			$("#parent_category").val(val);
 		}
 

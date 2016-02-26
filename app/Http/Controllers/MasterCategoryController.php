@@ -20,12 +20,14 @@ class MasterCategoryController extends Controller
 		$categories = MasterCategory::where('parent', $id)
 									->where('is_deleted', 0)
 									->orderBy(DB::raw('master_category_display_order + 0'), 'asc')
-									->lists('master_category_description', 'id');
+									->get();
 		if ( $is_ajax ) {
-			$categories->prepend('Select a category', '');
-			return view('master_categories.ajax_category_response', compact('categories', 'id'));
+			if ( $categories->count() > 0 ) {
+				return view('master_categories.ajax_category_response', compact('categories', 'id'));
+			}
+
+			return response()->json();
 		}
-		$categories->prepend('Select a category', '0');
 
 		return $categories;
 	}
@@ -37,10 +39,10 @@ class MasterCategoryController extends Controller
 										   ->orderBy(DB::raw('master_category_display_order + 0'), 'asc')
 										   ->paginate(50);
 		$count = 1;
-
+		$id = 0;
 		$categories = $this->getChildCategories();
 
-		return view('master_categories.new_index', compact('master_categories', 'count', 'categories'));
+		return view('master_categories.new_index', compact('master_categories', 'count', 'categories', 'id'));
 	}
 
 	public function create ()
@@ -91,9 +93,9 @@ class MasterCategoryController extends Controller
 			return view('errors.404');
 		}
 
-		$master_category->master_category_code = $request->get('master_category_code');
-		$master_category->master_category_description = $request->get('master_category_description');
-		$master_category->master_category_display_order = intval($request->get('master_category_display_order'));
+		$master_category->master_category_code = $request->get('modified_code');
+		$master_category->master_category_description = $request->get('modified_description');
+		$master_category->master_category_display_order = intval($request->get('modified_display_order'));
 
 		$master_category->save();
 
@@ -119,9 +121,10 @@ class MasterCategoryController extends Controller
 		if ( !$request->ajax() ) {
 			return view('errors.404');
 		}
-		if(intval($parent_category_id) == 0){
+		if ( intval($parent_category_id) == 0 ) {
 			return;
 		}
+
 		return $this->getChildCategories($parent_category_id, true);
 	}
 }
