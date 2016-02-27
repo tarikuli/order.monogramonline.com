@@ -37,8 +37,8 @@ class ProductController extends Controller
 						   ->searchRoute($request->get('route'))
 						   ->searchProductionCategory($request->get('product_production_category'))
 						   ->searchMasterCategory($request->get('product_master_category'))
-						   ->searchCategory($request->get('product_category'))
-						   ->searchSubCategory($request->get('product_sub_category'))
+						   /*->searchCategory($request->get('product_category'))
+						   ->searchSubCategory($request->get('product_sub_category'))*/
 						   ->latest()
 						   ->paginate(50);
 
@@ -50,9 +50,10 @@ class ProductController extends Controller
 
 		$batch_routes->prepend('Not selected', 'null');
 
-		$product_master_category = MasterCategory::where('is_deleted', 0)
+		/*$product_master_category = MasterCategory::where('is_deleted', 0)
 												 ->lists('master_category_description', 'id')
-												 ->prepend('All', 0);
+												 ->prepend('All', 0);*/
+		$master_categories = (new MasterCategoryController())->getChildCategories();
 
 		$product_category = Category::where('is_deleted', 0)
 									->lists('category_description', 'id')
@@ -67,7 +68,9 @@ class ProductController extends Controller
 												   ->prepend('All', 0);
 		$count = 1;
 
-		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'));
+		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
+			->with('categories', $master_categories)
+			->with('id', 0);
 	}
 
 	public function create ()
@@ -154,12 +157,12 @@ class ProductController extends Controller
 		if ( $request->exists('product_master_category') ) {
 			$product->product_master_category = intval($request->get('product_master_category'));
 		}
-		if ( $request->exists('product_category') ) {
+		/*if ( $request->exists('product_category') ) {
 			$product->product_category = intval($request->get('product_category'));
 		}
 		if ( $request->exists('product_sub_category') ) {
 			$product->product_sub_category = intval($request->get('product_sub_category'));
-		}
+		}*/
 		if ( $request->exists('product_production_category') ) {
 			$product->product_production_category = intval($request->get('product_production_category'));
 		}
@@ -282,7 +285,7 @@ class ProductController extends Controller
 					'error' => 'Selected category is invalid',
 				]);
 		}
-		
+
 		$product = Product::where('is_deleted', 0)
 						  ->find($id);
 		if ( !$product ) {
@@ -308,12 +311,12 @@ class ProductController extends Controller
 		if ( $request->exists('product_master_category') ) {
 			$product->product_master_category = $request->get('product_master_category');
 		}
-		if ( $request->exists('product_category') ) {
+		/*if ( $request->exists('product_category') ) {
 			$product->product_category = $request->get('product_category');
 		}
 		if ( $request->exists('product_sub_category') ) {
 			$product->product_sub_category = $request->get('product_sub_category');
-		}
+		}*/
 		if ( $request->exists('product_production_category') ) {
 			$product->product_production_category = intval($request->get('product_production_category'));
 		}

@@ -11,6 +11,12 @@
 	      href = "/assets/css/bootstrap-horizon.css" />
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<style>
+		.parent-selector{
+			width: 135px;
+			overflow: auto;
+		}
+	</style>
 </head>
 <body>
 	@include('includes.header_menu')
@@ -296,10 +302,10 @@
 			var node = $(this);
 			var selected_parent_category = parseInt($(this).val());
 			delete_next(node);
-			set_parent_category(parent_id);
 
 			if ( !selected_parent_category ) {
 				var parent_id = $(this).closest('div.col-sm-3').attr('data-parent');
+				set_parent_category(parent_id);
 				return false;
 			}
 

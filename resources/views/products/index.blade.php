@@ -8,7 +8,14 @@
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-
+	<link type = "text/css" rel = "stylesheet"
+	      href = "/assets/css/bootstrap-horizon.css" />
+	<style>
+		.parent-selector{
+			width: 135px;
+			overflow: auto;
+		}
+	</style>
 </head>
 <body>
 	@include('includes.header_menu')
@@ -64,25 +71,24 @@
 			</div>
 			<div class = "col-md-12">
 				<div class = "form-group col-xs-3">
-					<label for = "product_master_category">Search in category</label>
-					{!! Form::select('product_master_category', $product_master_category, $request->get('product_master_category') ?: 'all', ['id'=>'product_master_category', 'class' => 'form-control']) !!}
-				</div>
-				<div class = "form-group col-xs-3">
-					<label for = "product_category">Search in sub category 1</label>
-					{!! Form::select('product_category', $product_category, $request->get('product_category') ?: 'all', ['id'=>'product_category', 'class' => 'form-control']) !!}
-				</div>
-				<div class = "form-group col-xs-3">
-					<label for = "product_sub_category">Search in sub category 2</label>
-					{!! Form::select('product_sub_category', $product_sub_category, $request->get('product_sub_category') ?: 'all', ['id'=>'product_sub_category', 'class' => 'form-control']) !!}
-				</div>
-				<div class = "form-group col-xs-3">
 					<label for = "product_production_category">Search in production category</label>
 					{!! Form::select('product_production_category', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control']) !!}
 				</div>
-				<div class = "form-group col-xs-2">
-					<label for = "" class = ""></label>
-					{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+				<div class = "form-group col-xs-9">
+					<label for = "product_master_category">Search in category</label>
+					{!! Form::hidden('product_master_category', null, ['id' => 'product_master_category']) !!}
+					<div class = "col-sm-12" style = "overflow: auto;">
+						<div class = "row row-horizon">
+							@include('master_categories.ajax_category_response')
+						</div>
+					</div>
+					{{--{!! Form::select('product_master_category', $product_master_category, $request->get('product_master_category') ?: 'all', ['id'=>'product_master_category', 'class' => 'form-control']) !!}--}}
 				</div>
+			</div>
+
+			<div class = "form-group col-xs-2">
+				<label for = "" class = ""></label>
+				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
 			</div>
 			{!! Form::close() !!}
 		</div>
@@ -216,6 +222,55 @@
 				form.submit();
 			}
 		});
+		$(document).on('change', "select.parent-selector", function (event)
+		{
+			var node = $(this);
+			var selected_parent_category = parseInt($(this).val());
+			delete_next(node);
+
+			if ( !selected_parent_category ) {
+				var parent_id = $(this).closest('div.col-sm-3').attr('data-parent');
+				set_parent_category(parent_id);
+				return false;
+			}
+
+			set_parent_category(selected_parent_category);
+			ajax_performer(selected_parent_category, node);
+		});
+
+		function delete_next (node)
+		{
+			$(node).closest('div.col-sm-3').nextAll().each(function ()
+			{
+				$(this).remove();
+			});
+		}
+
+		function set_parent_category (val)
+		{
+			$("#product_master_category").val(val);
+		}
+
+		function set_select_form_data (node, data)
+		{
+			$(node).closest('div.col-sm-3').after(data);
+		}
+
+		function ajax_performer (category_id, node)
+		{
+			var url = "/master_categories/get_next/" + category_id;
+			var method = "GET";
+			$.ajax({
+				method: method, url: url, success: function (data, status, xhr)
+				{
+					var select_form_data = data.select_form_data;
+					set_select_form_data(node, select_form_data);
+				}, error: function (xhr, status, error)
+				{
+					alert("Something went wrong!!");
+				}
+			});
+		}
 	</script>
 </body>
 </html>
