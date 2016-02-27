@@ -72,7 +72,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	resource('rejection_reasons', 'RejectionReasonController');
 
 	resource('users', 'UserController');
-
+	resource('vendors', 'VendorController');
 	get('exports/batch/{id}', 'ItemController@export_batch');
 
 	get('products/unassigned', 'ProductController@unassigned');

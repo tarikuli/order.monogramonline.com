@@ -16,6 +16,10 @@
             <li><a href="{{url('/')}}">Home</a></li>
             <li class="active">Users</li>
         </ol>
+
+	    @include('includes.error_div')
+	    @include('includes.success_div')
+
         @if(count($users) > 0)
             <h3 class="page-header">
                 Users

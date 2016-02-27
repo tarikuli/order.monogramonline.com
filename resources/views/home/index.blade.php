@@ -19,6 +19,8 @@
 					<li><a href = "/users/create">Create user</a></li>
 					<li><a href = "/customers">Customers</a></li>
 					<li><a href = "/customers/create">Create Customer</a></li>
+					<li><a href = "/vendors">Vendors</a></li>
+					<li><a href = "/vendors/create">Create vendor</a></li>
 				</ul>
 			</div>
 			<div class = "col-xs-12">
