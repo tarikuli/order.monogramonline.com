@@ -17,14 +17,31 @@ class ProductUpdateRequest extends Request
 
 	/**
 	 * Get the validation rules that apply to the request.
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 *
 	 * @return array
 	 */
-	public function rules ()
+	public function rules (\Illuminate\Http\Request $request)
+	{
+		if ( $request->has('update_batch') ) {
+			return [
+				'product_master_category' => 'required',
+			];
+		}
+
+		return [
+			'product_master_category' => 'required',
+			'id_catalog'              => 'sometimes|required',
+			'store_id'                => 'sometimes|required',
+			'product_model'           => 'required',
+		];
+	}
+
+	public function messages ()
 	{
 		return [
-			'id_catalog'    => 'required',
-			'store_id'      => 'required',
-			'product_model' => 'required',
+			'product_master_category.required' => 'Product category is required',
 		];
 	}
 }

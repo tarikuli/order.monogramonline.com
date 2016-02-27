@@ -83,9 +83,10 @@ class ProductController extends Controller
 			'0' => 'No',
 		];
 
-		$master_categories = MasterCategory::where('is_deleted', 0)
+		/*$master_categories = MasterCategory::where('is_deleted', 0)
 										   ->lists('master_category_description', 'id')
-										   ->prepend('Select category', '');
+										   ->prepend('Select category', '');*/
+		$master_categories = (new MasterCategoryController())->getChildCategories();
 
 		$categories = Category::where('is_deleted', 0)
 							  ->lists('category_description', 'id')
@@ -99,11 +100,25 @@ class ProductController extends Controller
 												   ->lists('production_category_description', 'id')
 												   ->prepend('Select production category', '');
 
-		return view('products.create', compact('title', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'));
+		return view('products.create', compact('title', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
+			->with('categories', $master_categories)
+			->with('id', 0);
 	}
 
 	public function store (ProductAddRequest $request)
 	{
+		$master_category_id = $request->get('product_master_category');
+		$master_category = MasterCategory::where('is_deleted', 0)
+										 ->where('id', $master_category_id)
+										 ->first();
+		if ( !$master_category ) {
+			return redirect()
+				->back()
+				->withInput()
+				->withErrors([
+					'error' => 'Selected category is invalid',
+				]);
+		}
 		$id_catalog = trim($request->get('id_catalog'));
 		$product_model = trim($request->get('product_model'));
 		$checkExisting = Product::where('id_catalog', $id_catalog)
@@ -196,6 +211,8 @@ class ProductController extends Controller
 		}
 		$product->save();
 
+		session()->flash('success', 'Product is successfully added.');
+
 		return redirect(url('products'));
 	}
 
@@ -227,9 +244,7 @@ class ProductController extends Controller
 
 		$batch_routes = BatchRoute::where('is_deleted', 0)
 								  ->lists('batch_route_name', 'id');
-		$master_categories = MasterCategory::where('is_deleted', 0)
-										   ->lists('master_category_description', 'id')
-										   ->prepend('Select category', '');
+		$master_categories = (new MasterCategoryController())->getChildCategories();
 
 		$categories = Category::where('is_deleted', 0)
 							  ->lists('category_description', 'id')
@@ -247,11 +262,27 @@ class ProductController extends Controller
 			'0' => 'No',
 		];
 
-		return view('products.edit', compact('product', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'));
+		return view('products.edit', compact('product', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
+			->with('categories', $master_categories)
+			->with('id', 0);;
 	}
 
 	public function update (ProductUpdateRequest $request, $id)
 	{
+		#return $request->all();
+		$master_category_id = $request->get('product_master_category');
+		$master_category = MasterCategory::where('is_deleted', 0)
+										 ->where('id', $master_category_id)
+										 ->first();
+		if ( !$master_category ) {
+			return redirect()
+				->back()
+				->withInput()
+				->withErrors([
+					'error' => 'Selected category is invalid',
+				]);
+		}
+		
 		$product = Product::where('is_deleted', 0)
 						  ->find($id);
 		if ( !$product ) {

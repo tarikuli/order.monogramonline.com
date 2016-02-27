@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Response;
 
 class MasterCategoryController extends Controller
 {
-	private function getChildCategories ($id = 0, $is_ajax = false)
+	public function getChildCategories ($id = 0, $is_ajax = false)
 	{
 		$id = intval($id);
 

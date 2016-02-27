@@ -7,6 +7,8 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
+	      href = "/assets/css/bootstrap-horizon.css" />
+	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
 <body>
@@ -80,11 +82,18 @@
 		</div>
 		<div class = "form-group">
 			{!!Form::label('product_master_category','Product category: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			{!! Form::hidden('product_master_category', $product->product_master_category, ['id' => 'product_master_category']) !!}
+			<div class = "col-sm-8" style = "overflow: auto;">
+				<div class = "row row-horizon">
+					@include('master_categories.ajax_category_response')
+				</div>
+			</div>
+			{{--{!!Form::label('product_master_category','Product category: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::select('product_master_category', $master_categories, $product->product_master_category, ['id' => 'product_master_category','class'=>'form-control']) !!}
-			</div>
+			</div>--}}
 		</div>
-		<div class = "form-group">
+		{{--<div class = "form-group">
 			{!!Form::label('product_category','Product sub category 1: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::select('product_category', $categories, $product->product_category, ['id' => 'product_category','class'=>'form-control']) !!}
@@ -95,7 +104,7 @@
 			<div class = "col-xs-5">
 				{!! Form::select('product_sub_category', $sub_categories, $product->product_sub_category, ['id' => 'product_sub_category','class'=>'form-control']) !!}
 			</div>
-		</div>
+		</div>--}}
 		<div class = "form-group">
 			{!!Form::label('product_production_category','Product production category: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
@@ -179,6 +188,55 @@
 				form.submit();
 			}
 		});
+		$(document).on('change', "select.parent-selector", function (event)
+		{
+			var node = $(this);
+			var selected_parent_category = parseInt($(this).val());
+			delete_next(node);
+			set_parent_category(parent_id);
+
+			if ( !selected_parent_category ) {
+				var parent_id = $(this).closest('div.col-sm-3').attr('data-parent');
+				return false;
+			}
+
+			set_parent_category(selected_parent_category);
+			ajax_performer(selected_parent_category, node);
+		});
+
+		function delete_next (node)
+		{
+			$(node).closest('div.col-sm-3').nextAll().each(function ()
+			{
+				$(this).remove();
+			});
+		}
+
+		function set_parent_category (val)
+		{
+			$("#product_master_category").val(val);
+		}
+
+		function set_select_form_data (node, data)
+		{
+			$(node).closest('div.col-sm-3').after(data);
+		}
+
+		function ajax_performer (category_id, node)
+		{
+			var url = "/master_categories/get_next/" + category_id;
+			var method = "GET";
+			$.ajax({
+				method: method, url: url, success: function (data, status, xhr)
+				{
+					var select_form_data = data.select_form_data;
+					set_select_form_data(node, select_form_data);
+				}, error: function (xhr, status, error)
+				{
+					alert("Something went wrong!!");
+				}
+			});
+		}
 	</script>
 </body>
 </html>

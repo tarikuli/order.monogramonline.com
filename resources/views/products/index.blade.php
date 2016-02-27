@@ -44,7 +44,7 @@
 		</div>
 		<div class = "col-xs-12">
 			{!! Form::open(['method' => 'get', 'id' => 'search-order']) !!}
-			<div class="col-md-12">
+			<div class = "col-md-12">
 				<div class = "form-group col-xs-3">
 					<label for = "id_catalog">Search in id catalog</label>
 					{!! Form::text('id_catalog', $request->get('id_catalog'), ['id'=>'id_catalog', 'class' => 'form-control', 'placeholder' => 'Search in id catalog']) !!}
@@ -62,7 +62,7 @@
 					{!! Form::select('route', $searchInRoutes, $request->get('route') ?: 'all', ['id'=>'route', 'class' => 'form-control']) !!}
 				</div>
 			</div>
-			<div class="col-md-12">
+			<div class = "col-md-12">
 				<div class = "form-group col-xs-3">
 					<label for = "product_master_category">Search in category</label>
 					{!! Form::select('product_master_category', $product_master_category, $request->get('product_master_category') ?: 'all', ['id'=>'product_master_category', 'class' => 'form-control']) !!}
@@ -193,7 +193,7 @@
 			console.log(token);
 			$.ajax({
 				method: 'PUT', url: formUrl, data: {
-					_token: token, batch_route_id: value,
+					_token: token, batch_route_id: value, update_batch: true,
 				}, success: function (data, textStatus, xhr)
 				{
 

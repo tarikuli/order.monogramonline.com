@@ -22,14 +22,15 @@ class ProductAddRequest extends Request
 	public function rules ()
 	{
 		return [
-			"store_id"           => "required",
-			"id_catalog"         => "required",
-			"product_model"      => "required",
-			"product_name"       => "required",
-			"ship_weight"        => "required",
-			"product_price"      => "required",
-			"product_sale_price" => "required",
-			"is_taxable"         => "required",
+			"store_id"                => "required",
+			"id_catalog"              => "required",
+			"product_model"           => "required",
+			"product_name"            => "required",
+			"ship_weight"             => "required",
+			"product_price"           => "required",
+			"product_sale_price"      => "required",
+			"is_taxable"              => "required",
+			"product_master_category" => 'required|exists:master_categories,id',
 		];
 	}
 }

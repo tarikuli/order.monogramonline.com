@@ -7,7 +7,7 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
-	      href = "assets/css/bootstrap-horizon.css" />
+	      href = "/assets/css/bootstrap-horizon.css" />
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
@@ -304,7 +304,7 @@
 					set_tabular_data(tabular_data);
 				}, error: function (xhr, status, error)
 				{
-					alert("Something going wrong");
+					alert("Something going wrong!!");
 				}
 			});
 		}

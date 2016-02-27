@@ -45,17 +45,17 @@
 					<td>{{$product->product_description}}</td>
 				</tr>
 				<tr class = "success">
-					<td>Product master category</td>
+					<td>Product category</td>
 					<td>{{$product->master_category ? $product->master_category->master_category_description : "N/A"}}</td>
 				</tr>
-				<tr>
+				{{--<tr>
 					<td>Product category</td>
 					<td>{{$product->category ? $product->category->category_description : "N/A"}}</td>
 				</tr>
 				<tr class = "success">
 					<td>Product sub category</td>
 					<td>{{$product->sub_category ? $product->sub_category->sub_category_description : "N/A"}}</td>
-				</tr>
+				</tr>--}}
 				<tr class = "success">
 					<td>Product production category</td>
 					<td>{{$product->production_category ? $product->production_category->production_category_description : "N/A"}}</td>
