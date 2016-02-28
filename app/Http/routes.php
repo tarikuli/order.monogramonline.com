@@ -73,6 +73,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 	resource('users', 'UserController');
 	resource('vendors', 'VendorController');
+	resource('purchases', 'PurchaseController');
+	
 	get('exports/batch/{id}', 'ItemController@export_batch');
 
 	get('products/unassigned', 'ProductController@unassigned');

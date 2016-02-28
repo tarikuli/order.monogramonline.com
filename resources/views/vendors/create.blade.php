@@ -15,17 +15,8 @@
             <li><a href="{{url('vendors')}}">Vendors</a></li>
             <li class="active">Create vendor</li>
         </ol>
-        @if($errors->any())
-            <div class = "col-xs-12">
-                <div class = "alert alert-danger">
-                    <ul>
-                        @foreach($errors->all() as $error)
-                            <li>{{$error}}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-        @endif
+
+	    @include('includes.error_div')
 
 
         {!! Form::open(['url' => url('/vendors'), 'method' => 'post','class'=>'form-horizontal','role'=>'form']) !!}

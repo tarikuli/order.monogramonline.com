@@ -53,6 +53,8 @@
 					<li><a href = "/shipping">Shipping list</a></li>
 					<li><a href = "/summary">Stations summary</a></li>
 					<li><a href = "/rejection_reasons">Rejection reasons</a></li>
+					<li><a href = "/purchases">Purchases</a></li>
+					<li><a href = "/purchases/create">Add purchase</a></li>
 				</ul>
 				<hr />
 				<ul>
