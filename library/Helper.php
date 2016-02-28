@@ -13,6 +13,7 @@ use App\Ship;
 use App\Station;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use DNS1D;
 
 class Helper
 {
@@ -170,6 +171,17 @@ class Helper
 		'S-SHP',
 		'H-SHP',
 	];
+
+	public static function getHtmlBarcode ($value)
+	{
+		return DNS1D::getBarcodeHTML($value, "C39", 1);
+	}
+
+	public static function getImageBarcodeSource ($value)
+	{
+		return "data:image/png;base64," . DNS1D::getBarcodePNG($value, "C39+");
+		#return '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG("4", "C39+") . '" alt="barcode"   />';
+	}
 
 	public static function getBatchStatusList ()
 	{

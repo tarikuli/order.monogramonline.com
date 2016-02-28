@@ -39,12 +39,70 @@ class OrderController extends Controller
 
 	public function create ()
 	{
-		return view('orders.create');
+		return view('orders.new_create');
 	}
 
 	public function store (OrderCreateRequest $request)
 	{
 		$order = new Order();
+		$order->order_id = $request->get('order_id');
+		$order->short_order = $request->get('short_order');
+		$order->item_count = $request->get('item_count');
+		$order->coupon_description = $request->get('coupon_description');
+		$order->coupon_id = $request->get('coupon_id');
+		$order->coupon_value = $request->get('coupon_value');
+		$order->shipping_charge = $request->get('shipping_charge');
+		$order->tax_charge = $request->get('tax_charge');
+		$order->total = $request->get('total');
+		$order->card_name = $request->get('card_name');
+		$order->card_expiry = $request->get('card_expiry');
+		$order->order_comments = $request->get('order_comments');
+		$order->order_date = $request->get('order_date');
+		//$order->order_numeric_time = $request->get('order_numeric_time');
+		$order->order_ip = $request->get('order_ip');
+		$order->paypal_merchant_email = $request->get('paypal_merchant_email');
+		$order->paypal_txid = $request->get('paypal_txid');
+		$order->space_id = $request->get('space_id');
+		$order->store_id = $request->get('store_id');
+		$order->store_name = $request->get('store_name');
+		$order->ship_state = $request->get('ship_state');
+		$order->order_status = $request->get('order_status');
+		$order->sub_total = $request->get('sub_total');
+		$order->save();
+
+		$customer = new Customer();
+		$customer->order_id = $request->get('order_id');
+		$customer->ship_full_name = $request->get('ship_full_name');
+		$customer->ship_first_name = $request->get('ship_first_name');
+		$customer->ship_last_name = $request->get('ship_last_name');
+		$customer->ship_company_name = $request->get('ship_company_name');
+		$customer->ship_address_1 = $request->get('ship_address_1');
+		$customer->ship_address_2 = $request->get('ship_address_2');
+		$customer->ship_city = $request->get('ship_city');
+		$customer->ship_state = $request->get('ship_state');
+		$customer->ship_zip = $request->get('ship_zip');
+		$customer->ship_country = $request->get('ship_country');
+		$customer->ship_phone = $request->get('ship_phone');
+		$customer->ship_email = $request->get('ship_email');
+		$customer->shipping = $request->get('shipping');
+		$customer->bill_full_name = $request->get('bill_full_name');
+		$customer->bill_first_name = $request->get('bill_first_name');
+		$customer->bill_last_name = $request->get('bill_last_name');
+		$customer->bill_company_name = $request->get('bill_company_name');
+		$customer->bill_address_1 = $request->get('bill_address_1');
+		$customer->bill_address_2 = $request->get('bill_address_2');
+		$customer->bill_city = $request->get('bill_city');
+		$customer->bill_state = $request->get('bill_state');
+		$customer->bill_zip = $request->get('bill_zip');
+		$customer->bill_country = $request->get('bill_country');
+		$customer->bill_phone = $request->get('bill_phone');
+		$customer->bill_email = $request->get('bill_email');
+		$customer->bill_mailing_list = $request->get('bill_mailing_list');
+		$customer->save();
+
+		return redirect(url('orders'));
+
+		/*$order = new Order();
 		$order->order_id = $request->get('order_id');
 		$order->email = $request->get('email');
 		$order->customer_id = $request->get('customer_id');
@@ -90,7 +148,7 @@ class OrderController extends Controller
 		$order->cancel_code = $request->get('cancel_code');
 		$order->save();
 
-		return redirect(url('orders'));
+		return redirect(url('orders'));*/
 	}
 
 	public function show ($id)

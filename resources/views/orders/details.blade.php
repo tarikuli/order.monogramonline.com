@@ -312,6 +312,11 @@
 		</div>
 	</div>
 	{!! Form::close() !!}
+	<div class = "col-md-12">
+		<a href = "{{ url(sprintf('prints/packing/%s', $order->order_id)) }}">Print Packing slip</a>
+		|
+		<a href = "{{ url(sprintf('prints/invoice/%s', $order->order_id)) }}">Print Invoice</a>
+	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript">
 		$("a#add-note").on('click', function (event)

@@ -61,7 +61,7 @@
 					{!! Form::close() !!} --}}
 				</div>
 				<div class = "col-xs-4">
-					{!! DNS1D::getBarcodeHTML($batch_number, "C39") !!}
+					{!! \Monogram\Helper::getHtmlBarcode($batch_number) !!}
 				</div>
 				<div class = "col-xs-12">
 					<table class = "table table-bordered" id = "batch-items-table">

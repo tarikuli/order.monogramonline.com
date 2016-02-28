@@ -324,7 +324,8 @@ class ItemController extends Controller
 		if ( !count($items) ) {
 			return view('errors.404');
 		}
-		$bar_code = DNS1D::getBarcodeHTML($batch_number, "C39");
+		#$bar_code = DNS1D::getBarcodeHTML($batch_number, "C39");
+		$bar_code = Helper::getHtmlBarcode($batch_number);
 		$statuses = Helper::getBatchStatusList();
 		$route = BatchRoute::with('stations')
 						   ->find($items[0]->batch_route_id);
@@ -353,7 +354,8 @@ class ItemController extends Controller
 		if ( !count($items) ) {
 			return view('errors.404');
 		}
-		$bar_code = DNS1D::getBarcodeHTML($batch_number, "C39");
+		#$bar_code = DNS1D::getBarcodeHTML($batch_number, "C39");
+		$bar_code = Helper::getHtmlBarcode($batch_number);
 		#$statuses = $this->statuses;
 		$statuses = Helper::getBatchStatusList();
 		$route = BatchRoute::with('stations')

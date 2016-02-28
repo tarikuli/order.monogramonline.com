@@ -74,7 +74,10 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	resource('users', 'UserController');
 	resource('vendors', 'VendorController');
 	resource('purchases', 'PurchaseController');
-	
+
+	get('prints/packing/{id}', 'PrintController@packing');
+	get('prints/invoice/{id}', 'PrintController@invoice');
+
 	get('exports/batch/{id}', 'ItemController@export_batch');
 
 	get('products/unassigned', 'ProductController@unassigned');
