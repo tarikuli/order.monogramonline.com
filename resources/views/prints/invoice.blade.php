@@ -39,9 +39,8 @@
 					</td>
 				</tr>
 				<tr valign = "top">
-					<td colspan = "5" align = "center"><strong>
-							Packing Slip for order#
-							{{$order->short_order}} </strong>
+					<td colspan = "5" align = "center">
+						<strong> Invoice for order# {{$order->short_order}}</strong>
 						<hr size = "1">
 					</td>
 				</tr>
@@ -55,7 +54,6 @@
 							<tr valign = "top">
 								<td align = "left"><strong>{{$order->short_order}}</strong></td>
 								<td align = "right">
-									{{--<img src = "{{\Monogram\Helper::getImageBarcodeSource($order->short_order)}}">--}}
 									{!! \Monogram\Helper::getHtmlBarcode($order->short_order) !!}
 								</td>
 							</tr>
@@ -83,6 +81,20 @@
 						{{$order->customer->bill_phone}}
 					</td>
 				</tr>
+				<tr>
+					<td><strong>Amount:</strong></td>
+					<td>$ {{$order->total}}</td>
+					<td></td>
+					<td><strong>E-Mail:</strong></td>
+					<td>{{$order->customer->bill_email}}</td>
+				</tr>
+				<tr>
+					<td><strong>Paid:</strong></td>
+					<td>HOW TO CALCULATE THIS?? (on /resources/views/prints/invoice: 93)</td>
+					<td></td>
+					<td><strong>Payment:</strong></td>
+					<td>{{$order->card_name}}</td>
+				</tr>
 				<tr valign = "top">
 					<td><strong>Ship Via:</strong></td>
 					<td>{{$order->customer->shipping}}</td>
@@ -96,10 +108,8 @@
 					<td colspan = "5">
 						<table width = "100%" cellpadding = "2" cellspacing = "0" border = "0">
 							<tr height = "10" valign = "top">
-								<td colspan = "9">
-									<img src = "{{url('/assets/images/spacer.gif')}}"
-									     width = "50" height = "20" border = "0">
-								</td>
+								<td colspan = "9"><img src = "https://4psitelink.com/images/images/spacer.gif"
+								                       width = "50" height = "20" border = "0"></td>
 							</tr>
 							<tr valign = "top">
 								<td></td>
@@ -107,7 +117,7 @@
 								<td align = "left"><strong>Name</strong></td>
 								<td align = "left"><strong>Code</strong></td>
 								<td align = "right"><strong>Qty</strong></td>
-								<td align = "right"></td>
+								<td align = "right"><strong>Unit Price</strong></td>
 								<td align = "left"><strong>Options</strong></td>
 								<td align = "left"><strong>B/O</strong></td>
 							</tr>
@@ -122,9 +132,7 @@
 										<img src = "{{url("/assets/images/box.jpg")}}" border = "0">
 									</td>
 									<td>
-										<img height = "80" width = "80"
-										     src = "{{$item->item_thumb}}"
-										     border = "0" />
+										<img height = "80" width = "80" src = "{{$item->item_thumb}}" border = "0" />
 									</td>
 									<td align = "left">
 										{{$item->item_description}}
@@ -140,7 +148,7 @@
 									<td align = "right" style = "font-size:18px;">
 										<strong>{{$item->item_quantity}}</strong>
 									</td>
-									<td align = "right"></td>
+									<td align = "left">$ {{sprintf("%.2f", floatval($item->item_unit_price))}}</td>
 									<td align = "left">
 										{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}
 									</td>
@@ -152,23 +160,51 @@
 									<hr size = "1">
 								</td>
 							</tr>
-
-
+							<tr valign = "top">
+								<td colspan = "9">
+									<table width = "100%" cellpadding = "2" cellspacing = "0" border = "0">
+										<tr valign = "top">
+											<td align = "right">Subtotal</td>
+											<td align = "right">$ HOW TO GET?? @Line    :171</td>
+										</tr>
+										<tr valign = "top">
+											<td align = "right">Coupon ({{$order->coupon_id}})</td>
+											<td align = "right">$ {{sprintf("-%.2f", $order->coupon_value)}} </td>
+										</tr>
+										<tr valign = "top">
+											<td align = "right">Subtotal</td>
+											<td align = "right" width = "100">$ How to get?? :179</td>
+										</tr>
+										<tr valign = "top">
+											<td align = "right">Shipping</td>
+											<td align = "right">$ {{sprintf("%.2f", $order->shipping_charge)}}</td>
+										</tr>
+										<tr valign = "top">
+											<td align = "right">Tax</td>
+											<td align = "right">$ {{sprintf("%.2f", $order->tax_charge)}}</td>
+										</tr>
+										<tr valign = "top">
+											<td align = "right">Total</td>
+											<td align = "right">$ {{sprintf("%.2f", $order->total)}}</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
 							<tr valign = "top">
 								<td align = "center" colspan = "9">
 									<table width = "100%" cellpadding = "5" cellspacing = "5" border = "1">
 										<tr valign = "top">
-											<td align = "center"><p style = "text-align: center;">
+											<td align = "center"><p>
 													<strong>IMPORTANT PLEASE NOTE:&nbsp; </strong></p>
-												<p style = "text-align: center;">
+												<p>
 													Each item is shipped in a separate envelope.&nbsp;</p>
-												<p style = "text-align: center;">
+												<p>
 													If you have placed an order of more than one item(s) in the SAME ORDER,&nbsp;</p>
-												<p style = "text-align: center;">
+												<p>
 													You will receive each item in a separate package.&nbsp;</p>
-												<p style = "text-align: center;">
+												<p>
 													We thank you for your business and we hope you enjoy your new MonogramOnline.com product. &nbsp;</p>
-												<p style = "text-align: center;">
+												<p>
 													If for any unlikely&nbsp;reason you are not satisfied with your order please contact us through our website and we will make all efforts to make sure that you are satisfied with your purchase at MonogramOnline.com.</p>
 											</td>
 										</tr>
@@ -183,6 +219,6 @@
 	</tr>
 </table>
 <script>
-	window.print();
+	//window.print();
 </script>
 </html>

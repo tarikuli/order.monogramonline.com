@@ -172,9 +172,9 @@ class Helper
 		'H-SHP',
 	];
 
-	public static function getHtmlBarcode ($value)
+	public static function getHtmlBarcode ($value, $width = 1)
 	{
-		return DNS1D::getBarcodeHTML($value, "C39", 1);
+		return DNS1D::getBarcodeHTML($value, "C39", $width);
 	}
 
 	public static function getImageBarcodeSource ($value)

@@ -24,11 +24,13 @@ class PrintController extends Controller
 
 	public function invoice ($id)
 	{
-		$order = Order::find($id);
+		$order = Order::with('customer', 'items.shipInfo')
+					  ->where('order_id', $id)
+					  ->first();
 		if ( !$order ) {
 			return view('errors.404');
 		}
 
-		return $order;
+		return view('prints.invoice', compact('order'));
 	}
 }
