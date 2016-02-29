@@ -77,6 +77,7 @@
 				<tr>
 					<th>Order#</th>
 					<th>Customer#</th>
+					<th>Barcode</th>
 					<th>Name</th>
 					<th>State/Country</th>
 					<th>Item</th>
@@ -91,6 +92,7 @@
 						       class = "btn btn-link">{{$order->short_order}}</a></td>
 						<td><a href = "{{ url("customers/".$order->customer->id) }}" title = "This is customer id"
 						       class = "btn btn-link">{{$order->customer->id}}</a></td>
+						<td>{!! \Monogram\Helper::getHtmlBarcode($order->short_order) !!}</td>
 						<td>{{$order->customer->ship_full_name}}</td>
 						<td>{{$order->customer->ship_state}}, {{$order->customer->ship_country}}</td>
 						<td>{{$order->item_count}}</td>

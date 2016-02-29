@@ -11,13 +11,22 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<style>
-		table {
+		/*table {
 			table-layout: fixed;
 			font-size: 12px;
-		}
+		}*/
 
 		td {
+			/*width: auto;*/
+			white-space: nowrap;
+		}
+
+		td textarea {
+			border: none;
 			width: auto;
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
 		}
 	</style>
 </head>
@@ -71,7 +80,9 @@
 								<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>
 							</th>
 							<th>SL#</th>
+							<th>Item barcode</th>
 							<th>Order</th>
+							<th>Order barcode</th>
 							<th>Date</th>
 							<th>Qty.</th>
 							<th>SKU</th>
@@ -87,14 +98,16 @@
 							<tr data-id = "{{$item->id}}">
 								<td><a href = "#" class = "btn btn-danger reject">Reject</a></td>
 								<td>{{$count++}}</td>
+								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
 								<td>
 									<a href = "{{url('/orders/details/'.$item->order->order_id)}}">{{$item->order->short_order}}</a>
 								</td>
+								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
 								<td>{{$item->item_code}}</td>
 								<td>{{$item->item_description}}</td>
-								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', "style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"]) !!}</td>
+								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
 								<td>{{--<a href = "#" class = "btn btn-danger reject">Reject</a> |--}} <a href = "#"
 								                                                                          class = "btn btn-success done">Done</a>
 								</td>

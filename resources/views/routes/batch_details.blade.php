@@ -11,13 +11,10 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<style>
-		table {
-			table-layout: fixed;
-			font-size: 12px;
-		}
 
 		td {
-			width: auto;
+			width: 1px;
+			white-space: nowrap;
 		}
 	</style>
 </head>
@@ -67,8 +64,10 @@
 						<thead>
 						<tr>
 							<th>SL#</th>
+							<th>Item barcode</th>
 							<th>Current station</th>
 							<th>Order</th>
+							<th>Order barcode</th>
 							<th>Date</th>
 							<th>Qty.</th>
 							<th>SKU</th>
@@ -80,6 +79,7 @@
 						@foreach($items as $item)
 							<tr data-id = "{{$item->id}}">
 								<td>{{$count++}}</td>
+								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
 								<td>
 									@if($item->station_details)
 										<a href="{{ url(sprintf("/batches/%s/%s", $item->batch_number, $item->station_details->station_name)) }}" data-toggle="tooltip" data-placement="top" title="{{ $item->station_details->station_description }}">{{$item->station_details->station_name}}</a>
@@ -90,6 +90,7 @@
 								<td>
 									<a href = "{{url('/orders/details/'.$item->order->order_id)}}">{{$item->order->short_order}}</a>
 								</td>
+								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
 								<td>{{$item->item_code}}</td>
@@ -148,7 +149,7 @@
 			var totalQuantity = 0;
 			$("table#batch-items-table tbody tr").each(function ()
 			{
-				totalQuantity += parseInt($(this).find('td:eq(4)').text());
+				totalQuantity += parseInt($(this).find('td:eq(6)').text());
 			});
 
 			$("table#batch-items-table tfoot td#item-quantity-in-total").text("Total quantity: " + totalQuantity);

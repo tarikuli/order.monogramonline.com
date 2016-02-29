@@ -31,6 +31,7 @@
 		<br>
 		<label><b>Order# MONO {{$order->short_order}}</b></label>
 		<br>
+		{!! \Monogram\Helper::getHtmlBarcode($order->short_order) !!}
 		<hr style = "width: 100%; color: black; background-color:black;margin-top:  0px" size = "1" />
 		{!! Form::open(['url' => url('orders/'.$order->order_id), 'method' => 'put']) !!}
 		<table>
@@ -208,7 +209,8 @@
 		</table>
 		<table>
 			<tr>
-				<td style = "padding-left:30px">Name</td>
+				<td style = "padding-left:50px">Barcode</td>
+				<td style = "padding-left:50px">Name</td>
 				<td style = "padding-left:180px">Code</td>
 				<td style = "padding-left:90px">Quantity</td>
 				<td style = "padding-left:60px">Inv</td>
@@ -223,6 +225,7 @@
 			@setvar($ind = 0)
 			@foreach($order->items as $item)
 				<tr>
+					<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
 					{!! Form::hidden("item_id[$ind]", $item->id) !!}
 					<td style = 'width: 200px;padding-left:30px'><a href = "#">{{$item->item_description}}</a></td>
 					<td><a style = 'color:red' href = "#">{{$item->item_code}}</a></td>

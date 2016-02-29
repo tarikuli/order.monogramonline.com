@@ -76,6 +76,7 @@
 			<table class = "table table-bordered">
 				<tr>
 					<th>Order#</th>
+					<th>Barcode</th>
 					<th>Order date</th>
 					<th>Order status</th>
 					<th>Item status</th>
@@ -94,6 +95,7 @@
 					<tr data-id = "{{$item->id}}">
 						<td><a href = "{{ url("orders/details/".$item->order_id) }}"
 						       class = "btn btn-link">{{$item->order->short_order}}</a></td>
+						<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
 						<td>{{substr($item->order->order_date, 0, 10)}}</td>
 						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['id' => 'order_status_id','disabled' => 'disabled'])  !!}</td>
 						<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['id' => 'item_order_status_2_id','disabled' => 'disabled'])  !!}</td>
