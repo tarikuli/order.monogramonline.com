@@ -42,7 +42,7 @@
 				</tr>
 			</table>
 			@if($purchase->products)
-				<table class="table table-bordered">
+				<table class = "table table-bordered">
 					<tr>
 						<th>Product name</th>
 						<th>Quantity</th>
@@ -61,10 +61,16 @@
 			@endif
 		</div>
 		<div class = "col-xs-12" style = "margin-bottom: 30px;">
-			<div class = "col-xs-offset-1 col-xs-10" style = "margin-bottom: 10px;">
+			{{--<div class = "col-xs-offset-1 col-xs-10" style = "margin-bottom: 10px;">
 				<a href = "{{ url(sprintf("/purchases/%d/edit", $purchase->id)) }}" class = "btn btn-success btn-block">Edit
 				                                                                                                        this
 				                                                                                                        purchase</a>
+			</div>--}}
+			<div class = "col-xs-offset-1 col-xs-10" style = "margin-bottom: 10px;">
+				<a href = "{{ url(sprintf("/prints/purchase/%d", $purchase->id)) }}"
+				   class = "btn btn-success btn-block">
+					Print purchase slip
+				</a>
 			</div>
 			<div class = "col-xs-offset-1 col-xs-10">
 				{!! Form::open(['url' => url(sprintf('/purchases/%d', $purchase->id)), 'method' => 'delete', 'id' => 'delete-vendor-form']) !!}

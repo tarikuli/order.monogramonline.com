@@ -50,6 +50,8 @@
 							     title = "View this purchase"><i class = 'fa fa-pencil-square-o text-success'></i></a>--}}
 							| <a href = "#" class = "delete" data-toggle = "tooltip" data-placement = "top"
 							     title = "Delete this purchase"><i class = 'fa fa-times text-danger'></i></a>
+							| <a href = "{{url(sprintf("/prints/purchase/%d", $purchase->id))}}" class = "print" data-toggle = "tooltip" data-placement = "top"
+							     title = "Print purchase slip"><i class = 'fa fa-print text-info'></i></a>
 						</td>
 					</tr>
 				@endforeach

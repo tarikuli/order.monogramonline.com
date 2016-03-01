@@ -36,6 +36,10 @@
 					<td>State</td>
 					<td>{{$vendor->state}}</td>
 				</tr>
+				<tr>
+					<td>Country</td>
+					<td>{{$vendor->country}}</td>
+				</tr>
 				<tr class = "success">
 					<td>Phone number</td>
 					<td>{{$vendor->phone_number}}</td>

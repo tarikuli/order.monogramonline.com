@@ -38,6 +38,9 @@ class VendorController extends Controller
 		if ( $request->has('state') ) {
 			$vendor->state = trim($request->get('state'));
 		}
+		if ( $request->has('country') ) {
+			$vendor->country = trim($request->get('country'));
+		}
 
 		$vendor->save();
 
@@ -85,6 +88,9 @@ class VendorController extends Controller
 		}
 		if ( $request->has('state') ) {
 			$vendor->state = trim($request->get('state'));
+		}
+		if ( $request->has('country') ) {
+			$vendor->country = trim($request->get('country'));
 		}
 
 		$vendor->save();

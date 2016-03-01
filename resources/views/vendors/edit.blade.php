@@ -54,6 +54,12 @@
             </div>
         </div>
         <div class = "form-group">
+            {!!Form::label('country','Country: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+            <div class = "col-xs-5">
+                {!! Form::text('country', $vendor->country, ['id' => 'state','class'=>'form-control']) !!}
+            </div>
+        </div>
+        <div class = "form-group">
             <div class = "col-xs-offset-4 col-xs-5">
                 {!! Form::submit('Update this vendor',['class'=>'btn btn-primary btn-block']) !!}
             </div>

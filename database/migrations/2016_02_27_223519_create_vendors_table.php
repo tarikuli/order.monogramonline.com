@@ -14,6 +14,7 @@ class CreateVendorsTable extends Migration
 			$table->string('zip_code')->nullable();
 			$table->string('state')->nullable();
 			$table->string('phone_number');
+			$table->string('country');
 			$table->enum('is_deleted', array(0, 1))->default(0);
             $table->timestamps();
         });

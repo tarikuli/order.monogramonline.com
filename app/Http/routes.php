@@ -77,6 +77,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 	get('prints/packing/{id}', 'PrintController@packing');
 	get('prints/invoice/{id}', 'PrintController@invoice');
+	get('prints/purchase/{purchase_id}', 'PrintController@purchase');
 
 	get('exports/batch/{id}', 'ItemController@export_batch');
 
