@@ -76,7 +76,7 @@
 			<table class = "table table-bordered">
 				<tr>
 					<th>Order#</th>
-					<th>Barcode</th>
+					<th>Image</th>
 					<th>Order date</th>
 					<th>Order status</th>
 					<th>Item status</th>
@@ -95,7 +95,8 @@
 					<tr data-id = "{{$item->id}}">
 						<td><a href = "{{ url("orders/details/".$item->order_id) }}"
 						       class = "btn btn-link">{{$item->order->short_order}}</a></td>
-						<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
+						{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
+						<td><img src="{{$item->item_thumb}}" /></td>
 						<td>{{substr($item->order->order_date, 0, 10)}}</td>
 						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['id' => 'order_status_id','disabled' => 'disabled'])  !!}</td>
 						<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['id' => 'item_order_status_2_id','disabled' => 'disabled'])  !!}</td>
@@ -106,7 +107,8 @@
 						<td>{{$item->order->customer->ship_state}}</td>
 						<td>{{$item->item_description}}</td>
 						<td>{{$item->item_code}}</td>
-						<td>{{\Monogram\Helper::jsonTransformer($item->item_option)}}</td>
+						{{--<td>{{\Monogram\Helper::jsonTransformer($item->item_option)}}</td>--}}
+						<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
 						<td>{{$item->item_quantity}}</td>
 						<td>{{$item->batch_number ?: 'N/A' }}</td>
 						<td>{{$item->batch_creation_date ?: 'N/A'}}</td>
