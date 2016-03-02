@@ -67,6 +67,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	get('/', 'HomeController@index');
 	get('logout', 'AuthenticationController@getLogout');
 
+	post('imports/inventory', 'ImportController@importInventory');
+
 	resource('customers', 'CustomerController');
 
 	resource('rejection_reasons', 'RejectionReasonController');
@@ -78,6 +80,9 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	get('prints/packing/{id}', 'PrintController@packing');
 	get('prints/invoice/{id}', 'PrintController@invoice');
 	get('prints/purchase/{purchase_id}', 'PrintController@purchase');
+
+	resource('inventories', 'InventoryController');
+	get('exports/inventory', 'ExportController@inventory');
 
 	get('exports/batch/{id}', 'ItemController@export_batch');
 

@@ -78,13 +78,15 @@ class CreateInventoriesTable extends Migration
 			$table->string('inv_u180')->nullable();
 			$table->string('exp_date')->nullable();
 			$table->string('lead_time')->nullable();
+			$table->string('inv_target')->nullable();
 			$table->string('rt_qty_max')->nullable();
 			$table->string('amz_price')->nullable();
 			$table->string('ebay_price')->nullable();
 			$table->string('buy_com_price')->nullable();
-			$table->string('feed_houzz', [0, 1])->default(0);
-			$table->string('feed_jet', [0, 1])->default(0);
+			$table->enum('feed_houzz', [0, 1])->default(0);
+			$table->enum('feed_jet', [0, 1])->default(0);
 			$table->string('inv_last_update')->nullable();
+			$table->enum('is_deleted', [0, 1])->default(0);
             $table->timestamps();
         });
     }
