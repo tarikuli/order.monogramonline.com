@@ -105,10 +105,11 @@
 						       class = "btn btn-link">{{ !empty($item->order->customer->ship_full_name) ? $item->order->customer->ship_full_name : $item->order->customer->bill_full_name }}</a>
 						</td>
 						<td>{{$item->order->customer->ship_state}}</td>
-						<td>{{$item->item_description}}</td>
+						{{--<td>{{$item->item_description}}</td>--}}
+						<td>{!! Form::textarea('desc', $item->item_description, ['rows' => '2', 'cols' => '20']) !!}</td>
 						<td>{{$item->item_code}}</td>
 						{{--<td>{{\Monogram\Helper::jsonTransformer($item->item_option)}}</td>--}}
-						<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
+						<td>{!! Form::textarea('opt', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '3', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
 						<td>{{$item->item_quantity}}</td>
 						<td>{{$item->batch_number ?: 'N/A' }}</td>
 						<td>{{$item->batch_creation_date ?: 'N/A'}}</td>
