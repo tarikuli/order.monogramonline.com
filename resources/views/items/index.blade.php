@@ -65,7 +65,7 @@
 		</div>
 		@if(count($items) > 0)
 			<h3 class = "page-header">
-				Items
+				Items ({{ $items->total() }} items found / {{$items->currentPage()}} of {{$items->lastPage()}} pages)
 				<span style = "font-size: 14px; padding-left: 10px;"
 				      class = "text-info text-center">{{$unassigned}} items batch ready to create.</span>
 				<a href = "{{url('products/unassigned')}}"
@@ -93,7 +93,7 @@
 				</tr>
 				@foreach($items as $item)
 					<tr data-id = "{{$item->id}}">
-						<td><a href = "{{ url("orders/details/".$item->order_id) }}"
+						<td><a href = "{{ url("orders/details/".$item->order_id) }}" target="_blank"
 						       class = "btn btn-link">{{$item->order->short_order}}</a></td>
 						{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
 						<td><img src="{{$item->item_thumb}}" /></td>

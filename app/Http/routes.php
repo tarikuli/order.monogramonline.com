@@ -1,34 +1,7 @@
 <?php
 
 get('test/batch', function () {
-	#return \DNS1D::getBarcodeHTML("4445645656", "C39");
-	#return date('Y-m-d h:i:s', strtotime("now"));
-	$start = strtotime("now");
-	$index = 1;
-	$x = 0;
-	/*foreach ( range(1, \App\Product::count()) as $id ) {
-		++$x;
-		if ( $index > 31 ) {
-			$index = 1;
-		}
-		$product = \App\Product::find($id);
-		$product->batch_route_id = $index;
-		$product->save();
-		++$index;
-	}*/
-	foreach ( \App\Product::all() as $product ) {
-		++$x;
-		if ( $index > 31 ) {
-			$index = 1;
-		}
-		#$product = \App\Product::find($id);
-		$product->batch_route_id = $index;
-		$product->save();
-		++$index;
-	}
-	$end = strtotime("now");
 
-	return sprintf("%d seconds passed to add routes to %d products", ( $end - $start ), $x);
 });
 
 get('set_route', function () {
@@ -80,6 +53,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	get('prints/packing/{id}', 'PrintController@packing');
 	get('prints/invoice/{id}', 'PrintController@invoice');
 	get('prints/purchase/{purchase_id}', 'PrintController@purchase');
+	get('prints/batches', 'PrintController@batches');
 
 	resource('inventories', 'InventoryController');
 	get('exports/inventory', 'ExportController@inventory');

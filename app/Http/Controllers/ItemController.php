@@ -68,7 +68,6 @@ class ItemController extends Controller
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
-			'order_date'          => 'Order date',
 			'store_id'            => 'Store',
 			'state'               => 'State',
 			'description'         => 'Description',
@@ -103,7 +102,8 @@ class ItemController extends Controller
 							 DB::raw('orders.id as order_table_id'),
 							 'orders.order_id',
 							 'orders.order_date',
-						 ]);
+						 ])
+						 ->paginate(1000);
 			},
 		])
 								  ->where('batch_routes.is_deleted', 0)
@@ -289,7 +289,7 @@ class ItemController extends Controller
 					}
 				}
 			}
-			if(!empty($current_station_by_url)){
+			if ( !empty( $current_station_by_url ) ) {
 				$current_station_name = $current_station_by_url;
 			}
 
@@ -463,7 +463,9 @@ class ItemController extends Controller
 				];
 				$validation = Validator::make($request->all(), $rules);
 				if ( $validation->fails() ) {
-					return redirect()->back()->withErrors($validation);
+					return redirect()
+						->back()
+						->withErrors($validation);
 				}
 
 

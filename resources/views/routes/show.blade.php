@@ -71,6 +71,12 @@
 				</div>
 				<div class = "col-xs-4">
 					{!! \Monogram\Helper::getHtmlBarcode($batch_number) !!}
+					<br />
+					@if($items->first())
+						<img src="{{$items->first()->item_thumb}}" />
+						<br/>
+					@endif
+					<a href="{{url('prints/batches?batch_number[]='.$batch_number)}}" target="_blank">Print batch</a>
 				</div>
 				<div class = "col-xs-12">
 					<table class = "table table-bordered" id = "batch-items-table">
@@ -170,7 +176,7 @@
 			var totalQuantity = 0;
 			$("table#batch-items-table tbody tr").each(function ()
 			{
-				totalQuantity += parseInt($(this).find('td:eq(4)').text());
+				totalQuantity += parseInt($(this).find('td:eq(6)').text());
 			});
 
 			$("table#batch-items-table tfoot td#item-quantity-in-total").text("Total quantity: " + totalQuantity);
