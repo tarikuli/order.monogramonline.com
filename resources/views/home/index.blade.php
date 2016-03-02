@@ -31,6 +31,12 @@
 					<li><a href = "/templates">Templates</a></li>
 				</ul>
 			</div>
+			<div class = "col-xs-12">
+				<h5 class = "page-header">Inventories</h5>
+				<ul>
+					<li><a href = "/inventories">Inventories</a></li>
+				</ul>
+			</div>
 		</div>
 		<div class = "col-xs-6">
 			<div class = "col-xs-12">

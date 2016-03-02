@@ -10,11 +10,14 @@
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
-
 	<style>
 		td {
 			width: 1px;
 			white-space: nowrap;
+		}
+
+		li {
+			font-size: 10px;
 		}
 	</style>
 </head>
@@ -98,7 +101,7 @@
 								<li>The first row should contain the column names as follows:
 									<ul>
 										<li>id_catalog - unique product part #</li>
-										<li>parent_item - item master code/style (can be used instead of the item id, idcatalog => please don't use both columns)</li>
+										<li>parent_item - item master code/style (can be used instead of the item id, id_catalog => please don't use both columns)</li>
 										<li>vendor_id - Shipper's ID</li>
 										<li>warehouse - location of the product, warehouse Code</li>
 										<li>wh_bin - BIN location of the product</li>
