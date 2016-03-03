@@ -103,7 +103,7 @@ class ItemController extends Controller
 							 'orders.order_id',
 							 'orders.order_date',
 						 ])
-						 ->paginate(1000);
+						 ->paginate(100);
 			},
 		])
 								  ->where('batch_routes.is_deleted', 0)
