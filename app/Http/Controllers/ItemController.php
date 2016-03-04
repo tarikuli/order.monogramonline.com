@@ -128,7 +128,7 @@ class ItemController extends Controller
 					 ->get();*/
 		$items = Item::groupBy('batch_number')
 					 ->get();
-		$last_batch_number = count($items);
+		$last_batch_number = 10000 + count($items);
 		$current_group = -1;
 
 		foreach ( $batches as $preferredBatch ) {
@@ -140,7 +140,7 @@ class ItemController extends Controller
 			}
 			#$batch_code = BatchRoute::find($batch_route_id)->batch_code;
 			#$proposedBatch = sprintf("%s~%s~%s", $today, $batch_code, $max_batch_id);
-			$proposedBatch = sprintf("%s%04d", $today, $last_batch_number);
+			$proposedBatch = sprintf("%d", $last_batch_number);
 
 			$acceptedGroups[$inGroup][] = [
 				$item_id,
