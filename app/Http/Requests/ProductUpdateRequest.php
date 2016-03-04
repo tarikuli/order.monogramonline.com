@@ -26,7 +26,7 @@ class ProductUpdateRequest extends Request
 	{
 		if ( $request->has('update_batch') ) {
 			return [
-				'product_master_category' => 'required',
+				'batch_route_id' => 'required',
 			];
 		}
 

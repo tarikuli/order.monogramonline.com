@@ -29,13 +29,21 @@
 		@include('includes.success_div')
 		<div class = "col-xs-12">
 			{!! Form::open(['method' => 'get', 'url' => url('items'), 'id' => 'search-order']) !!}
-			<div class = "form-group col-xs-5">
-				<label for = "search_for">Search for</label>
-				{!! Form::text('search_for', $request->get('search_for'), ['id'=>'search_for', 'class' => 'form-control', 'placeholder' => 'Comma delimited']) !!}
+			<div class = "form-group col-xs-3">
+				<label for = "search_for_first">Search for 1</label>
+				{!! Form::text('search_for_first', $request->get('search_for_first'), ['id'=>'search_for_first', 'class' => 'form-control', 'placeholder' => 'Comma delimited']) !!}
 			</div>
-			<div class = "form-group col-xs-5">
-				<label for = "search_in">Search in</label>
-				{!! Form::select('search_in', $search_in, $request->get('search_in'), ['id'=>'search_in', 'class' => 'form-control']) !!}
+			<div class = "form-group col-xs-3">
+				<label for = "search_in_first">Search in 1</label>
+				{!! Form::select('search_in_first', $search_in, $request->get('search_in_first'), ['id'=>'search_in_first', 'class' => 'form-control']) !!}
+			</div>
+			<div class = "form-group col-xs-3">
+				<label for = "search_for_second">Search for 2</label>
+				{!! Form::text('search_for_second', $request->get('search_for_second'), ['id'=>'search_for_second', 'class' => 'form-control', 'placeholder' => 'Comma delimited']) !!}
+			</div>
+			<div class = "form-group col-xs-3">
+				<label for = "search_in_first">Search in 2</label>
+				{!! Form::select('search_in_second', $search_in, $request->get('search_in_second'), ['id'=>'search_in_second', 'class' => 'form-control']) !!}
 			</div>
 			<br />
 

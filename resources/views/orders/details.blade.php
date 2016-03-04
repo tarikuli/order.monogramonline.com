@@ -209,7 +209,7 @@
 		</table>
 		<table>
 			<tr>
-				<td style = "padding-left:50px">Barcode</td>
+				<td style = "padding-left:50px">Image</td>
 				<td style = "padding-left:50px">Name</td>
 				<td style = "padding-left:180px">Code</td>
 				<td style = "padding-left:90px">Quantity</td>
@@ -225,8 +225,8 @@
 			@setvar($ind = 0)
 			@foreach($order->items as $item)
 				<tr>
-					<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
 					{!! Form::hidden("item_id[$ind]", $item->id) !!}
+					<td><img src="{{$item->item_thumb}}" /> </td>
 					<td style = 'width: 200px;padding-left:30px'><a href = "#">{{$item->item_description}}</a></td>
 					<td><a style = 'color:red' href = "#">{{$item->item_code}}</a></td>
 					<td style = "padding-left:80px">{!! Form::text("item_quantity[$ind]", $item->item_quantity, ['id' => 'item_quantity','style'=>'width:35px']) !!}</td>
@@ -236,6 +236,10 @@
 					<td></td>
 					<td></td>
 					@setvar($ind++)
+				</tr>
+				<tr colspan="10">
+					<td></td>
+					<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
 				</tr>
 				@if($item->shipInfo && $item->shipInfo->tracking_number)
 					<tr>

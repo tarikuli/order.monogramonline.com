@@ -33,6 +33,9 @@ class CreateItemsTable extends Migration
 			$table->integer('rejection_reason')->nullable();
 			$table->text('rejection_message')->nullable();
             $table->enum('is_deleted', array(0, 1))->default(0);
+
+			$table->index('order_id');
+			$table->index('item_code');
             $table->timestamps();
         });
     }

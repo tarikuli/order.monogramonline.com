@@ -1,38 +1,8 @@
 <?php
 
 get('test/batch', function () {
-
-});
-
-get('set_route', function () {
-	$stations = [
-		"R-GGR",
-		"R-GLP",
-		"R-GRD",
-		"R-Red",
-		"R-BM1",
-		"R-BM2",
-		"R-BM3",
-		"R-BM4",
-		"R-BM5",
-		"R-PEDD",
-		"R-PNAF",
-		"R-TBF",
-		"R-QCD",
-		"R-SHP",
-		"R-REC",
-		"R-BO",
-	];
-
-	return \App\Station::whereIn('station_name', $stations)
-					   ->orderBy(\DB::raw(sprintf("field(station_name, '%s')", implode("','", $stations))))
-					   ->lists('id');
-});
-
-get('set/{id}', function ($id) {
-	\Session::put('station_id', $id);
-
-	return redirect(url('stations/my_station'));
+	$today = date('md', strtotime('now'));
+	return $today;
 });
 
 // auth middleware enabled controller

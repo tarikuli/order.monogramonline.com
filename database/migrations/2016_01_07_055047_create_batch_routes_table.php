@@ -20,6 +20,8 @@ class CreateBatchRoutesTable extends Migration
 			$table->integer('export_template')->nullable();
             $table->string('batch_options')->nullable();
             $table->enum('is_deleted', array(0, 1))->default(0);
+
+			$table->index('batch_code');
             $table->timestamps();
         });
     }

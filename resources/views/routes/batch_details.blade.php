@@ -57,7 +57,7 @@
 					{!! Form::close() !!} --}}
 				</div>
 				<div class = "col-xs-4">
-					{!! DNS1D::getBarcodeHTML($batch_number, "C39") !!}
+					{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $batch_number)) !!}
 				</div>
 				<div class = "col-xs-12">
 					<table class = "table table-bordered" id = "batch-items-table">
@@ -67,7 +67,7 @@
 							<th>Item barcode</th>
 							<th>Current station</th>
 							<th>Order</th>
-							<th>Order barcode</th>
+							<th>Image</th>
 							<th>Date</th>
 							<th>Qty.</th>
 							<th>SKU</th>
@@ -90,7 +90,8 @@
 								<td>
 									<a href = "{{url('/orders/details/'.$item->order->order_id)}}">{{$item->order->short_order}}</a>
 								</td>
-								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>
+								{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>--}}
+								<td><img src="{{$item->item_thumb}}" /> </td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
 								<td>{{$item->item_code}}</td>

@@ -36,8 +36,7 @@ class ProductController extends Controller
 						   ->searchProductName($request->get('product_name'))
 						   ->searchRoute($request->get('route'))
 						   ->searchProductionCategory($request->get('product_production_category'))
-						   ->searchMasterCategory($request->get('product_master_category'))
-						   /*->searchCategory($request->get('product_category'))
+						   ->searchMasterCategory($request->get('product_master_category'))/*->searchCategory($request->get('product_category'))
 						   ->searchSubCategory($request->get('product_sub_category'))*/
 						   ->latest()
 						   ->paginate(50);
@@ -272,12 +271,11 @@ class ProductController extends Controller
 
 	public function update (ProductUpdateRequest $request, $id)
 	{
-		#return $request->all();
 		$master_category_id = $request->get('product_master_category');
 		$master_category = MasterCategory::where('is_deleted', 0)
 										 ->where('id', $master_category_id)
 										 ->first();
-		if ( !$master_category ) {
+		if ( !$request->ajax() && !$master_category ) {
 			return redirect()
 				->back()
 				->withInput()
@@ -428,9 +426,7 @@ class ProductController extends Controller
 
 		$batch_routes->prepend('Not selected', 'null');
 
-		$product_master_category = MasterCategory::where('is_deleted', 0)
-												 ->lists('master_category_description', 'id')
-												 ->prepend('All', 0);
+		$master_categories = (new MasterCategoryController())->getChildCategories();
 
 		$product_category = Category::where('is_deleted', 0)
 									->lists('category_description', 'id')
@@ -445,7 +441,9 @@ class ProductController extends Controller
 												   ->prepend('All', 0);
 		$count = 1;
 
-		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'));
+		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
+			->with('categories', $master_categories)
+			->with('id', 0);
 	}
 
 	public function import (Request $request)

@@ -34,9 +34,11 @@ class ItemController extends Controller
 
 	public function index (Request $request)
 	{
+		#return [$request->get('search_for_first'), $request->get('search_in_first')];
 		$items = Item::with('order.customer', 'store', 'route.stations_list')
 					 ->where('is_deleted', 0)
-					 ->search($request->get('search_for'), $request->get('search_in'))
+					 ->search($request->get('search_for_first'), $request->get('search_in_first'))
+					 ->search($request->get('search_for_second'), $request->get('search_in_second'))
 					 ->searchDate($request->get('start_date'), $request->get('end_date'))
 					 ->latest()
 					 ->paginate(50);
@@ -110,13 +112,13 @@ class ItemController extends Controller
 								  ->get();
 
 		#return $batch_routes;
-
+		#Log::info('Showing user profile for user: '.count($batch_routes));
 		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));
 	}
 
 	public function postBatch (Requests\ItemToBatchCreateRequest $request)
 	{
-		$today = date('ymd', strtotime('now'));
+		$today = date('md', strtotime('now'));
 		$batches = $request->get('batches');
 
 		$acceptedGroups = [ ];
@@ -513,10 +515,8 @@ class ItemController extends Controller
 		$file_path = sprintf("%s/assets/exports/batches/", public_path());
 		$file_name = sprintf("batch_%d-%s-%s.csv", $batch_id, date("y-m-d", strtotime('now')), str_random(5));
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
-
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'a+'), 'w');
 		$csv->insertOne($columns);
-
 		foreach ( $items as $item ) {
 			$row = [ ];
 			#$row[] = explode("-", $item->order_id)[2];
@@ -524,21 +524,40 @@ class ItemController extends Controller
 			$decoded_options = json_decode($options, true);
 
 			foreach ( $template->exportable_options as $column ) {
-				$keys = explode(",", $column->value);
-				$found = false;
-				$values = [ ];
-				foreach ( $keys as $key ) {
-					$trimmed_key = implode("_", explode(" ", trim($key)));
-					if ( array_key_exists($trimmed_key, $decoded_options) ) {
-						$values[] = $decoded_options[$trimmed_key];
-						$found = true;
+				$result = '';
+
+				if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
+					#$result = array_slice(explode("-", $item->order_id), -1, 1);
+					#$exp = explode("-", $item->order_id); // explode the short order
+					#$result = $exp[count($exp)-1];
+					$result = $item->order_id;
+				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "sku" ) { // if the template value is sku
+					$result = $item->item_code;
+				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "po#" ) { // if string is po/batch number
+					$result = $item->batch_number;
+				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "orderdate" ) {//if the string is order date
+					$result = $item->order->order_date;
+				} else {
+					$keys = explode(",", $column->value);
+					$found = false;
+					$values = [ ];
+					foreach ( $keys as $key ) {
+						$trimmed_key = implode("_", explode(" ", trim($key)));
+						if ( array_key_exists($trimmed_key, $decoded_options) ) {
+							$values[] = $decoded_options[$trimmed_key];
+							$found = true;
+						}
+					}
+					if ( $values ) {
+						$result = implode(",", $values);
 					}
 				}
-				if ( $found ) {
-					$row[] = implode(",", $values);
+				$row[] = $result;
+				/*if ( $found ) {
+
 				} else {
 					$row[] = '';
-				}
+				}*/
 			}
 			$csv->insertOne($row);
 		}

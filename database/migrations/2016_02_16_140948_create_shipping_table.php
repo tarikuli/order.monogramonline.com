@@ -56,6 +56,8 @@ class CreateShippingTable extends Migration
             $table->string('return_address')->default("MonogramOnline.com|575 Underhill Blvd|Suite 216|Syosset|NY 11791-3416");
             $table->string('carrier')->nullable();
             $table->enum('is_deleted', [0, 1])->default(0);
+
+			$table->index('order_number');
             $table->timestamps();
         });
     }
