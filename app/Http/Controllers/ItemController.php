@@ -105,7 +105,7 @@ class ItemController extends Controller
 							 'orders.order_id',
 							 'orders.order_date',
 						 ])
-						 ->paginate(100);
+						 ->paginate(10000);
 			},
 		])
 								  ->where('batch_routes.is_deleted', 0)
@@ -123,8 +123,10 @@ class ItemController extends Controller
 
 		$acceptedGroups = [ ];
 
-		$items = Item::where('batch_number', 'LIKE', sprintf("%s%%", $today))
+		/*$items = Item::where('batch_number', 'LIKE', sprintf("%s%%", $today))
 					 ->groupBy('batch_number')
+					 ->get();*/
+		$items = Item::groupBy('batch_number')
 					 ->get();
 		$last_batch_number = count($items);
 		$current_group = -1;
