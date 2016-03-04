@@ -331,7 +331,7 @@ class ItemController extends Controller
 		#$bar_code = DNS1D::getBarcodeHTML($batch_number, "C39");
 		$bar_code = Helper::getHtmlBarcode($batch_number);
 		$statuses = Helper::getBatchStatusList();
-		$route = BatchRoute::with('stations')
+		$route = BatchRoute::with('stations', 'template')
 						   ->find($items[0]->batch_route_id);
 
 		#$department_id = DB::table('department_station')->where('station_id', Station::where('station_name', $station_name)->first()->id)->first()->department_id;
@@ -515,9 +515,9 @@ class ItemController extends Controller
 												->toArray(); #->prepend('Order id');
 
 		$file_path = sprintf("%s/assets/exports/batches/", public_path());
-		$file_name = sprintf("batch_%d-%s-%s.csv", $batch_id, date("y-m-d", strtotime('now')), str_random(5));
+		$file_name = sprintf("%s.csv", $batch_id);
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
-		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'a+'), 'w');
+		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
 		$csv->insertOne($columns);
 		foreach ( $items as $item ) {
 			$row = [ ];
@@ -530,15 +530,15 @@ class ItemController extends Controller
 
 				if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
 					#$result = array_slice(explode("-", $item->order_id), -1, 1);
-					#$exp = explode("-", $item->order_id); // explode the short order
-					#$result = $exp[count($exp)-1];
-					$result = $item->order_id;
+					$exp = explode("-", $item->order_id); // explode the short order
+					$result = $exp[count($exp)-1];
+					#$result = $item->order_id;
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "sku" ) { // if the template value is sku
 					$result = $item->item_code;
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "po#" ) { // if string is po/batch number
 					$result = $item->batch_number;
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "orderdate" ) {//if the string is order date
-					$result = $item->order->order_date;
+					$result = substr($item->order->order_date, 0, 10);
 				} else {
 					$keys = explode(",", $column->value);
 					$found = false;

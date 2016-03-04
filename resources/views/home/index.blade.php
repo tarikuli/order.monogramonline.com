@@ -28,7 +28,6 @@
 				<ul>
 					<li><a href = "/logistics/sku_converter">Set store options to SKU conversion parameters</a></li>
 					<li><a href = "/logistics/sku_import">Export/Import options coded SKUs CSV file</a></li>
-					<li><a href = "/templates">Templates</a></li>
 				</ul>
 			</div>
 			<div class = "col-xs-12">
@@ -50,6 +49,7 @@
 					<li><a href = "/orders/list">Orders</a></li>
 					<li><a href = "/departments">Departments</a></li>
 					<li><a href = "/stations">Stations</a></li>
+					<li><a href = "/templates">Route Templates</a></li>
 					<li><a href = "/batch_routes">Routes</a></li>
 					<li><a href = "/items">Order items list status</a></li>
 					<li><a href = "/items/batch">Preview batch</a></li>

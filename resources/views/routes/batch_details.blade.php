@@ -11,10 +11,24 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<style>
-
 		td {
 			width: 1px;
 			white-space: nowrap;
+		}
+
+		td.description {
+			white-space: pre-wrap;
+			word-wrap: break-word;
+			max-width: 1px;
+			width: 100%;
+		}
+
+		td textarea {
+			border: none;
+			width: auto;
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
 		}
 	</style>
 </head>
@@ -32,22 +46,18 @@
 					<p>Batch: # <span>{{$batch_number}}</span></p>
 					<a href = "{{url('exports/batch/'.$batch_number)}}">Export batch</a>
 					<p>Batch creation date: <span>{{substr($items[0]->batch_creation_date, 0, 10)}}</span></p>
-					<div class = "col-xs-12">
-						<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>
-						{{--{!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
-						<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, []) !!}</p>
-						{!! Form::submit('Change status', ['id' => 'change-status',]) !!}
-						{!! Form::close() !!}--}}
-					</div>
+					{{--<div class = "col-xs-12"> </div>
 					<div class = "col-xs-12">
 						<div class = "btn-group" role = "group" aria-label = "...">
-							{{--<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>--}}
-							{{--<button type = "button" class = "btn btn-success" id = "done-all">Done all</button>--}}
 						</div>
 						{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
 						{!! Form::hidden('action', null) !!}
 						{!! Form::close() !!}
-					</div>
+					</div>--}}
+					<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>
+					<p>Template:
+						<a href = "{{url(sprintf("/templates/%d", $route->template->id))}}">{!! $route->template->template_name !!}</a>
+					</p>
 					<p>Route: {{$route['batch_code']}} / {{$route['batch_route_name']}} => {!! $stations !!}</p>
 					{{--<p>Department: {{ $department_name }}</p>--}}
 					{{--<p>Current Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, ['disabled' => 'disabled']) !!}</p>--}}
@@ -64,11 +74,15 @@
 						<thead>
 						<tr>
 							<th>SL#</th>
-							<th>Item barcode</th>
+							<th>
+								Order
+								<br />
+								Item barcode
+							</th>
 							<th>Current station</th>
-							<th>Order</th>
+							{{--<th>Order</th>--}}
 							<th>Image</th>
-							<th>Date</th>
+							<th>Order date</th>
 							<th>Qty.</th>
 							<th>SKU</th>
 							<th>Item name</th>
@@ -79,24 +93,31 @@
 						@foreach($items as $item)
 							<tr data-id = "{{$item->id}}">
 								<td>{{$count++}}</td>
-								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
+								<td>
+									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
+									   target = "_blank">{{$item->order->short_order}}</a> - {{$item->id}}
+									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
+								</td>
 								<td>
 									@if($item->station_details)
-										<a href="{{ url(sprintf("/batches/%s/%s", $item->batch_number, $item->station_details->station_name)) }}" data-toggle="tooltip" data-placement="top" title="{{ $item->station_details->station_description }}">{{$item->station_details->station_name}}</a>
+										<a href = "{{ url(sprintf("/batches/%s/%s", $item->batch_number, $item->station_details->station_name)) }}"
+										   data-toggle = "tooltip" data-placement = "top"
+										   title = "{{ $item->station_details->station_description }}">{{$item->station_details->station_name}}</a>
 									@else
 										-
 									@endif
 								</td>
-								<td>
+								{{--<td>
 									<a href = "{{url('/orders/details/'.$item->order->order_id)}}">{{$item->order->short_order}}</a>
-								</td>
+								</td>--}}
 								{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>--}}
-								<td><img src="{{$item->item_thumb}}" /> </td>
+								<td><img src = "{{$item->item_thumb}}" /></td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
 								<td>{{$item->item_code}}</td>
-								<td>{{$item->item_description}}</td>
-								<td>{{\Monogram\Helper::jsonTransformer($item->item_option)}}</td>
+								<td class = "description">{{$item->item_description}}</td>
+								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '3', 'cols' => '20',]) !!}</td>
+								{{--<td>{{\Monogram\Helper::jsonTransformer($item->item_option)}}</td>--}}
 							</tr>
 						@endforeach
 						</tbody>
@@ -150,7 +171,7 @@
 			var totalQuantity = 0;
 			$("table#batch-items-table tbody tr").each(function ()
 			{
-				totalQuantity += parseInt($(this).find('td:eq(6)').text());
+				totalQuantity += parseInt($(this).find('td:eq(5)').text());
 			});
 
 			$("table#batch-items-table tfoot td#item-quantity-in-total").text("Total quantity: " + totalQuantity);

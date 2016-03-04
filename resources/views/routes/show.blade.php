@@ -11,14 +11,17 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<style>
-		/*table {
-			table-layout: fixed;
-			font-size: 12px;
-		}*/
-
 		td {
-			/*width: auto;*/
+			/*width: 1px;*/
 			white-space: nowrap;
+		}
+
+		td.description {
+			white-space: pre-wrap;
+			word-wrap: break-word;
+			max-width: 300px;
+			min-width: 250px !important;
+			width: 100%;
 		}
 
 		td textarea {
@@ -45,22 +48,29 @@
 					<p>Batch: # <span>{{$batch_number}}</span></p>
 					<a href = "{{url('exports/batch/'.$batch_number)}}">Export batch</a>
 					<p>Batch creation date: <span>{{substr($items[0]->batch_creation_date, 0, 10)}}</span></p>
-					<div class = "col-xs-12">
-						<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>
-						{{--{!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
+					{{--<div class = "col-xs-12">
+						--}}{{--<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>--}}{{--
+						--}}{{--{!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
 						<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, []) !!}</p>
 						{!! Form::submit('Change status', ['id' => 'change-status',]) !!}
-						{!! Form::close() !!}--}}
-					</div>
-					<div class = "col-xs-12">
+						{!! Form::close() !!}--}}{{--
+					</div>--}}
+					{{--<div class = "col-xs-12">
 						<div class = "btn-group" role = "group" aria-label = "...">
-							{{--<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>--}}
-							{{--<button type = "button" class = "btn btn-success" id = "done-all">Done all</button>--}}
+							--}}{{--<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>--}}{{--
+							--}}{{--<button type = "button" class = "btn btn-success" id = "done-all">Done all</button>--}}{{--
 						</div>
 						{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
 						{!! Form::hidden('action', null) !!}
 						{!! Form::close() !!}
-					</div>
+					</div>--}}
+					{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
+					{!! Form::hidden('action', null) !!}
+					{!! Form::close() !!}
+					<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>
+					<p>Template:
+						<a href = "{{url(sprintf("/templates/%d", $route->template->id))}}">{!! $route->template->template_name !!}</a>
+					</p>
 					<p>Route: {{$route['batch_code']}} / {{$route['batch_route_name']}} => {!! $stations !!}</p>
 					<p>Department: {{ $department_name }}</p>
 					<p>Current Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, ['disabled' => 'disabled']) !!}</p>
@@ -72,11 +82,12 @@
 				<div class = "col-xs-4">
 					{!! \Monogram\Helper::getHtmlBarcode($batch_number) !!}
 					<br />
-					@if($items->first())
-						<img src="{{$items->first()->item_thumb}}" />
-						<br/>
-					@endif
-					<a href="{{url('prints/batches?batch_number[]='.$batch_number)}}" target="_blank">Print batch</a>
+					{{--@if($items->first())
+						<img src = "{{$items->first()->item_thumb}}" />
+						<br />
+					@endif--}}
+					<a href = "{{url('prints/batches?batch_number[]='.$batch_number)}}"
+					   target = "_blank">Print batch</a>
 				</div>
 				<div class = "col-xs-12">
 					<table class = "table table-bordered" id = "batch-items-table">
@@ -86,9 +97,14 @@
 								<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>
 							</th>
 							<th>SL#</th>
-							<th>Item barcode</th>
-							<th>Order</th>
-							<th>Order barcode</th>
+							<th>
+								Order
+								<br />
+								Item barcode
+							</th>
+							{{--<th>Order</th>
+							<th>Order barcode</th>--}}
+							<th>Image</th>
 							<th>Date</th>
 							<th>Qty.</th>
 							<th>SKU</th>
@@ -104,15 +120,22 @@
 							<tr data-id = "{{$item->id}}">
 								<td><a href = "#" class = "btn btn-danger reject">Reject</a></td>
 								<td>{{$count++}}</td>
-								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
+								{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
 								<td>
+									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
+									   target = "_blank">{{$item->order->short_order}}</a> - {{$item->id}}
+									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
+								</td>
+								{{--<td>
 									<a href = "{{url('/orders/details/'.$item->order->order_id)}}">{{$item->order->short_order}}</a>
 								</td>
-								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>
+								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>--}}
+								<td><img src = "{{$item->item_thumb}}" /></td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
 								<td>{{$item->item_code}}</td>
-								<td>{{$item->item_description}}</td>
+								{{--<td>{{$item->item_description}}</td>--}}
+								<td class = "description">{{$item->item_description}}</td>
 								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
 								<td>{{--<a href = "#" class = "btn btn-danger reject">Reject</a> |--}} <a href = "#"
 								                                                                          class = "btn btn-success done">Done</a>
@@ -176,7 +199,7 @@
 			var totalQuantity = 0;
 			$("table#batch-items-table tbody tr").each(function ()
 			{
-				totalQuantity += parseInt($(this).find('td:eq(6)').text());
+				totalQuantity += parseInt($(this).find('td:eq(5)').text());
 			});
 
 			$("table#batch-items-table tfoot td#item-quantity-in-total").text("Total quantity: " + totalQuantity);

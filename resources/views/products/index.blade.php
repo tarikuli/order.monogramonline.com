@@ -53,12 +53,12 @@
 			{!! Form::open(['method' => 'get', 'id' => 'search-order']) !!}
 			<div class = "col-md-12">
 				<div class = "form-group col-xs-3">
-					<label for = "id_catalog">Search in id catalog</label>
-					{!! Form::text('id_catalog', $request->get('id_catalog'), ['id'=>'id_catalog', 'class' => 'form-control', 'placeholder' => 'Search in id catalog']) !!}
+					<label for = "id_catalog">Search in ID Catalog</label>
+					{!! Form::text('id_catalog', $request->get('id_catalog'), ['id'=>'id_catalog', 'class' => 'form-control', 'placeholder' => 'Search in ID Catalog']) !!}
 				</div>
 				<div class = "form-group col-xs-3">
-					<label for = "product_model">Search in model</label>
-					{!! Form::text('product_model', $request->get('product_model'), ['id'=>'product_model', 'class' => 'form-control', 'placeholder' => 'Search in product model']) !!}
+					<label for = "product_model">Search in SKU</label>
+					{!! Form::text('product_model', $request->get('product_model'), ['id'=>'product_model', 'class' => 'form-control', 'placeholder' => 'Search in product SKU']) !!}
 				</div>
 				<div class = "form-group col-xs-3">
 					<label for = "product_name">Search in name</label>

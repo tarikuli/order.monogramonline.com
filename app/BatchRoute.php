@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 class BatchRoute extends Model
 {
+	public function template ()
+	{
+		return $this->belongsTo('App\Template', 'export_template', 'id');
+	}
+
 	public function itemGroups ()
 	{
 		return $this->hasMany('App\Product')
@@ -40,6 +45,10 @@ class BatchRoute extends Model
 	public function stations_list ()
 	{
 		return $this->belongsToMany('App\Station')
-					->select(['station_name', 'station_description', 'station_id']);
+					->select([
+						'station_name',
+						'station_description',
+						'station_id',
+					]);
 	}
 }
