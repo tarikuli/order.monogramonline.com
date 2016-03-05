@@ -77,11 +77,9 @@ class LogisticsController extends Controller
 
 	private function insert_parameters_into_table ($parameters, $store_id)
 	{
-		$unique_row_value = sprintf("%s_%s", strtotime("now"), str_random(5));
 		foreach ( $parameters as $parameter_value ) {
 			$parameter = new Parameter();
 			$parameter->store_id = $store_id;
-			$parameter->unique_row_value = $unique_row_value;
 			$parameter->parameter_value = trim($parameter_value);
 			$parameter->save();
 		}
@@ -205,9 +203,11 @@ class LogisticsController extends Controller
 			$rows = $reader->setOffset(1)
 						   ->fetchAssoc(Helper::$column_names);
 			foreach ( $rows as $row ) {
+				$unique_row_value = sprintf("%s_%s", strtotime("now"), str_random(5));
 				foreach ( Helper::$column_names as $column_name ) {
 					$option = new Option();
 					$option->store_id = $store_id;
+					$option->unique_row_value = $unique_row_value;
 					$option->parameter_id = Helper::$columns[$column_name];
 					$option->parameter_option = $row[$column_name];
 					$option->save();
