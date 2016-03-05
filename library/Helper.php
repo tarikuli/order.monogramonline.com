@@ -19,6 +19,7 @@ class Helper
 {
 	public static $column_names = [ ];
 	public static $columns = [ ];
+	public static $error = '';
 
 	private static $carrier = [
 		"USPS"     => 'USPS',
@@ -253,7 +254,12 @@ class Helper
 									->toArray();
 
 		#$parameters->lists('parameter_value')->toArray()
-		return count($parameters) && ( self::$column_names == $row );
+		$different = array_diff(self::$column_names, $row);
+		if ( $different ) {
+			self::$error = sprintf("%s columns are not present in uploaded CSV file.", implode(", ", $different));
+		}
+
+		return count($parameters) && !$different;
 	}
 
 	public static function routeThroughStations ($route_id, $station_name = null)

@@ -1,6 +1,4 @@
-<?php
-
-namespace App\Http\Controllers;
+<?php namespace App\Http\Controllers;
 
 use App\Option;
 use App\Parameter;
@@ -180,14 +178,16 @@ class LogisticsController extends Controller
 		}
 
 		$row = $reader->fetchOne();
+
 		$is_valid = Helper::validateSkuImportFile($store_id, $row);
 
 		if ( !$is_valid ) {
 			return redirect()
 				->back()
 				->withErrors(new MessageBag([
-					'error' => sprintf('Column names / values do not match with the parameters with <b>%s</b> store.', Store::where('store_id', $store_id)
-																															->first()->store_name),
+					/*'error' => sprintf('Column names / values do not match with the parameters with <b>%s</b> store.', Store::where('store_id', $store_id)
+																															->first()->store_name),*/
+					'error' => Helper::$error,
 				]));
 		}
 

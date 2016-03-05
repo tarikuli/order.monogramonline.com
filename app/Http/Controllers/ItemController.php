@@ -322,7 +322,7 @@ class ItemController extends Controller
 
 	public function batch_details ($batch_number)
 	{
-		$items = Item::with('order', 'station_details')
+		$items = Item::with('order', 'station_details', 'product')
 					 ->where('batch_number', $batch_number)
 					 ->get();
 		if ( !count($items) ) {

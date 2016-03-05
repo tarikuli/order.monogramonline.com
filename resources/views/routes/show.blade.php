@@ -130,7 +130,8 @@
 									<a href = "{{url('/orders/details/'.$item->order->order_id)}}">{{$item->order->short_order}}</a>
 								</td>
 								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>--}}
-								<td><img src = "{{$item->item_thumb}}" /></td>
+								<td><a href = "{{ $item->product->product_url }}" target="_blank"><img src = "{{$item->item_thumb}}" /></a>
+								</td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
 								<td>{{$item->item_code}}</td>

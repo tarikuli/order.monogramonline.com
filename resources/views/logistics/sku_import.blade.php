@@ -45,7 +45,7 @@
 			<div class = "form-group">
 				{!! Form::label('store_id', "Store id", ['class'=> 'col-xs-2 control-label']) !!}
 				<div class = "col-sm-6">
-					{!! Form::select('store_id', $stores->lists('store_name', 'store_id')->prepend('Select a station', 'all'), 'all', ['id'=>'store_id', 'class' => 'form-control']) !!}
+					{!! Form::select('store_id', $stores->lists('store_name', 'store_id')->prepend('Select a store', 'all'), 'all', ['id'=>'store_id', 'class' => 'form-control']) !!}
 				</div>
 			</div>
 			<div class = "form-group">

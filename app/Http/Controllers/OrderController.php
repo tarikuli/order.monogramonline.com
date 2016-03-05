@@ -286,6 +286,8 @@ class OrderController extends Controller
 									->lists('shipping', 'shipping');
 		$shipping_methods->prepend('All', 'all');
 
+		$total_money = Order::get([\DB::raw('SUM(total) as money')])->first();
+
 		$search_in = [
 			'order'         => 'Order',
 			'five_p'        => '5P#',
@@ -295,7 +297,7 @@ class OrderController extends Controller
 			'shipper-po'    => 'Shipper-PO',
 		];
 
-		return view('orders.lists', compact('orders', 'stores', 'statuses', 'shipping_methods', 'search_in', 'request'));
+		return view('orders.lists', compact('orders', 'stores', 'statuses', 'shipping_methods', 'search_in', 'request'))->with('money', $total_money->money);
 	}
 
 	public function search (Request $request)

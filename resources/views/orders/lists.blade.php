@@ -70,7 +70,7 @@
 		</div>
 		@if(count($orders) > 0)
 			<h3 class = "page-header">
-				Orders ({{ $orders->total() }} orders found / {{$orders->currentPage()}} of {{$orders->lastPage()}} pages)
+				Orders ({{ $orders->total() }} orders found / $ {{sprintf("%.2f", $money)}} / {{$orders->currentPage()}} of {{$orders->lastPage()}} pages)
 				<a class = "btn btn-success btn-sm pull-right" href = "{{url('/orders/create')}}">Create order</a>
 			</h3>
 			<table class = "table table-bordered">
