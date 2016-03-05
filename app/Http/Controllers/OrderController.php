@@ -274,6 +274,7 @@ class OrderController extends Controller
 						   'order_status',
 						   'total',
 					   ]);
+
 		$statuses = Status::where('is_deleted', 0)
 						  ->lists('status_name', 'status_code');
 		$statuses->prepend('All', 'all');
@@ -286,7 +287,16 @@ class OrderController extends Controller
 									->lists('shipping', 'shipping');
 		$shipping_methods->prepend('All', 'all');
 
-		$total_money = Order::get([\DB::raw('SUM(total) as money')])->first();
+		$total_money = Order::with('customer')
+							->where('is_deleted', 0)
+							->storeId($request->get('store'))
+							->status($request->get('status'))
+							->shipping($request->get('shipping_method'))
+							->search($request->get('search_for'), $request->get('search_in'))
+							->withinDate($request->get('start_date'), $request->get('end_date'))
+							->latest()
+							->get([ \DB::raw('SUM(total) as money') ])
+							->first();
 
 		$search_in = [
 			'order'         => 'Order',
