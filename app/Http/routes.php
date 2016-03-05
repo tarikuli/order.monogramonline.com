@@ -59,6 +59,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	get('logistics/sku_converter', 'LogisticsController@sku_converter');
 	post('logistics/sku_converter', 'LogisticsController@post_sku_converter');
 
+	delete('/logistics/delete_sku/{unique_row_value}', 'LogisticsController@delete_sku');
+
 	put('logistics/{store_id}/update', 'LogisticsController@sku_converter_update');
 	get('logistics/sku_import', 'LogisticsController@get_sku_import');
 	post('logistics/sku_import', 'LogisticsController@post_sku_import');

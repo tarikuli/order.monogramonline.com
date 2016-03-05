@@ -258,4 +258,16 @@ class LogisticsController extends Controller
 		return view('logistics.sku_converter_store_details', compact('parameters', 'options', 'request'));
 
 	}
+
+	public function delete_sku (Request $request, $unique_row_value)
+	{
+		$option = Option::where('unique_row_value', $unique_row_value)
+						->first();
+		if ( $option ) {
+			Option::where('unique_row_value', $unique_row_value)
+				  ->delete();
+		}
+
+		return redirect()->back();
+	}
 }

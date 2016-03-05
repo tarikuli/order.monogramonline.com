@@ -51,9 +51,15 @@
 				</tr>
 				@foreach($options->chunk(count($parameters->lists('parameter_value'))) as $option_array)
 					<tr>
+						<td>
+							{!! Form::open(['url' => url('/logistics/delete_sku/'.$option_array->first()->unique_row_value), 'method' => 'delete']) !!}
+							{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
+							{!! Form::close() !!}
+						</td>
 						@foreach($option_array as $option)
 							<td>{{$option->parameter_option}}</td>
 						@endforeach
+						<td>Edit</td>
 					</tr>
 				@endforeach
 			</table>
@@ -80,17 +86,14 @@
 		var message = {
 			delete: 'Are you sure you want to delete?',
 		};
-		$("a.delete").on('click', function (event)
+		$(".delete-sku_converter").on('click', function (event)
 		{
 			event.preventDefault();
-			var id = $(this).closest('tr').attr('data-id');
 			var action = confirm(message.delete);
 			if ( action ) {
-				var form = $("form#delete-order");
-				var url = form.attr('action');
-				form.attr('action', url.replace('id', id));
-				form.submit();
+				$(this).closest('form').submit();
 			}
+			//return false;
 		});
 	</script>
 </body>
