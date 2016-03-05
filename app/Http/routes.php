@@ -2,6 +2,7 @@
 
 get('test/batch', function () {
 	$today = date('md', strtotime('now'));
+
 	return $today;
 });
 
@@ -61,6 +62,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	put('logistics/{store_id}/update', 'LogisticsController@sku_converter_update');
 	get('logistics/sku_import', 'LogisticsController@get_sku_import');
 	post('logistics/sku_import', 'LogisticsController@post_sku_import');
+	get('logistics/sku_show', 'LogisticsController@get_sku_show');
 
 
 	post('stations/change', 'StationController@change');
@@ -117,5 +119,5 @@ Route::group([ 'prefix' => 'auth' ], function () {
 });
 
 Event::listen('illuminate.query', function ($q) {
-	Log::info($q);
+	#Log::info($q);
 });

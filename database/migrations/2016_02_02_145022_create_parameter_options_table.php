@@ -14,6 +14,7 @@ class CreateParameterOptionsTable extends Migration
 		Schema::create('parameter_options', function (Blueprint $table) {
 			$table->increments('id');
 			$table->string('store_id');
+			$table->string('unique_row_value', 20);
 			$table->integer('parameter_id');
 			$table->text('parameter_option')
 				  ->nullable();

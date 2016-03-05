@@ -60,6 +60,7 @@
 					<button type = "button" id = "validate" class = "btn btn-warning">Validate</button>
 					<button type = "button" id = "upload" class = "btn btn-primary">Upload</button>
 					<button type = "button" id = "export" class = "btn btn-success">Export</button>
+					<button type = "button" id = "show" class = "btn btn-info">Show</button>
 				</div>
 			</div>
 			{!! Form::close() !!}
@@ -146,7 +147,22 @@
 
 			$("input#action").val('export');
 			$("form#sku-import-form").submit();
-		})
+		});
+
+		$("button#show").on('click', function (event)
+		{
+			event.preventDefault();
+			var store_id = $("select#store_id").val();
+
+			if ( store_id == 'all' ) {
+				alert('Please, select a store');
+				return;
+			}
+
+			var url = "/logistics/sku_show?store_id=" + store_id;
+			window.open(url, '_blank');
+
+		});
 	</script>
 </body>
 </html>

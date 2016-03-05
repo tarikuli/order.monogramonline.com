@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\MessageBag;
 use League\Csv\Reader;
@@ -76,9 +77,11 @@ class LogisticsController extends Controller
 
 	private function insert_parameters_into_table ($parameters, $store_id)
 	{
+		$unique_row_value = sprintf("%s_%s", strtotime("now"), str_random(5));
 		foreach ( $parameters as $parameter_value ) {
 			$parameter = new Parameter();
 			$parameter->store_id = $store_id;
+			$parameter->unique_row_value = $unique_row_value;
 			$parameter->parameter_value = trim($parameter_value);
 			$parameter->save();
 		}
@@ -219,6 +222,40 @@ class LogisticsController extends Controller
 		}
 
 		return redirect()->back();
+
+	}
+
+	public function get_sku_show (Request $request)
+	{
+		$store_id = $request->get('store_id');
+
+		$store = Store::where('store_id', $store_id)
+					  ->where('is_deleted', 0)
+					  ->first();
+		if ( !$store ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'Not a valid store selected',
+				]);
+		}
+
+		// get the parameters - ie, columns of csv
+		$parameters = Parameter::where('store_id', $store_id)
+							   ->get();
+
+		// get the values of the above columns
+		// by parameter id relation
+		// and paginate as of the length of the parameter
+		// here in paginate, the multiple is the number of parameter column
+		$relation_array = $parameters->lists('id')
+									 ->toArray();
+
+		$options = Option::whereIn('parameter_id', $relation_array)#->orderBy(DB::raw(sprintf('FIELD(parameter_id, %s)', implode(", ", $relation_array))))
+						 ->paginate(50 * count($parameters));
+
+		#return $options;
+		return view('logistics.sku_converter_store_details', compact('parameters', 'options', 'request'));
 
 	}
 }

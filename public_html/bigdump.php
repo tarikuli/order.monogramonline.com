@@ -90,7 +90,7 @@ $string_quotes = '\'';                  // Change to '"' if your dump file uses 
 
 // How many lines may be considered to be one query (except text lines)
 
-$max_query_lines = 300;
+$max_query_lines = 1000;
 
 // Where to put the upload files into (default: bigdump folder)
 
