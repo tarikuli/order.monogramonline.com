@@ -68,6 +68,8 @@
 				</div>
 				<div class = "col-xs-4">
 					{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $batch_number)) !!}
+					<a href = "{{url('prints/batches?batch_number[]='.$batch_number)}}"
+					   target = "_blank">Print batch</a>
 				</div>
 				<div class = "col-xs-12">
 					<table class = "table table-bordered" id = "batch-items-table">
@@ -112,7 +114,8 @@
 								</td>--}}
 								{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>--}}
 								{{--<td><img src = "{{$item->item_thumb}}" /></td>--}}
-								<td><a href = "{{ $item->product->product_url }}" target="_blank"><img src = "{{$item->item_thumb}}" /></a>
+								<td><a href = "{{ $item->product->product_url }}" target = "_blank"><img
+												src = "{{$item->item_thumb}}" /></a>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
 								<td>{{$item->item_code}}</td>

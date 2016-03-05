@@ -11,6 +11,7 @@ use App\RuleTrigger;
 use App\Setting;
 use App\Ship;
 use App\Station;
+use App\StationLog;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use DNS1D;
@@ -238,6 +239,32 @@ class Helper
 		return Setting::first()->supervisor_station;
 	}
 
+	public static function getStationIdFromName ($station_name)
+	{
+		$station = Station::where('station_name', $station_name)
+						  ->where('is_deleted', 0)
+						  ->first();
+
+		return $station ? $station->id : null;
+	}
+
+	public static function getStationLog ($batch_number, $station_name)
+	{
+		$station_id = static::getStationIdFromName($station_name);
+		if ( $station_id ) {
+			$log = StationLog::where('batch_number', $batch_number)
+							 ->where('station_id', $station_id)
+							 ->first();
+			if ( $log ) {
+				return substr($log->started_at, 0, 10);
+			}
+
+			return "N/A";
+		}
+
+		return "N/A";
+	}
+
 	public static function getDefaultRouteId ()
 	{
 		return Setting::first()->default_route_id;
@@ -406,5 +433,15 @@ class Helper
 	public static function getItemOrderStatus ($index)
 	{
 		return $index && array_key_exists($index, static::$statuses) ? static::$statuses[$index] : null;
+	}
+
+	public static function getItemCount ($items)
+	{
+		$total = 0;
+		foreach ( $items as $item ) {
+			$total += $item->item_quantity;
+		}
+
+		return $total;
 	}
 }

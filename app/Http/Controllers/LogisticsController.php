@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
 use League\Csv\Reader;
 use League\Csv\Writer;
@@ -257,6 +258,51 @@ class LogisticsController extends Controller
 		#return $options;
 		return view('logistics.sku_converter_store_details', compact('parameters', 'options', 'request'));
 
+	}
+
+	public function edit_sku_converter (Request $request)
+	{
+		$rules = [
+			'store_id'         => 'required',
+			'unique_row_value' => 'required',
+		];
+
+		$inputs = [
+			'store_id'         => $request->get('store_id'),
+			'unique_row_value' => $request->get('row'),
+		];
+
+		$validator = Validator::make($inputs, $rules);
+
+		if ( $validator->fails() ) {
+			return redirect()
+				->back()
+				->withErrors($validator);
+		}
+
+		$options = Option::where($inputs)
+						 ->get();
+
+		if ( count($options) == 0 ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'Your input is wrong',
+				]);
+		}
+
+		$parameter_ids = $options->lists('parameter_id');
+
+		$parameters = Parameter::whereIn('id', $parameter_ids)
+							   ->get();
+		#$options = $options->toArray();
+
+		return view('logistics.edit_sku_converter', compact('options', 'parameters'));
+	}
+
+	public function update_sku_converter (Request $request)
+	{
+		return $request->all();
 	}
 
 	public function delete_sku (Request $request, $unique_row_value)

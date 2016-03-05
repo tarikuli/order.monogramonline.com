@@ -2,7 +2,7 @@
 <html lang = "en">
 <head>
 	<meta charset = "UTF-8">
-	<title>SKU Converter - details</title>
+	<title>Edit sku data</title>
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -38,38 +38,28 @@
 			<li class = "active">SKU Converter details</li>
 		</ol>
 		@include('includes.error_div')
-		@if($parameters)
-			<h3 class = "page-header">
-				Parameters
-			</h3>
-			<table class = "table table-bordered">
-				<tr>
-					<th>Delete</th>
-					@foreach($parameters as $parameter)
-						<th>{{$parameter->parameter_value}}</th>
-					@endforeach
-					{{--<th>Edit</th>--}}
-				</tr>
-				@foreach($options->chunk(count($parameters->lists('parameter_value'))) as $option_array)
-					<tr>
-						<td>
-							@setvar($value = $option_array->first())
-							{!! Form::open(['url' => url('/logistics/delete_sku/'.$value->unique_row_value), 'method' => 'delete']) !!}
-							{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
-							{!! Form::close() !!}
-						</td>
-						@foreach($option_array as $option)
-							<td>{{$option->parameter_option}}</td>
-						@endforeach
-						{{--<td>
-							<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s", $value->store_id, $value->unique_row_value))}}">Edit</a>
-						</td>--}}
-					</tr>
-				@endforeach
-			</table>
-			<div class = "col-xs-12 text-center">
-				{!! $options->appends($request->all())->render() !!}
+		@if($options)
+			<h3 class = "page-header">Edit</h3>
+			@setvar($i = 0)
+			{!! Form::open(['url' => url('/logistics/edit_sku_converter'), 'method' => 'put', 'class' => 'form-horizontal']) !!}
+			{!! Form::hidden("store_id", $options->first()->store_id) !!}
+			{!! Form::hidden("unique_row_value", $options->first()->unique_row_value) !!}
+			@foreach($parameters as $parameter)
+				<div class = "form-group">
+					@setvar($parameter_value = $parameter->parameter_value)
+					{!! Form::label(str_replace(" ", "_", strtolower($parameter_value)), ucfirst($parameter_value), ['class' => 'col-md-2 control-label']) !!}
+					<div class = "col-sm-10">
+						{!! Form::text($parameter_value, $options->get($i)->parameter_option, ['class'=> 'form-control', 'id' => $parameter_value]) !!}
+					</div>
+				</div>
+				@setvar($i++)
+			@endforeach
+			<div class = "form-group">
+				<div class = "col-sm-offset-2 col-sm-10">
+					<button type = "submit" class = "btn btn-primary">Update</button>
+				</div>
 			</div>
+			{!! Form::close() !!}
 		@else
 			<div class = "col-xs-12">
 				<div class = "alert alert-warning text-center">
