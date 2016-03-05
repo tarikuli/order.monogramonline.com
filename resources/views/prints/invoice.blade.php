@@ -108,8 +108,11 @@
 					<td colspan = "5">
 						<table width = "100%" cellpadding = "2" cellspacing = "0" border = "0">
 							<tr height = "10" valign = "top">
-								<td colspan = "9"><img src = "https://4psitelink.com/images/images/spacer.gif"
-								                       width = "50" height = "20" border = "0"></td>
+								<td colspan = "9">
+									<img src = "{{url('/assets/images/spacer.gif')}}"
+									     width = "50" height = "20" border = "0">
+
+								</td>
 							</tr>
 							<tr valign = "top">
 								<td></td>
@@ -137,11 +140,11 @@
 									<td align = "left">
 										{{$item->item_description}}
 										@if($item->shipInfo)
-											<br/>
+											<br />
 											Shipped on {{substr($item->shipInfo->transaction_datetime, 0, 10)}} by
 											{{$item->shipInfo->mail_class}}
-											<br/>
-											Trk# <a href="#">{{$item->shipInfo->tracking_number}}</a>
+											<br />
+											Trk# <a href = "#">{{$item->shipInfo->tracking_number}}</a>
 										@endif
 									</td>
 									<td align = "left">{{$item->item_code}}</td>
@@ -165,7 +168,7 @@
 									<table width = "100%" cellpadding = "2" cellspacing = "0" border = "0">
 										<tr valign = "top">
 											<td align = "right">Subtotal</td>
-											<td align = "right">$ HOW TO GET?? @Line    :171</td>
+											<td align = "right">$ HOW TO GET?? @Line :171</td>
 										</tr>
 										<tr valign = "top">
 											<td align = "right">Coupon ({{$order->coupon_id}})</td>

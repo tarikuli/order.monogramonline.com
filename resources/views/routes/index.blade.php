@@ -58,6 +58,10 @@
 			@if(count($rows))
 				<table class = "table">
 					<tr>
+						<th>
+							<img src = "{{url('/assets/images/spacer.gif')}}"
+							     width = "50" height = "20" border = "0">
+						</th>
 						<th>Batch#</th>
 						<th>View batch</th>
 						<th>Batch creation date</th>
@@ -69,13 +73,18 @@
 						<th>Status</th>
 						<th>MinOrderDate</th>
 					</tr>
+					{!! Form::open(['url' => url('prints/batches'), 'method' => 'get']) !!}
 					@foreach($rows as $row)
 						<tr>
+							<td>
+								<input type = "checkbox" name = "batch_number[]" value = "{{$row['batch_number']}}" />
+							</td>
 							<td>
 								<a href = "{{url(sprintf('batches/%d/%s',$row['batch_number'], $row['current_station_name']))}}">{{$row['batch_number']}}</a>
 							</td>
 							<td>
-								<a href = "{{url(sprintf('batch_details/%d',$row['batch_number']))}}" target="_blank">View batch</a>
+								<a href = "{{url(sprintf('batch_details/%d',$row['batch_number']))}}"
+								   target = "_blank">View batch</a>
 							</td>
 							<td>{{$row['batch_creation_date']}}</td>
 							<td><span data-toggle = "tooltip" data-placement = "top"
@@ -100,6 +109,12 @@
 							<td>{{$row['min_order_date']}}</td>
 						</tr>
 					@endforeach
+					<tr>
+						<td colspan = "11">
+							{!! Form::submit('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
+						</td>
+					</tr>
+					{!! Form::close() !!}
 				</table>
 			@else
 				<div class = "alert alert-warning">No batch is created.</div>
@@ -115,6 +130,15 @@
 		$(function ()
 		{
 			$('[data-toggle="tooltip"]').tooltip();
+		});
+		$("a#print_batches").on('click', function (event)
+		{
+			var form = $(this).prev('form:first');
+			var checkbox = $(form).next('checkbox').each(function ()
+			{
+				console.log($(this).prop('checked'));
+			});
+			event.preventDefault();
 		});
 	</script>
 </body>

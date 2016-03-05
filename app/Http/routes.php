@@ -1,9 +1,7 @@
 <?php
 
 get('test/batch', function () {
-	$today = date('md', strtotime('now'));
-
-	return $today;
+	echo '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG("4", "C39+") . '" alt="barcode"   />';
 });
 
 // auth middleware enabled controller
