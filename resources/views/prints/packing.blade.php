@@ -13,15 +13,14 @@
 	}
 
 	@page {
-		size: A4;
+		width: 210mm;
+		height: 297mm;
 		margin-top: 10mm;
 	}
 
 	@media print {
 		div.current-batch {
-			page-break-inside: auto;
-			width: 210mm;
-			height: 297mm;
+			page-break-before: always;
 		}
 	}
 </style>

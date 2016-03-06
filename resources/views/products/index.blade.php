@@ -11,7 +11,7 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "/assets/css/bootstrap-horizon.css" />
 	<style>
-		.parent-selector{
+		.parent-selector {
 			width: 135px;
 			overflow: auto;
 		}
@@ -117,7 +117,13 @@
 						</td>
 						<td>{{ $count++ }}</td>
 						<td>{{ $product->id_catalog }}</td>
-						<td class = "text-center">{{ $product->product_model ? $product->product_model : '-' }}</td>
+						<td class = "text-center">
+							@if($product->product_model)
+								<a href = "{{$product->product_url}}" target="_blank">{{$product->product_model}}</a>
+							@else
+								-
+							@endif
+						</td>
 						<td>{{ $product->product_name }}</td>
 						<td><img src = "{{ $product->product_thumb }}" width = "50" height = "50" /></td>
 						<td>{!! Form::select('batch_route_id', $batch_routes, $product->batch_route_id, ['class' => 'form-control changable']) !!}</td>
