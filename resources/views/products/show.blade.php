@@ -48,6 +48,14 @@
 					<td>Product category</td>
 					<td>{{$product->master_category ? $product->master_category->master_category_description : "N/A"}}</td>
 				</tr>
+				<tr class = "">
+					<td>Product occasion</td>
+					<td>{{$product->product_occasion ? $product->product_occasion_details->occasion_description : "N/A"}}</td>
+				</tr>
+				<tr class = "success">
+					<td>Product collection</td>
+					<td>{{$product->product_collection ? $product->product_collection_details->collection_description : "N/A"}}</td>
+				</tr>
 				{{--<tr>
 					<td>Product category</td>
 					<td>{{$product->category ? $product->category->category_description : "N/A"}}</td>

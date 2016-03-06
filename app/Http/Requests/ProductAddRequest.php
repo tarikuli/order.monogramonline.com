@@ -31,6 +31,8 @@ class ProductAddRequest extends Request
 			"product_sale_price"      => "required",
 			"is_taxable"              => "required",
 			"product_master_category" => 'required|exists:master_categories,id',
+			"product_collection"      => 'required|exists:collections,id',
+			"product_occasion"        => 'required|exists:occasions,id',
 		];
 	}
 }

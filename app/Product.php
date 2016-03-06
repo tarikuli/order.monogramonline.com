@@ -24,6 +24,7 @@ class Product extends Model
 			'product_category',
 			'product_sub_category',
 		];
+
 		return array_diff($columns, $remove_columns);
 	}
 
@@ -55,6 +56,18 @@ class Product extends Model
 	public function production_category ()
 	{
 		return $this->belongsTo('App\ProductionCategory', 'product_production_category', 'id');
+	}
+
+	public function product_occasion_details ()
+	{
+		return $this->belongsTo('App\Occasion', 'product_occasion', 'id')
+					->where('is_deleted', 0);
+	}
+
+	public function product_collection_details ()
+	{
+		return $this->belongsTo('App\Collection', 'product_collection', 'id')
+					->where('is_deleted', 0);
 	}
 
 	public function groupedItems ()
@@ -152,5 +165,23 @@ class Product extends Model
 		}
 
 		return $query->where('product_production_category', intval($production_category));
+	}
+
+	public function scopeSearchProductCollection ($query, $product_collection_id)
+	{
+		if ( !$product_collection_id || $product_collection_id == 0 ) {
+			return;
+		}
+
+		return $query->where('product_collection', intval($product_collection_id));
+	}
+
+	public function scopeSearchProductOccasion ($query, $product_occasion_id)
+	{
+		if ( !$product_occasion_id || $product_occasion_id == 0 ) {
+			return;
+		}
+
+		return $query->where('product_occasion', intval($product_occasion_id));
 	}
 }

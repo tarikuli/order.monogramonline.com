@@ -70,19 +70,31 @@
 				</div>
 			</div>
 			<div class = "col-md-12">
-				<div class = "form-group col-xs-3">
-					<label for = "product_production_category">Search in production category</label>
-					{!! Form::select('product_production_category', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control']) !!}
-				</div>
-				<div class = "form-group col-xs-9">
-					<label for = "product_master_category">Search in category</label>
-					{!! Form::hidden('product_master_category', null, ['id' => 'product_master_category']) !!}
-					<div class = "col-sm-12" style = "overflow: auto;">
-						<div class = "row row-horizon">
-							@include('master_categories.ajax_category_response')
-						</div>
+				<div class = "col-xs-3">
+					<div class = "form-group">
+						<label for = "product_production_category">Search in production category</label>
+						{!! Form::select('product_production_category', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control']) !!}
 					</div>
-					{{--{!! Form::select('product_master_category', $product_master_category, $request->get('product_master_category') ?: 'all', ['id'=>'product_master_category', 'class' => 'form-control']) !!}--}}
+					<div class = "form-group">
+						<label for = "product_occasion">Search in production occasion</label>
+						{!! Form::select('product_occasion', $product_occasions, $request->get('product_occasion') ?: 'all', ['id'=>'product_occasion', 'class' => 'form-control']) !!}
+					</div>
+					<div class = "form-group">
+						<label for = "product_collection">Search in production collection</label>
+						{!! Form::select('product_collection', $product_collections, $request->get('product_collection') ?: 'all', ['id'=>'product_collection', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "col-xs-9">
+					<div class = "form-group">
+						<label for = "product_master_category">Search in category</label>
+						{!! Form::hidden('product_master_category', null, ['id' => 'product_master_category']) !!}
+						<div class = "col-sm-12" style = "overflow: auto;">
+							<div class = "row row-horizon">
+								@include('master_categories.ajax_category_response')
+							</div>
+						</div>
+						{{--{!! Form::select('product_master_category', $product_master_category, $request->get('product_master_category') ?: 'all', ['id'=>'product_master_category', 'class' => 'form-control']) !!}--}}
+					</div>
 				</div>
 			</div>
 
@@ -119,7 +131,7 @@
 						<td>{{ $product->id_catalog }}</td>
 						<td class = "text-center">
 							@if($product->product_model)
-								<a href = "{{$product->product_url}}" target="_blank">{{$product->product_model}}</a>
+								<a href = "{{$product->product_url}}" target = "_blank">{{$product->product_model}}</a>
 							@else
 								-
 							@endif

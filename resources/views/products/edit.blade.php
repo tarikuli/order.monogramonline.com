@@ -118,6 +118,18 @@
 			</div>
 		</div>
 		<div class = "form-group">
+			{!!Form::label('product_occasion','Product occasion',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::select('product_occasion', $product_occasions, $product->product_occasion, ['id' => 'product_occasion','class'=>'form-control']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!!Form::label('product_collection','Product collection',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::select('product_collection', $product_collections, $product->product_collection, ['id' => 'product_collection','class'=>'form-control']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
 			{!!Form::label('product_price','Product price: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::number('product_price', $product->product_price, ['id' => 'product_price','class'=>'form-control', 'step' => 'any']) !!}

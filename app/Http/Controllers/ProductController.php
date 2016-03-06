@@ -1,14 +1,15 @@
-<?php
-
-namespace App\Http\Controllers;
+<?php namespace App\Http\Controllers;
 
 use App\BatchRoute;
 use App\Category;
 use App\MasterCategory;
+use App\Occasion;
 use App\Product;
 use App\ProductionCategory;
 use App\Store;
 use App\SubCategory;
+use App\Collection as CollectionModel;
+
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -36,6 +37,8 @@ class ProductController extends Controller
 						   ->searchProductName($request->get('product_name'))
 						   ->searchRoute($request->get('route'))
 						   ->searchProductionCategory($request->get('product_production_category'))
+						   ->searchProductOccasion($request->get('product_occasion'))
+						   ->searchProductCollection($request->get('product_collection'))
 						   ->searchMasterCategory($request->get('product_master_category'))/*->searchCategory($request->get('product_category'))
 						   ->searchSubCategory($request->get('product_sub_category'))*/
 						   ->latest()
@@ -65,9 +68,16 @@ class ProductController extends Controller
 		$production_categories = ProductionCategory::where('is_deleted', 0)
 												   ->lists('production_category_description', 'id')
 												   ->prepend('All', 0);
+
+		$product_occasions = Occasion::where('is_deleted', 0)
+									 ->lists('occasion_description', 'id')
+									 ->prepend('All', '0');
+		$product_collections = CollectionModel::where('is_deleted', 0)
+											  ->lists('collection_description', 'id')
+											  ->prepend('All', '0');
 		$count = 1;
 
-		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
+		return view('products.index', compact('products', 'product_occasions', 'product_collections', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
 			->with('categories', $master_categories)
 			->with('id', 0);
 	}
@@ -102,7 +112,16 @@ class ProductController extends Controller
 												   ->lists('production_category_description', 'id')
 												   ->prepend('Select production category', '');
 
-		return view('products.create', compact('title', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
+		$product_occasions = Occasion::where('is_deleted', 0)
+									 ->lists('occasion_description', 'id')
+									 ->prepend('Select occasion', '');
+		$product_collections = CollectionModel::where('is_deleted', 0)
+											  ->lists('collection_description', 'id')
+											  ->prepend('Select collection', '');
+
+		#return $product_occasions;
+
+		return view('products.create', compact('title', 'stores', 'product_occasions', 'product_collections', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
 			->with('categories', $master_categories)
 			->with('id', 0);
 	}
@@ -165,6 +184,12 @@ class ProductController extends Controller
 		if ( $request->exists('product_production_category') ) {
 			$product->product_production_category = intval($request->get('product_production_category'));
 		}
+		if ( $request->exists('product_collection') ) {
+			$product->product_collection = intval($request->get('product_collection'));
+		}
+		if ( $request->exists('product_occasion') ) {
+			$product->product_occasion = intval($request->get('product_occasion'));
+		}
 		if ( $request->exists('product_price') ) {
 			$product->product_price = floatval($request->get('product_price'));
 		}
@@ -221,7 +246,7 @@ class ProductController extends Controller
 	public function show ($id)
 	{
 		// if searching for inactive or deleted product
-		$product = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category')
+		$product = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category', 'product_occasion_details', 'product_collection_details')
 						  ->where('is_deleted', 0)
 						  ->find($id);
 		if ( !$product ) {
@@ -259,18 +284,27 @@ class ProductController extends Controller
 		$production_categories = ProductionCategory::where('is_deleted', 0)
 												   ->lists('production_category_description', 'id')
 												   ->prepend('Select production category', '');
+
+		$product_occasions = Occasion::where('is_deleted', 0)
+									 ->lists('occasion_description', 'id')
+									 ->prepend('Select occasion', '');
+		$product_collections = CollectionModel::where('is_deleted', 0)
+											  ->lists('collection_description', 'id')
+											  ->prepend('Select collection', '');
+
 		$is_taxable = [
 			'1' => 'Yes',
 			'0' => 'No',
 		];
 
-		return view('products.edit', compact('product', 'stores', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
+		return view('products.edit', compact('product', 'stores', 'product_occasions', 'product_collections', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
 			->with('categories', $master_categories)
 			->with('id', 0);;
 	}
 
 	public function update (ProductUpdateRequest $request, $id)
 	{
+		#return $request->all();
 		$master_category_id = $request->get('product_master_category');
 		$master_category = MasterCategory::where('is_deleted', 0)
 										 ->where('id', $master_category_id)
@@ -317,6 +351,12 @@ class ProductController extends Controller
 		}*/
 		if ( $request->exists('product_production_category') ) {
 			$product->product_production_category = intval($request->get('product_production_category'));
+		}
+		if ( $request->exists('product_collection') ) {
+			$product->product_collection = intval($request->get('product_collection'));
+		}
+		if ( $request->exists('product_occasion') ) {
+			$product->product_occasion = intval($request->get('product_occasion'));
 		}
 		if ( $request->exists('product_price') ) {
 			$product->product_price = floatval($request->get('product_price'));
@@ -416,6 +456,8 @@ class ProductController extends Controller
 						   ->searchIdCatalog($request->get('id_catalog'))
 						   ->searchProductModel($request->get('product_model'))
 						   ->searchProductName($request->get('product_name'))
+						   ->searchProductOccasion($request->get('product_occasion'))
+						   ->searchProductCollection($request->get('product_collection'))
 						   ->latest()
 						   ->paginate(50);
 		$batch_routes = BatchRoute::where('is_deleted', 0)
@@ -439,9 +481,17 @@ class ProductController extends Controller
 		$production_categories = ProductionCategory::where('is_deleted', 0)
 												   ->lists('production_category_description', 'id')
 												   ->prepend('All', 0);
+
+
+		$product_occasions = Occasion::where('is_deleted', 0)
+									 ->lists('occasion_description', 'id')
+									 ->prepend('All', '0');
+		$product_collections = CollectionModel::where('is_deleted', 0)
+											  ->lists('collection_description', 'id')
+											  ->prepend('All', '0');
 		$count = 1;
 
-		return view('products.index', compact('products', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
+		return view('products.index', compact('products', 'count', 'product_occasions', 'product_collections', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
 			->with('categories', $master_categories)
 			->with('id', 0);
 	}
@@ -514,6 +564,26 @@ class ProductController extends Controller
 					} else {
 						$product->product_master_category = null;
 					}
+				} elseif ( $column == 'product_occasion' ) {
+					$product_occasion_from_file = trim($row['product_occasion']);
+					$product_occasion_from_table = Occasion::where('occasion_code', $product_occasion_from_file)
+														   ->where('is_deleted', 0)
+														   ->first();
+					if ( $product_occasion_from_table ) {
+						$product->product_occasion = $product_occasion_from_table->id;
+					} else {
+						$product->product_occasion = null;
+					}
+				} elseif ( $column == 'product_collection' ) {
+					$product_collection_from_file = trim($row['product_collection']);
+					$product_collection_from_table = CollectionModel::where('collection_code', $product_collection_from_file)
+																	->where('is_deleted', 0)
+																	->first();
+					if ( $product_collection_from_table ) {
+						$product->product_collection = $product_collection_from_table->id;
+					} else {
+						$product->product_collection = null;
+					}
 				} elseif ( $column == 'product_category' ) {
 					$category_from_file = trim($row['product_category']);
 					$category_from_table = Category::where('category_code', $category_from_file)
@@ -573,7 +643,7 @@ class ProductController extends Controller
 	public function export ()
 	{
 		$columns = Product::getTableColumns();
-		$products = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category')
+		$products = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category', 'product_occasion_details', 'product_collection_details')
 						   ->get($columns);
 
 		$file_path = sprintf("%s/assets/exports/products/", public_path());
@@ -608,6 +678,10 @@ class ProductController extends Controller
 					$row[] = $product->sub_category ? $product->sub_category->sub_category_code : '';
 				} elseif ( $column == 'product_production_category' ) {
 					$row[] = $product->production_category ? $product->production_category->production_category_code : '';
+				} elseif ( $column == 'product_collection' ) {
+					$row[] = $product->product_collection ? $product->product_collection_details->collection_code : '';
+				} elseif ( $column == 'product_occasion' ) {
+					$row[] = $product->product_occasion ? $product->product_occasion_details->occasion_code : '';
 				} else {
 					$row[] = $product->$column;
 				}
