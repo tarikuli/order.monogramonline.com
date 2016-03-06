@@ -73,11 +73,12 @@
 						<th>Status</th>
 						<th>MinOrderDate</th>
 					</tr>
-					{!! Form::open(['url' => url('prints/batches'), 'method' => 'get']) !!}
+					{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}
 					@foreach($rows as $row)
 						<tr>
 							<td>
-								<input type = "checkbox" name = "batch_number[]" value = "{{$row['batch_number']}}" />
+								<input type = "checkbox" name = "batch_number[]" class = "checkbox"
+								       value = "{{$row['batch_number']}}" />
 							</td>
 							<td>
 								<a href = "{{url(sprintf('batches/%d/%s',$row['batch_number'], $row['current_station_name']))}}">{{$row['batch_number']}}</a>
@@ -111,7 +112,9 @@
 					@endforeach
 					<tr>
 						<td colspan = "11">
-							{!! Form::submit('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
+							{!! Form::button('Select / Deselect all', ['id' => 'select_deselect', 'class' => 'btn btn-link']) !!}
+							{!! Form::button('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
+							{!! Form::button('Packing Slip', ['id' => 'packing_slip', 'class' => 'btn btn-link']) !!}
 						</td>
 					</tr>
 					{!! Form::close() !!}
@@ -131,14 +134,29 @@
 		{
 			$('[data-toggle="tooltip"]').tooltip();
 		});
-		$("a#print_batches").on('click', function (event)
+		$("button#print_batches").on('click', function (event)
 		{
-			var form = $(this).prev('form:first');
-			var checkbox = $(form).next('checkbox').each(function ()
-			{
-				console.log($(this).prop('checked'));
-			});
-			event.preventDefault();
+			var url = "{{ url('/prints/batches') }}";
+			setFormUrlAndSubmit(url);
+		});
+		$("button#packing_slip").on('click', function (event)
+		{
+			var url = "{{ url('/prints/batch_packing') }}";
+			setFormUrlAndSubmit(url);
+		});
+
+		function setFormUrlAndSubmit (url)
+		{
+			var form = $("form#batch_list_form");
+			$(form).attr('action', url);
+			$(form).submit();
+		}
+		var state = false;
+
+		$("button#select_deselect").on('click', function ()
+		{
+			state = !state;
+			$(".checkbox").prop('checked', state);
 		});
 	</script>
 </body>

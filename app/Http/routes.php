@@ -1,7 +1,7 @@
 <?php
 
 get('test/batch', function () {
-	echo '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG("4", "C39+") . '" alt="barcode"   />';
+
 });
 
 // auth middleware enabled controller
@@ -19,10 +19,14 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	resource('vendors', 'VendorController');
 	resource('purchases', 'PurchaseController');
 
+	resource('collections', 'CollectionController');
+	resource('occasions', 'OccasionController');
+
 	get('prints/packing/{id}', 'PrintController@packing');
 	get('prints/invoice/{id}', 'PrintController@invoice');
 	get('prints/purchase/{purchase_id}', 'PrintController@purchase');
 	get('prints/batches', 'PrintController@batches');
+	get('prints/batch_packing', 'PrintController@batch_packing_slip');
 
 	resource('inventories', 'InventoryController');
 	get('exports/inventory', 'ExportController@inventory');

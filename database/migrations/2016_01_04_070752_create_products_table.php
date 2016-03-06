@@ -17,7 +17,9 @@ class CreateProductsTable extends Migration
 			$table->string('product_name')->nullable();
 			$table->string('ship_weight')->nullable();
 			$table->string('product_master_category')->nullable();
-			$table->string('product_production_category')->nullable();
+			$table->integer('product_production_category')->nullable();
+			$table->integer('product_collection')->default(0);
+			$table->integer('product_occasion')->default(0);
 			$table->double('product_price')->default(0);
 			$table->double('product_sale_price')->default(0);
 			$table->string('product_thumb')->nullable();

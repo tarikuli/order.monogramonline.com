@@ -6,6 +6,7 @@ use App\BatchRoute;
 use App\Item;
 use App\Order;
 use App\Purchase;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -16,14 +17,14 @@ class PrintController extends Controller
 {
 	public function packing ($id)
 	{
-		$order = Order::with('customer', 'items.shipInfo')
-					  ->where('order_id', $id)
-					  ->first();
+		$order = $this->getOrderFromId($id);
+
 		if ( !$order ) {
 			return view('errors.404');
 		}
+		$modules = $this->getPackingModulesFromOrder($order);
 
-		return view('prints.packing', compact('order'));
+		return view('prints.packing', compact('modules'));
 	}
 
 	public function invoice ($id)
@@ -64,7 +65,7 @@ class PrintController extends Controller
 
 		$modules = [ ];
 
-		if ( count($batches) == 1 ) {
+		/*if ( count($batches) == 1 ) {
 			$batch_number = $batches[0];
 			$module = $this->batch_printing_module($batch_number);
 			$modules[] = $module->render();
@@ -73,7 +74,37 @@ class PrintController extends Controller
 				$module = $this->batch_printing_module($batch_number);
 				$modules[] = $module->render();
 			}
+		}*/
+		foreach ( $batches as $batch_number ) {
+			$module = $this->batch_printing_module($batch_number);
+			$modules[] = $module->render();
 		}
+
+		return view('prints.batch_printer')->with('modules', $modules);
+	}
+
+	public function batch_packing_slip (Request $request)
+	{
+		$batches = $request->exists('batch_number') ? array_filter($request->get('batch_number')) : null;
+		if ( !$batches || !is_array($batches) ) {
+			#return view('errors.404');
+			return redirect()
+				->back()
+				->withErrors([ 'error' => 'No batch is selected to print' ]);
+		}
+
+		$order_ids = Item::whereIn('batch_number', $batches)
+						 ->lists('order_id')
+						 ->toArray();
+
+		$orders = $this->getOrderFromId($order_ids);
+
+		$modules = $this->getPackingModulesFromOrder($orders);
+
+		/*foreach ( $batches as $batch_number ) {
+			$module = $this->batch_printing_module($batch_number);
+			$modules[] = $module->render();
+		}*/
 
 		return view('prints.batch_printer')->with('modules', $modules);
 	}
@@ -172,5 +203,40 @@ class PrintController extends Controller
 		$count = 1;
 
 		return view('prints.printing_module', compact('item', 'batch_status', 'next_station_name', 'current_station_name', 'batch_number', 'statuses', 'route', 'stations', 'count', 'department_name'));
+	}
+
+	private function getOrderFromId ($order_ids) // get an id or an array of order id
+	{
+		if ( is_array($order_ids) ) {
+			$orders = Order::with('customer', 'items.shipInfo')
+						   ->whereIn('order_id', $order_ids)
+						   ->get();
+
+			return $orders;
+		} else {
+			$order = Order::with('customer', 'items.shipInfo')
+						  ->where('order_id', $order_ids)
+						  ->first();
+
+			return $order;
+		}
+
+	}
+
+	private function getPackingModulesFromOrder ($params) // get each order row
+	{
+		#dd($params instanceof Collection);
+		$orders = [ ];
+		if ( $params instanceof Collection ) {
+			$orders = $params; // is this a collection? if yes, then it's an array
+		} else {
+			$orders[] = $params; // if it is not a collection, then it's a single order
+		}
+		$modules = [ ];
+		foreach ( $orders as $order ) {
+			$modules[] = view('prints.includes.print_slip_partial', compact('order'))->render();
+		}
+
+		return $modules;
 	}
 }

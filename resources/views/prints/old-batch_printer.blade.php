@@ -6,15 +6,9 @@
 	<title>Print a batch</title>
 	<link rel = "stylesheet" type = "text/css" href = "{{url("/assets/css/single_batch_print_css.css")}}" />
 	<style type = "text/css">
-		@page {
-		  size: A4;
-		  margin-top: 10mm;
-		}
 		@media print {
 			div.current-batch {
 				page-break-before: always;
-				width: 210mm;
-    			height: 297mm;
 			}
 		}
 	</style>

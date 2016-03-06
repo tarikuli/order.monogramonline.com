@@ -1,6 +1,5 @@
-<div class = "current-batch">
-	<!-- table width = "100%" cellpadding = "2" cellspacing = "2" border = "0"-->
-	<table style = "width:210mm;" cellpadding = "2" cellspacing = "2" border = "0">
+<div class="current-batch">
+	<table width = "100%" cellpadding = "2" cellspacing = "2" border = "0">
 		<tr valign = "top">
 			<td colspan = "10">
 				<table width = "100%" cellpadding = "2" cellspacing = "2" border = "0">
@@ -38,33 +37,25 @@
 		</tr>
 		<tr>
 			<td>
-				<table style = "width:210mm;" cellpadding = "2" cellspacing = "2" border = "0">
+				<table width = "100%" cellpadding = "2" cellspacing = "2" border = "0">
 					<tr valign = "top">
-						<th align = "center" style = "width:12mm;">Order</th>
-						<th align = "center" style = "width:17mm;">Date</th>
-						<th align = "center" style = "width:5mm;">Qty</th>
-						<th align = "center" style = "width:18mm;">SKU</th>
-						<th align = "center" style = "width:50mm;">Item name</th>
-						<th align = "center" style = "width:100mm;">Options</th>
-						<th align = "center" style = "width:8mm;">Shi -pped?</th>
+						<th align = "left">Order</th>
+						<th align = "left">Date</th>
+						<th align = "left">Qty</th>
+						<th align = "left">SKU</th>
+						<th align = "left">Item name</th>
+						<th align = "left">Options</th>
+						<th align = "left">Shipped ?</th>
 					</tr>
 					@foreach($item->groupedItems as $row)
 						<tr valign = "top">
-
-							<td align = "left">{{$item->order->short_order}}</td>
+							<td align = "left">{{$row->order_id}}</td>
 							<td align = "left">{{substr($row->order->order_date, 0, 10)}}</td>
-							<td align = "center">{{$row->item_quantity}}</td>
+							<td align = "left">{{$row->item_quantity}}</td>
 							<td align = "left">{{$row->item_code}}</td>
-							<td align = "left" rowspan = "2">{{$row->item_description}}</td>
-							<td align = "left"
-							    rowspan = "2">{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}</td>
-							<td align = "left"
-							    rowspan = "2">{{ $row->shipInfo ? ($row->shipInfo->tracking_number ? "Yes" : "No" ): "No" }}</td>
-						</tr>
-						<tr>
-							<td colspan = "4" align = "left" valign = "top">
-								{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
-							</td>
+							<td align = "left">{{$row->item_description}}</td>
+							<td align = "left">{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}</td>
+							<td align = "left">{{ $row->shipInfo ? ($row->shipInfo->tracking_number ? "Yes" : "No" ): "No" }}</td>
 						</tr>
 					@endforeach
 					<tr valign = "top">
