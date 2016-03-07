@@ -267,6 +267,7 @@ class OrderController extends Controller
 					   ->groupBy('order_id')
 					   ->latest()
 					   ->paginate(50, [
+					   	   'id',
 						   'order_id',
 						   'short_order',
 						   'item_count',
