@@ -112,7 +112,6 @@ class ItemController extends Controller
 								  ->get();
 
 		#return $batch_routes;
-		#Log::info('Showing user profile for user: '.count($batch_routes));
 		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));
 	}
 

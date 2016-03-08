@@ -110,7 +110,7 @@
 				@foreach($items as $item)
 					<tr data-id = "{{$item->id}}">
 						<td><a href = "{{ url("orders/details/".$item->order_id) }}" target = "_blank"
-						       class = "btn btn-link">{{$item->order->short_order}}</a></td>
+						       class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a></td>
 						{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
 						<td><img src = "{{$item->item_thumb}}" /></td>
 						<td>{{substr($item->order->order_date, 0, 10)}}</td>

@@ -174,6 +174,20 @@ class Helper
 		'H-SHP',
 	];
 
+	public static function orderIdFormatter ($order, $column_name = 'id')
+	{
+		return sprintf("%06d", $order->$column_name);
+	}
+
+	public static function orderNameFormatter ($order)
+	{
+		if ( strpos($order->order_id, "yhst-128796189915726") !== false ) {
+			return "M-" . $order->short_order;
+		} else {
+			return "S-" . $order->short_order;
+		}
+	}
+
 	public static function getHtmlBarcode ($value, $width = 1)
 	{
 		#return DNS1D::getBarcodeHTML($value, "C39", $width);

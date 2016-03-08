@@ -91,18 +91,14 @@
 					<tr data-id = "{{$order->id}}">
 						<td>
 							<a href = "{{ url("orders/details/".$order->id) }}"
-						       class = "btn btn-link">{{sprintf("%06d", $order->id)}}</a>
-				       	</td>
+							   class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($order)}}</a>
+						</td>
 						<td>
 							<a href = "{{ url("orders/details/".$order->order_id) }}"
-						       class = "btn btn-link">
-						       @if(strpos($order->order_id, "yhst-128796189915726") !== false)
-						           M-{{$order->short_order}}
-					       	   @else
-					       	       S-{{$order->short_order}}
-				       	       @endif
-					       	</a>
-				       	</td>
+							   class = "btn btn-link">
+								{{\Monogram\Helper::orderNameFormatter($order)}}
+							</a>
+						</td>
 						<td><a href = "{{ url("customers/".$order->customer->id) }}" title = "This is customer id"
 						       class = "btn btn-link">{{$order->customer->id}}</a></td>
 						<td>{!! \Monogram\Helper::getHtmlBarcode($order->short_order) !!}</td>

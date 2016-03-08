@@ -98,7 +98,7 @@
 								<td>{{$count++}}</td>
 								<td>
 									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
-									   target = "_blank">{{$item->order->short_order}}</a> - {{$item->id}}
+									   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a> - {{$item->id}}
 									<br/>
 									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
 								</td>

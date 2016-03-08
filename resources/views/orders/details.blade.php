@@ -29,7 +29,7 @@
 		@include('includes.error_div')
 		@include('includes.success_div')
 		<br>
-		<label><b>Order# MONO {{$order->short_order}}</b></label>
+		<label><b>Order# {{\Monogram\Helper::orderNameFormatter($order)}}</b></label>
 		<br>
 		{!! \Monogram\Helper::getHtmlBarcode($order->short_order) !!}
 		<hr style = "width: 100%; color: black; background-color:black;margin-top:  0px" size = "1" />
