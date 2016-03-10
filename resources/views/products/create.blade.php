@@ -12,7 +12,7 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<style>
-		.parent-selector{
+		.parent-selector {
 			width: 135px;
 			overflow: auto;
 		}
@@ -107,13 +107,15 @@
 		<div class = "form-group">
 			{!!Form::label('product_occasion','Product occasion',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
-				{!! Form::select('product_occasion', $product_occasions, null, ['id' => 'product_occasion','class'=>'form-control']) !!}
+				{{--{!! Form::select('product_occasion', $product_occasions, null, ['id' => 'product_occasion','class'=>'form-control']) !!}--}}
+				{!! Form::select('product_occasion[]', $product_occasions, null, ['id' => 'product_occasion','class'=>'form-control', 'multiple' => 'multiple']) !!}
 			</div>
 		</div>
 		<div class = "form-group">
 			{!!Form::label('product_collection','Product collection',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
-				{!! Form::select('product_collection', $product_collections, null, ['id' => 'product_collection','class'=>'form-control']) !!}
+				{{--{!! Form::select('product_collection', $product_collections, null, ['id' => 'product_collection','class'=>'form-control']) !!}--}}
+				{!! Form::select('product_collection[]', $product_collections, null, ['id' => 'product_collection','class'=>'form-control', 'multiple' => 'multiple']) !!}
 			</div>
 		</div>
 		<div class = "form-group">
@@ -308,7 +310,7 @@
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
-	<script type="text/javascript">
+	<script type = "text/javascript">
 		$(document).on('change', "select.parent-selector", function (event)
 		{
 			var node = $(this);

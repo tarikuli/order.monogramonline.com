@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use DNS1D;
@@ -445,16 +446,33 @@ class ItemController extends Controller
 								 ->get();
 					Helper::populateShippingData($items);
 				}
-				$updates = [ 'station_name' => $next_station_name ];
+				$updates = [
+					'station_name' => $next_station_name,
+				];
+
 				if ( $next_station_name == '' ) {
 					$updates['item_order_status_2'] = 3;
 					$updates['item_order_status'] = 'complete';
 				} else {
 					$updates['item_order_status'] = 'active';
 				}
+				$previousItems = Item::where('batch_number', $batch_number)
+									 ->where('station_name', $station_name)
+									 ->get();
 				$items = Item::where('batch_number', $batch_number)
 							 ->where('station_name', $station_name)
 							 ->update($updates);
+				if ( $next_station_name ) {
+					foreach ( $previousItems as $item ) {
+						$station_log = new StationLog();
+						$station_log->item_id = $item->id;
+						$station_log->batch_number = $item->batch_number;
+						$station_log->station_id = Station::where('station_name', $station_name)
+														  ->first()->id;
+						$station_log->user_id = Auth::user()->id;
+						$station_log->save();
+					}
+				}
 
 				break;
 			case 'reject':
@@ -530,7 +548,7 @@ class ItemController extends Controller
 				if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
 					#$result = array_slice(explode("-", $item->order_id), -1, 1);
 					$exp = explode("-", $item->order_id); // explode the short order
-					$result = $exp[count($exp)-1];
+					$result = $exp[count($exp) - 1];
 					#$result = $item->order_id;
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "sku" ) { // if the template value is sku
 					$result = $item->item_code;

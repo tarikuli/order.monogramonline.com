@@ -22,7 +22,7 @@ class OccasionUpdateRequest extends Request
 	public function rules ()
 	{
 		return [
-			'occasion_code'          => 'required',
+			'occasion_code'          => 'required|unique:occasions,occasion_code',
 			'occasion_description'   => 'required',
 			'occasion_display_order' => 'required',
 		];

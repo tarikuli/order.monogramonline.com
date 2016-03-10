@@ -7,6 +7,7 @@ use App\BatchRoute;
 use App\Department;
 use App\Item;
 use App\Order;
+use App\StationLog;
 use App\Status;
 use Illuminate\Http\Request;
 use App\Station;
@@ -14,6 +15,7 @@ use App\Station;
 use App\Http\Requests\StationCreateRequest;
 use App\Http\Requests\StationUpdateRequest;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Monogram\Helper;
@@ -179,6 +181,14 @@ class StationController extends Controller
 			if ( $next_station_name == '' ) {
 				$item->item_order_status_2 = 3;
 				$item->item_order_status = "complete";
+			} else {
+				$station_log = new StationLog();
+				$station_log->item_id = $item->id;
+				$station_log->batch_number = $item->batch_number;
+				$station_log->station_id = Station::where('station_name', $next_station_name)
+												  ->first()->id;
+				$station_log->user_id = Auth::user()->id;
+				$station_log->save();
 			}
 			$item->save();
 

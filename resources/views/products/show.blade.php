@@ -50,11 +50,11 @@
 				</tr>
 				<tr class = "">
 					<td>Product occasion</td>
-					<td>{{$product->product_occasion ? $product->product_occasion_details->occasion_description : "N/A"}}</td>
+					<td>{{$product->occasions->count() ? implode(", ", $product->occasions->lists('occasion_description')->all()) : "N/A" }}</td>
 				</tr>
 				<tr class = "success">
 					<td>Product collection</td>
-					<td>{{$product->product_collection ? $product->product_collection_details->collection_description : "N/A"}}</td>
+					<td>{{$product->collections->count() ? implode(", ", $product->collections->lists('collection_description')->all()) : "N/A" }}</td>
 				</tr>
 				{{--<tr>
 					<td>Product category</td>

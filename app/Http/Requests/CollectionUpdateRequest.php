@@ -22,7 +22,7 @@ class CollectionUpdateRequest extends Request
 	public function rules ()
 	{
 		return [
-			'collection_code'          => 'required',
+			'collection_code'          => 'required|unique:collections,collection_code',
 			'collection_description'   => 'required',
 			'collection_display_order' => 'required',
 		];

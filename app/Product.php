@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
@@ -62,6 +63,18 @@ class Product extends Model
 	{
 		return $this->belongsTo('App\Occasion', 'product_occasion', 'id')
 					->where('is_deleted', 0);
+	}
+
+	public function occasions ()
+	{
+		return $this->belongsToMany('App\Occasion')
+					->withTimestamps();
+	}
+
+	public function collections ()
+	{
+		return $this->belongsToMany('App\Collection')
+					->withTimestamps();
 	}
 
 	public function product_collection_details ()
@@ -172,8 +185,13 @@ class Product extends Model
 		if ( !$product_collection_id || $product_collection_id == 0 ) {
 			return;
 		}
+		$product_ids = DB::table('collection_product')
+						 ->where('collection_id', $product_collection_id)
+						 ->lists('product_id');
 
-		return $query->where('product_collection', intval($product_collection_id));
+		return $query->whereIn('id', $product_ids);
+
+		#return $query->where('product_collection', intval($product_collection_id));
 	}
 
 	public function scopeSearchProductOccasion ($query, $product_occasion_id)
@@ -181,7 +199,12 @@ class Product extends Model
 		if ( !$product_occasion_id || $product_occasion_id == 0 ) {
 			return;
 		}
+		$product_ids = DB::table('occasion_product')
+						 ->where('occasion_id', $product_occasion_id)
+						 ->lists('product_id');
 
-		return $query->where('product_occasion', intval($product_occasion_id));
+		return $query->whereIn('id', $product_ids);
+
+		#return $query->where('product_occasion', intval($product_occasion_id));*/
 	}
 }

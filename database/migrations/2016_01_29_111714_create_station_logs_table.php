@@ -17,6 +17,7 @@ class CreateStationLogsTable extends Migration
 			$table->integer('item_id');
 			$table->string('batch_number');
 			$table->integer('station_id');
+			$table->integer('user_id');
 			$table->string('started_at');
             $table->timestamps();
         });

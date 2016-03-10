@@ -28,6 +28,7 @@
 				<ul>
 					<li><a href = "/logistics/sku_converter">Set store options to SKU conversion parameters</a></li>
 					<li><a href = "/logistics/sku_import">Export/Import options coded SKUs CSV file</a></li>
+					<li><a href = "/logs">Station logs</a></li>
 				</ul>
 			</div>
 			<div class = "col-xs-12">

@@ -28,6 +28,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	get('prints/batches', 'PrintController@batches');
 	get('prints/batch_packing', 'PrintController@batch_packing_slip');
 
+	resource('logs', 'StationLogController');
+
 	resource('inventories', 'InventoryController');
 	get('exports/inventory', 'ExportController@inventory');
 

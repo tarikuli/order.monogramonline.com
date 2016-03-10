@@ -184,12 +184,12 @@ class ProductController extends Controller
 		if ( $request->exists('product_production_category') ) {
 			$product->product_production_category = intval($request->get('product_production_category'));
 		}
-		if ( $request->exists('product_collection') ) {
+		/*if ( $request->exists('product_collection') ) {
 			$product->product_collection = intval($request->get('product_collection'));
 		}
 		if ( $request->exists('product_occasion') ) {
 			$product->product_occasion = intval($request->get('product_occasion'));
-		}
+		}*/
 		if ( $request->exists('product_price') ) {
 			$product->product_price = floatval($request->get('product_price'));
 		}
@@ -237,6 +237,29 @@ class ProductController extends Controller
 			$product->width = floatval($request->get('width'));
 		}
 		$product->save();
+		if ( $request->exists('product_collection') && is_array($request->get('product_collection')) ) {
+			// check if product collection is an array
+			// check if the given collection is valid
+			$collections = CollectionModel::whereIn('id', $request->get('product_collection'))
+										  ->lists('id')
+										  ->toArray();
+			if ( $collections ) {
+				$product->collections()
+						->attach($collections);
+			}
+
+			#$product->product_collection = intval($request->get('product_collection'));
+		}
+		if ( $request->exists('product_occasion') && is_array($request->get('product_occasion')) ) {
+			$occasions = Occasion::whereIn('id', $request->get('product_occasion'))
+								 ->lists('id')
+								 ->toArray();
+			if ( $occasions ) {
+				$product->occasions()
+						->attach($occasions);
+			}
+			#$product->product_occasion = intval($request->get('product_occasion'));
+		}
 
 		session()->flash('success', 'Product is successfully added.');
 
@@ -246,14 +269,13 @@ class ProductController extends Controller
 	public function show ($id)
 	{
 		// if searching for inactive or deleted product
-		$product = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category', 'product_occasion_details', 'product_collection_details')
+		$product = Product::with('batch_route', 'master_category', 'production_category', 'collections')
 						  ->where('is_deleted', 0)
 						  ->find($id);
 		if ( !$product ) {
 			return view('errors.404');
 		}
 
-		#return $product;
 		return view('products.show', compact('product'));
 	}
 
@@ -304,7 +326,6 @@ class ProductController extends Controller
 
 	public function update (ProductUpdateRequest $request, $id)
 	{
-		#return $request->all();
 		$master_category_id = $request->get('product_master_category');
 		$master_category = MasterCategory::where('is_deleted', 0)
 										 ->where('id', $master_category_id)
@@ -352,11 +373,28 @@ class ProductController extends Controller
 		if ( $request->exists('product_production_category') ) {
 			$product->product_production_category = intval($request->get('product_production_category'));
 		}
-		if ( $request->exists('product_collection') ) {
-			$product->product_collection = intval($request->get('product_collection'));
+		if ( $request->exists('product_collection') && is_array($request->get('product_collection')) ) {
+			// check if product collection is an array
+			// check if the given collection is valid
+			$collections = CollectionModel::whereIn('id', $request->get('product_collection'))
+										  ->lists('id')
+										  ->toArray();
+			if ( $collections ) {
+				$product->collections()
+						->sync($collections);
+			}
+
+			#$product->product_collection = intval($request->get('product_collection'));
 		}
-		if ( $request->exists('product_occasion') ) {
-			$product->product_occasion = intval($request->get('product_occasion'));
+		if ( $request->exists('product_occasion') && is_array($request->get('product_occasion')) ) {
+			$occasions = Occasion::whereIn('id', $request->get('product_occasion'))
+								 ->lists('id')
+								 ->toArray();
+			if ( $occasions ) {
+				$product->occasions()
+						->sync($occasions);
+			}
+			#$product->product_occasion = intval($request->get('product_occasion'));
 		}
 		if ( $request->exists('product_price') ) {
 			$product->product_price = floatval($request->get('product_price'));
@@ -404,6 +442,7 @@ class ProductController extends Controller
 		if ( $request->exists('width') ) {
 			$product->width = floatval($request->get('width'));
 		}
+
 		$product->save();
 
 		if ( !$request->ajax() ) {
@@ -518,9 +557,14 @@ class ProductController extends Controller
 		$file->move($file_path, $file_name);
 		$reader = Reader::createFromPath($fully_specified_file_name);
 		$table_columns = Product::getTableColumns();
+		$extra_columns = [
+			'product_occasions',
+			'product_collections',
+		];
+		$needed_columns = array_merge($table_columns, $extra_columns);
 		$csv_columns = array_filter($reader->fetchOne());
 
-		if ( count(array_intersect($table_columns, $csv_columns)) != count($table_columns) ) {
+		if ( count(array_intersect($needed_columns, $csv_columns)) != count($needed_columns) ) {
 			return redirect()
 				->back()
 				->withErrors(new MessageBag([
@@ -528,7 +572,7 @@ class ProductController extends Controller
 				]));
 		}
 		$rows = $reader->setOffset(1)
-					   ->fetchAssoc($table_columns);
+					   ->fetchAssoc($needed_columns);
 
 		foreach ( $rows as $row ) {
 			$product = Product::where('id_catalog', $row['id_catalog'])
@@ -564,17 +608,17 @@ class ProductController extends Controller
 					} else {
 						$product->product_master_category = null;
 					}
-				} elseif ( $column == 'product_occasion' ) {
-					$product_occasion_from_file = trim($row['product_occasion']);
-					$product_occasion_from_table = Occasion::where('occasion_code', $product_occasion_from_file)
+				}/* elseif ( $column == 'product_occasions' ) {
+					$product_occasions_from_file = trim($row['product_occasions']);
+					$product_occasion_from_table = Occasion::whereIn('occasion_code', $product_occasions_from_file)
 														   ->where('is_deleted', 0)
-														   ->first();
+														   ->get();
 					if ( $product_occasion_from_table ) {
 						$product->product_occasion = $product_occasion_from_table->id;
 					} else {
 						$product->product_occasion = null;
 					}
-				} elseif ( $column == 'product_collection' ) {
+				} elseif ( $column == 'product_collections' ) {
 					$product_collection_from_file = trim($row['product_collection']);
 					$product_collection_from_table = CollectionModel::where('collection_code', $product_collection_from_file)
 																	->where('is_deleted', 0)
@@ -604,7 +648,7 @@ class ProductController extends Controller
 					} else {
 						$product->product_sub_category = null;
 					}
-				} elseif ( $column == 'product_production_category' ) {
+				} */ elseif ( $column == 'product_production_category' ) {
 					$production_category_from_file = trim($row['product_production_category']);
 					$production_category_from_table = ProductionCategory::where('production_category_code', $production_category_from_file)
 																		->where('is_deleted', 0)
@@ -634,6 +678,26 @@ class ProductController extends Controller
 				}*/
 			}
 			$product->save();
+			foreach ( $extra_columns as $column ) {
+				if ( $column == 'product_occasions' ) {
+					$occasionsFromFile = trim($row['product_occasions']);
+					$occasionsArray = explode(",", str_replace(" ", "", $occasionsFromFile));
+					$occasionsInTable = Occasion::whereIn("occasion_code", $occasionsArray)
+												->lists('id')
+												->toArray();
+					$product->occasions()
+							->sync($occasionsInTable);
+				} elseif ( $column == 'product_collections' ) {
+					$collectionsFromFile = trim($row['product_collections']);
+					$collectionsArray = explode(",", str_replace(" ", "", $collectionsFromFile));
+					$collectionsInTable = CollectionModel::whereIn("collection_code", $collectionsArray)
+														 ->lists('id')
+														 ->toArray();
+					#dd($collectionsInTable);
+					$product->collections()
+							->sync($collectionsInTable);
+				}
+			}
 		}
 		session()->flash('success', 'Product is successfully added');
 
@@ -642,15 +706,21 @@ class ProductController extends Controller
 
 	public function export ()
 	{
-		$columns = Product::getTableColumns();
-		$products = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category', 'product_occasion_details', 'product_collection_details')
-						   ->get($columns);
-
+		$table_columns = Product::getTableColumns();
+		$extra_columns = [
+			'product_occasions',
+			'product_collections',
+		];
+		$columns = array_merge($table_columns, $extra_columns);
+		#$products = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category', 'product_occasion_details', 'product_collection_details')->get($columns);
+		$products = Product::with('batch_route', 'master_category', 'production_category')
+						   ->get();
+		#->get(array_merge([ 'id' ], $table_columns));
 		$file_path = sprintf("%s/assets/exports/products/", public_path());
 		$file_name = sprintf("products-%s-%s.csv", date("y-m-d", strtotime('now')), str_random(5));
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
 
-		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'a+'), 'w');
+		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
 
 		$csv->insertOne($columns);
 
@@ -678,10 +748,18 @@ class ProductController extends Controller
 					$row[] = $product->sub_category ? $product->sub_category->sub_category_code : '';
 				} elseif ( $column == 'product_production_category' ) {
 					$row[] = $product->production_category ? $product->production_category->production_category_code : '';
-				} elseif ( $column == 'product_collection' ) {
-					$row[] = $product->product_collection ? $product->product_collection_details->collection_code : '';
-				} elseif ( $column == 'product_occasion' ) {
-					$row[] = $product->product_occasion ? $product->product_occasion_details->occasion_code : '';
+				} elseif ( $column == 'product_collections' ) {
+					// get collections and insert
+					$row[] = implode(",", $product->collections->lists('collection_code')
+															   ->all());
+					/*continue;
+					$row[] = $product->product_collection ? $product->product_collection_details->collection_code : '';*/
+				} elseif ( $column == 'product_occasions' ) {
+					// get occasions and insert
+					$row[] = implode(",", $product->occasions->lists('occasion_code')
+															 ->all());
+					/*continue;
+					$row[] = $product->product_occasion ? $product->product_occasion_details->occasion_code : '';*/
 				} else {
 					$row[] = $product->$column;
 				}
