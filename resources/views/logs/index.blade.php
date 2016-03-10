@@ -23,11 +23,19 @@
 		{{-- Search criteria --}}
 		<div class = "col-xs-12">
 			{!! Form::open(['method' => 'get', 'url' => url('logs'), 'id' => 'search-station-log']) !!}
-			<div class = "form-group col-xs-3">
+			<div class = "form-group col-xs-2">
+				<label for = "user_id">Employee</label>
+				{!! Form::select('user_id', $users, $request->get('user_id'), ['id'=>'user_id', 'class' => 'form-control']) !!}
+			</div>
+			<div class = "form-group col-xs-2">
+				<label for = "sku">SKU</label>
+				{!! Form::select('sku', $skus, $request->get('sku'), ['id'=>'sku', 'class' => 'form-control']) !!}
+			</div>
+			<div class = "form-group col-xs-2">
 				<label for = "route">Station</label>
 				{!! Form::select('station', $stations, $request->get('station'), ['id'=>'station', 'class' => 'form-control']) !!}
 			</div>
-			<div class = "form-group col-xs-3">
+			<div class = "form-group col-xs-2">
 				<label for = "start_date">Start date</label>
 				<div class = 'input-group date' id = 'start_date_picker'>
 					{!! Form::text('start_date', $request->get('start_date'), ['id'=>'start_date', 'class' => 'form-control', 'placeholder' => 'Enter start date']) !!}
@@ -36,7 +44,7 @@
                     </span>
 				</div>
 			</div>
-			<div class = "form-group col-xs-3">
+			<div class = "form-group col-xs-2">
 				<label for = "end_date">End date</label>
 				<div class = 'input-group date' id = 'end_date_picker'>
 					{!! Form::text('end_date', $request->get('end_date'), ['id'=>'end_date', 'class' => 'form-control', 'placeholder' => 'Enter end date']) !!}
@@ -60,21 +68,33 @@
 				<table class = "table table-bordered">
 					<tr>
 						<th>#</th>
-						<th>Station name</th>
-						<th>Items</th>
+						<th>Date</th>
+						<th>Station</th>
+						<th>Employee</th>
+						<th>SKU</th>
+						<th>Qty</th>
 					</tr>
 					@foreach($logs as $log)
 						<tr data-id = "{{$log->id}}">
 							<td>{{ $count++ }}</td>
+							<td>{{ substr($log->started_at, 0, 10) }}</td>
 							<td>
 								@if($log->station)
-									{{$log->station->station_description}}
+									<strong>{{$log->station->station_description }} ({{$log->station->station_name }})</strong>
+								@else
+									-
+								@endif
+							</td>
+							<td>{{ $log->user->username }}</td>
+							<td>
+								@if($log->item)
+									{{ $log->item->item_code }}
 								@else
 									-
 								@endif
 							</td>
 							<td>
-								{{$log->item_count}}
+								{{$log->item_count ?: 0}}
 							</td>
 						</tr>
 					@endforeach

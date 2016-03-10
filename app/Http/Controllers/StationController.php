@@ -187,6 +187,7 @@ class StationController extends Controller
 				$station_log->batch_number = $item->batch_number;
 				$station_log->station_id = Station::where('station_name', $next_station_name)
 												  ->first()->id;
+				$station_log->started_at = date('Y-m-d', strtotime("now"));
 				$station_log->user_id = Auth::user()->id;
 				$station_log->save();
 			}

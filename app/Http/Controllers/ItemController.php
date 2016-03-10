@@ -169,12 +169,12 @@ class ItemController extends Controller
 				$item->item_order_status_2 = 2;
 				$item->save();
 
-				$station_log = new StationLog();
+				/*$station_log = new StationLog();
 				$station_log->item_id = $item_id;
 				$station_log->batch_number = $batch_number;
 				$station_log->station_id = $station_id;
 				$station_log->started_at = date('Y-m-d h:i:s', strtotime("now"));
-				$station_log->save();
+				$station_log->save();*/
 
 			}
 		}
@@ -469,6 +469,8 @@ class ItemController extends Controller
 						$station_log->batch_number = $item->batch_number;
 						$station_log->station_id = Station::where('station_name', $station_name)
 														  ->first()->id;
+						#$station_log->started_at = date('Y-m-d h:i:s', strtotime("now"));
+						$station_log->started_at = date('Y-m-d', strtotime("now"));
 						$station_log->user_id = Auth::user()->id;
 						$station_log->save();
 					}
