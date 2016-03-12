@@ -45,6 +45,16 @@ class Product extends Model
 		return $this->belongsTo('App\MasterCategory', 'product_master_category', 'id');
 	}
 
+	public function store ()
+	{
+		return $this->belongsTo('App\Store', 'store_id', 'store_id');
+	}
+
+	public function vendor ()
+	{
+		return $this->belongsTo('App\Vendor', 'vendor_id', 'id');
+	}
+
 	public function category ()
 	{
 		return $this->belongsTo('App\Category', 'product_category', 'id');
@@ -58,6 +68,11 @@ class Product extends Model
 	public function production_category ()
 	{
 		return $this->belongsTo('App\ProductionCategory', 'product_production_category', 'id');
+	}
+
+	public function sales_category ()
+	{
+		return $this->belongsTo('App\SalesCategory', 'product_sales_category', 'id');
 	}
 
 	public function product_occasion_details ()
@@ -173,6 +188,7 @@ class Product extends Model
 		$this->recursion($categories);
 
 		$category_id_list = $this->data_set;
+
 		#dd($category_id_list);
 		return $query->whereIn('product_master_category', $category_id_list);
 

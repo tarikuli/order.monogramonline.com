@@ -11,6 +11,7 @@ use App\Store;
 use App\SubCategory;
 use App\Collection as CollectionModel;
 
+use App\Vendor;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -95,7 +96,9 @@ class ProductController extends Controller
 			'1' => 'Yes',
 			'0' => 'No',
 		];
-
+		$vendors = Vendor::where('is_deleted', 0)
+						 ->lists('vendor_name', 'id')
+						 ->prepend('Select Supplier', '');
 		/*$master_categories = MasterCategory::where('is_deleted', 0)
 										   ->lists('master_category_description', 'id')
 										   ->prepend('Select category', '');*/
@@ -119,16 +122,26 @@ class ProductController extends Controller
 		$product_collections = CollectionModel::where('is_deleted', 0)
 											  ->lists('collection_description', 'id')
 											  ->prepend('Select collection', '');
+		$sales_categories = SalesCategory::where('is_deleted', 0)
+										 ->lists('sales_category_description', 'id')
+										 ->prepend('Select sales category', '');
 
 		#return $product_occasions;
+		$financial_categories = [
+			'0' => 'Select a financial category',
+		];
 
 		return view('products.create', compact('title', 'stores', 'product_occasions', 'product_collections', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
 			->with('categories', $master_categories)
-			->with('id', 0);
+			->with('id', 0)
+			->with('sales_categories', $sales_categories)
+			->with('vendors', $vendors)
+			->with('financial_categories', $financial_categories);
 	}
 
 	public function store (ProductAddRequest $request)
 	{
+		#return $request->all();
 		$master_category_id = $request->get('product_master_category');
 		$master_category = MasterCategory::where('is_deleted', 0)
 										 ->where('id', $master_category_id)
@@ -161,8 +174,26 @@ class ProductController extends Controller
 		if ( $request->exists('store_id') ) {
 			$product->store_id = $request->get('store_id');
 		}
+		if ( $request->exists('product_upc') ) {
+			$product->product_upc = trim($request->get('product_upc'));
+		}
+		if ( $request->exists('product_asin') ) {
+			$product->product_asin = trim($request->get('product_asin'));
+		}
+		if ( $request->exists('product_brand') ) {
+			$product->product_brand = trim($request->get('product_brand'));
+		}
+		if ( $request->exists('product_availability') ) {
+			$product->product_availability = trim($request->get('product_availability'));
+		}
 		if ( $request->exists('vendor_id') ) {
 			$product->vendor_id = $request->get('vendor_id');
+		}
+		if ( $request->exists('financial_category') ) {
+			$product->financial_category = $request->get('financial_category');
+		}
+		if ( $request->exists('product_default_cost') ) {
+			$product->product_default_cost = intval($request->get('product_default_cost'));
 		}
 		if ( $request->exists('product_url') ) {
 			$product->product_url = $request->get('product_url');
@@ -185,6 +216,9 @@ class ProductController extends Controller
 		if ( $request->exists('product_production_category') ) {
 			$product->product_production_category = intval($request->get('product_production_category'));
 		}
+		if ( $request->exists('product_sales_category') ) {
+			$product->product_sales_category = intval($request->get('product_sales_category'));
+		}
 		/*if ( $request->exists('product_collection') ) {
 			$product->product_collection = intval($request->get('product_collection'));
 		}
@@ -197,8 +231,14 @@ class ProductController extends Controller
 		if ( $request->exists('product_sale_price') ) {
 			$product->product_sale_price = floatval($request->get('product_sale_price'));
 		}
+		if ( $request->exists('product_wholesale_price') ) {
+			$product->product_wholesale_price = $request->get('product_wholesale_price');
+		}
 		if ( $request->exists('product_thumb') ) {
 			$product->product_thumb = $request->get('product_thumb');
+		}
+		if ( $request->exists('product_video') ) {
+			$product->product_video = $request->get('product_video');
 		}
 		if ( $request->exists('batch_route_id') ) {
 			// update request via form for overall change
@@ -225,11 +265,23 @@ class ProductController extends Controller
 		if ( $request->exists('is_taxable') ) {
 			$product->is_taxable = $request->get('is_taxable') ? 1 : 0;
 		}
+		if ( $request->exists('is_deleted') ) {
+			$product->is_deleted = $request->get('is_deleted') ? 1 : 0;
+		}
+		if ( $request->exists('is_royalties') ) {
+			$product->is_royalties = $request->get('is_royalties') ? 1 : 0;
+		}
+		if ( $request->exists('product_royalty_paid') ) {
+			$product->product_royalty_paid = $request->get('product_royalty_paid');
+		}
 		if ( $request->exists('product_keywords') ) {
 			$product->product_keywords = trim($request->get('product_keywords'));
 		}
 		if ( $request->exists('product_description') ) {
 			$product->product_description = trim($request->get('product_description'));
+		}
+		if ( $request->exists('product_note') ) {
+			$product->product_note = trim($request->get('product_note'));
 		}
 		if ( $request->exists('height') ) {
 			$product->height = floatval($request->get('height'));
@@ -270,19 +322,77 @@ class ProductController extends Controller
 	public function show ($id)
 	{
 		// if searching for inactive or deleted product
-		$product = Product::with('batch_route', 'master_category', 'production_category', 'collections')
+		$product = Product::with('store', 'batch_route', 'master_category', 'production_category', 'collections', 'vendor', 'sales_category')
 						  ->where('is_deleted', 0)
 						  ->find($id);
 		if ( !$product ) {
 			return view('errors.404');
 		}
-
+		#return $product;
 		return view('products.show', compact('product'));
 	}
 
 	public function edit ($id)
 	{
+		$product = Product::with('batch_route')
+						  ->where('is_deleted', 0)
+						  ->find($id);
+		if ( !$product ) {
+			return view('errors.404');
+		}
 		$stores = Store::where('is_deleted', 0)
+					   ->lists('store_name', 'store_id');
+
+		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->lists('batch_route_name', 'id')
+								  ->prepend('Select a Route', '');
+		$is_taxable = [
+			'1' => 'Yes',
+			'0' => 'No',
+		];
+		$vendors = Vendor::where('is_deleted', 0)
+						 ->lists('vendor_name', 'id')
+						 ->prepend('Select Supplier', '');
+		/*$master_categories = MasterCategory::where('is_deleted', 0)
+										   ->lists('master_category_description', 'id')
+										   ->prepend('Select category', '');*/
+		$master_categories = (new MasterCategoryController())->getChildCategories();
+
+		$categories = Category::where('is_deleted', 0)
+							  ->lists('category_description', 'id')
+							  ->prepend('Select sub category 1', '');
+
+		$sub_categories = SubCategory::where('is_deleted', 0)
+									 ->lists('sub_category_description', 'id')
+									 ->prepend('Select sub category 2', '');
+
+		$production_categories = ProductionCategory::where('is_deleted', 0)
+												   ->lists('production_category_description', 'id')
+												   ->prepend('Select production category', '');
+
+		$product_occasions = Occasion::where('is_deleted', 0)
+									 ->lists('occasion_description', 'id')
+									 ->prepend('Select occasion', '');
+		$product_collections = CollectionModel::where('is_deleted', 0)
+											  ->lists('collection_description', 'id')
+											  ->prepend('Select collection', '');
+		$sales_categories = SalesCategory::where('is_deleted', 0)
+										 ->lists('sales_category_description', 'id')
+										 ->prepend('Select sales category', '');
+
+		#return $product_occasions;
+		$financial_categories = [
+			'0' => 'Select a financial category',
+		];
+
+		return view('products.edit', compact('product', 'title', 'stores', 'product_occasions', 'product_collections', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
+			->with('categories', $master_categories)
+			->with('id', 0)
+			->with('sales_categories', $sales_categories)
+			->with('vendors', $vendors)
+			->with('financial_categories', $financial_categories);
+		/* previous values */
+		/*$stores = Store::where('is_deleted', 0)
 					   ->lists('store_name', 'store_id');
 		// if searching for inactive or deleted product
 		$product = Product::with('batch_route')
@@ -322,7 +432,7 @@ class ProductController extends Controller
 
 		return view('products.edit', compact('product', 'stores', 'product_occasions', 'product_collections', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
 			->with('categories', $master_categories)
-			->with('id', 0);;
+			->with('id', 0);*/
 	}
 
 	public function update (ProductUpdateRequest $request, $id)
@@ -362,40 +472,50 @@ class ProductController extends Controller
 		if ( $request->exists('ship_weight') ) {
 			$product->ship_weight = floatval($request->get('ship_weight'));
 		}
-		if ( $request->exists('product_master_category') ) {
-			$product->product_master_category = $request->get('product_master_category');
-		}
 		/*if ( $request->exists('product_category') ) {
 			$product->product_category = $request->get('product_category');
 		}
 		if ( $request->exists('product_sub_category') ) {
 			$product->product_sub_category = $request->get('product_sub_category');
 		}*/
+		if ( $request->exists('product_upc') ) {
+			$product->product_upc = trim($request->get('product_upc'));
+		}
+		if ( $request->exists('product_asin') ) {
+			$product->product_asin = trim($request->get('product_asin'));
+		}
+		if ( $request->exists('product_brand') ) {
+			$product->product_brand = trim($request->get('product_brand'));
+		}
+		if ( $request->exists('product_availability') ) {
+			$product->product_availability = trim($request->get('product_availability'));
+		}
+		if ( $request->exists('financial_category') ) {
+			$product->financial_category = $request->get('financial_category');
+		}
+		if ( $request->exists('product_default_cost') ) {
+			$product->product_default_cost = intval($request->get('product_default_cost'));
+		}
+		if ( $request->exists('product_wholesale_price') ) {
+			$product->product_wholesale_price = $request->get('product_wholesale_price');
+		}
+		if ( $request->exists('is_royalties') ) {
+			$product->is_royalties = $request->get('is_royalties') ? 1 : 0;
+		}
+		if ( $request->exists('product_royalty_paid') ) {
+			$product->product_royalty_paid = $request->get('product_royalty_paid');
+		}
+		if ( $request->exists('product_video') ) {
+			$product->product_video = $request->get('product_video');
+		}
+		if ( $request->exists('product_master_category') ) {
+			$product->product_master_category = $request->get('product_master_category');
+		}
 		if ( $request->exists('product_production_category') ) {
 			$product->product_production_category = intval($request->get('product_production_category'));
 		}
-		if ( $request->exists('product_collection') && is_array($request->get('product_collection')) ) {
-			// check if product collection is an array
-			// check if the given collection is valid
-			$collections = CollectionModel::whereIn('id', $request->get('product_collection'))
-										  ->lists('id')
-										  ->toArray();
-			if ( $collections ) {
-				$product->collections()
-						->sync($collections);
-			}
-
-			#$product->product_collection = intval($request->get('product_collection'));
-		}
-		if ( $request->exists('product_occasion') && is_array($request->get('product_occasion')) ) {
-			$occasions = Occasion::whereIn('id', $request->get('product_occasion'))
-								 ->lists('id')
-								 ->toArray();
-			if ( $occasions ) {
-				$product->occasions()
-						->sync($occasions);
-			}
-			#$product->product_occasion = intval($request->get('product_occasion'));
+		if ( $request->exists('product_sales_category') ) {
+			$product->product_sales_category = intval($request->get('product_sales_category'));
 		}
 		if ( $request->exists('product_price') ) {
 			$product->product_price = floatval($request->get('product_price'));
@@ -437,6 +557,9 @@ class ProductController extends Controller
 		if ( $request->exists('product_description') ) {
 			$product->product_description = trim($request->get('product_description'));
 		}
+		if ( $request->exists('product_note') ) {
+			$product->product_note = trim($request->get('product_note'));
+		}
 		if ( $request->exists('height') ) {
 			$product->height = floatval($request->get('height'));
 		}
@@ -445,6 +568,30 @@ class ProductController extends Controller
 		}
 
 		$product->save();
+
+		if ( $request->exists('product_collection') && is_array($request->get('product_collection')) ) {
+			// check if product collection is an array
+			// check if the given collection is valid
+			$collections = CollectionModel::whereIn('id', $request->get('product_collection'))
+										  ->lists('id')
+										  ->toArray();
+			if ( $collections ) {
+				$product->collections()
+						->sync($collections);
+			}
+
+			#$product->product_collection = intval($request->get('product_collection'));
+		}
+		if ( $request->exists('product_occasion') && is_array($request->get('product_occasion')) ) {
+			$occasions = Occasion::whereIn('id', $request->get('product_occasion'))
+								 ->lists('id')
+								 ->toArray();
+			if ( $occasions ) {
+				$product->occasions()
+						->sync($occasions);
+			}
+			#$product->product_occasion = intval($request->get('product_occasion'));
+		}
 
 		if ( !$request->ajax() ) {
 			if ( $is_error ) {
