@@ -32,8 +32,8 @@ class CollectionController extends Controller
 	public function store (CollectionCreateRequest $request)
 	{
 		$collection = new Collection();
-		$collection->collection_code = $request->get('collection_code');
-		$collection->collection_description = $request->get('collection_description');
+		$collection->collection_code = trim($request->get('collection_code'));
+		$collection->collection_description = trim($request->get('collection_description'));
 		$collection->collection_display_order = intval($request->get('collection_display_order'));
 
 		$collection->save();
@@ -76,8 +76,8 @@ class CollectionController extends Controller
 			return view('errors.404');
 		}
 
-		$collection->collection_code = $request->get('collection_code');
-		$collection->collection_description = $request->get('collection_description');
+		$collection->collection_code = trim($request->get('collection_code'));
+		$collection->collection_description = trim($request->get('collection_description'));
 		$collection->collection_display_order = intval($request->get('collection_display_order'));
 
 		$collection->save();

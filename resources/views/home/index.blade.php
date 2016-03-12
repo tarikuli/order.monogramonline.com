@@ -46,6 +46,7 @@
 					{{--<li><a href = "/categories">Sub Category 1</a></li>
 					<li><a href = "/sub_categories">Sub Category 2</a></li>--}}
 					<li><a href = "/production_categories">Production Category</a></li>
+					<li><a href = "/sales_categories">Sales Category</a></li>
 					<li><a href = "/collections">Collection</a></li>
 					<li><a href = "/occasions">Occasion</a></li>
 					<li><a href = "/products">Products ( SKUs ) </a></li>

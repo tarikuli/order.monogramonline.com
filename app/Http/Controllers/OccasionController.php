@@ -32,8 +32,8 @@ class OccasionController extends Controller
 	public function store (OccasionCreateRequest $request)
 	{
 		$occasion = new Occasion();
-		$occasion->occasion_code = $request->get('occasion_code');
-		$occasion->occasion_description = $request->get('occasion_description');
+		$occasion->occasion_code = trim($request->get('occasion_code'));
+		$occasion->occasion_description = trim($request->get('occasion_description'));
 		$occasion->occasion_display_order = intval($request->get('occasion_display_order'));
 
 		$occasion->save();
@@ -76,8 +76,8 @@ class OccasionController extends Controller
 			return view('errors.404');
 		}
 
-		$occasion->occasion_code = $request->get('occasion_code');
-		$occasion->occasion_description = $request->get('occasion_description');
+		$occasion->occasion_code = trim($request->get('occasion_code'));
+		$occasion->occasion_description = trim($request->get('occasion_description'));
 		$occasion->occasion_display_order = intval($request->get('occasion_display_order'));
 
 		$occasion->save();

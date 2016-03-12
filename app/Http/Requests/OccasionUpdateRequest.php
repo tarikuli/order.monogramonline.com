@@ -21,8 +21,11 @@ class OccasionUpdateRequest extends Request
 	 */
 	public function rules ()
 	{
+		$id = $this->route()
+				   ->parameter('occasions', 0);
+
 		return [
-			'occasion_code'          => 'required|unique:occasions,occasion_code',
+			'occasion_code'          => sprintf("required|no_space_allowed|%s", \Monogram\Helper::getUniquenessRule("Occasion", $id, "occasion_code")),
 			'occasion_description'   => 'required',
 			'occasion_display_order' => 'required',
 		];

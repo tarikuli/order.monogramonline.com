@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
 
-class CollectionUpdateRequest extends Request
+class SalesCategoryUpdateRequest extends Request
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -22,12 +22,12 @@ class CollectionUpdateRequest extends Request
 	public function rules ()
 	{
 		$id = $this->route()
-				   ->parameter('collections', 0);
+				   ->parameter('sales_categories', 0);
 
 		return [
-			'collection_code'          => sprintf("required|no_space_allowed|%s", \Monogram\Helper::getUniquenessRule("Collection", $id, "collection_code")),
-			'collection_description'   => 'required',
-			'collection_display_order' => 'required',
+			'sales_category_code'          => sprintf("required|no_space_allowed|%s", \Monogram\Helper::getUniquenessRule("SalesCategory", $id, "sales_category_code")),
+			'sales_category_description'   => 'required',
+			'sales_category_display_order' => 'required',
 		];
 	}
 }

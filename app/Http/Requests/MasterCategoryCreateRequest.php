@@ -22,7 +22,7 @@ class MasterCategoryCreateRequest extends Request
 	public function rules ()
 	{
 		return [
-			'master_category_code'          => 'required|no_space_allowed',
+			'master_category_code'          => 'required|no_space_allowed|unique:master_categories,master_category_code',
 			'master_category_description'   => 'required',
 			'master_category_display_order' => 'required',
 			'parent_category'               => 'required',

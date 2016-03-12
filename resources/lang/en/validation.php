@@ -87,7 +87,8 @@ return [
 	|
 	*/
 
-	'no_space_allowed' => 'Cannot contain any space in :attribute',
+	'no_space_allowed'    => 'Cannot contain any space in :attribute',
+	'uniqueness_in_model' => 'The :attribute has already been taken.',
 
 	'custom' => [
 		'attribute-name' => [

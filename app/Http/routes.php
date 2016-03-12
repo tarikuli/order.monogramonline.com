@@ -83,6 +83,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	resource('departments', 'DepartmentController');
 
 	resource('production_categories', 'ProductionCategoryController');
+	resource('sales_categories', 'SalesCategoryController');
 
 	resource('stations', 'StationController');
 

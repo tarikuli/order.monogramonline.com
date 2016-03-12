@@ -24,16 +24,19 @@ class MasterCategoryUpdateRequest extends Request
 	 */
 	public function rules (\Illuminate\Http\Request $request)
 	{
+		$id = $this->route()
+				   ->parameter('master_categories', 0);
+		#dd($request->all());
 		if ( $request->has('master_category_code') ) {
 			return [
-				'master_category_code'          => 'required|no_space_allowed',
+				'master_category_code'          => sprintf("required|no_space_allowed|%s", \Monogram\Helper::getUniquenessRule("MasterCategory", $id, "master_category_code")),
 				'master_category_description'   => 'required',
 				'master_category_display_order' => 'required',
 			];
 		}
 
 		return [
-			'modified_code'          => 'required|no_space_allowed',
+			'modified_code'   => sprintf("required|no_space_allowed|%s", \Monogram\Helper::getUniquenessRule("MasterCategory", $id, "master_category_code")),
 			'modified_description'   => 'required',
 			'modified_display_order' => 'required',
 		];

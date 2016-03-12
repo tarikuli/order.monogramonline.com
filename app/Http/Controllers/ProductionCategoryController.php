@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 class ProductionCategoryController extends Controller
 {
-
 	public function index ()
 	{
 		$production_categories = ProductionCategory::where('is_deleted', 0)
@@ -33,8 +32,8 @@ class ProductionCategoryController extends Controller
 	public function store (ProductionCategoryCreateRequest $request)
 	{
 		$production_categories = new ProductionCategory();
-		$production_categories->production_category_code = $request->get('production_category_code');
-		$production_categories->production_category_description = $request->get('production_category_description');
+		$production_categories->production_category_code = trim($request->get('production_category_code'));
+		$production_categories->production_category_description = trim($request->get('production_category_description'));
 		$production_categories->production_category_display_order = intval($request->get('production_category_display_order'));
 
 		$production_categories->save();
@@ -72,8 +71,8 @@ class ProductionCategoryController extends Controller
 			return view('errors.404');
 		}
 
-		$production_categories->production_category_code = $request->get('production_category_code');
-		$production_categories->production_category_description = $request->get('production_category_description');
+		$production_categories->production_category_code = trim($request->get('production_category_code'));
+		$production_categories->production_category_description = trim($request->get('production_category_description'));
 		$production_categories->production_category_display_order = intval($request->get('production_category_display_order'));
 
 		$production_categories->save();

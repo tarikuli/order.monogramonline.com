@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
 
-class BatchRouteCreateRequest extends Request
+class SalesCategoryCreateRequest extends Request
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -22,9 +22,9 @@ class BatchRouteCreateRequest extends Request
 	public function rules ()
 	{
 		return [
-			"batch_max_units"  => 'required',
-			"batch_route_name" => 'required',
-			"batch_code"       => 'required|unique:batch_routes,batch_code',
+			'sales_category_code'          => 'required|no_space_allowed|unique:sales_categories,sales_category_code',
+			'sales_category_description'   => 'required',
+			'sales_category_display_order' => 'required',
 		];
 	}
 }

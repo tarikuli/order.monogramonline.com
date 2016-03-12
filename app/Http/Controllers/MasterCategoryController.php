@@ -65,8 +65,8 @@ class MasterCategoryController extends Controller
 	public function store (Requests\MasterCategoryCreateRequest $request)
 	{
 		$master_category = new MasterCategory();
-		$master_category->master_category_code = $request->get('master_category_code');
-		$master_category->master_category_description = $request->get('master_category_description');
+		$master_category->master_category_code = trim($request->get('master_category_code'));
+		$master_category->master_category_description = trim($request->get('master_category_description'));
 		$master_category->master_category_display_order = intval($request->get('master_category_display_order'));
 		$master_category->parent = intval($request->get('parent_category'));
 
@@ -106,8 +106,8 @@ class MasterCategoryController extends Controller
 		}
 
 		if ( $request->has('modified_code') ) {
-			$master_category->master_category_code = $request->get('modified_code');
-			$master_category->master_category_description = $request->get('modified_description');
+			$master_category->master_category_code = trim($request->get('modified_code'));
+			$master_category->master_category_description = trim($request->get('modified_description'));
 			$master_category->master_category_display_order = intval($request->get('modified_display_order'));
 		} else {
 			$master_category->master_category_code = $request->get('master_category_code');

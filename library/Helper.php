@@ -459,4 +459,9 @@ class Helper
 
 		return $total;
 	}
+
+	public static function getUniquenessRule ($model, $id, $field)
+	{
+		return sprintf("uniqueness_in_model:%s,%d,%s", $model, $id, $field);
+	}
 }
