@@ -210,18 +210,21 @@ class Helper
 		return $index && array_key_exists($index, static::$batchStatuses) ? static::$batchStatuses[$index] : 'not started';
 	}
 
-	public static function jsonTransformer ($json, $separator = null)
+	public static function jsonTransformer ($json, $separator = "\n")
 	{
-		if ( null === $separator ) {
+		/*if ( null === $separator ) {
 			$separator = "\n";
-		}
+		}*/
 		$formatted_string = '';
+		$json_array = json_decode($json, true);
 
-		foreach ( json_decode($json, true) as $key => $value ) {
-			$formatted_string .= sprintf("%s = %s%s", str_replace("_", " ", $key), $value, $separator);
+		if ( $json_array ) {
+			foreach ( $json_array as $key => $value ) {
+				$formatted_string .= sprintf("%s = %s%s", str_replace("_", " ", $key), $value, $separator);
+			}
 		}
 
-		return $formatted_string;
+		return $formatted_string ?: $json;
 	}
 
 	public static function dateTransformer ($date)
