@@ -267,7 +267,7 @@ class OrderController extends Controller
 					   ->groupBy('order_id')
 					   ->latest()
 					   ->paginate(50, [
-					   	   'id',
+						   'id',
 						   'order_id',
 						   'short_order',
 						   'item_count',
@@ -737,15 +737,18 @@ class OrderController extends Controller
 			// -------------- Items table data insertion ended ---------------------- //
 
 			// -------------- Products table data insertion started ---------------------- //
-			$product = Product::where('id_catalog', $item->item_id)
+			#$product = Product::where('id_catalog', $item->item_id)->first();
+			$product = Product::where('product_model', $item->item_id)
 							  ->first();
 			if ( !$product ) {
 				$product = new Product();
-				$product->id_catalog = $item->item_id;
+				#$product->id_catalog = $item->item_id;
+				$product->product_model = $item->item_code;
 			}
 
 			$product->store_id = sprintf("%s-%s", $exploded[0], $exploded[1]);
-			$product->product_model = $item->item_code;
+			#$product->product_model = $item->item_code;
+			$product->id_catalog = $item->item_id;
 			$product->product_url = $item->item_url;
 			$product->product_name = $item->item_description;
 			$product->product_price = $item->item_unit_price;
