@@ -571,6 +571,7 @@ class ProductController extends Controller
 					'error' => 'CSV file columns don\'t match. Import stopped.',
 				]));
 		}
+		#dd($needed_columns, $csv_columns, count(array_intersect($needed_columns, $csv_columns)));
 		$rows = $reader->setOffset(1)
 					   ->fetchAssoc($needed_columns);
 
