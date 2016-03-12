@@ -6,6 +6,7 @@ use App\MasterCategory;
 use App\Occasion;
 use App\Product;
 use App\ProductionCategory;
+use App\SalesCategory;
 use App\Store;
 use App\SubCategory;
 use App\Collection as CollectionModel;
@@ -571,7 +572,7 @@ class ProductController extends Controller
 					'error' => 'CSV file columns don\'t match. Import stopped.',
 				]));
 		}
-		#dd($needed_columns, $csv_columns, count(array_intersect($needed_columns, $csv_columns)));
+		#dd($table_columns, $needed_columns, $csv_columns, count(array_intersect($needed_columns, $csv_columns)));
 		$rows = $reader->setOffset(1)
 					   ->fetchAssoc($needed_columns);
 
@@ -659,7 +660,20 @@ class ProductController extends Controller
 					} else {
 						$product->product_production_category = null;
 					}
+				} elseif ( $column == 'product_sales_category' ) {
+					$sales_category_from_file = trim($row['product_sales_category']);
+					$sales_category_from_table = SalesCategory::where('sales_category_code', $sales_category_from_file)
+															  ->where('is_deleted', 0)
+															  ->first();
+					if ( $sales_category_from_table ) {
+						$product->product_sales_category = $sales_category_from_table->id;
+					} else {
+						$product->product_sales_category = null;
+					}
 				} else {
+					if ( $column == "product_note" ) {
+						#dd($row[$column]);
+					}
 					$product->$column = trim($row[$column]);
 				}
 				/*$product->store_id = $row['store_id'];
