@@ -12,6 +12,7 @@ class Product extends Model
 		'updated_at',
 		'created_at',
 	];
+	private $data_set = [ ];
 
 	private function tableColumns ()
 	{
@@ -104,6 +105,21 @@ class Product extends Model
 					]);
 	}
 
+	private function recursion ($categories)
+	{
+		$this->data_set = array_merge($this->data_set, $categories->lists('id')
+																  ->toArray());
+		foreach ( $categories as $category ) {
+			$child_count = $category->children()
+									->count();
+
+			if ( $child_count > 0 ) {
+				$this->recursion($category->children()
+										  ->get());
+			}
+		}
+	}
+
 	public function scopeSearchIdCatalog ($query, $id_catalog)
 	{
 		if ( !$id_catalog ) {
@@ -144,13 +160,23 @@ class Product extends Model
 		return $query->where('batch_route_id', $route_id);
 	}
 
-	public function scopeSearchMasterCategory ($query, $product_master_category)
+	public function scopeSearchMasterCategory ($query, $product_master_category_id)
 	{
-		if ( !$product_master_category || $product_master_category == 'all' ) {
+		if ( !$product_master_category_id || $product_master_category_id == 'all' ) {
 			return;
 		}
+		$this->data_set[] = $product_master_category_id;
 
-		return $query->where('product_master_category', $product_master_category);
+		$categories = MasterCategory::where('parent', $product_master_category_id)
+									->get();
+
+		$this->recursion($categories);
+
+		$category_id_list = $this->data_set;
+		#dd($category_id_list);
+		return $query->whereIn('product_master_category', $category_id_list);
+
+		#return $query->where('product_master_category', $product_master_category);
 	}
 
 	public function scopeSearchCategory ($query, $product_category)
