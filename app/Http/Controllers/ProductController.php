@@ -141,8 +141,7 @@ class ProductController extends Controller
 
 	public function store (ProductAddRequest $request)
 	{
-		return redirect()->back()->withInput();
-		return $request->all();
+		#return $request->all();
 		$master_category_id = $request->get('product_master_category');
 		$master_category = MasterCategory::where('is_deleted', 0)
 										 ->where('id', $master_category_id)
