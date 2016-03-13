@@ -279,7 +279,7 @@
 						{!!Form::label('product_collection','Product collection',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">
 							{{--{!! Form::select('product_collection', $product_collections, null, ['id' => 'product_collection','class'=>'form-control']) !!}--}}
-							{!! \Monogram\Helper::scrollableCheckbox('product_collection[]', $product_occasions, $product->collections()->lists('collection_id')->all()) !!}
+							{!! \Monogram\Helper::scrollableCheckbox('product_collection[]', $product_collections, $product->collections()->lists('collection_id')->all()) !!}
 							{{--{!! Form::select('product_collection[]', $product_collections, $product->collections()->lists('collection_id')->all(), ['id' => 'product_collection','class'=>'form-control', 'multiple' => 'multiple']) !!}--}}
 						</div>
 					</div>
