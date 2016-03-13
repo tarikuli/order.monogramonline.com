@@ -259,14 +259,16 @@
 						{!!Form::label('product_occasion','Product occasion',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">
 							{{--{!! Form::select('product_occasion', $product_occasions, null, ['id' => 'product_occasion','class'=>'form-control']) !!}--}}
-							{!! Form::select('product_occasion[]', $product_occasions, null, ['id' => 'product_occasion','class'=>'form-control', 'multiple' => 'multiple']) !!}
+							{!! \Monogram\Helper::scrollableCheckbox('product_occasion[]', $product_occasions) !!}
+							{{--{!! Form::select('product_occasion[]', $product_occasions, null, ['id' => 'product_occasion','class'=>'form-control', 'multiple' => 'multiple']) !!}--}}
 						</div>
 					</div>
 					<div class = "form-group">
 						{!!Form::label('product_collection','Product collection',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">
 							{{--{!! Form::select('product_collection', $product_collections, null, ['id' => 'product_collection','class'=>'form-control']) !!}--}}
-							{!! Form::select('product_collection[]', $product_collections, null, ['id' => 'product_collection','class'=>'form-control', 'multiple' => 'multiple']) !!}
+							{!! \Monogram\Helper::scrollableCheckbox('product_collection[]', $product_collections) !!}
+							{{--{!! Form::select('product_collection[]', $product_collections, null, ['id' => 'product_collection','class'=>'form-control', 'multiple' => 'multiple']) !!}--}}
 						</div>
 					</div>
 				</div>

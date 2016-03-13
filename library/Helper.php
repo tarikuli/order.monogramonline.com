@@ -174,6 +174,41 @@ class Helper
 		'H-SHP',
 	];
 
+	public static function scrollableCheckbox ($name, $options, $value = null)
+	{
+		$container = <<<Container
+<div style="height: 6em; width: 12em; overflow: auto;">
+				<div class="checkbox">
+Container;
+
+		foreach ( $options as $optionKey => $optionValue ) {
+			$checked = '';
+			if ( is_array($value) ) {
+				$values = array_values($value);
+				if ( in_array($optionKey, $values) ) {
+					$checked = 'checked';
+				}
+			} elseif ( !is_null($value) ) {
+				if ( $optionKey == $value ) {
+					$checked = 'checked';
+				}
+			}
+			$input = <<<INPUT
+					<label>
+						<input type="checkbox" value="{$optionKey}" name="{$name}" {$checked}>
+						{$optionValue}
+					</label>
+INPUT;
+			$container .= $input;
+		}
+		$container .= <<<APPEND
+				</div>
+</div>
+APPEND;
+
+		return $container;
+	}
+
 	public static function orderIdFormatter ($order, $column_name = 'id')
 	{
 		return sprintf("%06d", $order->$column_name);

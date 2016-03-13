@@ -117,11 +117,11 @@ class ProductController extends Controller
 												   ->prepend('Select production category', '');
 
 		$product_occasions = Occasion::where('is_deleted', 0)
-									 ->lists('occasion_description', 'id')
-									 ->prepend('Select occasion', '');
+									 ->lists('occasion_description', 'id');
+									 #->prepend('Select occasion', '');
 		$product_collections = CollectionModel::where('is_deleted', 0)
-											  ->lists('collection_description', 'id')
-											  ->prepend('Select collection', '');
+											  ->lists('collection_description', 'id');
+											  #->prepend('Select collection', '');
 		$sales_categories = SalesCategory::where('is_deleted', 0)
 										 ->lists('sales_category_description', 'id')
 										 ->prepend('Select sales category', '');
@@ -141,7 +141,8 @@ class ProductController extends Controller
 
 	public function store (ProductAddRequest $request)
 	{
-		#return $request->all();
+		return redirect()->back()->withInput();
+		return $request->all();
 		$master_category_id = $request->get('product_master_category');
 		$master_category = MasterCategory::where('is_deleted', 0)
 										 ->where('id', $master_category_id)
@@ -371,11 +372,11 @@ class ProductController extends Controller
 												   ->prepend('Select production category', '');
 
 		$product_occasions = Occasion::where('is_deleted', 0)
-									 ->lists('occasion_description', 'id')
-									 ->prepend('Select occasion', '');
+									 ->lists('occasion_description', 'id');
+									 #->prepend('Select occasion', '');
 		$product_collections = CollectionModel::where('is_deleted', 0)
-											  ->lists('collection_description', 'id')
-											  ->prepend('Select collection', '');
+											  ->lists('collection_description', 'id');
+											  #->prepend('Select collection', '');
 		$sales_categories = SalesCategory::where('is_deleted', 0)
 										 ->lists('sales_category_description', 'id')
 										 ->prepend('Select sales category', '');
