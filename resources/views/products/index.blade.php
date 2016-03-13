@@ -26,84 +26,94 @@
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
-		<div class = "col-xs-12">
-			<a class = "btn btn-warning pull-right" role = "button" data-toggle = "collapse" href = "#collapse"
-			   aria-expanded = "false" aria-controls = "collapse">
-				Export / Import products
-			</a>
-		</div>
-		<div class = "col-xs-12" style = "margin-top: 10px;">
-			<div class = "collapse" id = "collapse">
-				<div class = "col-xs-6">
-					{!! Form::open(['url' => url('products/import'), 'files' => true, 'id' => 'importer']) !!}
-					<div class = "form-group">
-						{!! Form::file('csv_file', ['required' => 'required', 'class' => 'form-control', 'accept' => '.csv']) !!}
+		<div class = "col-md-12">
+			<ul class = "nav nav-tabs" role = "tablist">
+				<li role = "presentation" class = "active">
+					<a href = "#tab-export-import" aria-controls = "info" role = "tab"
+					   data-toggle = "tab">Export/Import</a>
+				</li>
+				<li role = "presentation">
+					<a href = "#tab-search" aria-controls = "description" role = "tab"
+					   data-toggle = "tab">Search</a>
+				</li>
+			</ul>
+			<div class = "clearfix"></div>
+			<div class = "tab-content" style = "margin-top: 20px;">
+				<div role = "tabpanel" class = "tab-pane fade in active" id = "tab-export-import">
+					<div class = "col-xs-6">
+						{!! Form::open(['url' => url('products/import'), 'files' => true, 'id' => 'importer']) !!}
+						<div class = "form-group">
+							{!! Form::file('csv_file', ['required' => 'required', 'class' => 'form-control', 'accept' => '.csv']) !!}
+						</div>
+						<div class = "form-group">
+							{!! Form::submit('Import', ['class' => 'btn btn-info']) !!}
+						</div>
+						{!! Form::close() !!}
 					</div>
-					<div class = "form-group">
-						{!! Form::submit('Import', ['class' => 'btn btn-info']) !!}
-					</div>
-					{!! Form::close() !!}
-				</div>
-				<div class = "col-xs-6">
-					<a class = "btn btn-info pull-right" href = "{{url('products/export')}}">Export products</a>
-				</div>
-			</div>
-		</div>
-		<div class = "col-xs-12">
-			{!! Form::open(['method' => 'get', 'id' => 'search-order']) !!}
-			<div class = "col-md-12">
-				<div class = "form-group col-xs-3">
-					<label for = "id_catalog">Search in ID Catalog</label>
-					{!! Form::text('id_catalog', $request->get('id_catalog'), ['id'=>'id_catalog', 'class' => 'form-control', 'placeholder' => 'Search in ID Catalog']) !!}
-				</div>
-				<div class = "form-group col-xs-3">
-					<label for = "product_model">Search in SKU</label>
-					{!! Form::text('product_model', $request->get('product_model'), ['id'=>'product_model', 'class' => 'form-control', 'placeholder' => 'Search in product SKU']) !!}
-				</div>
-				<div class = "form-group col-xs-3">
-					<label for = "product_name">Search in name</label>
-					{!! Form::text('product_name', $request->get('product_name'), ['id'=>'product_name', 'class' => 'form-control', 'placeholder' => 'Search in product name']) !!}
-				</div>
-				<div class = "form-group col-xs-3">
-					<label for = "route">Search in route</label>
-					{!! Form::select('route[]', $searchInRoutes, $request->get('route') ?: 'all', ['id'=>'route', 'class' => 'form-control', 'multiple' => true]) !!}
-				</div>
-			</div>
-			<div class = "col-md-12">
-				<div class = "col-xs-3">
-					<div class = "form-group">
-						<label for = "product_production_category">Search in production category</label>
-						{!! Form::select('product_production_category[]', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control', 'multiple' => true]) !!}
-					</div>
-					<div class = "form-group">
-						<label for = "product_occasion">Search in product occasion</label>
-						{!! Form::select('product_occasion[]', $product_occasions, $request->get('product_occasion') ?: 'all', ['id'=>'product_occasion', 'class' => 'form-control', 'multiple' => true]) !!}
-					</div>
-					<div class = "form-group">
-						<label for = "product_collection">Search in product collection</label>
-						{!! Form::select('product_collection[]', $product_collections, $request->get('product_collection') ?: 'all', ['id'=>'product_collection', 'class' => 'form-control', 'multiple' => true]) !!}
+					<div class = "col-xs-6">
+						<a class = "btn btn-info pull-right" href = "{{url('products/export')}}">Export products</a>
 					</div>
 				</div>
-				<div class = "col-xs-9">
-					<div class = "form-group">
-						<label for = "product_master_category">Search in category</label>
-						{!! Form::hidden('product_master_category', null, ['id' => 'product_master_category']) !!}
-						<div class = "col-sm-12" style = "overflow: auto;">
-							<div class = "row row-horizon">
-								@include('master_categories.ajax_category_response')
+				<div role = "tabpanel" class = "tab-pane fade" id = "tab-search">
+					<div class = "col-xs-12">
+						{!! Form::open(['method' => 'get', 'id' => 'search-order']) !!}
+						<div class = "col-md-12">
+							<div class = "form-group col-xs-3">
+								<label for = "id_catalog">Search in ID Catalog</label>
+								{!! Form::text('id_catalog', $request->get('id_catalog'), ['id'=>'id_catalog', 'class' => 'form-control', 'placeholder' => 'Search in ID Catalog']) !!}
+							</div>
+							<div class = "form-group col-xs-3">
+								<label for = "product_model">Search in SKU</label>
+								{!! Form::text('product_model', $request->get('product_model'), ['id'=>'product_model', 'class' => 'form-control', 'placeholder' => 'Search in product SKU']) !!}
+							</div>
+							<div class = "form-group col-xs-3">
+								<label for = "product_name">Search in name</label>
+								{!! Form::text('product_name', $request->get('product_name'), ['id'=>'product_name', 'class' => 'form-control', 'placeholder' => 'Search in product name']) !!}
+							</div>
+							<div class = "form-group col-xs-3">
+								<label for = "route">Search in route</label>
+								{!! Form::select('route[]', $searchInRoutes, $request->get('route') ?: 'all', ['id'=>'route', 'class' => 'form-control', 'multiple' => true]) !!}
 							</div>
 						</div>
-						{{--{!! Form::select('product_master_category', $product_master_category, $request->get('product_master_category') ?: 'all', ['id'=>'product_master_category', 'class' => 'form-control']) !!}--}}
+						<div class = "col-md-12">
+							<div class = "col-xs-3">
+								<div class = "form-group">
+									<label for = "product_production_category">Search in production category</label>
+									{!! Form::select('product_production_category[]', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control', 'multiple' => true]) !!}
+								</div>
+								<div class = "form-group">
+									<label for = "product_occasion">Search in product occasion</label>
+									{!! Form::select('product_occasion[]', $product_occasions, $request->get('product_occasion') ?: 'all', ['id'=>'product_occasion', 'class' => 'form-control', 'multiple' => true]) !!}
+								</div>
+								<div class = "form-group">
+									<label for = "product_collection">Search in product collection</label>
+									{!! Form::select('product_collection[]', $product_collections, $request->get('product_collection') ?: 'all', ['id'=>'product_collection', 'class' => 'form-control', 'multiple' => true]) !!}
+								</div>
+							</div>
+							<div class = "col-xs-9">
+								<div class = "form-group">
+									<label for = "product_master_category">Search in category</label>
+									{!! Form::hidden('product_master_category', null, ['id' => 'product_master_category']) !!}
+									<div class = "col-sm-12" style = "overflow: auto;">
+										<div class = "row row-horizon">
+											@include('master_categories.ajax_category_response')
+										</div>
+									</div>
+									{{--{!! Form::select('product_master_category', $product_master_category, $request->get('product_master_category') ?: 'all', ['id'=>'product_master_category', 'class' => 'form-control']) !!}--}}
+								</div>
+							</div>
+						</div>
+
+						<div class = "form-group col-xs-2">
+							<label for = "" class = ""></label>
+							{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+						</div>
+						{!! Form::close() !!}
 					</div>
 				</div>
 			</div>
-
-			<div class = "form-group col-xs-2">
-				<label for = "" class = ""></label>
-				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
-			</div>
-			{!! Form::close() !!}
 		</div>
+		<hr />
 		@if(count($products) > 0)
 			<h3 class = "page-header">
 				Products ({{ $products->total() }} items found / {{$products->currentPage()}} of {{$products->lastPage()}} pages)
