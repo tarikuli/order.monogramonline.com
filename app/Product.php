@@ -135,6 +135,15 @@ class Product extends Model
 		}
 	}
 
+	private function trimmer ($haystack, ...$needle)
+	{
+		if ( is_array($haystack) ) {
+			return array_diff($haystack, array_keys($needle));
+		}
+
+		return [ ];
+	}
+
 	public function scopeSearchIdCatalog ($query, $id_catalog)
 	{
 		if ( !$id_catalog ) {
@@ -166,13 +175,18 @@ class Product extends Model
 		return $query->where('product_name', 'LIKE', sprintf("%%%s%%", $product_name));
 	}
 
-	public function scopeSearchRoute ($query, $route_id)
+	public function scopeSearchRoute ($query, $route_ids)
 	{
-		if ( !$route_id ) {
+
+		if ( !$route_ids || !is_array($route_ids) ) {
+			return;
+		}
+		$stripped_values = $this->trimmer($route_ids, 0);
+		if ( count($stripped_values) == 0 ) {
 			return;
 		}
 
-		return $query->where('batch_route_id', $route_id);
+		return $query->whereIn('batch_route_id', $stripped_values);
 	}
 
 	public function scopeSearchMasterCategory ($query, $product_master_category_id)
@@ -215,38 +229,55 @@ class Product extends Model
 
 	public function scopeSearchProductionCategory ($query, $production_category)
 	{
-		if ( !$production_category || $production_category == 'all' ) {
+		if ( !$production_category || !is_array($production_category) ) {
+			return;
+		}
+		$stripped_values = $this->trimmer($production_category, 'all');
+
+		if ( count($stripped_values) == 0 ) {
 			return;
 		}
 
-		return $query->where('product_production_category', intval($production_category));
+		return $query->whereIn('product_production_category', $stripped_values);
+		/*if ( !$production_category || $production_category == 'all' ) {
+			return;
+		}
+		return $query->where('product_production_category', intval($production_category));*/
 	}
 
 	public function scopeSearchProductCollection ($query, $product_collection_id)
 	{
-		if ( !$product_collection_id || $product_collection_id == 0 ) {
+		if ( !$product_collection_id || !is_array($product_collection_id) ) {
+			return;
+		}
+		$stripped_values = $this->trimmer($product_collection_id, 0);
+
+		if ( count($stripped_values) == 0 ) {
 			return;
 		}
 		$product_ids = DB::table('collection_product')
-						 ->where('collection_id', $product_collection_id)
+						 ->whereIn('collection_id', $stripped_values)
 						 ->lists('product_id');
 
 		return $query->whereIn('id', $product_ids);
-
-		#return $query->where('product_collection', intval($product_collection_id));
 	}
 
 	public function scopeSearchProductOccasion ($query, $product_occasion_id)
 	{
-		if ( !$product_occasion_id || $product_occasion_id == 0 ) {
+		if ( !$product_occasion_id || !is_array($product_occasion_id) ) {
 			return;
 		}
+		$stripped_values = $this->trimmer($product_occasion_id, 0);
+
+		if ( count($stripped_values) == 0 ) {
+			return;
+		}
+
 		$product_ids = DB::table('occasion_product')
 						 ->where('occasion_id', $product_occasion_id)
 						 ->lists('product_id');
 
 		return $query->whereIn('id', $product_ids);
-
 		#return $query->where('product_occasion', intval($product_occasion_id));*/
 	}
 }

@@ -66,22 +66,22 @@
 				</div>
 				<div class = "form-group col-xs-3">
 					<label for = "route">Search in route</label>
-					{!! Form::select('route', $searchInRoutes, $request->get('route') ?: 'all', ['id'=>'route', 'class' => 'form-control']) !!}
+					{!! Form::select('route[]', $searchInRoutes, $request->get('route') ?: 'all', ['id'=>'route', 'class' => 'form-control', 'multiple' => true]) !!}
 				</div>
 			</div>
 			<div class = "col-md-12">
 				<div class = "col-xs-3">
 					<div class = "form-group">
 						<label for = "product_production_category">Search in production category</label>
-						{!! Form::select('product_production_category', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control']) !!}
+						{!! Form::select('product_production_category[]', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control', 'multiple' => true]) !!}
 					</div>
 					<div class = "form-group">
-						<label for = "product_occasion">Search in production occasion</label>
-						{!! Form::select('product_occasion', $product_occasions, $request->get('product_occasion') ?: 'all', ['id'=>'product_occasion', 'class' => 'form-control']) !!}
+						<label for = "product_occasion">Search in product occasion</label>
+						{!! Form::select('product_occasion[]', $product_occasions, $request->get('product_occasion') ?: 'all', ['id'=>'product_occasion', 'class' => 'form-control', 'multiple' => true]) !!}
 					</div>
 					<div class = "form-group">
-						<label for = "product_collection">Search in production collection</label>
-						{!! Form::select('product_collection', $product_collections, $request->get('product_collection') ?: 'all', ['id'=>'product_collection', 'class' => 'form-control']) !!}
+						<label for = "product_collection">Search in product collection</label>
+						{!! Form::select('product_collection[]', $product_collections, $request->get('product_collection') ?: 'all', ['id'=>'product_collection', 'class' => 'form-control', 'multiple' => true]) !!}
 					</div>
 				</div>
 				<div class = "col-xs-9">
