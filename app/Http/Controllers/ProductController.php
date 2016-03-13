@@ -118,10 +118,10 @@ class ProductController extends Controller
 
 		$product_occasions = Occasion::where('is_deleted', 0)
 									 ->lists('occasion_description', 'id');
-									 #->prepend('Select occasion', '');
+		#->prepend('Select occasion', '');
 		$product_collections = CollectionModel::where('is_deleted', 0)
 											  ->lists('collection_description', 'id');
-											  #->prepend('Select collection', '');
+		#->prepend('Select collection', '');
 		$sales_categories = SalesCategory::where('is_deleted', 0)
 										 ->lists('sales_category_description', 'id')
 										 ->prepend('Select sales category', '');
@@ -328,6 +328,7 @@ class ProductController extends Controller
 		if ( !$product ) {
 			return view('errors.404');
 		}
+
 		#return $product;
 		return view('products.show', compact('product'));
 	}
@@ -372,10 +373,10 @@ class ProductController extends Controller
 
 		$product_occasions = Occasion::where('is_deleted', 0)
 									 ->lists('occasion_description', 'id');
-									 #->prepend('Select occasion', '');
+		#->prepend('Select occasion', '');
 		$product_collections = CollectionModel::where('is_deleted', 0)
 											  ->lists('collection_description', 'id');
-											  #->prepend('Select collection', '');
+		#->prepend('Select collection', '');
 		$sales_categories = SalesCategory::where('is_deleted', 0)
 										 ->lists('sales_category_description', 'id')
 										 ->prepend('Select sales category', '');
@@ -568,31 +569,43 @@ class ProductController extends Controller
 		}
 
 		$product->save();
+		// if the request is not for updating batch
+		if ( !$request->exists('update_batch') ) {
+			// if the request has collection
+			if ( $request->exists('product_collection') && is_array($request->get('product_collection')) ) {
+				// check if product collection is an array
+				// check if the given collection is valid
+				$collections = CollectionModel::whereIn('id', $request->get('product_collection'))
+											  ->lists('id')
+											  ->toArray();
+				if ( $collections ) {
+					$product->collections()
+							->sync($collections);
+				}
 
-		if ( $request->exists('product_collection') && is_array($request->get('product_collection')) ) {
-			// check if product collection is an array
-			// check if the given collection is valid
-			$collections = CollectionModel::whereIn('id', $request->get('product_collection'))
-										  ->lists('id')
-										  ->toArray();
-			if ( $collections ) {
+				#$product->product_collection = intval($request->get('product_collection'));
+			} else {
+				// the update request has no collection request sent over the form
 				$product->collections()
-						->sync($collections);
+						->detach();
 			}
 
-			#$product->product_collection = intval($request->get('product_collection'));
-		}
-		if ( $request->exists('product_occasion') && is_array($request->get('product_occasion')) ) {
-			$occasions = Occasion::whereIn('id', $request->get('product_occasion'))
-								 ->lists('id')
-								 ->toArray();
-			if ( $occasions ) {
+			// if the product occasions are array and exist
+			if ( $request->exists('product_occasion') && is_array($request->get('product_occasion')) ) {
+				$occasions = Occasion::whereIn('id', $request->get('product_occasion'))
+									 ->lists('id')
+									 ->toArray();
+				if ( $occasions ) {
+					$product->occasions()
+							->sync($occasions);
+				}
+				#$product->product_occasion = intval($request->get('product_occasion'));
+			} else {
+				// the update request has no occasion request sent over the form
 				$product->occasions()
-						->sync($occasions);
+						->detach();
 			}
-			#$product->product_occasion = intval($request->get('product_occasion'));
 		}
-
 		if ( !$request->ajax() ) {
 			if ( $is_error ) {
 				return redirect()
