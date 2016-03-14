@@ -1,7 +1,7 @@
 <?php
 
 get('test/batch', function () {
-
+	#return array_values(\App\Product::getTableColumns());
 });
 
 // auth middleware enabled controller

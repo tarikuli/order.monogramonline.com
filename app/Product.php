@@ -274,7 +274,7 @@ class Product extends Model
 		}
 
 		$product_ids = DB::table('occasion_product')
-						 ->where('occasion_id', $product_occasion_id)
+						 ->whereIn('occasion_id', $product_occasion_id)
 						 ->lists('product_id');
 
 		return $query->whereIn('id', $product_ids);

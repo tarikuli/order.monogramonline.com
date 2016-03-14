@@ -104,11 +104,11 @@
 							</tr>
 							<tr>
 								<td>Taxable</td>
-								<td>{{$product->is_taxable}}</td>
+								<td>{{$product->is_taxable ? "Yes" : "No"}}</td>
 							</tr>
 							<tr>
 								<td>Royalties Product</td>
-								<td>{{$product->is_royalties}}</td>
+								<td>{{$product->is_royalties ? "Yes" : "No"}}</td>
 							</tr>
 							<tr>
 								<td>Royalty paid(%)</td>

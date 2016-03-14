@@ -724,7 +724,7 @@ class ProductController extends Controller
 		];
 		$needed_columns = array_merge($table_columns, $extra_columns);
 		$csv_columns = array_filter($reader->fetchOne());
-
+		#dd(array_diff($needed_columns, $csv_columns));
 		if ( count(array_intersect($needed_columns, $csv_columns)) != count($needed_columns) ) {
 			return redirect()
 				->back()
@@ -737,6 +737,11 @@ class ProductController extends Controller
 					   ->fetchAssoc($needed_columns);
 
 		foreach ( $rows as $row ) {
+			$id_catalog = trim($row['id_catalog']);
+			$model = trim($row['id_catalog']);
+			if ( empty( $id_catalog ) || empty( $model ) ) {
+				continue;
+			}
 			$product = Product::where('id_catalog', $row['id_catalog'])
 							  ->first();
 			if ( !$product ) {
@@ -745,6 +750,8 @@ class ProductController extends Controller
 			}
 			foreach ( $table_columns as $column ) {
 				if ( $column == 'id_catalog' ) {
+					continue;
+				} elseif ( $column == 'product_model' ) {
 					continue;
 				} elseif ( $column == 'is_taxable' ) {
 					$product->is_taxable = strtolower($row['is_taxable']) == 'yes' ? 1 : 0;
