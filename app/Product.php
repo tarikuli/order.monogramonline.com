@@ -135,10 +135,10 @@ class Product extends Model
 		}
 	}
 
-	private function trimmer ($haystack, ...$needle)
+	private function trimmer ($haystack, $needle)
 	{
 		if ( is_array($haystack) ) {
-			return array_diff($haystack, array_keys($needle));
+			return array_diff($haystack, [$needle]);
 		}
 
 		return [ ];
