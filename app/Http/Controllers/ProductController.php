@@ -33,10 +33,10 @@ class ProductController extends Controller
 	public function index (Request $request)
 	{
 		$products = Product::with('batch_route')
-						   ->where('is_deleted', 0)
-						   ->searchIdCatalog($request->get('id_catalog'))
+						   ->where('is_deleted', 0)/*->searchIdCatalog($request->get('id_catalog'))
 						   ->searchProductModel($request->get('product_model'))
-						   ->searchProductName($request->get('product_name'))
+						   ->searchProductName($request->get('product_name'))*/
+						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
 						   ->searchRoute($request->get('route'))
 						   ->searchProductionCategory($request->get('product_production_category'))
 						   ->searchProductOccasion($request->get('product_occasion'))
@@ -652,10 +652,10 @@ class ProductController extends Controller
 		$products = Product::with('batch_route')
 						   ->where('is_deleted', 0)
 						   ->whereNull('batch_route_id')
-						   ->orWhere('batch_route_id', Helper::getDefaultRouteId())
-						   ->searchIdCatalog($request->get('id_catalog'))
+						   ->orWhere('batch_route_id', Helper::getDefaultRouteId())/*->searchIdCatalog($request->get('id_catalog'))
 						   ->searchProductModel($request->get('product_model'))
-						   ->searchProductName($request->get('product_name'))
+						   ->searchProductName($request->get('product_name'))*/
+						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
 						   ->searchProductOccasion($request->get('product_occasion'))
 						   ->searchProductCollection($request->get('product_collection'))
 						   ->latest()
@@ -895,7 +895,7 @@ class ProductController extends Controller
 		];
 		$columns = array_merge($table_columns, $extra_columns);
 		#$products = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category', 'product_occasion_details', 'product_collection_details')->get($columns);
-		$products = Product::with('batch_route', 'master_category', 'production_category')
+		$products = Product::with('batch_route', 'master_category', 'production_category', 'sales_category')
 						   ->get();
 		#->get(array_merge([ 'id' ], $table_columns));
 		$file_path = sprintf("%s/assets/exports/products/", public_path());
@@ -905,7 +905,6 @@ class ProductController extends Controller
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
 
 		$csv->insertOne($columns);
-
 		foreach ( $products as $product ) {
 			$row = [ ];
 			foreach ( $columns as $column ) {
@@ -922,6 +921,8 @@ class ProductController extends Controller
 					$row[] = ( $product->is_taxable == 1 ) ? 'Yes' : 'No';
 				} elseif ( $column == 'product_master_category' ) {
 					$row[] = $product->master_category ? $product->master_category->master_category_code : '';
+				} elseif ( $column == 'product_sales_category' ) {
+					$row[] = $product->sales_category ? $product->sales_category->sales_category_code : '';
 				} elseif ( $column == 'product_category' ) {
 					continue;
 					$row[] = $product->category ? $product->category->category_code : '';

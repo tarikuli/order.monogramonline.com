@@ -28,18 +28,18 @@
 		@include('includes.success_div')
 		<div class = "col-md-12">
 			<ul class = "nav nav-tabs" role = "tablist">
-				<li role = "presentation" class = "active">
+				<li role = "presentation">
 					<a href = "#tab-export-import" aria-controls = "info" role = "tab"
 					   data-toggle = "tab">Export/Import</a>
 				</li>
-				<li role = "presentation">
+				<li role = "presentation" class = "active">
 					<a href = "#tab-search" aria-controls = "description" role = "tab"
 					   data-toggle = "tab">Search</a>
 				</li>
 			</ul>
 			<div class = "clearfix"></div>
 			<div class = "tab-content" style = "margin-top: 20px;">
-				<div role = "tabpanel" class = "tab-pane fade in active" id = "tab-export-import">
+				<div role = "tabpanel" class = "tab-pane fade" id = "tab-export-import">
 					<div class = "col-xs-6">
 						{!! Form::open(['url' => url('products/import'), 'files' => true, 'id' => 'importer']) !!}
 						<div class = "form-group">
@@ -54,21 +54,21 @@
 						<a class = "btn btn-info pull-right" href = "{{url('products/export')}}">Export products</a>
 					</div>
 				</div>
-				<div role = "tabpanel" class = "tab-pane fade" id = "tab-search">
+				<div role = "tabpanel" class = "tab-pane fade in active" id = "tab-search">
 					<div class = "col-xs-12">
-						{!! Form::open(['method' => 'get', 'id' => 'search-order']) !!}
+						{!! Form::open(['method' => 'get', 'id' => 'search-product']) !!}
 						<div class = "col-md-12">
 							<div class = "form-group col-xs-3">
-								<label for = "id_catalog">Search in ID Catalog</label>
-								{!! Form::text('id_catalog', $request->get('id_catalog'), ['id'=>'id_catalog', 'class' => 'form-control', 'placeholder' => 'Search in ID Catalog']) !!}
+								<label for = "search_for">Search for</label>
+								{!! Form::text('search_for', $request->get('search_for'), ['id'=>'search_for', 'class' => 'form-control', 'placeholder' => 'Search for']) !!}
 							</div>
 							<div class = "form-group col-xs-3">
-								<label for = "product_model">Search in SKU</label>
-								{!! Form::text('product_model', $request->get('product_model'), ['id'=>'product_model', 'class' => 'form-control', 'placeholder' => 'Search in product SKU']) !!}
+								<label for = "search_in">Search in</label>
+								{!! Form::select('search_in',['id_catalog' => 'ID Catalog', 'product_model' => 'SKU', 'product_name' => 'Name'], $request->get('search_in'), ['id'=>'search_in', 'class' => 'form-control']) !!}
 							</div>
-							<div class = "form-group col-xs-3">
-								<label for = "product_name">Search in name</label>
-								{!! Form::text('product_name', $request->get('product_name'), ['id'=>'product_name', 'class' => 'form-control', 'placeholder' => 'Search in product name']) !!}
+							<div class = "form-group  col-xs-3">
+								<label for = "product_production_category">Search in production category</label>
+								{!! Form::select('product_production_category[]', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control', 'multiple' => true]) !!}
 							</div>
 							<div class = "form-group col-xs-3">
 								<label for = "route">Search in route</label>
@@ -77,10 +77,6 @@
 						</div>
 						<div class = "col-md-12">
 							<div class = "col-xs-3">
-								<div class = "form-group">
-									<label for = "product_production_category">Search in production category</label>
-									{!! Form::select('product_production_category[]', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control', 'multiple' => true]) !!}
-								</div>
 								<div class = "form-group">
 									<label for = "product_occasion">Search in product occasion</label>
 									{!! Form::select('product_occasion[]', $product_occasions, $request->get('product_occasion') ?: 'all', ['id'=>'product_occasion', 'class' => 'form-control', 'multiple' => true]) !!}
@@ -103,7 +99,10 @@
 								</div>
 							</div>
 						</div>
-
+						<div class = "form-group col-xs-2">
+							<label for = "" class = ""></label>
+							{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}
+						</div>
 						<div class = "form-group col-xs-2">
 							<label for = "" class = ""></label>
 							{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}

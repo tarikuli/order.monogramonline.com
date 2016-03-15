@@ -138,10 +138,31 @@ class Product extends Model
 	private function trimmer ($haystack, $needle)
 	{
 		if ( is_array($haystack) ) {
-			return array_diff($haystack, [$needle]);
+			return array_diff($haystack, [ $needle ]);
 		}
 
 		return [ ];
+	}
+
+	public function scopeSearchInOption ($query, $search_in, $search_for)
+	{
+		$available_fields = [
+			'id_catalog',
+			'product_model',
+			'product_name',
+		];
+		// search in field means, in which field you want to search
+		if ( $search_in && in_array($search_in, $available_fields) ) {
+			if ( $search_in == 'id_catalog' ) {
+				return $this->scopeSearchIdCatalog($query, $search_for);
+			} elseif ( $search_in == 'product_mode' ) {
+				return $this->scopeSearchProductModel($query, $search_for);
+			} elseif ( $search_in == 'product_name' ) {
+				return $this->scopeSearchProductName($query, $search_for);
+			}
+		}
+
+		return;
 	}
 
 	public function scopeSearchIdCatalog ($query, $id_catalog)
@@ -171,6 +192,7 @@ class Product extends Model
 		if ( !$product_name ) {
 			return;
 		}
+		$product_name = trim($product_name);
 
 		return $query->where('product_name', 'LIKE', sprintf("%%%s%%", $product_name));
 	}
