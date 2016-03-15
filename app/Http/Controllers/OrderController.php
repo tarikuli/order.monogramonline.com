@@ -434,6 +434,7 @@ class OrderController extends Controller
 		if ( $xml === false ) {
 			return false;
 		}
+		#dd($xml);
 		$RequestID = $xml->RequestID;
 
 		foreach ( $xml->ResponseResourceList->OrderList->children() as $order ) {
@@ -503,7 +504,7 @@ class OrderController extends Controller
 			$customer->bill_country = $order->BillToInfo->AddressInfo->Country;
 			$customer->bill_phone = $order->BillToInfo->GeneralInfo->PhoneNumber;
 			$customer->bill_email = $order->BillToInfo->GeneralInfo->Email;
-			$customer->bill_mailing_list = $order->CustomFieldsList->CustomField->Value;
+			$customer->bill_mailing_list = $order->CustomFieldsList ? $order->CustomFieldsList->CustomField->Value : null;
 			$customer->save();
 			// $BuyerEmail = $order->BuyerEmail;
 			// new field didn't find any perfect position
