@@ -150,6 +150,7 @@ class Product extends Model
 			'id_catalog',
 			'product_model',
 			'product_name',
+			'product_sales_category',
 		];
 		// search in field means, in which field you want to search
 		if ( $search_in && in_array($search_in, $available_fields) ) {
@@ -159,10 +160,26 @@ class Product extends Model
 				return $this->scopeSearchProductModel($query, $search_for);
 			} elseif ( $search_in == 'product_name' ) {
 				return $this->scopeSearchProductName($query, $search_for);
+			} elseif ( $search_in == 'product_sales_category' ) {
+				return $this->scopeSearchProductSalesCategory($query, $search_for);
 			}
 		}
 
 		return;
+	}
+
+	public function scopeSearchProductSalesCategory ($query, $sales_category)
+	{
+		if ( !$sales_category ) {
+			return;
+		}
+		$replaced = str_replace(" ", "", $sales_category);
+		$values = explode(",", trim($replaced, ","));
+		$sales_categories = SalesCategory::whereIn('sales_category_code', $values)
+										 ->lists('id')
+										 ->toArray();
+
+		return $query->whereIn('product_sales_category', $sales_categories);
 	}
 
 	public function scopeSearchIdCatalog ($query, $id_catalog)
