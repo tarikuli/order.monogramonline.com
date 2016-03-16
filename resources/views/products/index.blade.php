@@ -123,6 +123,7 @@
 				<tr>
 					<th>Remove</th>
 					<th>#</th>
+					<th>Category</th>
 					<th>ID Catalog</th>
 					<th>SKU</th>
 					<th>Product name</th>
@@ -137,6 +138,13 @@
 							   title = "Delete this product"><i class = 'fa fa-times text-danger'></i></a>
 						</td>
 						<td>{{ $count++ }}</td>
+						<td>
+							@if($product->master_category)
+								{{ $product->master_category->master_category_description }}
+							@else
+								N/A
+							@endif
+						</td>
 						<td>{{ $product->id_catalog }}</td>
 						<td class = "text-center">
 							@if($product->product_model)

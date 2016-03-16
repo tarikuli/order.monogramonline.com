@@ -32,7 +32,7 @@ class ProductController extends Controller
 {
 	public function index (Request $request)
 	{
-		$products = Product::with('batch_route')
+		$products = Product::with('batch_route', 'master_category')
 						   ->where('is_deleted', 0)/*->searchIdCatalog($request->get('id_catalog'))
 						   ->searchProductModel($request->get('product_model'))
 						   ->searchProductName($request->get('product_name'))*/
@@ -78,7 +78,7 @@ class ProductController extends Controller
 											  ->lists('collection_description', 'id')
 											  ->prepend('All', '0');
 		$count = 1;
-
+		#return $products;
 		return view('products.index', compact('products', 'product_occasions', 'product_collections', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
 			->with('categories', $master_categories)
 			->with('id', 0);
@@ -649,7 +649,7 @@ class ProductController extends Controller
 
 	public function unassigned (Request $request)
 	{
-		$products = Product::with('batch_route')
+		$products = Product::with('batch_route', 'master_category')
 						   ->where('is_deleted', 0)
 						   ->whereNull('batch_route_id')
 						   ->orWhere('batch_route_id', Helper::getDefaultRouteId())/*->searchIdCatalog($request->get('id_catalog'))
@@ -737,6 +737,7 @@ class ProductController extends Controller
 					   ->fetchAssoc($needed_columns);
 
 		foreach ( $rows as $row ) {
+
 			$id_catalog = trim($row['id_catalog']);
 			$model = trim($row['id_catalog']);
 			if ( empty( $id_catalog ) || empty( $model ) ) {
