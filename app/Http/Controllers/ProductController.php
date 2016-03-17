@@ -40,6 +40,7 @@ class ProductController extends Controller
 						   ->searchProductModel($request->get('product_model'))
 						   ->searchProductName($request->get('product_name'))*/
 						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
+						   ->searchProductSalesCategory($request->get('product_sales_category'))
 						   ->searchRoute($request->get('route'))
 						   ->searchProductionCategory($request->get('product_production_category'))
 						   ->searchProductOccasion($request->get('product_occasion'))
@@ -80,12 +81,16 @@ class ProductController extends Controller
 		$product_collections = CollectionModel::where('is_deleted', 0)
 											  ->lists('collection_description', 'id')
 											  ->prepend('All', '0');
+		$sales_categories = SalesCategory::where('is_deleted', 0)
+										 ->lists('sales_category_description', 'sales_category_code')
+										 ->prepend('Select sales category', 'all');
 		$count = 1;
 
 		#return $products;
 		return view('products.index', compact('products', 'product_occasions', 'product_collections', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
 			->with('categories', $master_categories)
-			->with('id', 0);
+			->with('id', 0)
+			->with('sales_categories', $sales_categories);
 	}
 
 	public function create ()
@@ -660,6 +665,7 @@ class ProductController extends Controller
 						   ->searchProductModel($request->get('product_model'))
 						   ->searchProductName($request->get('product_name'))*/
 						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
+						   ->searchProductSalesCategory($request->get('product_sales_category'))
 						   ->searchProductOccasion($request->get('product_occasion'))
 						   ->searchProductCollection($request->get('product_collection'))
 						   ->latest()
@@ -695,9 +701,14 @@ class ProductController extends Controller
 											  ->prepend('All', '0');
 		$count = 1;
 
+		$sales_categories = SalesCategory::where('is_deleted', 0)
+										 ->lists('sales_category_description', 'sales_category_code')
+										 ->prepend('Select sales category', 'all');
+
 		return view('products.index', compact('products', 'count', 'product_occasions', 'product_collections', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
 			->with('categories', $master_categories)
-			->with('id', 0);
+			->with('id', 0)
+			->with('sales_categories', $sales_categories);
 	}
 
 	public function import (Request $request)

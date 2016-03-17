@@ -64,7 +64,7 @@
 							</div>
 							<div class = "form-group col-xs-3">
 								<label for = "search_in">Search in</label>
-								{!! Form::select('search_in',['id_catalog' => 'ID Catalog', 'product_model' => 'SKU', 'product_name' => 'Name', 'product_sales_category' => 'Sales category'], $request->get('search_in'), ['id'=>'search_in', 'class' => 'form-control']) !!}
+								{!! Form::select('search_in',['id_catalog' => 'ID Catalog', 'product_model' => 'SKU', 'product_name' => 'Name'/*, 'product_sales_category' => 'Sales category'*/], $request->get('search_in'), ['id'=>'search_in', 'class' => 'form-control']) !!}
 							</div>
 							<div class = "form-group  col-xs-3">
 								<label for = "product_production_category">Search in production category</label>
@@ -84,6 +84,10 @@
 								<div class = "form-group">
 									<label for = "product_collection">Search in product collection</label>
 									{!! Form::select('product_collection[]', $product_collections, $request->get('product_collection') ?: 'all', ['id'=>'product_collection', 'class' => 'form-control', 'multiple' => true]) !!}
+								</div>
+								<div class = "form-group">
+									<label for = "product_sales_category">Search in sales category</label>
+									{!! Form::select('product_sales_category', $sales_categories, $request->get('product_sales_category'), ['id'=>'product_sales_category', 'class' => 'form-control']) !!}
 								</div>
 							</div>
 							<div class = "col-xs-9">

@@ -170,14 +170,18 @@ class Product extends Model
 
 	public function scopeSearchProductSalesCategory ($query, $sales_category)
 	{
-		if ( !$sales_category ) {
+		/*if ( !$sales_category ) {
 			return;
 		}
 		$replaced = str_replace(" ", "", $sales_category);
-		$values = explode(",", trim($replaced, ","));
-		$sales_categories = SalesCategory::whereIn('sales_category_code', $values)
-										 ->lists('id')
-										 ->toArray();
+		$values = explode(",", trim($replaced, ","));*/
+		if ( !$sales_category || $sales_category == 'all' ) {
+			return;
+		}
+
+		$sales_categories = SalesCategory::where('sales_category_code', $sales_category)
+										 ->lists('id');
+										 //->toArray();
 
 		return $query->whereIn('product_sales_category', $sales_categories);
 	}
