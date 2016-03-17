@@ -50,6 +50,7 @@
 					<li><a href = "/collections">Collection</a></li>
 					<li><a href = "/occasions">Occasion</a></li>
 					<li><a href = "/products">Products ( SKUs ) </a></li>
+					<li><a href = "/products/sync">Sync products</a></li>
 					<li><a href = "/orders/list">Orders</a></li>
 					<li><a href = "/departments">Departments</a></li>
 					<li><a href = "/stations">Stations</a></li>

@@ -7,6 +7,14 @@ class CreateProductsTable extends Migration
 {
     public function up()
     {
+		/*TODO: add this fields to migration*/
+		/*ALTER TABLE  `products` ADD  `product_orderable` ENUM(  '0',  '1' ) NOT NULL DEFAULT  '0' AFTER  `width` ,
+ADD  `product_gift_cert` ENUM(  '0',  '1' ) NOT NULL DEFAULT  '0' AFTER  `product_orderable` ,
+ADD  `product_headline` TEXT NULL AFTER  `product_gift_cert` ,
+ADD  `product_caption` TEXT NULL AFTER  `product_headline` ,
+ADD  `product_abstract` TEXT NULL AFTER  `product_caption` ,
+ADD  `product_label` TEXT NULL AFTER  `product_abstract` ,
+ADD  `product_condition` VARCHAR( 255 ) NULL AFTER  `product_label` ;*/
         Schema::create('products', function (Blueprint $table) {
             $table->increments('id');
             $table->string('store_id');

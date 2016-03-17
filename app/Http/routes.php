@@ -1,7 +1,7 @@
 <?php
 
 get('test/batch', function () {
-	#return array_values(\App\Product::getTableColumns());
+	return 'test';
 });
 
 // auth middleware enabled controller
@@ -36,6 +36,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	get('exports/batch/{id}', 'ItemController@export_batch');
 
 	get('products/unassigned', 'ProductController@unassigned');
+	get('products/sync', 'ProductController@getSync');
+	post('products/sync', 'ProductController@postSync');
 	#get('products/import', 'ProductController@getAddProductsByCSV');
 	post('products/import', 'ProductController@import');
 	get('products/export', 'ProductController@export');

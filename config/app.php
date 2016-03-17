@@ -169,6 +169,8 @@ return [
 		/* Custom validation provider */
 		App\Providers\CustomValidationProvider::class,
 
+		/*Orchestra xml service provider*/
+		#Orchestra\Parser\XmlServiceProvider::class,
 	],
 
 	/*
@@ -222,6 +224,7 @@ return [
 		'Html'      => Collective\Html\HtmlFacade::class,
 		'DNS1D'     => Milon\Barcode\Facades\DNS1DFacade::class,
 		'DNS2D'     => Milon\Barcode\Facades\DNS2DFacade::class,
+		#'XmlParser' => Orchestra\Parser\Xml\Facade::class,
 
 	],
 

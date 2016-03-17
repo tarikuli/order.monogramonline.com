@@ -10,7 +10,7 @@ use GuzzleHttp\Psr7\Request as GRequest;
 class ApiClient
 {
 	private $httpClient;
-	private $orderIds = [ ], $store, $neededApi;
+	private $orderIds = [ ], $store, $neededApi, $id_catalogs = [ ];
 	private $options = [ ];
 	private $store_contact_token = [
 		// store online id
@@ -28,6 +28,7 @@ class ApiClient
 		'Mozilla/5.0 (compatible, MSIE 11, Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko',
 		'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.10 Safari/537.36',
 	];
+	private $task = null;
 
 	private function getOrderIds ()
 	{
@@ -47,6 +48,26 @@ class ApiClient
 		}
 
 		throw new \Exception("Order id cannot be null");
+	}
+
+	private function getIdCatalogs ()
+	{
+		return $this->id_catalogs;
+	}
+
+	private function setIdCatalogs ($id_catalogs)
+	{
+		if ( !empty( $id_catalogs ) ) {
+			if ( is_array($id_catalogs) ) {
+				$this->id_catalogs = array_merge($this->id_catalogs, $id_catalogs);
+			} else {
+				$this->orderIds = [ $id_catalogs ];
+			}
+
+			return;
+		}
+
+		throw new \Exception("Id catalogs cannot be null");
 	}
 
 	private function getNeededApi ()
@@ -81,18 +102,31 @@ class ApiClient
 		throw new \Exception("Store id cannot be null");
 	}
 
-	public function __construct ($order_ids, $store, $needed_api)
+	public function __construct ($items, $store, $needed_api, $task = null)
 	{
-		$this->setStore($store);
-		$this->setNeededApi($needed_api);
-		$this->setOrderIds($order_ids);
-		$this->httpClient = new Client();
+		if ( $task == 'sync' ) {
+			$this->task = 'sync';
+			$this->setStore($store);
+			$this->setNeededApi($needed_api);
+			$this->setIdCatalogs($items);
+			$this->httpClient = new Client();
+		} else {
+			$this->task = 'add-order';
+			$this->setStore($store);
+			$this->setNeededApi($needed_api);
+			$this->setOrderIds($items);
+			$this->httpClient = new Client();
+		}
 	}
 
 	public function fetch_data ()
 	{
 		if ( $this->getNeededApi() == 'yahoo' ) {
-			return $this->fetch_data_from_yahoo();
+			if ( $this->task == 'sync' ) {
+				return $this->fetch_sync_order_from_yahoo();
+			} elseif ( $this->task == 'add-order' ) {
+				return $this->fetch_data_from_yahoo();
+			}
 		}
 	}
 
@@ -147,6 +181,62 @@ class ApiClient
 				$errors[] = "Error for order id: $orderId";
 			} catch ( Exception $exception ) {
 				$errors[] = "Error for order id: $orderId";
+			}
+		}
+
+		return [
+			$responses,
+			new MessageBag($errors),
+		];
+	}
+
+	private function fetch_sync_order_from_yahoo ()
+	{
+		$data = "<?xml version='1.0' encoding='utf-8'?>";
+		$data .= "<ystorewsRequest>";
+		$data .= "<StoreID>{$this->getStore()}</StoreID>";     //insert your store id
+		$data .= "<SecurityHeader>";
+		$data .= "<PartnerStoreContractToken>{$this->store_contact_token[$this->getStore()]}</PartnerStoreContractToken>";  //insert your token`
+		$data .= "</SecurityHeader>";
+		$data .= "<Version>1.0</Version>";
+		$data .= "<Verb>get</Verb>";
+		$data .= "<ResourceList>";
+		$data .= "<CatalogQuery>";
+		$data .= "<ItemQueryList>";
+		$data .= "<ItemIDList>";
+		$data .= "<ID>PLACEHOLDERIDCATALOG</ID>";
+		$data .= "</ItemIDList>";
+		$data .= "<AttributesType>all</AttributesType>";
+		$data .= "</ItemQueryList>";
+		$data .= "</CatalogQuery>";
+		$data .= "</ResourceList>";
+		$data .= "</ystorewsRequest>";
+		#$url = "https://{$this->getStore()}.order.store.yahooapis.com/V1/order";
+		$url = "https://{$this->getStore()}.catalog.store.yahooapis.com/V1/CatalogQuery";
+		$errors = [ ];
+		$responses = [ ];
+		foreach ( $this->getIdCatalogs() as $idCatalog ) {
+			$ndata = str_replace("PLACEHOLDERIDCATALOG", $idCatalog, $data);
+			$body = [
+				'body' => $ndata,
+			];
+			$response = null;
+			try {
+				$response = $this->httpClient->request('POST', $url, $body);
+				if ( $response->getStatusCode() === 200 ) {
+					$responses[] = [
+						$idCatalog,
+						$response->getBody()
+								 ->getContents(),
+					];
+				} else {
+					$errors[] = "Error for order id: $idCatalog";
+				}
+			} catch ( RequestException $requestException ) {
+				$errors[] = "Error for order id: $idCatalog";
+			} catch ( Exception $exception ) {
+				dd(2);
+				$errors[] = "Error for order id: $idCatalog";
 			}
 		}
 

@@ -26,10 +26,13 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\MessageBag;
 use League\Csv\Reader;
 use League\Csv\Writer;
+use Monogram\ApiClient;
 use Monogram\Helper;
 
 class ProductController extends Controller
 {
+	private $store_id = null;
+
 	public function index (Request $request)
 	{
 		$products = Product::with('batch_route', 'master_category')
@@ -78,6 +81,7 @@ class ProductController extends Controller
 											  ->lists('collection_description', 'id')
 											  ->prepend('All', '0');
 		$count = 1;
+
 		#return $products;
 		return view('products.index', compact('products', 'product_occasions', 'product_collections', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
 			->with('categories', $master_categories)
@@ -952,5 +956,111 @@ class ProductController extends Controller
 		}
 
 		return response()->download($fully_specified_path);
+	}
+
+	public function getSync ()
+	{
+		$stores = Store::where('is_deleted', 0)
+					   ->lists('store_name', 'store_id');
+
+		return view('products.add', compact('stores'));
+	}
+
+	public function postSync (Request $request)
+	{
+		$id_catalogs = [ ];
+		$id_catalogs = explode(",", trim(preg_replace('/\s+/', '', $request->get('product_id_catalogs')), ","));
+
+		$needed_api = '';
+		$store = $request->get('store');
+		if ( strpos($store, "yhst") !== false ) {
+			$needed_api = 'yahoo';
+		}
+		try {
+			$api_client = new ApiClient($id_catalogs, $store, $needed_api, "sync");
+		} catch ( \Exception $exception ) {
+			return redirect()
+				->back()
+				->withInput()
+				->withErrors(new MessageBag([ 'api_error' => 'Selected store is not valid' ]));
+		}
+		$responses = [ ];
+		$errors = new Collection();
+		list( $responses, $errors ) = $api_client->fetch_data();
+		$count = count($id_catalogs);
+		foreach ( $responses as $data ) {
+			$this->store_id = $request->get('store');
+			$id_catalog = $data[0];
+			$response = $data[1];
+			$success = $this->sync_product($response);
+			if ( $success === false ) {
+				$errors->add(sprintf("Insertion error: %s", $id_catalog), sprintf("Error occurred while reading data from api for id catalog : %s.", $id_catalog));
+			}
+		}
+		if ( $errors->count() ) {
+			return redirect()
+				->back()
+				->withErrors($errors);
+		}
+
+		Session::flash('success', sprintf('%d Product(s) are synced successfully.', ( count($responses) - $errors->count() )));
+
+		return redirect(url('products/sync'));
+	}
+
+	public function sync_product ($response)
+	{
+		$xml = simplexml_load_string($response);
+		if ( $xml === false ) {
+			return false;
+		}
+		if ( $xml->InfoMessages || $xml->ErrorMessages ) { // no item found
+			return false;
+		}
+		foreach ( $xml->ResponseResourceList->Catalog->ItemList->children() as $item ) {
+			$id_catalog = $item->ID;
+			$product_name = $item->Name;
+			$model = $item->Code->Value;
+			$price = $item->Price;
+			$sale_price = $item->SalePrice;
+			$ship_weight = $item->ShipWeight;
+			$orderable = $item->Orderable;
+			$gift_cert = $item->GiftCert;
+			$headline = $item->Headline;
+			$caption = $item->Caption;
+			$abstract = $item->Abstract;
+			$label = $item->Label;
+			$condition = $item->Condition;
+			$updates = [
+				'product_name'       => $product_name,
+				'product_model'      => $model,
+				'product_price'      => $price,
+				'product_sale_price' => $sale_price,
+				'ship_weight'        => $ship_weight,
+				'product_orderable'  => $orderable,
+				'product_gift_cert'  => $gift_cert,
+				'product_headline'   => $headline,
+				'product_caption'    => $caption,
+				'product_abstract'   => $abstract,
+				'product_label'      => $label,
+				'product_condition'  => $condition,
+			];
+			$product = Product::where('id_catalog', $id_catalog)
+							  ->first();
+			if ( $product ) {
+				Product::where('id_catalog', $id_catalog)
+					   ->update($updates);;
+			} else {
+				$product = new Product();
+				$product->store_id = $this->store_id;
+				$product->id_catalog = $id_catalog;
+				foreach ( $updates as $key => $value ) {
+					$product->$key = $value;
+				}
+				$product->save();
+			}
+		}
+
+		return true;
 	}
 }
