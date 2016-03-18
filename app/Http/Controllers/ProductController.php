@@ -7,6 +7,7 @@ use App\Occasion;
 use App\Product;
 use App\ProductionCategory;
 use App\SalesCategory;
+use App\Specification;
 use App\Store;
 use App\SubCategory;
 use App\Collection as CollectionModel;
@@ -980,7 +981,22 @@ class ProductController extends Controller
 	public function postSync (Request $request)
 	{
 		$id_catalogs = [ ];
-		$id_catalogs = explode(",", trim(preg_replace('/\s+/', '', $request->get('product_id_catalogs')), ","));
+		if ( $request->exists('sync_all') && ( $request->get('sync_all') == 1 ) ) {
+			$id_catalogs = Product::where('is_deleted', 0)
+								  ->lists('id_catalog')
+								  ->toArray();
+		} else {
+			$id_catalog_input = trim(preg_replace('/\s+/', '', $request->get('product_id_catalogs')), ",");
+			if ( $id_catalog_input == "" ) {
+				return redirect()
+					->back()
+					->withInput()
+					->withErrors([
+						'error' => 'No id catalog is given',
+					]);
+			}
+			$id_catalogs = explode(",", $id_catalog_input);
+		}
 
 		$needed_api = '';
 		$store = $request->get('store');
@@ -1032,6 +1048,10 @@ class ProductController extends Controller
 			$id_catalog = $item->ID;
 			$product_name = $item->Name;
 			$model = $item->Code->Value;
+			// return false, if id catalog or model is null
+			if ( is_null($id_catalog) || is_null($model) ) {
+				return false;
+			}
 			$price = $item->Price;
 			$sale_price = $item->SalePrice;
 			$ship_weight = $item->ShipWeight;
@@ -1042,25 +1062,35 @@ class ProductController extends Controller
 			$abstract = $item->Abstract;
 			$label = $item->Label;
 			$condition = $item->Condition;
+			$formatted_data = $this->fetch_custom_data($item->CustomData);
+			$keywords = $formatted_data['keywords'];
+			$description = $formatted_data['description'];
+			$customData = $formatted_data['customData'];
+			if ( $item->OptionList ) {
+				#$this->fetch_option_list($item->OptionList);
+			}
 			$updates = [
-				'product_name'       => $product_name,
-				'product_model'      => $model,
-				'product_price'      => $price,
-				'product_sale_price' => $sale_price,
-				'ship_weight'        => $ship_weight,
-				'product_orderable'  => $orderable,
-				'product_gift_cert'  => $gift_cert,
-				'product_headline'   => $headline,
-				'product_caption'    => $caption,
-				'product_abstract'   => $abstract,
-				'product_label'      => $label,
-				'product_condition'  => $condition,
+				'product_name'        => $product_name,
+				'product_model'       => $model,
+				'product_price'       => $price,
+				'product_sale_price'  => $sale_price,
+				'product_keywords'    => $keywords,
+				'product_description' => $description,
+				'ship_weight'         => $ship_weight,
+				'product_orderable'   => $orderable,
+				'product_gift_cert'   => $gift_cert,
+				'product_headline'    => $headline,
+				'product_caption'     => $caption,
+				'product_abstract'    => $abstract,
+				'product_label'       => $label,
+				'product_condition'   => $condition,
 			];
+
 			$product = Product::where('id_catalog', $id_catalog)
 							  ->first();
 			if ( $product ) {
 				Product::where('id_catalog', $id_catalog)
-					   ->update($updates);;
+					   ->update($updates);
 			} else {
 				$product = new Product();
 				$product->store_id = $this->store_id;
@@ -1070,8 +1100,52 @@ class ProductController extends Controller
 				}
 				$product->save();
 			}
+
+			$specification = new Specification();
+			$specification->id_catalog = $id_catalog;
+			$specification->product_model = $model;
+			$specification->product_id = $product->id;
+			$specification->custom_data = $customData;
+			$specification->save();
 		}
 
 		return true;
+	}
+
+	public function fetch_custom_data ($node)
+	{
+		$keywords = '';
+		$description = '';
+		$data = [ ];
+		foreach ( $node as $cursor ) {
+			$name = (string) $cursor->Name;
+			$value = (string) $cursor->Value;
+			if ( $name == 'keywords' ) {
+				$keywords = $value;
+			} elseif ( $name == 'description' ) {
+				$description = $value;
+			} else {
+				$data[$name] = $value;
+			}
+		}
+
+		return [
+			'keywords'    => $keywords,
+			'description' => $description,
+			'customData'  => json_encode($data),
+		];
+	}
+
+	public function fetch_option_list ($node) // $item->OptionList
+	{
+		$options = [];
+		foreach ( $node->Option as $option ) {
+			$name = (string) $option->Name;
+			$values_list = $option->ValueList;
+			foreach ( $values_list as $value ) {
+				$options[$name][] = $value;
+			}
+		}
+		dd($options);
 	}
 }

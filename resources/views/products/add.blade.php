@@ -33,6 +33,14 @@
 					{!! Form::text('product_id_catalogs', null, ['id'=>'product_id_catalogs', 'class' => 'form-control', 'placeholder' => 'Enter product id catalogs separated by comma']) !!}
 				</div>
 			</div>
+			<div class = "form-group">
+				<div class = "checkbox">
+					<label for = "sync_all" class = "col-sm-offset-3 control-label">
+						{!! Form::checkbox('sync_all', 1, false, ['id'=>'sync_all']) !!}
+						Sync all?
+					</label>
+				</div>
+			</div>
 
 			<div class = "form-group">
 				<div class = "col-xs-offset-3 col-sm-6">
