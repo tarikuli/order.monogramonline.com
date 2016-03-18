@@ -93,6 +93,11 @@ class Product extends Model
 					->withTimestamps();
 	}
 
+	public function specifications ()
+	{
+		return $this->hasOne('App\Specification', 'product_id', 'id');
+	}
+
 	public function product_collection_details ()
 	{
 		return $this->belongsTo('App\Collection', 'product_collection', 'id')

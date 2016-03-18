@@ -345,9 +345,10 @@ class ProductController extends Controller
 
 	public function edit ($id)
 	{
-		$product = Product::with('batch_route')
+		$product = Product::with('batch_route', 'specifications')
 						  ->where('is_deleted', 0)
 						  ->find($id);
+		#return $product;
 		if ( !$product ) {
 			return view('errors.404');
 		}
@@ -1062,13 +1063,17 @@ class ProductController extends Controller
 			$abstract = $item->Abstract;
 			$label = $item->Label;
 			$condition = $item->Condition;
+			#dd($xml);
 			$formatted_data = $this->fetch_custom_data($item->CustomData);
 			$keywords = $formatted_data['keywords'];
 			$description = $formatted_data['description'];
 			$customData = $formatted_data['customData'];
+			// TODO: Option list grabbing
 			if ( $item->OptionList ) {
-				#$this->fetch_option_list($item->OptionList);
+				$option_list = $this->fetch_option_list($item->OptionList->Option);
+				$customData = array_merge($customData, $option_list);
 			}
+
 			$updates = [
 				'product_name'        => $product_name,
 				'product_model'       => $model,
@@ -1101,11 +1106,15 @@ class ProductController extends Controller
 				$product->save();
 			}
 
-			$specification = new Specification();
-			$specification->id_catalog = $id_catalog;
+			$specification = Specification::where('id_catalog', $id_catalog)
+										  ->first();
+			if ( !$specification ) {
+				$specification = new Specification();
+				$specification->id_catalog = $id_catalog;
+			}
 			$specification->product_model = $model;
 			$specification->product_id = $product->id;
-			$specification->custom_data = $customData;
+			$specification->custom_data = json_encode($customData);
 			$specification->save();
 		}
 
@@ -1132,20 +1141,21 @@ class ProductController extends Controller
 		return [
 			'keywords'    => $keywords,
 			'description' => $description,
-			'customData'  => json_encode($data),
+			'customData'  => $data,
 		];
 	}
 
 	public function fetch_option_list ($node) // $item->OptionList
 	{
-		$options = [];
-		foreach ( $node->Option as $option ) {
-			$name = (string) $option->Name;
-			$values_list = $option->ValueList;
+		$options = [ ];
+		foreach ( $node as $cursor ) {
+			$name = (string) $cursor->Name;
+			$values_list = $cursor->ValueList ? (array) $cursor->ValueList->Value : [ ]; // if values list exist, cast it to array
 			foreach ( $values_list as $value ) {
-				$options[$name][] = $value;
+				$options[$name][] = (string) $value;
 			}
 		}
-		dd($options);
+
+		return $options;
 	}
 }

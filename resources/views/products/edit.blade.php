@@ -11,7 +11,7 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<style>
-		.parent-selector{
+		.parent-selector {
 			width: 135px;
 			overflow: auto;
 		}
@@ -54,6 +54,10 @@
 				<li role = "presentation">
 					<a href = "#tab-categories" aria-controls = "categories" role = "tab"
 					   data-toggle = "tab">All categories</a>
+				</li>
+				<li role = "presentation">
+					<a href = "#tab-custom-data" aria-controls = "custom-data" role = "tab"
+					   data-toggle = "tab">Custom data</a>
 				</li>
 			</ul>
 
@@ -108,9 +112,7 @@
 							{!! Form::text('product_name', $product->product_name, ['id' => 'product_name','class'=>'form-control']) !!}
 						</div>
 					</div>
-
 					<hr />
-
 					<div class = "form-group">
 						{!!Form::label('vendor_id','Supplier: ',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">
@@ -283,6 +285,16 @@
 							{{--{!! Form::select('product_collection[]', $product_collections, $product->collections()->lists('collection_id')->all(), ['id' => 'product_collection','class'=>'form-control', 'multiple' => 'multiple']) !!}--}}
 						</div>
 					</div>
+				</div>
+				<div role = "tabpanel" class = "tab-pane fade" id = "tab-custom-data">
+					@foreach(json_decode($product->specifications->custom_data, true) as $key => $value)
+						<div class = "form-group">
+							{!!Form::label("{$key}", "{$key}", ['class'=>'control-label col-xs-2'])!!}
+							<div class = "col-xs-5">
+								{!! Form::text("{$key}", implode(",", is_array($value) ? $value : [$value]), ['id' => "{$key}",'class'=>'form-control']) !!}
+							</div>
+						</div>
+					@endforeach
 				</div>
 			</div>
 		</div>
