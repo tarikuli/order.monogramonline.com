@@ -984,6 +984,7 @@ class ProductController extends Controller
 		$id_catalogs = [ ];
 		if ( $request->exists('sync_all') && ( $request->get('sync_all') == 1 ) ) {
 			$id_catalogs = Product::where('is_deleted', 0)
+								  ->where('store_id', $request->get('store'))
 								  ->lists('id_catalog')
 								  ->toArray();
 		} else {
@@ -998,7 +999,6 @@ class ProductController extends Controller
 			}
 			$id_catalogs = explode(",", $id_catalog_input);
 		}
-
 		$needed_api = '';
 		$store = $request->get('store');
 		if ( strpos($store, "yhst") !== false ) {
