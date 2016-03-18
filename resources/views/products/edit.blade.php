@@ -287,14 +287,18 @@
 					</div>
 				</div>
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-custom-data">
-					@foreach(json_decode($product->specifications->custom_data, true) as $key => $value)
-						<div class = "form-group">
-							{!!Form::label("{$key}", "{$key}", ['class'=>'control-label col-xs-2'])!!}
-							<div class = "col-xs-5">
-								{!! Form::text("{$key}", implode(",", is_array($value) ? $value : [$value]), ['id' => "{$key}",'class'=>'form-control']) !!}
+					@if($product->specifications)
+						@foreach(json_decode($product->specifications->custom_data, true) as $key => $value)
+							<div class = "form-group">
+								{!!Form::label("{$key}", "{$key}", ['class'=>'control-label col-xs-2'])!!}
+								<div class = "col-xs-5">
+									{!! Form::text("{$key}", implode(",", is_array($value) ? $value : [$value]), ['id' => "{$key}",'class'=>'form-control']) !!}
+								</div>
 							</div>
-						</div>
-					@endforeach
+						@endforeach
+						@else
+						<div class="alert alert-warning">No custom data available.</div>
+					@endif
 				</div>
 			</div>
 		</div>
