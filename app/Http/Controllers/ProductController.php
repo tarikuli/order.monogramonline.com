@@ -580,6 +580,19 @@ class ProductController extends Controller
 		}
 
 		$product->save();
+
+		// grab yahoo/custom data fields from request
+		$customData = [ ];
+		// TODO: how to check the second level json?
+		foreach ( $request->all() as $key => $value ) {
+			if ( strpos($key, "custom-") !== false ) {
+				$name = substr($key, strlen("custom-"));
+				$customData[$name] = $value;
+			}
+		}
+
+		#return $customData;
+
 		// if the request is not for updating batch
 		if ( !$request->exists('update_batch') ) {
 			// if the request has collection
@@ -981,6 +994,7 @@ class ProductController extends Controller
 
 	public function postSync (Request $request)
 	{
+		#return $request->all();
 		$id_catalogs = [ ];
 		if ( $request->exists('sync_all') && ( $request->get('sync_all') == 1 ) ) {
 			$id_catalogs = Product::where('is_deleted', 0)
@@ -1032,6 +1046,13 @@ class ProductController extends Controller
 		}
 
 		Session::flash('success', sprintf('%d Product(s) are synced successfully.', ( count($responses) - $errors->count() )));
+
+		// if the request is from products edit page,
+		//redirect to there
+
+		if ( $request->get('callee') ) {
+			return redirect(url($request->get('callee')));
+		}
 
 		return redirect(url('products/sync'));
 	}
@@ -1157,5 +1178,10 @@ class ProductController extends Controller
 		}
 
 		return $options;
+	}
+
+	public function post_to_yahoo (Request $request)
+	{
+		return $request->all();
 	}
 }

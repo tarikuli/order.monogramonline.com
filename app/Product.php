@@ -161,7 +161,7 @@ class Product extends Model
 		if ( $search_in && in_array($search_in, $available_fields) ) {
 			if ( $search_in == 'id_catalog' ) {
 				return $this->scopeSearchIdCatalog($query, $search_for);
-			} elseif ( $search_in == 'product_mode' ) {
+			} elseif ( $search_in == 'product_model' ) {
 				return $this->scopeSearchProductModel($query, $search_for);
 			} elseif ( $search_in == 'product_name' ) {
 				return $this->scopeSearchProductName($query, $search_for);

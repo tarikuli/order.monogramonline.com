@@ -290,31 +290,48 @@
 					@if($product->specifications)
 						@foreach(json_decode($product->specifications->custom_data, true) as $key => $value)
 							<div class = "form-group">
-								{!!Form::label("{$key}", "{$key}", ['class'=>'control-label col-xs-2'])!!}
+								{!!Form::label("custom-{$key}", "{$key}", ['class'=>'control-label col-xs-2'])!!}
 								<div class = "col-xs-5">
-									{!! Form::text("{$key}", implode(",", is_array($value) ? $value : [$value]), ['id' => "{$key}",'class'=>'form-control']) !!}
+									{!! Form::text("custom-{$key}", implode(",", is_array($value) ? $value : [$value]), ['id' => "custom-{$key}",'class'=>'form-control']) !!}
 								</div>
 							</div>
 						@endforeach
-						@else
-						<div class="alert alert-warning">No custom data available.</div>
+					@else
+						<div class = "alert alert-warning">No custom data available.</div>
 					@endif
 				</div>
 			</div>
 		</div>
 		<div class = "form-group">
+			<div class = "col-md-2 pull-left">
+				{!! Form::button('Pull from yahoo',['class'=>'btn btn-primary btn-block', 'id' => 'pull-from-yahoo']) !!}
+			</div>
 			<div class = "col-md-2 pull-right">
-				{!! Form::submit('Update product',['class'=>'btn btn-primary btn-block']) !!}
+				{!! Form::button('Pull from yahoo',['class'=>'btn btn-primary btn-block', 'id' => 'post-to-yahoo']) !!}
+			</div>
+			<div class = "col-md-2 pull-right">
+				{!! Form::submit('Update local',['class'=>'btn btn-primary btn-block']) !!}
 			</div>
 		</div>
 		{!! Form::close() !!}
 
 		{!! Form::open(['url' => url(sprintf('/products/%d', $product->id)), 'method' => 'delete', 'id' => 'delete-product-form', 'class'=>'form-horizontal','role'=>'form']) !!}
 		<div class = "form-group">
-			<div class = "col-xs-offset-4 col-xs-5">
-				{!! Form::submit('Delete product', ['class'=> 'btn btn-danger btn-block', 'id' => 'delete-product-btn']) !!}
+			<div class = "col-xs-2 pull-right">
+				{!! Form::submit('Delete product', ['class'=> 'btn btn-danger', 'id' => 'delete-product-btn']) !!}
 			</div>
 		</div>
+		{!! Form::close() !!}
+
+		{!! Form::open(['url' => url('/products/sync'), 'method' => 'post', 'id' => 'sync-product-from-yahoo']) !!}
+		{!! Form::hidden('product_id_catalogs', $product->id_catalog) !!}
+		{!! Form::hidden('store', $product->store_id) !!}
+		{!! Form::hidden('callee', Request::url()) !!}
+		{!! Form::close() !!}
+
+		{!! Form::open(['url' => url('/products/post_to_yahoo'), 'method' => 'post', 'id' => 'post_to_yahoo']) !!}
+		{!! Form::hidden('product_id', $product->id) !!}
+		{!! Form::hidden('store', $product->store_id) !!}
 		{!! Form::close() !!}
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -381,6 +398,17 @@
 				}
 			});
 		}
+
+		$("button#pull-from-yahoo").on('click', function (event)
+		{
+			event.preventDefault();
+			$("form#sync-product-from-yahoo").submit();
+		});
+		$("button#post-to-yahoo").on('click', function (event)
+		{
+			event.preventDefault();
+			$("form#post_to_yahoo").submit();
+		});
 	</script>
 </body>
 </html>

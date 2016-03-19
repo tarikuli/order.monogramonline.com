@@ -38,6 +38,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	get('products/unassigned', 'ProductController@unassigned');
 	get('products/sync', 'ProductController@getSync');
 	post('products/sync', 'ProductController@postSync');
+	post('products/post_to_yahoo', 'ProductController@post_to_yahoo');
 	#get('products/import', 'ProductController@getAddProductsByCSV');
 	post('products/import', 'ProductController@import');
 	get('products/export', 'ProductController@export');
