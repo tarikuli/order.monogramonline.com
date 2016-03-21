@@ -30,6 +30,9 @@ class HomeController extends Controller
 						   ->get();
 		foreach ( $products as $product ) {
 			$url = $product->product_url;
+			if ( !filter_var($url, FILTER_VALIDATE_URL) ) {
+				continue;
+			}
 			$images = $this->getImages($url);
 			$i = 0;
 			foreach ( $images as $image ) {
