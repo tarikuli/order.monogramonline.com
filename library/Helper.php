@@ -209,6 +209,12 @@ APPEND;
 		return $container;
 	}
 
+	public static function getProductCount ($category_id)
+	{
+		#return Product::where('product_master_category', $category_id)->count();
+		return Product::searchMasterCategory($category_id)->count();
+	}
+
 	public static function orderIdFormatter ($order, $column_name = 'id')
 	{
 		return sprintf("%06d", $order->$column_name);
