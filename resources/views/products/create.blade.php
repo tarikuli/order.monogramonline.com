@@ -156,6 +156,12 @@
 							{!! Form::select('is_taxable', $is_taxable, null, ['id' => 'is_taxable', 'class'=>'form-control']) !!}
 						</div>
 					</div>
+					<div class = "form-group">
+						{!!Form::label('product_drop_shipper','Drop shipper: ',['class'=>'control-label col-xs-2'])!!}
+						<div class = "col-xs-5">
+							{!! Form::select('product_drop_shipper', $is_taxable, null, ['id' => 'product_drop_shipper', 'class'=>'form-control']) !!}
+						</div>
+					</div>
 					{{--<div class = "form-group">
 						{!!Form::label('is_deleted','Active: ',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">

@@ -107,6 +107,10 @@
 								<td>{{$product->is_taxable ? "Yes" : "No"}}</td>
 							</tr>
 							<tr>
+								<td>Drop shipper</td>
+								<td>{{$product->product_drop_shipper ? "Yes" : "No"}}</td>
+							</tr>
+							<tr>
 								<td>Royalties Product</td>
 								<td>{{$product->is_royalties ? "Yes" : "No"}}</td>
 							</tr>
@@ -116,7 +120,13 @@
 							</tr>
 							<tr>
 								<td>Route</td>
-								<td>{{sprintf("%s(%s)", $product->batch_route->batch_route_name, $product->batch_route->batch_code)}}</td>
+								<td>
+									@if($product->batch_route)
+										{{sprintf("%s(%s)", $product->batch_route->batch_route_name, $product->batch_route->batch_code)}}
+									@else
+										-
+									@endif
+								</td>
 							</tr>
 							<tr>
 								<td>Height</td>

@@ -168,6 +168,12 @@
 						</div>
 					</div>
 					<div class = "form-group">
+						{!!Form::label('product_drop_shipper','Drop shipper: ',['class'=>'control-label col-xs-2'])!!}
+						<div class = "col-xs-5">
+							{!! Form::select('product_drop_shipper', $is_taxable, $product->product_drop_shipper, ['id' => 'product_drop_shipper', 'class'=>'form-control']) !!}
+						</div>
+					</div>
+					<div class = "form-group">
 						{!!Form::label('is_deleted','Delete?: ',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">
 							{!! Form::select('is_deleted', $is_taxable, $product->is_deleted, ['id' => 'is_deleted', 'class'=>'form-control']) !!}

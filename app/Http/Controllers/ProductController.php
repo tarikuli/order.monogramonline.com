@@ -275,6 +275,9 @@ class ProductController extends Controller
 		if ( $request->exists('is_taxable') ) {
 			$product->is_taxable = $request->get('is_taxable') ? 1 : 0;
 		}
+		if ( $request->exists('product_drop_shipper') ) {
+			$product->product_drop_shipper = $request->get('product_drop_shipper') ? 1 : 0;
+		}
 		if ( $request->exists('is_deleted') ) {
 			$product->is_deleted = $request->get('is_deleted') ? 1 : 0;
 		}
@@ -563,6 +566,9 @@ class ProductController extends Controller
 		if ( $request->exists('is_taxable') ) {
 			$product->is_taxable = $request->get('is_taxable') ? 1 : 0;
 		}
+		if ( $request->exists('product_drop_shipper') ) {
+			$product->product_drop_shipper = $request->get('product_drop_shipper') ? 1 : 0;
+		}
 		if ( $request->exists('product_keywords') ) {
 			$product->product_keywords = trim($request->get('product_keywords'));
 		}
@@ -798,6 +804,8 @@ class ProductController extends Controller
 					}
 				} elseif ( $column == 'is_deleted' ) {
 					$product->is_deleted = $row['is_deleted'] ? 1 : 0;
+				} elseif ( $column == 'product_drop_shipper' ) {
+					$product->product_drop_shipper = $row['product_drop_shipper'] ? 1 : 0;
 				} elseif ( $column == 'product_master_category' ) {
 					$master_category_from_file = trim($row['product_master_category']);
 					$master_category_from_table = MasterCategory::where('master_category_code', $master_category_from_file)
@@ -927,6 +935,7 @@ class ProductController extends Controller
 		$columns = array_merge($table_columns, $extra_columns);
 		#$products = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category', 'product_occasion_details', 'product_collection_details')->get($columns);
 		$products = Product::with('batch_route', 'master_category', 'production_category', 'sales_category')
+						   ->where('is_deleted', 0)
 						   ->get();
 		#->get(array_merge([ 'id' ], $table_columns));
 		$file_path = sprintf("%s/assets/exports/products/", public_path());
