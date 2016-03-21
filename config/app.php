@@ -171,6 +171,12 @@ return [
 
 		/*Orchestra xml service provider*/
 		#Orchestra\Parser\XmlServiceProvider::class,
+
+		/*HTML DOM */
+		Yangqi\Htmldom\HtmldomServiceProvider::class,
+
+		/*Image intervention */
+		Intervention\Image\ImageServiceProvider::class,
 	],
 
 	/*
@@ -224,6 +230,8 @@ return [
 		'Html'      => Collective\Html\HtmlFacade::class,
 		'DNS1D'     => Milon\Barcode\Facades\DNS1DFacade::class,
 		'DNS2D'     => Milon\Barcode\Facades\DNS2DFacade::class,
+		'Htmldom'   => Yangqi\Htmldom\Htmldom::class,
+		'Image'     => Intervention\Image\Facades\Image::class
 		#'XmlParser' => Orchestra\Parser\Xml\Facade::class,
 
 	],
