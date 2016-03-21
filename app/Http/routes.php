@@ -6,7 +6,6 @@ get('test/batch', function () {
 
 // auth middleware enabled controller
 Route::group([ 'middleware' => [ 'auth' ] ], function () {
-	get('image-crawler', 'HomeController@imageCrawler');
 	get('/', 'HomeController@index');
 	get('logout', 'AuthenticationController@getLogout');
 
