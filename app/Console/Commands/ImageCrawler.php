@@ -46,7 +46,7 @@ class ImageCrawler extends Command
 		// get the public path where to store the image
 		$this->save_to_path = public_path('media');
 		$products = Product::where('is_deleted', 0)
-						   ->paginate(2);
+						   ->get();
 		// start progress bar
 		$progressBar = $this->output->createProgressBar(count($products));
 		foreach ( $products as $product ) {
