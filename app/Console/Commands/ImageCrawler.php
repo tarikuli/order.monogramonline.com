@@ -49,13 +49,17 @@ class ImageCrawler extends Command
 						   ->get();
 		// start progress bar
 		$progressBar = $this->output->createProgressBar(count($products));
+		$imagesTotal = 0;
+		$errorsTotal = 0;
 		foreach ( $products as $product ) {
 			$url = $product->product_url;
 			if ( !filter_var($url, FILTER_VALIDATE_URL) ) { // url is invalid
 				$this->error(sprintf("<%'*30s> - error - <%s>", $product->id_catalog, $url));
+				++$errorsTotal;
 			} else {
 				$images = $this->getImages($url);
 				$i = 0;
+				$imagesTotal += count($images);
 				foreach ( $images as $image ) {
 					$this->info(sprintf("<%'*30s> - Downloaded image - %d", $product->id_catalog, ( $i + 1 )));
 					$this->download_image($image, $i);
@@ -67,9 +71,7 @@ class ImageCrawler extends Command
 		}
 
 		#$progressBar->finish();
-
-
-		return sprintf('Downloaded %d images.', count($product));
+		$this->info(sprintf("Total of %d images download. %d errors found out of %d products.", $imagesTotal, $errorsTotal, count($products)));
 	}
 
 	private function download_image ($image_url, $index)
