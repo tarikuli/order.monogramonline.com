@@ -54,7 +54,7 @@ class ImageCrawler extends Command
 		foreach ( $products as $product ) {
 			$url = $product->product_url;
 			if ( !filter_var($url, FILTER_VALIDATE_URL) ) { // url is invalid
-				$this->error(sprintf("<%'*30s> - error - <%s>", $product->id_catalog, $url));
+				$this->error(sprintf("<%'*30s> - Error in URL - <%s>", $product->id_catalog, $url));
 				++$errorsTotal;
 			} else {
 				$images = $this->getImages($url);
