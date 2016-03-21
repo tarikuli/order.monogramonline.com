@@ -13,6 +13,27 @@ class Product extends Model
 		'created_at',
 	];
 	private $data_set = [ ];
+	public static $searchable_fields = [
+		'id_catalog'             => 'ID Catalog',
+		'product_model'          => 'SKU',
+		'product_name'           => 'Name',
+		'product_sales_category' => 'Sales category',
+		'product_price'          => 'Price',
+		'product_sale_price'     => 'Sale price',
+		'product_ship_weight'    => 'Ship Weight',
+		'product_note'           => 'Note',
+		'product_keywords'       => 'Keywords',
+		'product_description'    => 'Description',
+		'product_brand'          => 'Brand',
+		'product_availability'   => 'Availability',
+		'product_default_cost'   => 'Default cost',
+		'product_video'          => 'Video',
+		'height'                 => 'Height',
+		'width'                  => 'Width',
+		'product_headline'       => 'Headline',
+		'product_caption'        => 'Caption',
+		'product_label'          => 'Label',
+	];
 
 	private function tableColumns ()
 	{
@@ -29,6 +50,7 @@ class Product extends Model
 
 		return array_diff($columns, $remove_columns);
 	}
+
 
 	public static function getTableColumns ()
 	{
@@ -151,14 +173,9 @@ class Product extends Model
 
 	public function scopeSearchInOption ($query, $search_in, $search_for)
 	{
-		$available_fields = [
-			'id_catalog',
-			'product_model',
-			'product_name',
-			'product_sales_category',
-		];
+
 		// search in field means, in which field you want to search
-		if ( $search_in && in_array($search_in, $available_fields) ) {
+		if ( $search_in && in_array($search_in, array_keys(static::$searchable_fields)) ) {
 			if ( $search_in == 'id_catalog' ) {
 				return $this->scopeSearchIdCatalog($query, $search_for);
 			} elseif ( $search_in == 'product_model' ) {
@@ -167,10 +184,184 @@ class Product extends Model
 				return $this->scopeSearchProductName($query, $search_for);
 			} elseif ( $search_in == 'product_sales_category' ) {
 				return $this->scopeSearchProductSalesCategory($query, $search_for);
+			} elseif ( $search_in == 'product_price' ) {
+				return $this->scopeSearchProductPrice($query, $search_for);
+			} elseif ( $search_in == 'product_sale_price' ) {
+				return $this->scopeSearchProductSalePrice($query, $search_for);
+			} elseif ( $search_in == 'product_ship_weight' ) {
+				return $this->scopeSearchProductShipWeight($query, $search_for);
+			} elseif ( $search_in == 'product_keywords' ) {
+				return $this->scopeSearchProductKeywords($query, $search_for);
+			} elseif ( $search_in == 'product_description' ) {
+				return $this->scopeSearchProductDescription($query, $search_for);
+			} elseif ( $search_in == 'product_brand' ) {
+				return $this->scopeSearchProductBrand($query, $search_for);
+			} elseif ( $search_in == 'product_availability' ) {
+				return $this->scopeSearchProductAvailability($query, $search_for);
+			} elseif ( $search_in == 'product_default_cost' ) {
+				return $this->scopeSearchProductDefaultCost($query, $search_for);
+			} elseif ( $search_in == 'product_video' ) {
+				return $this->scopeSearchProductVideo($query, $search_for);
+			} elseif ( $search_in == 'height' ) {
+				return $this->scopeSearchProductHeight($query, $search_for);
+			} elseif ( $search_in == 'width' ) {
+				return $this->scopeSearchProductWidth($query, $search_for);
+			} elseif ( $search_in == 'product_headline' ) {
+				return $this->scopeSearchProductHeadline($query, $search_for);
+			} elseif ( $search_in == 'product_caption' ) {
+				return $this->scopeSearchProductCaption($query, $search_for);
+			} elseif ( $search_in == 'product_label' ) {
+				return $this->scopeSearchProductLabel($query, $search_for);
+			} elseif ( $search_in == 'product_note' ) {
+				return $this->scopeSearchProductNote($query, $search_for);
 			}
 		}
 
 		return;
+	}
+
+	public function scopeSearchProductNote ($query, $note)
+	{
+		$note = trim($note);
+		if ( empty( $note ) ) {
+			return;
+		}
+
+		return $query->where('product_note', "LIKE", sprintf("%%%s%%", $note));
+	}
+
+	public function scopeSearchProductLabel ($query, $label)
+	{
+		$label = trim($label);
+		if ( empty( $label ) ) {
+			return;
+		}
+
+		return $query->where('product_label', "LIKE", sprintf("%%%s%%", $label));
+	}
+
+	public function scopeSearchProductCaption ($query, $caption)
+	{
+		$caption = trim($caption);
+		if ( empty( $caption ) ) {
+			return;
+		}
+
+		return $query->where('product_caption', "LIKE", sprintf("%%%s%%", $caption));
+	}
+
+	public function scopeSearchProductHeadline ($query, $headline)
+	{
+		$headline = trim($headline);
+		if ( empty( $headline ) ) {
+			return;
+		}
+
+		return $query->where('product_headline', "LIKE", sprintf("%%%s%%", $headline));
+	}
+
+	public function scopeSearchProductHeight ($query, $height)
+	{
+		if ( !$height ) {
+			return;
+		}
+
+		return $query->where('height', floatval($height));
+	}
+
+	public function scopeSearchProductWidth ($query, $width)
+	{
+		if ( !$width ) {
+			return;
+		}
+
+		return $query->where('width', floatval($width));
+	}
+
+	public function scopeSearchProductVideo ($query, $video_link)
+	{
+		$video_link = trim($video_link);
+		if ( empty( $video_link ) ) {
+			return;
+		}
+
+		return $query->where('product_video', "LIKE", sprintf("%%%s%%", $video_link));
+	}
+
+	public function scopeSearchProductAvailability ($query, $term)
+	{
+		$term = trim($term);
+		if ( empty( $term ) ) {
+			return;
+		}
+
+		return $query->where('product_availability', "LIKE", sprintf("%%%s%%", $term));
+	}
+
+	public function scopeSearchProductBrand ($query, $brand)
+	{
+		$brand = trim($brand);
+		if ( empty( $brand ) ) {
+			return;
+		}
+
+		return $query->where('product_brand', "LIKE", sprintf("%%%s%%", $brand));
+	}
+
+	public function scopeSearchProductDescription ($query, $description)
+	{
+		$description = trim($description);
+		if ( empty( $description ) ) {
+			return;
+		}
+
+		return $query->where('product_description', "LIKE", sprintf("%%%s%%", $description));
+	}
+
+	public function scopeSearchProductKeywords ($query, $keyword)
+	{
+		$keyword = trim($keyword);
+		if ( empty( $keyword ) ) {
+			return;
+		}
+
+		return $query->where('product_keywords', "LIKE", sprintf("%%%s%%", $keyword));
+	}
+
+	public function scopeSearchProductDefaultCost ($query, $cost)
+	{
+		if ( !$cost ) {
+			return;
+		}
+
+		return $query->where('product_default_cost', floatval($cost));
+	}
+
+	public function scopeSearchProductShipWeight ($query, $weight)
+	{
+		if ( !$weight ) {
+			return;
+		}
+
+		return $query->where('ship_weight', floatval($weight));
+	}
+
+	public function scopeSearchProductSalePrice ($query, $price)
+	{
+		if ( !$price ) {
+			return;
+		}
+
+		return $query->where('product_sale_price', floatval($price));
+	}
+
+	public function scopeSearchProductPrice ($query, $price)
+	{
+		if ( !$price ) {
+			return;
+		}
+
+		return $query->where('product_price', floatval($price));
 	}
 
 	public function scopeSearchProductSalesCategory ($query, $sales_category)
@@ -186,7 +377,8 @@ class Product extends Model
 
 		$sales_categories = SalesCategory::where('sales_category_code', $sales_category)
 										 ->lists('id');
-										 //->toArray();
+
+		//->toArray();
 
 		return $query->whereIn('product_sales_category', $sales_categories);
 	}

@@ -64,7 +64,7 @@
 							</div>
 							<div class = "form-group col-xs-3">
 								<label for = "search_in">Search in</label>
-								{!! Form::select('search_in',['id_catalog' => 'ID Catalog', 'product_model' => 'SKU', 'product_name' => 'Name'/*, 'product_sales_category' => 'Sales category'*/], $request->get('search_in'), ['id'=>'search_in', 'class' => 'form-control']) !!}
+								{!! Form::select('search_in', \App\Product::$searchable_fields, $request->get('search_in'), ['id'=>'search_in', 'class' => 'form-control']) !!}
 							</div>
 							<div class = "form-group  col-xs-3">
 								<label for = "product_production_category">Search in production category</label>
