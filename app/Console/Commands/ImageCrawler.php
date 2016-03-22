@@ -69,7 +69,6 @@ class ImageCrawler extends Command
 		} else { // id catalog is not passed as argument
 			$magento_products = Magento::all();
 			$products = Product::whereIn('id_catalog', $magento_products->lists('id_catalog'))
-							   ->where('is_deleted', 0)
 							   ->get();
 			/*$products = Product::where('is_deleted', 0)
 							   ->get();*/
