@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Magento;
 use App\Product;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 
 class ImageCrawler extends Command
@@ -55,23 +56,35 @@ class ImageCrawler extends Command
 		$products = null;
 		// if id catalog is passed as argument
 		if ( $id_catalog ) {
-			$products = Product::where('id_catalog', $id_catalog)
-							   ->get();
-			if ( count($products) == 0 ) {
+			// check if the id catalog is present in magento table
+			$magento_product = Magento::where('id_catalog', $id_catalog)
+									  ->first();
+			// if the product doesn't exist
+			if ( !$magento_product ) {
 				$this->error("0 Products found to crawl");
 
 				return;
 			}
+			// if forward flag is given
 			if ( $allow_forward ) {
-				$products = Product::where('id', '>=', $products->first()->id)
+				$magento_products = Magento::where('id', '>=', $magento_product->id)
+										   ->orderBy('id')
+										   ->get();
+				$products = Product::whereIn('id_catalog', $magento_products->lists('id_catalog'))
+								   ->orderByRaw(DB::raw(sprintf("FIELD(id_catalog,'%s')", implode("','", $magento_products->lists('id_catalog')
+																														  ->toArray()))))
+								   ->get();
+			} else { // if forward flag is not present
+				$products = Product::where('id_catalog', $magento_product->id_catalog)
 								   ->get();
 			}
 		} else { // id catalog is not passed as argument
-			$magento_products = Magento::all();
+			$magento_products = Magento::orderBy('id')
+									   ->get();
 			$products = Product::whereIn('id_catalog', $magento_products->lists('id_catalog'))
+							   ->orderByRaw(DB::raw(sprintf("FIELD(id_catalog,'%s')", implode("','", $magento_products->lists('id_catalog')
+																													  ->toArray()))))
 							   ->get();
-			/*$products = Product::where('is_deleted', 0)
-							   ->get();*/
 		}
 		if ( count($products) == 0 ) { // no product found to crawl
 			$this->error("0 Products found to crawl");
@@ -92,44 +105,41 @@ class ImageCrawler extends Command
 		foreach ( $products as $product ) {
 			$id_catalog = $product->id_catalog;
 			$url = $product->product_url;
-			/*$is_error = false;
-			$segment_one = '';
-			$segment_two = '';
-			$segment_three = '';*/
 			if ( !filter_var($url, FILTER_VALIDATE_URL) ) { // url is invalid
-				$segment_one = $product->id_catalog;
-				$segment_two = "Error in URL";
-				$segment_three = $url;
-				$this->logger("error", $segment_one, $segment_two, $segment_three);
+				$this->logger("error", $product->id_catalog, "Error in URL", $url);
 				++$errorsTotal;
 			} else {
 				$images = $this->getImages($url);
-				$i = 0;
-				$imagesTotal += count($images);
-				$error_occurred = 0;
-				$saved_images = [ ];
-				foreach ( $images as $image ) {
-					$image_name = $this->download_image($image, $i, $id_catalog);
-					if ( $image_name !== false ) {
-						#$this->logger("info", $product->id_catalog, "Downloaded image", $i + 1);
-						$saved_images[] = $image_name;
-						$this->logger("info", $image_name, "Downloaded image", $i + 1);
-					} else {
-						$this->logger("error", $product->id_catalog, "Invalid image URL", $image);
-						++$error_occurred;
+				if ( count($images) == 0 ) {
+					$this->logger("error", $product->id_catalog, "Product does not exist", $url);
+				} else {
+					$i = 0;
+					$imagesTotal += count($images);
+					$error_occurred = 0;
+					$saved_images = [ ];
+					foreach ( $images as $image ) {
+						$image_name = $this->download_image($image, $i, $id_catalog);
+						if ( $image_name !== false ) {
+							#$this->logger("info", $product->id_catalog, "Downloaded image", $i + 1);
+							$saved_images[] = $image_name;
+							$this->logger("info", $image_name, "Downloaded image", $i + 1);
+						} else {
+							$this->logger("error", $product->id_catalog, "Invalid image URL", $image);
+							++$error_occurred;
+						}
+						$i++;
 					}
-					$i++;
-				}
-				$this->logger("info", sprintf("Finished: %s", $product->id_catalog), "Error/Total", sprintf("%d/%d", $error_occurred, count($images)));
-				// save the image new names as json to table
-				$product->product_remote_images = json_encode($saved_images);
-				$product->save();
+					$this->logger("info", sprintf("Finished: %s", $product->id_catalog), "Error/Total", sprintf("%d/%d", $error_occurred, count($images)));
+					// save the image new names as json to table
+					$product->product_remote_images = json_encode($saved_images);
+					$product->save();
 
-				// update magento table on successful grab
-				Magento::where('id_catalog', $id_catalog)
-					   ->update([
-						   'is_updated' => 1,
-					   ]);
+					// update magento table on successful grab
+					Magento::where('id_catalog', $id_catalog)
+						   ->update([
+							   'is_updated' => 1,
+						   ]);
+				}
 			}
 			$progressBar->advance();
 			$this->info(PHP_EOL);
@@ -167,7 +177,11 @@ class ImageCrawler extends Command
 	private function getImages ($url)
 	{
 		$images = [ ];
-		$html = new \Htmldom($url);
+		try {
+			$html = new \Htmldom($url);
+		} catch ( \Exception $e ) {
+			return [ ];
+		}
 		// get from main image div
 		foreach ( $html->find('.mainImage a') as $element ) {
 			$images[] = $element->href;
