@@ -74,10 +74,11 @@ class ImageCrawler extends Command
 			/*$products = Product::where('is_deleted', 0)
 							   ->get();*/
 		}
-		if ( count($products) == 0 ) {
+		if ( count($products) == 0 ) { // no product found to crawl
 			$this->error("0 Products found to crawl");
 		} else {
-			$this->logger("warning", "SKU", "MESSAGE", "RESULT");
+			// products are available to be crawled
+			$this->logger("warning", "IMAGE NAME", "MESSAGE", "RESULT");
 			$this->imageCrawler($products);
 		}
 
@@ -92,10 +93,10 @@ class ImageCrawler extends Command
 		foreach ( $products as $product ) {
 			$id_catalog = $product->id_catalog;
 			$url = $product->product_url;
-			$is_error = false;
+			/*$is_error = false;
 			$segment_one = '';
 			$segment_two = '';
-			$segment_three = '';
+			$segment_three = '';*/
 			if ( !filter_var($url, FILTER_VALIDATE_URL) ) { // url is invalid
 				$segment_one = $product->id_catalog;
 				$segment_two = "Error in URL";
@@ -120,16 +121,18 @@ class ImageCrawler extends Command
 					}
 					$i++;
 				}
-				$this->logger("info", $product->id_catalog, "Error/Total", sprintf("%d/%d", $error_occurred, $imagesTotal));
+				$this->logger("info", sprintf("Finished: %s", $product->id_catalog), "Error/Total", sprintf("%d/%d", $error_occurred, count($images)));
+				// save the image new names as json to table
+				$product->product_remote_images = json_encode($saved_images);
+				$product->save();
 			}
-			$product->product_remote_images = json_encode($saved_images);
-			$product->save();
 			Magento::where('id_catalog', $id_catalog)
 				   ->update([
 					   'is_updated' => 1,
 				   ]);
 			$progressBar->advance();
 			$this->info(PHP_EOL);
+			$this->warn(sprintf("%'*80s", ""));
 		}
 
 		#$progressBar->finish();
