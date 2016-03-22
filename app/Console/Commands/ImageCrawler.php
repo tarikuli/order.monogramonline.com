@@ -102,18 +102,23 @@ class ImageCrawler extends Command
 				$i = 0;
 				$imagesTotal += count($images);
 				$error_occurred = 0;
+				$saved_images = [ ];
 				foreach ( $images as $image ) {
-					if ( $this->download_image($image, $i, $id_catalog) ) {
-						$this->logger("info", $product->id_catalog, "Downloaded image", $i + 1);
-						++$error_occurred;
+					$image_name = $this->download_image($image, $i, $id_catalog);
+					if ( $image_name !== false ) {
+						#$this->logger("info", $product->id_catalog, "Downloaded image", $i + 1);
+						$saved_images[] = $image_name;
+						$this->logger("info", $image_name, "Downloaded image", $i + 1);
 					} else {
 						$this->logger("error", $product->id_catalog, "Invalid image URL", $image);
+						++$error_occurred;
 					}
 					$i++;
 				}
 				$this->logger("info", $product->id_catalog, "Error/Total", sprintf("%d/%d", $error_occurred, $imagesTotal));
 			}
-
+			$product->product_remote_images = json_encode($saved_images);
+			$product->save();
 			$progressBar->advance();
 			$this->info(PHP_EOL);
 		}
@@ -137,7 +142,7 @@ class ImageCrawler extends Command
 		$save_image_path = sprintf("%s/%s", $this->save_to_path, $new_image_name);
 		$this->save_image_to_disk($image_url, $save_image_path);
 
-		return true;
+		return $new_image_name;
 	}
 
 	private function save_image_to_disk ($source_url, $destination_url)
