@@ -313,7 +313,7 @@
 				{!! Form::button('Pull from yahoo',['class'=>'btn btn-primary btn-block', 'id' => 'pull-from-yahoo']) !!}
 			</div>
 			<div class = "col-md-2 pull-right">
-				{!! Form::button('Pull from yahoo',['class'=>'btn btn-primary btn-block', 'id' => 'post-to-yahoo']) !!}
+				{!! Form::button('Push to yahoo',['class'=>'btn btn-primary btn-block', 'id' => 'post-to-yahoo']) !!}
 			</div>
 			<div class = "col-md-2 pull-right">
 				{!! Form::submit('Update local',['class'=>'btn btn-primary btn-block']) !!}
