@@ -68,7 +68,7 @@ class ImageCrawler extends Command
 			$products = Product::where('is_deleted', 0)
 							   ->get();
 		}
-		
+
 		if ( count($products) == 0 ) {
 			$this->error("0 Products found to crawl");
 		} else {
@@ -85,6 +85,7 @@ class ImageCrawler extends Command
 		$imagesTotal = 0;
 		$errorsTotal = 0;
 		foreach ( $products as $product ) {
+			$id_catalog = $product->id_catalog;
 			$url = $product->product_url;
 			$is_error = false;
 			$segment_one = '';
@@ -102,7 +103,7 @@ class ImageCrawler extends Command
 				$imagesTotal += count($images);
 				$error_occurred = 0;
 				foreach ( $images as $image ) {
-					if ( $this->download_image($image, $i) ) {
+					if ( $this->download_image($image, $i, $id_catalog) ) {
 						$this->logger("info", $product->id_catalog, "Downloaded image", $i + 1);
 						++$error_occurred;
 					} else {
@@ -122,11 +123,12 @@ class ImageCrawler extends Command
 		$this->info(sprintf("Total of %d images download. %d errors found out of %d products.", $imagesTotal, $errorsTotal, count($products)));
 	}
 
-	private function download_image ($image_url, $index)
+	private function download_image ($image_url, $index, $id_catalog)
 	{
 		$path_parts = pathinfo($image_url);
 		$extension = isset( $path_parts['extension'] ) ? $path_parts['extension'] : '';
-		$filename = isset( $path_parts['filename'] ) ? $path_parts['filename'] : '';
+		#$filename = isset( $path_parts['filename'] ) ? $path_parts['filename'] : '';
+		$filename = $id_catalog;
 		if ( empty( $extension ) || empty( $filename ) ) {
 			return false;
 		}
