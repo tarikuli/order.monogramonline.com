@@ -125,11 +125,13 @@ class ImageCrawler extends Command
 				// save the image new names as json to table
 				$product->product_remote_images = json_encode($saved_images);
 				$product->save();
+
+				// update magento table on successful grab
+				Magento::where('id_catalog', $id_catalog)
+					   ->update([
+						   'is_updated' => 1,
+					   ]);
 			}
-			Magento::where('id_catalog', $id_catalog)
-				   ->update([
-					   'is_updated' => 1,
-				   ]);
 			$progressBar->advance();
 			$this->info(PHP_EOL);
 			$this->warn(sprintf("%'*80s", ""));
