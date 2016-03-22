@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Magento;
 use App\Product;
 use Illuminate\Console\Command;
 use Intervention\Image\Facades\Image;
@@ -52,6 +53,7 @@ class ImageCrawler extends Command
 			$id_catalog = $this->argument('catalog');
 		}
 		$products = null;
+		// if id catalog is passed as argument
 		if ( $id_catalog ) {
 			$products = Product::where('id_catalog', $id_catalog)
 							   ->get();
@@ -64,11 +66,14 @@ class ImageCrawler extends Command
 				$products = Product::where('id', '>=', $products->first()->id)
 								   ->get();
 			}
-		} else {
-			$products = Product::where('is_deleted', 0)
+		} else { // id catalog is not passed as argument
+			$magento_products = Magento::all();
+			$products = Product::whereIn('id_catalog', $magento_products->lists('id_catalog'))
+							   ->where('is_deleted', 0)
 							   ->get();
+			/*$products = Product::where('is_deleted', 0)
+							   ->get();*/
 		}
-
 		if ( count($products) == 0 ) {
 			$this->error("0 Products found to crawl");
 		} else {
@@ -119,6 +124,10 @@ class ImageCrawler extends Command
 			}
 			$product->product_remote_images = json_encode($saved_images);
 			$product->save();
+			Magento::where('id_catalog', $id_catalog)
+				   ->update([
+					   'is_updated' => 1,
+				   ]);
 			$progressBar->advance();
 			$this->info(PHP_EOL);
 		}
