@@ -120,6 +120,11 @@ class Product extends Model
 		return $this->hasOne('App\Specification', 'product_id', 'id');
 	}
 
+	public function magento ()
+	{
+		return $this->belongsTo('App\Magento', 'id_catalog', 'id_catalog');
+	}
+
 	public function product_collection_details ()
 	{
 		return $this->belongsTo('App\Collection', 'product_collection', 'id')

@@ -11,6 +11,7 @@ use Intervention\Image\Facades\Image;
 class ImageCrawler extends Command
 {
 	private $save_to_path = '';
+	private $executed_product_image_name = '';
 
 	/**
 	 * The name and signature of the console command.
@@ -70,7 +71,8 @@ class ImageCrawler extends Command
 				$magento_products = Magento::where('id', '>=', $magento_product->id)
 										   ->orderBy('id')
 										   ->get();
-				$products = Product::whereIn('id_catalog', $magento_products->lists('id_catalog'))
+				$products = Product::with('magento')
+								   ->whereIn('id_catalog', $magento_products->lists('id_catalog'))
 								   ->orderByRaw(DB::raw(sprintf("FIELD(id_catalog,'%s')", implode("','", $magento_products->lists('id_catalog')
 																														  ->toArray()))))
 								   ->get();
@@ -81,7 +83,8 @@ class ImageCrawler extends Command
 		} else { // id catalog is not passed as argument
 			$magento_products = Magento::orderBy('id')
 									   ->get();
-			$products = Product::whereIn('id_catalog', $magento_products->lists('id_catalog'))
+			$products = Product::with('magento')
+							   ->whereIn('id_catalog', $magento_products->lists('id_catalog'))
 							   ->orderByRaw(DB::raw(sprintf("FIELD(id_catalog,'%s')", implode("','", $magento_products->lists('id_catalog')
 																													  ->toArray()))))
 							   ->get();
@@ -104,12 +107,13 @@ class ImageCrawler extends Command
 		$errorsTotal = 0;
 		foreach ( $products as $product ) {
 			$id_catalog = $product->id_catalog;
+			$save_image_base_name = $product->magento ? $product->magento->id_catalog_new : $product->id_catalog;
 			$url = $product->product_url;
 			if ( !filter_var($url, FILTER_VALIDATE_URL) ) { // url is invalid
 				$this->logger("error", $product->id_catalog, "Error in URL", $url);
 				++$errorsTotal;
 			} else {
-				$images = $this->getImages($url);
+				$images = $this->getImageUrlsFromProductUrl($url);
 				if ( count($images) == 0 ) {
 					$this->logger("error", $product->id_catalog, "Product does not exist", $url);
 				} else {
@@ -118,7 +122,7 @@ class ImageCrawler extends Command
 					$error_occurred = 0;
 					$saved_images = [ ];
 					foreach ( $images as $image ) {
-						$image_name = $this->download_image($image, $i, $id_catalog);
+						$image_name = $this->download_image($image, $i, $save_image_base_name);
 						if ( $image_name !== false ) {
 							#$this->logger("info", $product->id_catalog, "Downloaded image", $i + 1);
 							$saved_images[] = $image_name;
@@ -143,7 +147,7 @@ class ImageCrawler extends Command
 			}
 			$progressBar->advance();
 			$this->info(PHP_EOL);
-			$this->warn(sprintf("%'*80s", ""));
+			$this->warn(sprintf("%'*120s", ""));
 		}
 
 		#$progressBar->finish();
@@ -151,12 +155,12 @@ class ImageCrawler extends Command
 		$this->info(sprintf("Total of %d images download. %d errors found out of %d products.", $imagesTotal, $errorsTotal, count($products)));
 	}
 
-	private function download_image ($image_url, $index, $id_catalog)
+	private function download_image ($image_url, $index, $name_base)
 	{
 		$path_parts = pathinfo($image_url);
 		$extension = isset( $path_parts['extension'] ) ? $path_parts['extension'] : '';
 		#$filename = isset( $path_parts['filename'] ) ? $path_parts['filename'] : '';
-		$filename = $id_catalog;
+		$filename = $name_base;
 		if ( empty( $extension ) || empty( $filename ) ) {
 			return false;
 		}
@@ -174,7 +178,7 @@ class ImageCrawler extends Command
 		$image->save($destination_url);
 	}
 
-	private function getImages ($url)
+	private function getImageUrlsFromProductUrl ($url)
 	{
 		$images = [ ];
 		try {
@@ -196,7 +200,7 @@ class ImageCrawler extends Command
 
 	private function logger ($type, $segment_one, $segment_two, $segment_three = '')
 	{
-		$message = sprintf("%-30s - %-30s - %s", $segment_one, $segment_two, $segment_three);
+		$message = sprintf("%-60s - %-30s - %s", $segment_one, $segment_two, $segment_three);
 		if ( $type == 'info' ) {
 			$this->info($message);
 		} elseif ( $type == 'error' ) {
