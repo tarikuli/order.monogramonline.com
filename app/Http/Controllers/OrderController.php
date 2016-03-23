@@ -739,12 +739,21 @@ class OrderController extends Controller
 
 			// -------------- Products table data insertion started ---------------------- //
 			#$product = Product::where('id_catalog', $item->item_id)->first();
-			$product = Product::where('product_model', $item->item_id)
+			/*
+			 * $product->product_model ( SKU ) == $item->item_code
+			 * $product->id_catalog == $item->item_id
+			 */
+			// check if product model exists
+			#$product = Product::where('product_model', $item->item_id)->first();
+			$product = Product::where('product_model', $item->item_code)
 							  ->first();
 			if ( !$product ) {
 				$product = new Product();
 				#$product->id_catalog = $item->item_id;
 				$product->product_model = $item->item_code;
+			} else {
+				$product = Product::where('id_catalog', $item->item_id)
+								  ->first();
 			}
 
 			$product->store_id = sprintf("%s-%s", $exploded[0], $exploded[1]);

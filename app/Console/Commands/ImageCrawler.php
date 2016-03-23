@@ -81,7 +81,8 @@ class ImageCrawler extends Command
 								   ->get();
 			}
 		} else { // id catalog is not passed as argument
-			$magento_products = Magento::orderBy('id')
+			$magento_products = Magento::where('is_updated', 0)
+									   ->orderBy('id')
 									   ->get();
 			$products = Product::with('magento')
 							   ->whereIn('id_catalog', $magento_products->lists('id_catalog'))
