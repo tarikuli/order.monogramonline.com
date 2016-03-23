@@ -56,11 +56,11 @@
 				</td>
 				<td>
 					<label style = "padding-left:50px">Customer #:</label>
-					{!! Form::text('customer_id', $order->customer->id, ['id' => 'customer', 'class' => 'form-control', 'readonly' => 'readonly']) !!}
+					{!! Form::text('customer_id', $order->customer->id, ['id' => 'customer', 'class' => '', 'readonly' => 'readonly']) !!}
 
 				</td>
 				<td>
-					<select class = "form-control" id = "order">
+					<select class = "" id = "order">
 						<option value = "0" selected>Reg</option>
 						<option value = "1">Phone</option>
 						<option value = "100">REPAIR</option>
@@ -95,15 +95,15 @@
 				<td>{!! Form::text('ship_first_name', $order->customer->ship_first_name, ['id' => 'ship_first_name']) !!}</td>
 				<td>{!! Form::text('ship_last_name', $order->customer->ship_last_name, ['id' => 'ship_last_name']) !!}</td>
 				<td style = "padding-left:97px">First/last Name</td>
-				<td>{!! Form::text('bill_first_name', $order->customer->bill_first_name, ['id' => 'bill_first_name', 'class' => 'form-control']) !!}</td>
-				<td>{!! Form::text('bill_last_name', $order->customer->bill_last_name, ['id' => 'bill_last_name', 'class' => 'form-control']) !!}</td>
+				<td>{!! Form::text('bill_first_name', $order->customer->bill_first_name, ['id' => 'bill_first_name', 'class' => '']) !!}</td>
+				<td>{!! Form::text('bill_last_name', $order->customer->bill_last_name, ['id' => 'bill_last_name', 'class' => '']) !!}</td>
 			</tr>
 			<tr>
 				<td>Addr1</td>
 				<td>{!! Form::text('ship_address_1', $order->customer->ship_address_1, ['id' => 'ship_address_1']) !!}</td>
 				<td></td>
 				<td style = "padding-left:97px">Addr1</td>
-				<td>{!! Form::text('bill_address_1', $order->customer->bill_address_1, ['id' => 'bill_address_1', 'class' => 'form-control']) !!}</td>
+				<td>{!! Form::text('bill_address_1', $order->customer->bill_address_1, ['id' => 'bill_address_1', 'class' => '']) !!}</td>
 				<td></td>
 			</tr>
 			<tr>
@@ -226,7 +226,7 @@
 			@foreach($order->items as $item)
 				<tr>
 					{!! Form::hidden("item_id[$ind]", $item->id) !!}
-					<td><img src="{{$item->item_thumb}}" /> </td>
+					<td><img src = "{{$item->item_thumb}}" /></td>
 					<td style = 'width: 200px;padding-left:30px'><a href = "#">{{$item->item_description}}</a></td>
 					<td><a style = 'color:red' href = "#">{{$item->item_code}}</a></td>
 					<td style = "padding-left:80px">{!! Form::text("item_quantity[$ind]", $item->item_quantity, ['id' => 'item_quantity','style'=>'width:35px']) !!}</td>
@@ -237,7 +237,7 @@
 					<td></td>
 					@setvar($ind++)
 				</tr>
-				<tr colspan="10">
+				<tr colspan = "10">
 					<td></td>
 					<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
 				</tr>
