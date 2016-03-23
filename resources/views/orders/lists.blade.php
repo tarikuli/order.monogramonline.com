@@ -90,7 +90,7 @@
 				@foreach($orders as $order)
 					<tr data-id = "{{$order->id}}">
 						<td>
-							<a href = "{{ url("orders/details/".$order->id) }}"
+							<a href = "{{ url("orders/details/".$order->order_id) }}"
 							   class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($order)}}</a>
 						</td>
 						<td>
