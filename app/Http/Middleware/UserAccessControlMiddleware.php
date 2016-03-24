@@ -21,7 +21,10 @@ class UserAccessControlMiddleware
 		// it's previously taken
 		$uri = $request->route()
 					   ->uri();
-		if ( $this->url_checker($uri) ) {
+		// if the requested route is homepage,
+		// then process the request
+		// otherwise, check if the user has permission
+		if ( url($uri) == url('/') || $this->url_checker($uri) ) {
 			return $next($request);
 		}
 
