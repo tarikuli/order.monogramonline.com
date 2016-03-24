@@ -745,7 +745,7 @@ class OrderController extends Controller
 			 */
 			// check if product model exists
 			#$product = Product::where('product_model', $item->item_id)->first();
-			$product = Product::where('product_model', $item->item_code)
+			/*$product = Product::where('product_model', $item->item_code)
 							  ->first();
 			if ( !$product ) {
 				$product = new Product();
@@ -754,11 +754,27 @@ class OrderController extends Controller
 			} else {
 				$product = Product::where('id_catalog', $item->item_id)
 								  ->first();
+			}*/
+
+			$product = Product::where('id_catalog', $item->item_id)
+							  ->orWhere('product_model', $item->item_code)
+							  ->first();
+			// no product found matching id catalog or model
+			if ( !$product ) {
+				$product = new Product();
+				$product->id_catalog = $item->item_id;
+				$product->product_model = $item->item_code;
+			} else {
+				if ( $product->id_catalog == $item->item_id ) { // if product id catalog exists update product model
+					$product->product_model = $item->item_code;
+				} elseif ( $product->product_model == $item->item_code ) { // if product model exists update id catalog
+					$product->id_catalog = $item->item_id;
+				}
 			}
 
 			$product->store_id = sprintf("%s-%s", $exploded[0], $exploded[1]);
 			#$product->product_model = $item->item_code;
-			$product->id_catalog = $item->item_id;
+			#$product->id_catalog = $item->item_id;
 			$product->product_url = $item->item_url;
 			$product->product_name = $item->item_description;
 			$product->product_price = $item->item_unit_price;

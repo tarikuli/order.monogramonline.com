@@ -109,7 +109,8 @@ class ImageCrawler extends Command
 		foreach ( $products as $product ) {
 			$id_catalog = $product->id_catalog;
 			$save_image_base_name = $product->magento ? $product->magento->id_catalog_new : $product->id_catalog;
-			$url = $product->product_url;
+			//$url = $product->product_url;
+			$url = "http://www.monogramonline.com/".$id_catalog.".html";
 			if ( !filter_var($url, FILTER_VALIDATE_URL) ) { // url is invalid
 				$this->logger("error", $product->id_catalog, "Error in URL", $url);
 				++$errorsTotal;
