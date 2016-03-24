@@ -13,39 +13,44 @@ use Zizaco\Entrust\Traits\EntrustUserTrait;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
-    use Authenticatable, CanResetPassword, Authorizable, EntrustUserTrait {
-        EntrustUserTrait::can as may;
-        Authorizable::can insteadof EntrustUserTrait;
-    }
+	use Authenticatable, CanResetPassword, Authorizable, EntrustUserTrait {
+		EntrustUserTrait::can as may;
+		Authorizable::can insteadof EntrustUserTrait;
+	}
 
-    /**
-     * The database table used by the model.
-     * @var string
-     */
-    protected $table = 'users';
+	/**
+	 * The database table used by the model.
+	 * @var string
+	 */
+	protected $table = 'users';
 
-    /**
-     * The attributes that are mass assignable.
-     * @var array
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+	/**
+	 * The attributes that are mass assignable.
+	 * @var array
+	 */
+	protected $fillable = [
+		'name',
+		'email',
+		'password',
+	];
 
-    /**
-     * The attributes excluded from the model's JSON form.
-     * @var array
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+	/**
+	 * The attributes excluded from the model's JSON form.
+	 * @var array
+	 */
+	protected $hidden = [
+		'password',
+		'remember_token',
+	];
 
-    public function setPasswordAttribute ($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
-    }
+	public function setPasswordAttribute ($value)
+	{
+		$this->attributes['password'] = bcrypt($value);
+	}
+
+	public function accesses ()
+	{
+		return $this->hasMany('App\Access', 'user_id', 'id');
+	}
 
 }

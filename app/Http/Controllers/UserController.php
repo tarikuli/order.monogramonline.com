@@ -1,7 +1,6 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-namespace App\Http\Controllers;
-
+use App\Access;
 use Illuminate\Http\Request;
 use App\User;
 use App\Role;
@@ -32,7 +31,6 @@ class UserController extends Controller
 
 	public function store (UserRequest $request)
 	{
-
 		$user = new User();
 		$user->username = trim($request->get('username'));
 		$user->email = $request->get('email');
@@ -44,6 +42,15 @@ class UserController extends Controller
 
 		$role = Role::find($request->get('role'));
 		$user->attachRole($role);
+
+		$requested_accesses = $request->get('user_access');
+		$matched = array_intersect($requested_accesses, array_keys(Access::$pages)); // get the matched pages
+		foreach ( $matched as $match ) {
+			$access = new Access();
+			$access->user_id = $user->id;
+			$access->page = $match;
+			$access->save();
+		}
 
 		return redirect(url('users'));
 
@@ -62,6 +69,7 @@ class UserController extends Controller
 
 	public function edit ($id)
 	{
+		#return auth()->user()->accesses->lists('page')->toArray();
 		$user = User::where('is_deleted', 0)
 					->find($id);
 		if ( !$user ) {
@@ -95,6 +103,18 @@ class UserController extends Controller
 
 		$user->roles()
 			 ->sync([ $request->get('role') ]);
+		// delete previous accesses
+		$user->accesses()
+			 ->delete();
+		// get the new accesses
+		$requested_accesses = $request->get('user_access');
+		$matched = array_intersect($requested_accesses, array_keys(Access::$pages)); // get the matched pages
+		foreach ( $matched as $match ) {
+			$access = new Access();
+			$access->user_id = $user->id;
+			$access->page = $match;
+			$access->save();
+		}
 
 		return redirect(url('users'));
 	}

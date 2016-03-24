@@ -47,7 +47,7 @@
                                title = "View this user"><i class = 'fa fa-eye text-primary'></i></a>
                             | <a href = "{{ url(sprintf("/users/%d/edit", $user->id)) }}" data-toggle = "tooltip"
                                  data-placement = "top"
-                                 title = "View this user"><i class = 'fa fa-pencil-square-o text-success'></i></a>
+                                 title = "Edit this user"><i class = 'fa fa-pencil-square-o text-success'></i></a>
                             | <a href = "#" class = "delete" data-toggle = "tooltip" data-placement = "top"
                                  title = "Delete this user"><i class = 'fa fa-times text-danger'></i></a>
                         </td>
