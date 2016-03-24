@@ -44,6 +44,10 @@
                     <td>State</td>
                     <td>{{$user->state}}</td>
                 </tr>
+                <tr>
+                    <td>Access</td>
+                    <td>{{ implode(", ", $user->accesses->lists('page')->toArray()) ?: "No access is given yet." }}</td>
+                </tr>
             </table>
         </div>
         <div class = "col-xs-12" style = "margin-bottom: 30px;">
