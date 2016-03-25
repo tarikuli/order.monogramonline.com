@@ -63,7 +63,7 @@ class UserController extends Controller
 		if ( !$user ) {
 			return view('errors.404');
 		}
-
+		
 		return view('users.show', compact('user'));
 	}
 
