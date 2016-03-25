@@ -27,6 +27,7 @@ class Access extends Model
 		'batch_routes'             => 'Routes',
 		'route_templates'          => 'Route templates',
 		'order_item_status'        => 'Order item list status',
+		'items'                    => 'Items',
 		'preview_batch'            => 'Preview batch',
 		'batch_list'               => 'Batch list',
 		'supervisor'               => 'Supervisor',
