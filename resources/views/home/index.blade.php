@@ -66,6 +66,7 @@
 					<li><a href = "/rejection_reasons">Rejection reasons</a></li>
 					<li><a href = "/purchases">Purchases</a></li>
 					<li><a href = "/purchases/create">Add purchase</a></li>
+					<li><a href = "/stations/bulk">Bulk batch change</a></li>
 				</ul>
 				<hr />
 				<ul>

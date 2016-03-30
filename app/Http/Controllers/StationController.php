@@ -334,4 +334,82 @@ class StationController extends Controller
 
 		return view('stations.summary', compact('summaries'));
 	}
+
+	public function getBulkChange ()
+	{
+		$stations = Station::where('is_deleted', 0)
+						   ->lists('station_description', 'station_name')
+						   ->prepend('Select a station', null);
+
+		return view('items.bulk_change')->with('stations', $stations);
+	}
+
+	public function postBulkChange (Request $request)
+	{
+		$posted_station = trim($request->get('station'));
+		// check if station exists
+		$station = Station::where('is_deleted', 0)
+						  ->where('station_name', '=', $posted_station)
+						  ->first();
+
+		if ( !$station ) {
+			return redirect()
+				->back()
+				->withInput()
+				->withErrors([
+					'error' => 'Selected station is not valid',
+				]);
+		}
+
+		// station exists
+		// divide the given batches
+		$posted_batches = $request->get('batches');
+		// remove newlines and spaces
+		$posted_batches = trim(preg_replace('/\s+/', '', $posted_batches));
+
+		$batches = array_map(function ($batch) {
+			$integer_value_of_batch_number = intval($batch);
+			// safety check
+			// if the integer value of a batch number is 0,
+			// table having 0 as batch number has different meaning
+			// thus returns -1, table will never have any value -1;
+			return $integer_value_of_batch_number ?: -1;
+		}, explode(",", $posted_batches));
+
+		$items = Item::whereIn('batch_number', $batches)
+					 ->get();
+		if ( $items->count() == 0 ) {
+			return redirect()
+				->back()
+				->withInput()
+				->withErrors([
+					'error' => 'Batches given are not valid',
+				]);
+		}
+		$changed = $this->apply_station_change($items, $posted_station);
+
+		return redirect()
+			->back()
+			->withInput()
+			->with('success', sprintf("Total of: %d items moved to station: %s", $changed, $posted_station));
+	}
+
+	private function apply_station_change ($items, $station_name)
+	{
+		foreach ( $items as $item ) {
+			$item->station_name = $station_name;
+			$item->save();
+
+			$station_log = new StationLog();
+			$station_log->item_id = $item->id;
+			$station_log->batch_number = $item->batch_number;
+			$station_log->station_id = Station::where('station_name', $station_name)
+											  ->first()->id;
+			$station_log->started_at = date('Y-m-d', strtotime("now"));
+			$station_log->user_id = Auth::user()->id;
+			$station_log->save();
+		}
+
+		return $items->count();
+	}
 }

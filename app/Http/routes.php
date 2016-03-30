@@ -76,7 +76,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('logistics/sku_import', 'LogisticsController@post_sku_import');
 		get('logistics/sku_show', 'LogisticsController@get_sku_show');
 
-
+		get('stations/bulk', 'StationController@getBulkChange');
+		post('stations/bulk', 'StationController@postBulkChange');
 		post('stations/change', 'StationController@change');
 		get('stations/status', 'StationController@status');
 		get('stations/supervisor', 'StationController@supervisor');
