@@ -389,7 +389,6 @@ class StationController extends Controller
 
 		return redirect()
 			->back()
-			->withInput()
 			->with('success', sprintf("Total of: %d items moved to station: %s", $changed, $posted_station));
 	}
 
