@@ -44,6 +44,7 @@ class Access extends Model
 		'batch_details'            => 'Batch details',
 		'logistics'                => 'Logistics',
 		'shipping'                 => 'Shipping',
-
+		'stations/bulk'            => 'Bulk station update',
+		'export_station'           => 'Export station log',
 	];
 }

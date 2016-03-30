@@ -47,7 +47,7 @@ class StationLog extends Model
 		}
 		$items = Item::where('item_code', $sku)
 					 ->get();
-		
+
 		if ( !$items->count() ) {
 			return;
 		}
@@ -68,5 +68,24 @@ class StationLog extends Model
 
 		return $query->where('started_at', '>=', $starting)
 					 ->where('started_at', '<=', $ending);
+	}
+
+	public function scopeSearchWithinMonthGroupLog ($query, $start_date, $end_date)
+	{
+		if ( !$start_date ) {
+			return;
+		}
+
+		$starting = sprintf("%s", $start_date);
+		$ending = sprintf("%s", $end_date ? $end_date : $start_date);
+
+		return $query->where('started_at', '>=', $starting)
+					 ->where('started_at', '<=', $ending)
+					 ->groupBy([
+						 'station_id',
+						 // uncomment user if user is required
+						 # 'user_id',
+						 'started_at',
+					 ]);
 	}
 }

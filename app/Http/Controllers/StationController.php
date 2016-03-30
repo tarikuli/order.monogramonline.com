@@ -1,6 +1,4 @@
-<?php
-
-namespace App\Http\Controllers;
+<?php namespace App\Http\Controllers;
 
 
 use App\BatchRoute;
@@ -18,6 +16,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use League\Csv\Writer;
 use Monogram\Helper;
 
 class StationController extends Controller
@@ -412,4 +411,96 @@ class StationController extends Controller
 
 		return $items->count();
 	}
+
+	public function getExportStationLog ()
+	{
+		return view('stations.export_station');
+	}
+
+	public function postExportStationLog (Request $request)
+	{
+		// grab the month
+		$start = trim($request->get('start_date'));
+		#$end = trim($request->get('end_date'));
+
+		if ( empty( $start ) ) {
+			return redirect()
+				->back()
+				->withInput()
+				->withErrors([
+					'error' => 'Date is not selected',
+				]);
+		}
+		$month_starts = "01";
+		$month_ends = date('t', strtotime($request->get('start_date')));
+
+		$first_day_of_the_month = sprintf("%s-%s", $start, $month_starts);
+		$end_day_of_the_month = sprintf("%s-%s", $start, $month_ends);
+
+		/*
+		 * DB QUERY: SELECT station_id, started_at, SUM( 1 ) FROM  `station_logs` WHERE started_at >=  '2016-03-01' AND started_at <=  '2016-03-31' GROUP BY station_id, started_at ORDER BY station_id
+		 * SELECT station_id, started_at, user_id, sum(1) FROM `station_logs`  where started_at >= '2016-03-01' and started_at <= '2016-03-31' group by station_id, user_id, started_at order by started_at
+		 */
+
+		$station_logs = StationLog::with('user', 'station')
+								  ->searchWithinMonthGroupLog($first_day_of_the_month, $end_day_of_the_month)
+								  ->orderBy('started_at')
+								  ->get([
+									  'started_at',
+									  'station_id',
+									  'user_id',
+									  DB::raw('SUM(1) as item_count'),
+								  ]);
+		$dates = $this->range_date($first_day_of_the_month, $end_day_of_the_month);
+		$header = array_merge([
+			'station',
+			// uncomment user if user is required
+			#'user',
+		], $dates);
+
+		/*
+		 * File write operation
+		 */
+
+		$file_path = sprintf("%s/assets/exports/station_log/", public_path());
+		$file_name = sprintf("station_log-%s-%s.csv", date("y-m-d", strtotime('now')), str_random(5));
+		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
+		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
+		$csv->insertOne($header);
+		foreach ( $station_logs as $log ) {
+			$station_name = $log->station->station_name;
+			// uncomment user if user is required
+			# $user = $log->user->username;
+			$row = [ ];
+			$row[] = $station_name;
+			// uncomment user if user is required
+			#$row[] = $user;
+
+			foreach ( $dates as $date ) {
+				if ( $date == $log->started_at ) {
+					$row[] = $log->item_count;
+				} else {
+					$row[] = 0;
+				}
+			}
+			$csv->insertOne($row);
+		}
+
+		return response()->download($fully_specified_path);
+	}
+
+	private function range_date ($first, $last)
+	{
+		$arr = array();
+		$now = strtotime($first);
+		$last = strtotime($last);
+
+		while ( $now <= $last ) {
+			$arr[] = date('Y-m-d', $now);
+			$now = strtotime('+1 day', $now);
+		}
+
+		return $arr;
+	}
+
 }

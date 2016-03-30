@@ -78,6 +78,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 		get('stations/bulk', 'StationController@getBulkChange');
 		post('stations/bulk', 'StationController@postBulkChange');
+		get('export_station', 'StationController@getExportStationLog');
+		post('export_station', 'StationController@postExportStationLog');
 		post('stations/change', 'StationController@change');
 		get('stations/status', 'StationController@status');
 		get('stations/supervisor', 'StationController@supervisor');
@@ -134,5 +136,5 @@ Route::group([ 'prefix' => 'auth' ], function () {
 });
 
 Event::listen('illuminate.query', function ($q) {
-	Log::info($q);
+	#Log::info($q);
 });

@@ -28,7 +28,7 @@ class UserAccessControlMiddleware
 			return $next($request);
 		}
 
-		return app()->abort(404);
+		return app()->abort(403);
 	}
 
 	public function url_checker ($request_uri)
@@ -37,6 +37,9 @@ class UserAccessControlMiddleware
 			->user()
 			->accesses()
 			->lists('page');
+		#dd($granted);
+		#dd($request_uri);
+		#dd(strpos($request_uri, "stations/bulk"));
 
 		foreach ( $granted as $accessible ) {
 			if ( strpos($request_uri, $accessible) !== false ) { // Yoshi version
