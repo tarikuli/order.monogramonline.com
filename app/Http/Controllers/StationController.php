@@ -455,7 +455,7 @@ class StationController extends Controller
 			'station',
 			// uncomment user if user is required
 			#'user',
-		], $dates);
+		], $dates, [ 'total' ]);
 
 		/*
 		 * File write operation
@@ -474,14 +474,16 @@ class StationController extends Controller
 			$row[] = $station_name;
 			// uncomment user if user is required
 			#$row[] = $user;
-
+			$month_total_task_per_station = 0;
 			foreach ( $dates as $date ) {
+				$per_day = 0;
 				if ( $date == $log->started_at ) {
-					$row[] = $log->item_count;
-				} else {
-					$row[] = 0;
+					$per_day = $log->item_count;
 				}
+				$row[] = $per_day;
+				$month_total_task_per_station += $per_day;
 			}
+			$row[] = $month_total_task_per_station;
 			$csv->insertOne($row);
 		}
 
