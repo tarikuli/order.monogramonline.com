@@ -10,6 +10,20 @@
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+	<style>
+		td {
+			width: 1px;
+			white-space: nowrap;
+		}
+
+		td.description {
+			white-space: pre-wrap;
+			word-wrap: break-word;
+			max-width: 1px;
+			width: 100%;
+		}
+
+	</style>
 </head>
 <body>
 	@include('includes.header_menu')
@@ -21,11 +35,11 @@
 		@include('includes.error_div')
 		@include('includes.success_div')
 		<div class = "col-xs-12">
-			{!! Form::open(['method' => 'post', 'url' => url('export_station'), 'id' => 'export_station']) !!}
+			{!! Form::open(['method' => '', 'url' => url('export_station'), 'id' => 'export_station']) !!}
 			<div class = "form-group col-xs-3">
 				<label for = "start_date">Select a month</label>
 				<div class = 'input-group date' id = 'start_date_picker'>
-					{!! Form::text('start_date', null, ['id'=>'start_date', 'class' => 'form-control', 'placeholder' => 'Select month']) !!}
+					{!! Form::text('start_date', $request->get('start_date'), ['id'=>'start_date', 'class' => 'form-control', 'placeholder' => 'Select month']) !!}
 					<span class = "input-group-addon">
                         <span class = "glyphicon glyphicon-calendar"></span>
                     </span>
@@ -46,10 +60,25 @@
 			</div>
 			<div class = "form-group col-xs-2">
 				<label for = "" class = ""></label>
-				{!! Form::submit('Export', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+				{!! Form::button('View below', ['type' => 'button', 'id'=>'view', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-success form-control']) !!}
+			</div>
+			<div class = "form-group col-xs-2">
+				<label for = "" class = ""></label>
+				{!! Form::button('Export', ['type' => 'button', 'id'=>'export', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
 			</div>
 			{!! Form::close() !!}
 		</div>
+		@if(!is_null($output))
+			<table class = "table table-bordered">
+				@foreach($output as $row)
+					<tr>
+						@foreach($row as $cell)
+							<td>{{ $cell }}</td>
+						@endforeach
+					</tr>
+				@endforeach
+			</table>
+		@endif
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
@@ -64,6 +93,18 @@
 		{
 			$('#start_date_picker').datetimepicker(options);
 			$('#end_date_picker').datetimepicker(options);
+		});
+		// if view below button is pressed, send via get method
+		$("#view").on('click', function (event)
+		{
+			event.preventDefault();
+			$(this).closest('form').attr('method', 'GET').submit();
+		});
+		// if export button is pressed, send via post method
+		$("#export").on('click', function (event)
+		{
+			event.preventDefault();
+			$(this).closest('form').attr('method', 'POST').submit();
 		});
 	</script>
 </body>

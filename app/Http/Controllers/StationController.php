@@ -411,9 +411,60 @@ class StationController extends Controller
 		return $items->count();
 	}
 
-	public function getExportStationLog ()
+	public function getExportStationLog (Request $request)
 	{
-		return view('stations.export_station');
+		$start = trim($request->get('start_date'));
+		$output = null;
+
+		if ( !empty( $start ) ) {
+			$month_starts = "01";
+			$month_ends = date('t', strtotime($request->get('start_date')));
+
+			$first_day_of_the_month = sprintf("%s-%s", $start, $month_starts);
+			$end_day_of_the_month = sprintf("%s-%s", $start, $month_ends);
+
+			$station_logs = StationLog::with('user', 'station')
+									  ->searchWithinMonthGroupLog($first_day_of_the_month, $end_day_of_the_month)
+									  ->orderBy('started_at')
+									  ->get([
+										  'started_at',
+										  'station_id',
+										  'user_id',
+										  DB::raw('SUM(1) as item_count'),
+									  ]);
+			$dates = $this->range_date($first_day_of_the_month, $end_day_of_the_month);
+			$header = array_merge([
+				'station',
+				// uncomment user if user is required
+				#'user',
+			], $dates, [ 'total' ]);
+			$output[] = $header;
+
+			foreach ( $station_logs as $log ) {
+				$station_name = $log->station->station_name;
+				// uncomment user if user is required
+				# $user = $log->user->username;
+				$row = [ ];
+				$row[] = $station_name;
+				// uncomment user if user is required
+				#$row[] = $user;
+				$month_total_task_per_station = 0;
+				foreach ( $dates as $date ) {
+					$per_day = 0;
+					if ( $date == $log->started_at ) {
+						$per_day = $log->item_count;
+					}
+					$row[] = $per_day;
+					$month_total_task_per_station += $per_day;
+				}
+				$row[] = $month_total_task_per_station;
+				$output[] = $row;
+			}
+		}
+
+		return view('stations.export_station')
+			->with('request', $request)
+			->with('output', $output);
 	}
 
 	public function postExportStationLog (Request $request)
