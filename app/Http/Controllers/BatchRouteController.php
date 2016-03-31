@@ -49,6 +49,7 @@ class BatchRouteController extends Controller
 		$batch_route->stations()
 					->attach($request->get('batch_route_order'));
 		session()->flash('success', 'Route is successfully added');
+
 		return redirect(url('batch_routes'));
 	}
 
@@ -83,7 +84,8 @@ class BatchRouteController extends Controller
 		$batch_route->stations()
 					->attach($newStations);
 
-		return redirect(url('batch_routes'));
+		#return redirect(url('batch_routes'));
+		return redirect()->back();
 	}
 
 	public function destroy ($id)
