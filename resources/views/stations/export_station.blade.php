@@ -11,7 +11,7 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
 	<style>
-		td {
+		table.export-view-table td {
 			width: 1px;
 			white-space: nowrap;
 		}
@@ -69,7 +69,7 @@
 			{!! Form::close() !!}
 		</div>
 		@if(!is_null($output))
-			<table class = "table table-bordered">
+			<table class = "table table-bordered export-view-table">
 				@foreach($output as $row)
 					<tr>
 						@foreach($row as $cell)
