@@ -32,7 +32,7 @@ class StationController extends Controller
 		$count = 1;
 		$stations = Station::with('departments_list')
 						   ->where('is_deleted', 0)
-						   ->latest()
+						   ->orderBy('station_name', 'asc')
 						   ->paginate(50);
 
 		$departments = Department::where('is_deleted', 0)
