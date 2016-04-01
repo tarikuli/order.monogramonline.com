@@ -73,7 +73,8 @@ class Item extends Model
 	public function shipInfo ()
 	{
 		#return $this->belongsTo('App\Ship', 'item_id', 'id');
-		return $this->hasOne('App\Ship', 'item_id', 'id');
+		return $this->hasOne('App\Ship', 'item_id', 'id')
+					->latest();
 	}
 
 	public function station_details ()
