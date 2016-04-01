@@ -1,7 +1,8 @@
 <?php
 
 get('test/batch', function () {
-	return 'test';
+	#return 'test';
+	return sprintf("%06s", 1000110);
 });
 
 // auth middleware enabled controller

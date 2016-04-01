@@ -461,8 +461,11 @@ APPEND;
 		$phone = trim($customer->ship_phone) ? $customer->ship_phone : $customer->bill_phone;
 		$item_id = $item->id;
 
+		$unique_order_id = sprintf("%06s", $item->order->id);
+
 		$ship = new Ship();
 		$ship->order_number = $order_number;
+		$ship->unique_order_id = $unique_order_id;
 		$ship->item_id = $item_id;
 		$ship->mail_class = $mail_class;
 		$ship->package_shape = $package_shape;

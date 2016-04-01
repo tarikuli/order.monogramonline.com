@@ -155,7 +155,8 @@ class StationController extends Controller
 		$item_id = $request->get('item_id');
 
 		#$item = Item::find($item_id);
-		$item = Item::where('id', $item_id)
+		$item = Item::with('order')
+					->where('id', $item_id)
 					->first();
 		if ( !$item ) {
 			return view('errors.404');
@@ -379,7 +380,8 @@ class StationController extends Controller
 			return $integer_value_of_batch_number ?: -1;
 		}, explode(",", $posted_batches));
 
-		$items = Item::whereIn('batch_number', $batches)
+		$items = Item::with('order')
+					 ->whereIn('batch_number', $batches)
 					 ->get();
 		if ( $items->count() == 0 ) {
 			return redirect()
@@ -401,7 +403,9 @@ class StationController extends Controller
 		foreach ( $items as $item ) {
 			$item->station_name = $station_name;
 			$item->save();
-
+			if ( in_array($station_name, Helper::$shippingStations) ) {
+				Helper::populateShippingData($item);
+			}
 			$station_log = new StationLog();
 			$station_log->item_id = $item->id;
 			$station_log->batch_number = $item->batch_number;

@@ -49,7 +49,7 @@
 				@foreach($ships as $ship)
 					<tr data-id = "{{$ship->id}}" class = "text-center">
 						<td>
-							<a href = "{{url(sprintf("orders/details/%s", $ship->order_number))}}">{{explode("-", $ship->order_number)[2]}}</a>
+							<a href = "{{url(sprintf("orders/details/%s", $ship->order_number))}}">{{ $ship->unique_order_id }}</a>
 						</td>
 						<td>{{$ship->mail_class}}</td>
 						<td>{{$ship->package_shape}}</td>
