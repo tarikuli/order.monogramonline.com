@@ -336,9 +336,13 @@ class StationController extends Controller
 
 	public function getBulkChange ()
 	{
+		// https://www.neontsunami.com/posts/using-lists()-in-laravel-with-custom-attribute-accessors
 		$stations = Station::where('is_deleted', 0)
-						   ->lists('station_description', 'station_name')
-						   ->prepend('Select a station', null);
+						   ->get()
+						   ->lists('custom_station_name', 'station_name')
+						   ->prepend('Select a station', 0);
+
+		#return $stations;
 
 		return view('items.bulk_change')->with('stations', $stations);
 	}

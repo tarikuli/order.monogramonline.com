@@ -20,4 +20,9 @@ class Station extends Model
 	{
 		return $this->hasMany('App\RejectionReason', 'station_id', 'id');
 	}
+
+	public function getCustomStationNameAttribute ()
+	{
+		return sprintf("%s => %s", $this->station_name, $this->station_description);
+	}
 }

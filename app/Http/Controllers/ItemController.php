@@ -356,7 +356,8 @@ class ItemController extends Controller
 					 ->where('station_name', $station_name)
 					 ->get();
 		if ( !count($items) ) {
-			return view('errors.404');
+			return redirect()->to('items/grouped');
+			#return view('errors.404');
 		}
 		#$bar_code = DNS1D::getBarcodeHTML($batch_number, "C39");
 		#$bar_code = Helper::getHtmlBarcode($batch_number);
