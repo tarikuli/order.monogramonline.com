@@ -232,13 +232,13 @@ APPEND;
 
 	public static function getHtmlBarcode ($value, $width = 1)
 	{
-		return DNS1D::getBarcodeHTML($value, "C39", $width);
-		#return static::getImageBarcodeSource($value, $width);
+		#return DNS1D::getBarcodeHTML($value, "C39", $width);
+		return static::getImageBarcodeSource($value, $width);
 	}
 
 	public static function getImageBarcodeSource ($value, $width = 1)
 	{
-		return '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($value, "C39+", $width) . '" alt="barcode"   />';
+		return '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG($value, "C39", $width) . '" alt="barcode"   />';
 		#return '<img src="data:image/png;base64,' . DNS1D::getBarcodePNG("4", "C39+") . '" alt="barcode"   />';
 	}
 
