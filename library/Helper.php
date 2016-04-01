@@ -212,7 +212,8 @@ APPEND;
 	public static function getProductCount ($category_id)
 	{
 		#return Product::where('product_master_category', $category_id)->count();
-		return Product::searchMasterCategory($category_id)->count();
+		return Product::searchMasterCategory($category_id)
+					  ->count();
 	}
 
 	public static function orderIdFormatter ($order, $column_name = 'id')
@@ -231,8 +232,8 @@ APPEND;
 
 	public static function getHtmlBarcode ($value, $width = 1)
 	{
-		#return DNS1D::getBarcodeHTML($value, "C39", $width);
-		return static::getImageBarcodeSource($value, $width);
+		return DNS1D::getBarcodeHTML($value, "C39", $width);
+		#return static::getImageBarcodeSource($value, $width);
 	}
 
 	public static function getImageBarcodeSource ($value, $width = 1)

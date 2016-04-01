@@ -359,7 +359,8 @@ class ItemController extends Controller
 			return view('errors.404');
 		}
 		#$bar_code = DNS1D::getBarcodeHTML($batch_number, "C39");
-		$bar_code = Helper::getHtmlBarcode($batch_number);
+		#$bar_code = Helper::getHtmlBarcode($batch_number);
+		$bar_code = null;
 		#$statuses = $this->statuses;
 		$statuses = Helper::getBatchStatusList();
 		$route = BatchRoute::with('stations')

@@ -50,21 +50,18 @@
 								{!! Form::text('username', $user->username, ['id' => 'username','class'=>'form-control']) !!}
 							</div>
 						</div>
-						{{--
-							Email and password fields are left
-						--}}
-						{{--<div class = "form-group">
-							{!!Form::label('email','Email :',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
-							<div class = "col-xs-5">
-								{!! Form::email('email', null, ['id' => 'email', 'placeholder' => 'Insertion will update the email','class'=>'form-control']) !!}
-							</div>
-						</div>--}}
-						{{--<div class = "form-group">
+						<div class = "form-group">
 							{!!Form::label('password','Password :',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 							<div class = "col-xs-5">
 								{!! Form::password('password', ['id' => 'password', 'placeholder' => 'Insertion will set new password','class'=>'form-control']) !!}
 							</div>
-						</div>--}}
+						</div>
+						<div class = "form-group">
+							{!!Form::label('email','Email :',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+							<div class = "col-xs-5">
+								{!! Form::email('email', null, ['id' => 'email', 'placeholder' => 'Insertion will update the email','class'=>'form-control']) !!}
+							</div>
+						</div>
 						<div class = "form-group">
 							{!!Form::label('vendor_id','Role :',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 							<div class = "col-xs-5">

@@ -682,15 +682,28 @@ class ProductController extends Controller
 		$products = Product::with('batch_route', 'master_category')
 						   ->where('is_deleted', 0)
 						   ->whereNull('batch_route_id')
-						   ->orWhere('batch_route_id', Helper::getDefaultRouteId())/*->searchIdCatalog($request->get('id_catalog'))
-						   ->searchProductModel($request->get('product_model'))
-						   ->searchProductName($request->get('product_name'))*/
+						   ->orWhere('batch_route_id', Helper::getDefaultRouteId())
+						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
+						   ->searchProductSalesCategory($request->get('product_sales_category'))
+						   ->searchRoute($request->get('route'))
+						   ->searchProductionCategory($request->get('product_production_category'))
+						   ->searchProductOccasion($request->get('product_occasion'))
+						   ->searchProductCollection($request->get('product_collection'))
+						   ->searchMasterCategory($request->get('product_master_category'))/*->searchCategory($request->get('product_category'))
+						   ->searchSubCategory($request->get('product_sub_category'))*/
+						   ->latest()
+						   ->paginate(50);
+
+		/*$products = Product::with('batch_route', 'master_category')
+						   ->where('is_deleted', 0)
+						   ->whereNull('batch_route_id')
+						   ->orWhere('batch_route_id', Helper::getDefaultRouteId())
 						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
 						   ->searchProductSalesCategory($request->get('product_sales_category'))
 						   ->searchProductOccasion($request->get('product_occasion'))
 						   ->searchProductCollection($request->get('product_collection'))
 						   ->latest()
-						   ->paginate(50);
+						   ->paginate(50);*/
 		$batch_routes = BatchRoute::where('is_deleted', 0)
 								  ->lists('batch_route_name', 'id');
 
