@@ -476,7 +476,7 @@ APPEND;
 		$ship->city = $city;
 		$ship->state_city = $state_city;
 		$ship->postal_code = $postal_code;
-		$ship->actual_weight = $product_weight;
+		$ship->actual_weight = $product_weight ?: 0;
 		$ship->billed_weight = $final_weight;
 		$ship->country = $country;
 		$ship->email = $email;

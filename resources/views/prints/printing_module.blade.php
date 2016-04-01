@@ -51,13 +51,13 @@
 					@foreach($item->groupedItems as $row)
 						<tr valign = "top">
 
-							<td align = "left">{{$item->order->short_order}}</td>
+							<td align = "left">{{$row->order->short_order}}</td>
 							<td align = "left">{{substr($row->order->order_date, 0, 10)}}</td>
 							<td align = "center">{{$row->item_quantity}}</td>
 							<td align = "left">{{$row->item_code}}</td>
 							<td align = "left" rowspan = "2">{{$row->item_description}}</td>
 							<td align = "left"
-							    rowspan = "2">{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}</td>
+							    rowspan = "2">{!! \Monogram\Helper::jsonTransformer($row->item_option, "<br/>") !!}</td>
 							<td align = "left"
 							    rowspan = "2">{{ $row->shipInfo ? ($row->shipInfo->tracking_number ? "Yes" : "No" ): "No" }}</td>
 						</tr>
