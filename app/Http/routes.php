@@ -2,7 +2,7 @@
 
 get('test/batch', function () {
 	#return 'test';
-	return sprintf("%06s", 1000110);
+	#return date('Y-m-d', strtotime('30-03-2015'));
 });
 
 // auth middleware enabled controller
