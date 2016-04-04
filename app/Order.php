@@ -33,6 +33,11 @@ class Order extends Model
 					]);
 	}
 
+	public function shippingInfo ()
+	{
+		return $this->hasMany('App\Ship', 'order_number', 'order_id');
+	}
+
 	public function notes ()
 	{
 		return $this->hasMany('App\Note', 'order_id', 'order_id');

@@ -257,7 +257,7 @@ class OrderController extends Controller
 
 	public function getList (Request $request)
 	{
-		$orders = Order::with('customer')
+		$orders = Order::with('customer', 'shippingInfo')
 					   ->where('is_deleted', 0)
 					   ->storeId($request->get('store'))
 					   ->status($request->get('status'))

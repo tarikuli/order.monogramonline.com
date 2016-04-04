@@ -174,6 +174,18 @@ class Helper
 		'H-SHP',
 	];
 
+	public static function tracking_number_formatter ($shippingInfo, $new_line_formatter = '<br/>')
+	{
+		if ( !$shippingInfo ) {
+			return;
+		}
+
+		$tracking_numbers = $shippingInfo->lists('tracking_number')
+										 ->toArray();
+
+		return implode($new_line_formatter, $tracking_numbers);
+	}
+
 	public static function scrollableCheckbox ($name, $options, $value = null)
 	{
 		$container = <<<Container

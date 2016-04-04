@@ -37,7 +37,7 @@
 			</div>
 			<div class = "form-group col-xs-2">
 				<label for = "search_for">Search for</label>
-				{!! Form::text('search_for', null, ['id'=>'search_for', 'class' => 'form-control', 'placeholder' => 'Comma delimited']) !!}
+				{!! Form::text('search_for', $request->get('search_for'), ['id'=>'search_for', 'class' => 'form-control', 'placeholder' => 'Comma delimited']) !!}
 			</div>
 			<div class = "form-group col-xs-2">
 				<label for = "search_in">Search in</label>
@@ -85,6 +85,7 @@
 					<th>Order total</th>
 					<th>Order date</th>
 					<th>Ship method</th>
+					<th>Tracking number</th>
 					<th>Status</th>
 				</tr>
 				@foreach($orders as $order)
@@ -108,6 +109,7 @@
 						<td><i class = "fa fa-usd"></i>{{$order->total}}</td>
 						<td>{{substr($order->order_date, 0, 10)}}</td>
 						<td>{{$order->customer->shipping}}</td>
+						<td>{!! Monogram\Helper::tracking_number_formatter($order->shippingInfo) !!}</td>
 						<td>{!! Form::select('status', $statuses, App\Status::find($order->order_status)->status_code) !!}</td>
 					</tr>
 				@endforeach
