@@ -96,6 +96,7 @@
 					<th>Order status</th>
 					<th>Item status</th>
 					<th>Trk#</th>
+					<th>Tracking date</th>
 					<th>Customer</th>
 					<th>State</th>
 					<th>Description</th>
@@ -116,6 +117,7 @@
 						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['id' => 'order_status_id','disabled' => 'disabled'])  !!}</td>
 						<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['id' => 'item_order_status_2_id','disabled' => 'disabled'])  !!}</td>
 						<td>{{$item->shipInfo ? ($item->shipInfo->tracking_number ?: "Not shipped") : "N/A"}}</td>
+						<td>{{ $item->shipInfo ? $item->shipInfo->postmark_date : "N/A" }}
 						<td><a href = "{{ url("customers/".$item->order->customer->id) }}" title = "This is customer id"
 						       class = "btn btn-link">{{ !empty($item->order->customer->ship_full_name) ? $item->order->customer->ship_full_name : $item->order->customer->bill_full_name }}</a>
 						</td>
