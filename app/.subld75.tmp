@@ -128,10 +128,6 @@ class Item extends Model
 
 			return $query->where('batch_creation_date', 'REGEXP', implode("|", $values));
 
-		} elseif($search_in == 'tracking_number'){
-			$shipped_items = Ship::where('tracking_number', 'REGEXP', implode("|", $values))->get(['item_id'])->toArray();
-			#dd($shipped_items);
-			return $query->whereIn('id', $shipped_items);
 		} else {
 			return;
 		}
@@ -152,7 +148,7 @@ class Item extends Model
 		if ( !$tracking_date ) {
 			return;
 		}
-		$tracking = Ship::where('postmark_date', $tracking_date)->get([
+		$tracking = App\Ship::where('postmark_date', $tracking_date)->get([
 			'item_id'
 			])->toArray();
 

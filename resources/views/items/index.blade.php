@@ -72,6 +72,15 @@
                     </span>
 				</div>
 			</div>
+			<div class = "form-group col-xs-3">
+				<label for = "tracking_date">Shipping date</label>
+				<div class = 'input-group date' id = 'tracking_date_picker'>
+					{!! Form::text('tracking_date', $request->get('tracking_date'), ['id'=>'tracking_date', 'class' => 'form-control', 'placeholder' => 'Enter shipping date']) !!}
+					<span class = "input-group-addon">
+                        <span class = "glyphicon glyphicon-calendar"></span>
+                    </span>
+				</div>
+			</div>
 			<div class = "form-group col-xs-2">
 				<label for = "" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
@@ -167,6 +176,7 @@
 		{
 			$('#start_date_picker').datetimepicker(options);
 			$('#end_date_picker').datetimepicker(options);
+			$('#tracking_date_picker').datetimepicker(options);
 		});
 	</script>
 

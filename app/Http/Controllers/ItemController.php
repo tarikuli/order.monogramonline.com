@@ -41,6 +41,7 @@ class ItemController extends Controller
 					 ->search($request->get('search_for_first'), $request->get('search_in_first'))
 					 ->search($request->get('search_for_second'), $request->get('search_in_second'))
 					 ->searchDate($request->get('start_date'), $request->get('end_date'))
+					 ->searchTrackingDate($request->get('tracking_date'))
 					 ->latest()
 					 ->paginate(50);
 
@@ -77,6 +78,7 @@ class ItemController extends Controller
 			'item_code'           => 'SKU',
 			'batch'               => 'Batch',
 			'batch_creation_date' => 'Batch Creation date',
+			'tracking_number' 	  => 'Tracking number',
 		];
 
 		#return $items;
