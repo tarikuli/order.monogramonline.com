@@ -109,7 +109,7 @@
 						<td><i class = "fa fa-usd"></i>{{$order->total}}</td>
 						<td>{{substr($order->order_date, 0, 10)}}</td>
 						<td>{{$order->customer->shipping}}</td>
-						<td>{!! Monogram\Helper::tracking_number_formatter($order->shippingInfo) !!}</td>
+						<td>{!! Monogram\Helper::tracking_number_formatter($order->shippingInfo) ?: "N/A" !!}</td>
 						<td>{!! Form::select('status', $statuses, App\Status::find($order->order_status)->status_code) !!}</td>
 					</tr>
 				@endforeach
