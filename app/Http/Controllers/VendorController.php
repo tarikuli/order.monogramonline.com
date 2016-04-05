@@ -32,7 +32,23 @@ class VendorController extends Controller
 		$vendor->email = trim($request->get('email'));
 		$vendor->phone_number = trim($request->get('phone_number'));
 
-		if ( $request->has('zip_code') ) {
+		$vendor->contact_person_name = trim($request->get('contact_person_name'));
+		$vendor->link = trim($request->get('account_link'));
+		$vendor->login_id = trim($request->get('account_login'));
+		$vendor->password = trim($request->get('account_password'));
+
+		$vendor->bank_info = trim($request->get('bank_info'));
+		$vendor->paypal_info = trim($request->get('paypal_info'));
+		$vendor->notes = trim($request->get('notes'));
+
+		if ( $request->hasFile('image') ) {
+			$vendor->image = $this->image_manipulator($request->file('image'), $request->get('vendor_name'));
+		}
+		$vendor->zip_code = trim($request->get('zip_code'));
+		$vendor->state = trim($request->get('state'));
+		$vendor->country = trim($request->get('country'));
+
+		/*if ( $request->has('zip_code') ) {
 			$vendor->zip_code = trim($request->get('zip_code'));
 		}
 		if ( $request->has('state') ) {
@@ -40,7 +56,7 @@ class VendorController extends Controller
 		}
 		if ( $request->has('country') ) {
 			$vendor->country = trim($request->get('country'));
-		}
+		}*/
 
 		$vendor->save();
 
@@ -77,25 +93,35 @@ class VendorController extends Controller
 		}
 
 		$vendor->vendor_name = trim($request->get('vendor_name'));
-
 		$vendor->phone_number = trim($request->get('phone_number'));
+
+		$vendor->contact_person_name = trim($request->get('contact_person_name'));
+		$vendor->link = trim($request->get('account_link'));
+		$vendor->login_id = trim($request->get('account_login'));
+
+		$vendor->bank_info = trim($request->get('bank_info'));
+		$vendor->paypal_info = trim($request->get('paypal_info'));
+		$vendor->notes = trim($request->get('notes'));
+
+		if ( $request->hasFile('image') ) {
+			$vendor->image = $this->image_manipulator($request->file('image'), $request->get('vendor_name'));
+		}
+
+
+		$vendor->zip_code = trim($request->get('zip_code'));
+		$vendor->state = trim($request->get('state'));
+		$vendor->country = trim($request->get('country'));
 
 		if ( $request->has('email') ) {
 			$vendor->email = trim($request->get('email'));
 		}
-		if ( $request->has('zip_code') ) {
-			$vendor->zip_code = trim($request->get('zip_code'));
-		}
-		if ( $request->has('state') ) {
-			$vendor->state = trim($request->get('state'));
-		}
-		if ( $request->has('country') ) {
+		if ( $request->has('account_password') ) {
 			$vendor->country = trim($request->get('country'));
 		}
 
 		$vendor->save();
 
-		session()->flash('success', 'Vendor udpated successfully updated.');
+		session()->flash('success', 'Vendor is successfully updated.');
 
 		return redirect()->route('vendors.index');
 	}
@@ -114,5 +140,19 @@ class VendorController extends Controller
 
 		return redirect()->route('vendors.index');
 
+	}
+
+	private function image_manipulator ($image, $name)
+	{
+		if ( $image->isValid() ) {
+			$destinationPath = 'assets/images/vendor_images';
+			$extension = $image->getClientOriginalExtension();
+			$fileName = sprintf("%s-%s.%s", str_slug($name), rand(11111, 99999), $extension);
+			$image->move($destinationPath, $fileName);
+
+			return sprintf("%s/%s", url($destinationPath), $fileName);
+		}
+
+		return '';
 	}
 }

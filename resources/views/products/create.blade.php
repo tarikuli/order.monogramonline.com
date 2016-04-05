@@ -241,7 +241,7 @@
 					<div class = "form-group">
 						{!!Form::label('images','Upload image: ',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">
-							{!! Form::file('images[]', ['id' => 'images', 'multiple' => 'true', 'accepts' => 'images/*', 'class'=>'form-control']) !!}
+							{!! Form::file('images[]', ['id' => 'images', 'multiple' => 'true', 'accept' => 'image/*', 'class'=>'form-control']) !!}
 						</div>
 					</div>
 				</div>

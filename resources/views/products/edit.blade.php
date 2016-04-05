@@ -255,7 +255,7 @@
 					<div class = "form-group">
 						{!!Form::label('images','Upload image: ',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">
-							{!! Form::file('images[]', ['id' => 'images', 'multiple' => 'true', 'accepts' => 'images/*', 'class'=>'form-control']) !!}
+							{!! Form::file('images[]', ['id' => 'images', 'multiple' => 'true', 'accept' => 'image/*', 'class'=>'form-control']) !!}
 							@if($product->images)
 								@foreach($product->images as $image)
 									<a href="{{$image->path}}" target="_blank"><img src = "{{$image->path}}" width="70" height="70" style="margin-right: 10px; margin-bottom: 2px;"></a>

@@ -20,7 +20,7 @@
 		<div class = "col-xs-offset-1 col-xs-10 col-xs-offset-1">
 			<h4 class = "page-header">Vendor details</h4>
 			<table class = "table table-hover table-bordered">
-				<tr class = "success">
+				<tr>
 					<td>Vendor name</td>
 					<td>{{$vendor->vendor_name}}</td>
 				</tr>
@@ -28,7 +28,7 @@
 					<td>Email</td>
 					<td>{{$vendor->email}}</td>
 				</tr>
-				<tr class = "success">
+				<tr>
 					<td>Zip Code</td>
 					<td>{{$vendor->zip_code}}</td>
 				</tr>
@@ -40,9 +40,48 @@
 					<td>Country</td>
 					<td>{{$vendor->country}}</td>
 				</tr>
-				<tr class = "success">
+				<tr>
 					<td>Phone number</td>
 					<td>{{$vendor->phone_number}}</td>
+				</tr>
+				<tr>
+					<td>Image</td>
+					<td>
+						@if($vendor->image)
+							<a href = "{{$vendor->image}}" target = "_blank"><img src = "{{$vendor->image}}"
+							                                                      width = "70"
+							                                                      height = "70"
+							                                                      style = "margin-right: 10px; margin-bottom: 2px;"></a>
+						@else
+							No image available
+						@endif
+					</td>
+				</tr>
+				<tr>
+					<td>Contact person name</td>
+					<td>{{$vendor->contact_person_name}}</td>
+				</tr>
+				<tr>
+					<td>Account link</td>
+					<td>
+						@if($vendor->link)
+							<a href = "{{$vendor->link}}">{{$vendor->link}}</a>
+						@else
+							N/A
+						@endif
+					</td>
+				</tr>
+				<tr>
+					<td>Account login id</td>
+					<td>{{$vendor->login_id}}</td>
+				</tr>
+				<tr>
+					<td>Bank info</td>
+					<td>{{$vendor->bank_info}}</td>
+				</tr>
+				<tr>
+					<td>Paypal info</td>
+					<td>{{$vendor->paypal_info}}</td>
 				</tr>
 			</table>
 		</div>
