@@ -175,11 +175,30 @@
 								</td>
 							</tr>
 							<tr>
+								<td>Local image</td>
+								<td>
+									@if(count($product->images))
+										@foreach($product->images as $image)
+											<a href = "{{$image->path}}" target = "_blank"><img src = "{{$image->path}}"
+											                                                    width = "70"
+											                                                    height = "70"
+											                                                    style = "margin-right: 10px; margin-bottom: 2px;"></a>
+										@endforeach
+									@else
+										No local image available
+									@endif
+								</td>
+							</tr>
+							<tr>
 								<td>Video</td>
 								<td>
-									<a href = "{{$product->product_video}}" target = "_blank">
-										{{$product->product_video}}
-									</a>
+									@if($product->product_video)
+										<a href = "{{$product->product_video}}" target = "_blank">
+											{{$product->product_video}}
+										</a>
+									@else
+										No video link available
+									@endif
 								</td>
 							</tr>
 						</table>

@@ -339,7 +339,7 @@ class ProductController extends Controller
 	public function show ($id)
 	{
 		// if searching for inactive or deleted product
-		$product = Product::with('store', 'batch_route', 'master_category', 'production_category', 'collections', 'vendor', 'sales_category')
+		$product = Product::with('store', 'images', 'batch_route', 'master_category', 'production_category', 'collections', 'vendor', 'sales_category')
 						  ->where('is_deleted', 0)
 						  ->find($id);
 		if ( !$product ) {
@@ -952,10 +952,11 @@ class ProductController extends Controller
 		$extra_columns = [
 			'product_occasions',
 			'product_collections',
+			'product_images',
 		];
 		$columns = array_merge($table_columns, $extra_columns);
 		#$products = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category', 'product_occasion_details', 'product_collection_details')->get($columns);
-		$products = Product::with('batch_route', 'master_category', 'production_category', 'sales_category')
+		$products = Product::with('batch_route', 'master_category', 'production_category', 'sales_category', 'images')
 						   ->where('is_deleted', 0)
 						   ->get();
 		#->get(array_merge([ 'id' ], $table_columns));
@@ -1004,6 +1005,9 @@ class ProductController extends Controller
 															 ->all());
 					/*continue;
 					$row[] = $product->product_occasion ? $product->product_occasion_details->occasion_code : '';*/
+				} elseif ( $column == 'product_images' ) {
+					$row[] = implode(",", $product->images->lists('path')
+														  ->toArray());
 				} else {
 					$row[] = $product->$column;
 				}
