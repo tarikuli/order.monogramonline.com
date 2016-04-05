@@ -34,7 +34,7 @@
 			</div>--}}
 			<div class = "form-group col-xs-3">
 				<label for = "route">Station</label>
-				{!! Form::select('station', $stations, session('station', 'all'), ['id'=>'station', 'class' => 'form-control']) !!}
+				{!! Form::select('station', $stations, $request->get('station', ''), ['id'=>'station', 'class' => 'form-control']) !!}
 			</div>
 			{{--<div class = "form-group col-xs-2">
 				<label for = "status">Status</label>
@@ -94,7 +94,7 @@
 					{{--{!! Form::close() !!}--}}
 				</table>
 			@else
-				<div class = "alert alert-warning">No row found.</div>
+				<div class = "alert alert-warning">No data is available.</div>
 			@endif
 		</div>
 		<div class = "col-xs-12 text-center">

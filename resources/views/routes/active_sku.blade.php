@@ -18,7 +18,7 @@
 	<div class = "container">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
-			<li class = "active">Active batch by SKU group</li>
+			<li class = "active">Active SKU</li>
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
