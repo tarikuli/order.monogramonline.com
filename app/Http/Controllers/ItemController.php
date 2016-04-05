@@ -618,7 +618,7 @@ class ItemController extends Controller
 					 ->searchActiveByStation($request->get('station'))
 					 ->where('batch_number', '!=', '0')
 					 ->get();
-		
+
 		$stations = Station::where('is_deleted', 0)
 						   ->latest()
 						   ->get()
@@ -635,9 +635,9 @@ class ItemController extends Controller
 					'station_name'   => $station_name,
 					'sku'            => $sku,
 					'item_name'      => $sku_groups->first() ? $sku_groups->first()->item_description : "-",
-					'min_order_date' => $sku_groups->count() ? $sku_groups->first()->lowest_order_date->order_date : "",
+					'min_order_date' => $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
 					'item_count'     => $count,
-					'action'         => url(sprintf('/active_batch/sku/%s', $sku)),
+					'action'         => url(sprintf('items/active_batch/sku/%s', $sku)),
 				];
 			}
 		}
@@ -647,5 +647,37 @@ class ItemController extends Controller
 			->withRequest($request)
 			->with('stations', $stations)
 			->with('total_count', $total_count);
+	}
+
+	public function get_sku_on_stations (Request $request, $sku)
+	{
+		$items = Item::with('lowest_order_date')
+					 ->where('batch_number', '!=', 0)
+					 ->whereNotNull('station_name')
+					 ->Where('station_name', '!=', '')
+					 ->where('item_code', $sku)
+					 ->groupBy('batch_number')
+					 ->get([
+						 '*',
+						 DB::raw('SUM(item_quantity) as total'),
+					 ]);
+		$rows = [ ];
+		$total = 0;
+		foreach ( $items as $item ) {
+			$count = $item->total;
+			$total += $count;
+			$rows[] = [
+				'batch_number'   => $item->batch_number,
+				'sku'            => $sku,
+				'item_name'      => $item->item_description,
+				'item_count'     => $count,
+				'min_order_date' => substr($item->lowest_order_date->order_date, 0, 10),
+			];
+		}
+
+		return view('routes.active_sku')
+			->with('rows', $rows)
+			->with('total', $total);
+
 	}
 }

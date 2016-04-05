@@ -56,6 +56,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('batches/{batch_number}/{station_name}', 'ItemController@postBatchItems');
 
 		get('items/active_batch_group', 'ItemController@get_active_batch_by_sku');
+		get('items/active_batch/sku/{sku}', 'ItemController@get_sku_on_stations');
 		put('batches/{batch_number}', 'ItemController@updateBatchItems');
 		get('items/batch', 'ItemController@getBatch');
 		get('batch_details/{batch_number}', 'ItemController@batch_details');
