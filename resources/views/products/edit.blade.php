@@ -37,7 +37,7 @@
 			</div>
 		@endif
 
-		{!! Form::open(['url' => url(sprintf("/products/%d", $product->id)), 'method' => 'put', 'class'=>'form-horizontal','role'=>'form']) !!}
+		{!! Form::open(['url' => url(sprintf("/products/%d", $product->id)), 'files' => true, 'method' => 'put', 'class'=>'form-horizontal','role'=>'form']) !!}
 		<div class = "col-md-12">
 			<!-- Nav tabs -->
 			<ul class = "nav nav-tabs" role = "tablist">
@@ -250,6 +250,17 @@
 						{!!Form::label('product_video','Video: ',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">
 							{!! Form::text('product_video', $product->product_video, ['id' => 'product_video','class'=>'form-control']) !!}
+						</div>
+					</div>
+					<div class = "form-group">
+						{!!Form::label('images','Upload image: ',['class'=>'control-label col-xs-2'])!!}
+						<div class = "col-xs-5">
+							{!! Form::file('images[]', ['id' => 'images', 'multiple' => 'true', 'accepts' => 'images/*', 'class'=>'form-control']) !!}
+							@if($product->images)
+								@foreach($product->images as $image)
+									<a href="{{$image->path}}" target="_blank"><img src = "{{$image->path}}" width="70" height="70" style="margin-right: 10px; margin-bottom: 2px;"></a>
+								@endforeach
+							@endif
 						</div>
 					</div>
 				</div>

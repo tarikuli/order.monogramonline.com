@@ -2,6 +2,7 @@
 
 use App\BatchRoute;
 use App\Category;
+use App\Image;
 use App\MasterCategory;
 use App\Occasion;
 use App\Product;
@@ -303,6 +304,9 @@ class ProductController extends Controller
 			$product->width = floatval($request->get('width'));
 		}
 		$product->save();
+		if ( $request->hasFile('images') ) {
+			$this->image_manipulator($request->file('images'), $product);
+		}
 		if ( $request->exists('product_collection') && is_array($request->get('product_collection')) ) {
 			// check if product collection is an array
 			// check if the given collection is valid
@@ -348,7 +352,7 @@ class ProductController extends Controller
 
 	public function edit ($id)
 	{
-		$product = Product::with('batch_route', 'specifications')
+		$product = Product::with('batch_route', 'specifications', 'images')
 						  ->where('is_deleted', 0)
 						  ->find($id);
 		#return $product;
@@ -586,6 +590,10 @@ class ProductController extends Controller
 		}
 
 		$product->save();
+
+		if ( $request->hasFile('images') ) {
+			$this->image_manipulator($request->file('images'), $product);
+		}
 
 		// grab yahoo/custom data fields from request
 		$customData = [ ];
@@ -1205,5 +1213,21 @@ class ProductController extends Controller
 	public function post_to_yahoo (Request $request)
 	{
 		return $request->all();
+	}
+
+	private function image_manipulator ($images, $product)
+	{
+		foreach ( $images as $image ) {
+			if ( $image->isValid() ) {
+				$destinationPath = 'assets/images/product_images';
+				$extension = $image->getClientOriginalExtension();
+				$fileName = sprintf("%s-%s.%s", $product->product_model, rand(11111, 99999), $extension);
+				$image->move($destinationPath, $fileName);
+				$product_image = new Image();
+				$product_image->product_id = $product->id;
+				$product_image->path = sprintf("%s/%s", url($destinationPath), $fileName);
+				$product_image->save();
+			}
+		}
 	}
 }

@@ -238,6 +238,12 @@
 							{!! Form::text('product_video', null, ['id' => 'product_video','class'=>'form-control']) !!}
 						</div>
 					</div>
+					<div class = "form-group">
+						{!!Form::label('images','Upload image: ',['class'=>'control-label col-xs-2'])!!}
+						<div class = "col-xs-5">
+							{!! Form::file('images[]', ['id' => 'images', 'multiple' => 'true', 'accepts' => 'images/*', 'class'=>'form-control']) !!}
+						</div>
+					</div>
 				</div>
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-categories">
 					<div class = "form-group">

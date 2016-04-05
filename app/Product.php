@@ -57,6 +57,11 @@ class Product extends Model
 		return (new static())->tableColumns();
 	}
 
+	public function images ()
+	{
+		return $this->hasMany('App\Image', 'product_id', 'id');
+	}
+
 	public function batch_route ()
 	{
 		return $this->hasOne('App\BatchRoute', 'id', 'batch_route_id');
