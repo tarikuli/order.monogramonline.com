@@ -11,14 +11,6 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<style>
-		table {
-			table-layout: fixed;
-			font-size: 12px;
-		}
-
-		td {
-			width: auto;
-		}
 	</style>
 </head>
 <body>
@@ -44,10 +36,10 @@
 				<label for = "route">Station</label>
 				{!! Form::select('station', $stations, session('station', 'all'), ['id'=>'station', 'class' => 'form-control']) !!}
 			</div>
-			<div class = "form-group col-xs-2">
+			{{--<div class = "form-group col-xs-2">
 				<label for = "status">Status</label>
 				{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'status', 'class' => 'form-control']) !!}
-			</div>
+			</div>--}}
 			<div class = "form-group col-xs-2">
 				<label for = "" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
@@ -58,73 +50,55 @@
 			@if(count($rows))
 				<table class = "table">
 					<tr>
-						<th>
+						{{--<th>
 							<img src = "{{url('/assets/images/spacer.gif')}}"
 							     width = "50" height = "20" border = "0">
-						</th>
-						<th>Batch#</th>
-						<th>View batch</th>
-						<th>Batch creation date</th>
-						<th>Route</th>
-						<th>Lines</th>
-						<th>Current station</th>
-						<th>Current station since</th>
-						<th>Next station</th>
-						<th>Status</th>
-						<th>MinOrderDate</th>
+						</th>--}}
+						{{--<th>Batch#</th>--}}
+						{{--<th>View batch</th>--}}
+						{{--<th>Batch creation date</th>--}}
+						{{--<th>Route</th>--}}
+						<th>Station</th>
+						<th>SKU</th>
+						<th>Name</th>
+						<th>Quantity</th>
+						<th>Min-Order date</th>
+						<th>Action</th>
 					</tr>
-					{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}
+					{{--{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}--}}
 					@foreach($rows as $row)
 						<tr>
-							<td>
-								<input type = "checkbox" name = "batch_number[]" class = "checkbox"
-								       value = "{{$row['batch_number']}}" />
-							</td>
-							<td>
-								<a href = "{{url(sprintf('batches/%d/%s',$row['batch_number'], $row['current_station_name']))}}">{{$row['batch_number']}}</a>
-							</td>
-							<td>
-								<a href = "{{url(sprintf('batch_details/%d',$row['batch_number']))}}"
-								   target = "_blank">View batch</a>
-							</td>
-							<td>{{$row['batch_creation_date']}}</td>
-							<td><span data-toggle = "tooltip" data-placement = "top"
-							          title = "{{$row['route_name']}}">{{$row['route_code']}}</span>
-							</td>
-							<td>
-								@if($row['current_station_item_count'] == $row['lines'])
-									{{$row['current_station_item_count']}}
-								@else
-									{{$row['current_station_item_count']}} / {{$row['lines']}}
-								@endif
-							</td>
-							<td>
-								<span data-toggle = "tooltip" data-placement = "top"
-								      title = "{{ $row['current_station_description'] }}">{{ $row['current_station_name'] }}</span>
-							</td>
-							<td>{{ $row['batch_creation_date'] }}</td>
-							<td><span data-toggle = "tooltip" data-placement = "top"
-							          title = "{{ $row['next_station_description'] }}">{{ $row['next_station_name'] }}</span>
-							</td>
-							<td>{{$row['batch_status']}}</td>
-							<td>{{$row['min_order_date']}}</td>
+							<td>{{ $row['station_name'] }}</td>
+							<td>{{ $row['sku'] }}</td>
+							<td class = "description">{{ $row['item_name'] }}</td>
+							<td>{{ $row['item_count'] }}</td>
+							<td>{{ $row['min_order_date'] }}</td>
+							<td><a href = "{{ $row['action'] }}">Details</a></td>
 						</tr>
 					@endforeach
 					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td>{{ $total_count }}</td>
+						<td></td>
+						<td></td>
+					</tr>
+					{{--<tr>
 						<td colspan = "11">
 							{!! Form::button('Select / Deselect all', ['id' => 'select_deselect', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Packing Slip', ['id' => 'packing_slip', 'class' => 'btn btn-link']) !!}
 						</td>
-					</tr>
-					{!! Form::close() !!}
+					</tr>--}}
+					{{--{!! Form::close() !!}--}}
 				</table>
 			@else
-				<div class = "alert alert-warning">No batch is created.</div>
+				<div class = "alert alert-warning">No row found.</div>
 			@endif
 		</div>
 		<div class = "col-xs-12 text-center">
-			{!! $items->render() !!}
+			{{--{!! $items->render() !!}--}}
 		</div>
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>

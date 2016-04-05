@@ -83,6 +83,13 @@ class Item extends Model
 	}
 
 	/* Scope Search methods */
+	public function scopeSearchActiveByStation ($query, $station_name)
+	{
+		if ( !$station_name ) {
+			return;
+		}
+		return $query->where('station_name', $station_name);
+	}
 
 	public function scopeSearch ($query, $search_for, $search_in)
 	{
@@ -128,8 +135,11 @@ class Item extends Model
 
 			return $query->where('batch_creation_date', 'REGEXP', implode("|", $values));
 
-		} elseif($search_in == 'tracking_number'){
-			$shipped_items = Ship::where('tracking_number', 'REGEXP', implode("|", $values))->get(['item_id'])->toArray();
+		} elseif ( $search_in == 'tracking_number' ) {
+			$shipped_items = Ship::where('tracking_number', 'REGEXP', implode("|", $values))
+								 ->get([ 'item_id' ])
+								 ->toArray();
+
 			#dd($shipped_items);
 			return $query->whereIn('id', $shipped_items);
 		} else {
@@ -147,14 +157,16 @@ class Item extends Model
 		return $query->whereIn('batch_number', explode(",", trim($batch_number, ",")));
 	}
 
-	public function scopeSearchTrackingDate($query, $tracking_date)
+	public function scopeSearchTrackingDate ($query, $tracking_date)
 	{
 		if ( !$tracking_date ) {
 			return;
 		}
-		$tracking = Ship::where('postmark_date', $tracking_date)->get([
-			'item_id'
-			])->toArray();
+		$tracking = Ship::where('postmark_date', $tracking_date)
+						->get([
+							'item_id',
+						])
+						->toArray();
 
 		return $query->whereIn('id', $tracking);
 	}

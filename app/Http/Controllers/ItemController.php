@@ -615,13 +615,37 @@ class ItemController extends Controller
 	public function get_active_batch_by_sku (Request $request)
 	{
 		$items = Item::with('lowest_order_date')
+					 ->searchActiveByStation($request->get('station'))
 					 ->where('batch_number', '!=', '0')
-					 ->whereNotNull('station_name')
-					 ->orWhere('station_name', '!=', '')
 					 ->get();
+		
+		$stations = Station::where('is_deleted', 0)
+						   ->latest()
+						   ->get()
+						   ->lists('custom_station_name', 'station_name')
+						   ->prepend('Select a station', '');
+		$rows = [ ];
+		$total_count = 0;
+		foreach ( $items->groupBy('station_name') as $station_name => $items_on_station ) {
+			$groupBySKU = $items_on_station->groupBy('item_code');
+			foreach ( $groupBySKU as $sku => $sku_groups ) {
+				$count = $sku_groups->count();
+				$total_count += $count;
+				$rows[] = [
+					'station_name'   => $station_name,
+					'sku'            => $sku,
+					'item_name'      => $sku_groups->first() ? $sku_groups->first()->item_description : "-",
+					'min_order_date' => $sku_groups->count() ? $sku_groups->first()->lowest_order_date->order_date : "",
+					'item_count'     => $count,
+					'action'         => url(sprintf('/active_batch/sku/%s', $sku)),
+				];
+			}
+		}
 
-		return view('route.active_batch_by_sku')
-			->with('items', $items)
-			->withRequest($request);
+		return view('routes.active_batch_by_sku')
+			->with('rows', $rows)
+			->withRequest($request)
+			->with('stations', $stations)
+			->with('total_count', $total_count);
 	}
 }
