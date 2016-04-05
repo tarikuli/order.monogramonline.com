@@ -76,7 +76,7 @@ class ItemController extends Controller
 			'item_code'           => 'SKU',
 			'batch'               => 'Batch',
 			'batch_creation_date' => 'Batch Creation date',
-			'tracking_number' 	  => 'Tracking number',
+			'tracking_number'     => 'Tracking number',
 		];
 
 		#return $items;
@@ -610,5 +610,18 @@ class ItemController extends Controller
 		$item->save();
 
 		return redirect()->back();
+	}
+
+	public function get_active_batch_by_sku (Request $request)
+	{
+		$items = Item::with('lowest_order_date')
+					 ->where('batch_number', '!=', '0')
+					 ->whereNotNull('station_name')
+					 ->orWhere('station_name', '!=', '')
+					 ->get();
+
+		return view('route.active_batch_by_sku')
+			->with('items', $items)
+			->withRequest($request);
 	}
 }

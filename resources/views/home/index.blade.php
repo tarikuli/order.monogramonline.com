@@ -63,11 +63,12 @@
 					<li><a href = "/rules">Shipping Rules</a></li>
 					<li><a href = "/shipping">Shipping list</a></li>
 					<li><a href = "/summary">Stations summary</a></li>
-					<li><a href = "/export_station"><em><strong>Export station log</strong></em></a></li>
+					<li><a href = "/export_station">Export station log</a></li>
 					<li><a href = "/rejection_reasons">Rejection reasons</a></li>
 					<li><a href = "/purchases">Purchases</a></li>
 					<li><a href = "/purchases/create">Add purchase</a></li>
-					<li><a href = "/stations/bulk"><em><strong>Bulk batch change</strong></em></a></li>
+					<li><a href = "/stations/bulk">Bulk batch change</a></li>
+					<li><a href = "/items/active_batch_group"><em><strong>Active batch by SKU group</strong></em></a></li>
 				</ul>
 				<hr />
 				<ul>
