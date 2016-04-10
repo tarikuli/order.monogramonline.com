@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang = "en">
+<head>
+	<meta charset = "UTF-8">
+	<title>Product Spec sheet - 2</title>
+	<meta name = "viewport" content = "width=device-width, initial-scale=1">
+	<link type = "text/css" rel = "stylesheet"
+	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+	<link type = "text/css" rel = "stylesheet"
+	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+</head>
+<body>
+	@include('includes.header_menu')
+	<div class = "container">
+		<ol class = "breadcrumb">
+			<li><a href = "{{url('/')}}">Home</a></li>
+			<li>Product specifications step- 2</li>
+		</ol>
+		@include('includes.error_div')
+		@include('includes.success_div')
+		{!! Form::open(['url' => url('/products_specifications/step/2'), 'method' => 'post']) !!}
+		<div class = "col-md-12">
+			<ul class = "nav nav-tabs" role = "tablist">
+				<li role = "presentation" class = "active">
+					<a href = "#tab-general" aria-controls = "general" role = "tab"
+					   data-toggle = "tab">General info</a>
+				</li>
+				<li role = "presentation">
+					<a href = "#tab-specification" aria-controls = "specification" role = "tab"
+					   data-toggle = "tab">Product specification</a>
+				</li>
+				<li role = "presentation">
+					<a href = "#tab-instruction" aria-controls = "instruction" role = "tab"
+					   data-toggle = "tab">Product instruction</a>
+				</li>
+				<li role = "presentation">
+					<a href = "#tab-note" aria-controls = "note" role = "tab"
+					   data-toggle = "tab">Special Note</a>
+				</li>
+				<li role = "presentation">
+					<a href = "#tab-financial" aria-controls = "financial" role = "tab"
+					   data-toggle = "tab">Financial info</a>
+				</li>
+			</ul>
+
+			<!-- Tab panes -->
+			<div class = "tab-content" style = "margin-top: 20px;">
+				<div role = "tabpanel" class = "tab-pane fade in active" id = "tab-general">
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_images', 'Product images', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::file('product_images[]', ['id' => 'product_images', 'multiple' => true, 'accept' => 'image/*',  'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_name', 'Product name', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::text('product_name', null, ['id' => 'product_name', 'class' => "form-control"]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_sku', 'Product SKU', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::text('product_sku', $sku, ['id' => 'product_sku', 'class' => "form-control", 'readonly' => 'readonly']) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_description', 'Product description', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::textarea('product_description', null, ['id' => 'product_description', 'rows' => 4, 'class' => "form-control",]) !!}
+						</div>
+					</div>
+				</div>
+				<div role = "tabpanel" class = "tab-pane fade" id = "tab-specification">
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_weight', 'Product Weight (lb) :', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::number('product_weight', null, ['id' => 'product_weight', 'steps' => 'any', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_length', 'Length (in) :', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::number('product_length', null, ['id' => 'product_length', 'steps' => 'any', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_width', 'Width (in) :', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::number('product_width', null, ['id' => 'product_width', 'steps' => 'any', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_height', 'Height (in) :', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::number('product_height', null, ['id' => 'product_height', 'steps' => 'any', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('packaging_type_name', 'Packaging Type Name :', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::text('packaging_type_name', null, ['id' => 'packaging_type_name', 'steps' => 'any', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('packaging_size', 'Packaging size LxWxH (in) :', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::text('packaging_size', null, ['id' => 'packaging_size', 'steps' => 'any', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('packaging_weight', 'Packaging Weight (lb):', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::number('packaging_weight', null, ['id' => 'packaging_weight', 'steps' => 'any', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('total_weight', 'Total Weight (lb) :', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::number('total_weight', null, ['id' => 'total_weight', 'steps' => 'any', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+				</div>
+				<div role = "tabpanel" class = "tab-pane fade" id = "tab-instruction"></div>
+				<div role = "tabpanel" class = "tab-pane fade" id = "tab-note">
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_note', 'Product note', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::textarea('product_note', null, ['id' => 'product_note', 'rows' => 4, 'class' => "form-control",]) !!}
+						</div>
+					</div>
+				</div>
+				<div role = "tabpanel" class = "tab-pane fade" id = "tab-financial">
+					<table class = "table">
+						<tr>
+							<td>Qty, pcs</td>
+							<td>1</td>
+							<td>10</td>
+							<td>100</td>
+							<td>1000</td>
+							<td>10000</td>
+						</tr>
+						<tr>
+							<td>Cost, $</td>
+							<td>
+								<div class = "input-group">
+									<span class = "input-group-addon" id = "basic-addon1">$</span>
+									{!! Form::text('cost-of-1', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "input-group">
+									<span class = "input-group-addon" id = "basic-addon1">$</span>
+									{!! Form::text('cost-of-10', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "input-group">
+									<span class = "input-group-addon" id = "basic-addon1">$</span>
+									{!! Form::text('cost-of-100', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "input-group">
+									<span class = "input-group-addon" id = "basic-addon1">$</span>
+									{!! Form::text('cost-of-1000', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "input-group">
+									<span class = "input-group-addon" id = "basic-addon1">$</span>
+									{!! Form::text('cost-of-10000', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+						</tr>
+					</table>
+					<table class = "table" id = "cost-variable-table">
+						<thead>
+						<tr>
+							<th>Parts Name</th>
+							<th>Cost Variation 1, $</th>
+							<th>Cost Variation 2, $</th>
+							<th>Cost Variation 3, $</th>
+							<th>Cost Variation 4, $</th>
+							<th>Supplier Name</th>
+						</tr>
+						</thead>
+						<tbody id = "cost-variable-table-body">
+						<tr>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('parts_name[]', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('cost_variation[]', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('cost_variation[]', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('cost_variation[]', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('cost_variation[]', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('supplier_name[]', null, ['class' => 'form-control']) !!}
+								</div>
+							</td>
+						</tr>
+						</tbody>
+						<tfoot id = "cost-variable-table-footer">
+						<tr>
+							<td>Total (SUM), $</td>
+							<td>0.0</td>
+							<td>0.0</td>
+							<td>0.0</td>
+							<td>0.0</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::button('Add new row', ['id' => 'add-new-row', 'class' => 'btn btn-success btn-block']) !!}
+								</div>
+							</td>
+						</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class = "form-group">
+			<div class = "col-md-2 pull-right">
+				{!! Form::submit('Create',['class'=>'btn btn-primary btn-block']) !!}
+			</div>
+		</div>
+		{!! Form::close() !!}
+	</div>
+	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script type = "text/javascript">
+		$("#add-new-row").on("click", function (e)
+		{
+			e.preventDefault();
+			var clone = $("#cost-variable-table-body tr:last").clone().find('input').val('').end().insertAfter("#cost-variable-table-body tr:last");
+		});
+		$(document).on('keyup', '#cost-variable-table-body', function (e)
+		{
+			e.preventDefault();
+			$("#cost-variable-table-body")
+		});
+	</script>
+</body>
+</html>

@@ -65,6 +65,9 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('items/release/{item_id}', 'ItemController@release');
 		resource('items', 'ItemController');
 
+		get('products_specifications/step/{id}', 'ProductSpecificationController@getSteps');
+		post('products_specifications/step/{id}', 'ProductSpecificationController@postSteps');
+
 		resource('orders', 'OrderController');
 
 		get('logistics/sku_converter', 'LogisticsController@sku_converter');

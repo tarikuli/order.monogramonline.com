@@ -11,6 +11,8 @@
 <body>
 	@include('includes.header_menu')
 	<div class = "container">
+		@include('includes.error_div')
+		@include('includes.success_div')
 		<div class = "col-xs-6">
 			<div class = "col-xs-12">
 				<h5 class = "page-header">Users Management</h5>
@@ -68,7 +70,10 @@
 					<li><a href = "/purchases">Purchases</a></li>
 					<li><a href = "/purchases/create">Add purchase</a></li>
 					<li><a href = "/stations/bulk">Bulk batch change</a></li>
-					<li><a href = "/items/active_batch_group"><em><strong>Active batch by SKU group</strong></em></a></li>
+					<li><a href = "/items/active_batch_group">Active batch by SKU group</a></li>
+					<li>
+						<a href = "/products_specifications/step/1"><em><strong>Product specification sheet</strong></em></a>
+					</li>
 				</ul>
 				<hr />
 				<ul>

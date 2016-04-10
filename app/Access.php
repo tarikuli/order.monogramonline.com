@@ -46,5 +46,6 @@ class Access extends Model
 		'shipping'                 => 'Shipping',
 		'stations/bulk'            => 'Bulk station update',
 		'export_station'           => 'Export station log',
+		'products_specifications'  => 'Product specifications',
 	];
 }
