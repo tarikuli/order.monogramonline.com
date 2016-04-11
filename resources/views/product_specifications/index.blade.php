@@ -106,7 +106,7 @@
 					<th>Product Spec name</th>
 					<th>Production category</th>
 					<th>SKU</th>
-					<th>Image</th>
+					{{--<th>Image</th>--}}
 					<th>Action</th>
 				</tr>
 				@foreach($specSheets as $specSheet)
@@ -119,12 +119,12 @@
 						<td> {{ $specSheet->product_name }}</td>
 						<td> {{ $specSheet->production_category->production_category_description }} </td>
 						<td>{{ $specSheet->product_sku }}</td>
-						<td>
+						{{--<td>
 							@foreach(json_decode($specSheet->images) as $image)
 								<a target = "_blank" href = "{{$image}}"><img src = "{{ $image }}"
 								                                              style = "width: 50px; height: 50px;" /></a>
 							@endforeach
-						</td>
+						</td>--}}
 						<td>
 							<a href = "{{ url(sprintf("/products_specifications/%d", $specSheet->id)) }}"
 							   data-toggle = "tooltip"
