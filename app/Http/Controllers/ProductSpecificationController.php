@@ -34,7 +34,7 @@ class ProductSpecificationController extends Controller
 				 */
 				if ( !$request->has('sku') ) {
 					return redirect()
-						->to('/')
+						->to('/products_specifications/step')
 						->withErrors([
 							'error' => 'SKU cannot be generated or modified by user',
 						]);
@@ -47,14 +47,14 @@ class ProductSpecificationController extends Controller
 		}
 	}
 
-	public function postSteps (Request $request, $id)
+	public function postSteps (Request $request, $id = 1)
 	{
 		switch ( $id ) {
 			case 1:
 				$production_category = ProductionCategory::find($request->get('production_category'));
 				if ( !$production_category ) {
 					return redirect()
-						->to('/')
+						->to('/products_specifications/step')
 						->withErrors([
 							'error' => 'Not a valid production category',
 						]);
@@ -65,7 +65,7 @@ class ProductSpecificationController extends Controller
 				return redirect()->to(sprintf("products_specifications/step/2?sku=%s", $proposed_sku));
 			default:
 				return redirect()
-					->to('/')
+					->to('/products_specifications/step')
 					->withErrors([
 						'error' => 'Invalid request',
 					]);

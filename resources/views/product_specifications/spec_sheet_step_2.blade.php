@@ -145,31 +145,31 @@
 							<td>
 								<div class = "input-group">
 									<span class = "input-group-addon" id = "basic-addon1">$</span>
-									{!! Form::text('cost-of-1', null, ['class' => 'form-control']) !!}
+									{!! Form::text('cost_of_1', null, ['class' => 'form-control']) !!}
 								</div>
 							</td>
 							<td>
 								<div class = "input-group">
 									<span class = "input-group-addon" id = "basic-addon1">$</span>
-									{!! Form::text('cost-of-10', null, ['class' => 'form-control']) !!}
+									{!! Form::text('cost_of_10', null, ['class' => 'form-control']) !!}
 								</div>
 							</td>
 							<td>
 								<div class = "input-group">
 									<span class = "input-group-addon" id = "basic-addon1">$</span>
-									{!! Form::text('cost-of-100', null, ['class' => 'form-control']) !!}
+									{!! Form::text('cost_of_100', null, ['class' => 'form-control']) !!}
 								</div>
 							</td>
 							<td>
 								<div class = "input-group">
 									<span class = "input-group-addon" id = "basic-addon1">$</span>
-									{!! Form::text('cost-of-1000', null, ['class' => 'form-control']) !!}
+									{!! Form::text('cost_of_1000', null, ['class' => 'form-control']) !!}
 								</div>
 							</td>
 							<td>
 								<div class = "input-group">
 									<span class = "input-group-addon" id = "basic-addon1">$</span>
-									{!! Form::text('cost-of-10000', null, ['class' => 'form-control']) !!}
+									{!! Form::text('cost_of_10000', null, ['class' => 'form-control']) !!}
 								</div>
 							</td>
 						</tr>
@@ -194,22 +194,22 @@
 							</td>
 							<td>
 								<div class = "form-group">
-									{!! Form::text('cost_variation[]', null, ['class' => 'form-control']) !!}
+									{!! Form::text('cost_variation[]', null, ['class' => 'form-control cost-variation-1']) !!}
 								</div>
 							</td>
 							<td>
 								<div class = "form-group">
-									{!! Form::text('cost_variation[]', null, ['class' => 'form-control']) !!}
+									{!! Form::text('cost_variation[]', null, ['class' => 'form-control cost-variation-2']) !!}
 								</div>
 							</td>
 							<td>
 								<div class = "form-group">
-									{!! Form::text('cost_variation[]', null, ['class' => 'form-control']) !!}
+									{!! Form::text('cost_variation[]', null, ['class' => 'form-control cost-variation-3']) !!}
 								</div>
 							</td>
 							<td>
 								<div class = "form-group">
-									{!! Form::text('cost_variation[]', null, ['class' => 'form-control']) !!}
+									{!! Form::text('cost_variation[]', null, ['class' => 'form-control cost-variation-4']) !!}
 								</div>
 							</td>
 							<td>
@@ -222,17 +222,103 @@
 						<tfoot id = "cost-variable-table-footer">
 						<tr>
 							<td>Total (SUM), $</td>
-							<td>0.0</td>
-							<td>0.0</td>
-							<td>0.0</td>
-							<td>0.0</td>
+							<td class = "cost-variation-1-total">0.0</td>
+							<td class = "cost-variation-2-total">0.0</td>
+							<td class = "cost-variation-3-total">0.0</td>
+							<td class = "cost-variation-4-total">0.0</td>
 							<td>
 								<div class = "form-group">
 									{!! Form::button('Add new row', ['id' => 'add-new-row', 'class' => 'btn btn-success btn-block']) !!}
 								</div>
 							</td>
 						</tr>
+						<tr>
+							<td>Delivery to us, $</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('delivery_cost_variation[]', null, ['class' => 'form-control cost-variation-1']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('delivery_cost_variation[]', null, ['class' => 'form-control cost-variation-2']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('delivery_cost_variation[]', null, ['class' => 'form-control cost-variation-3']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('delivery_cost_variation[]', null, ['class' => 'form-control cost-variation-4']) !!}
+								</div>
+							</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Labor Expense to complete Production Process, $</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('labor_expense_cost_variation[]', null, ['class' => 'form-control cost-variation-1']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('labor_expense_cost_variation[]', null, ['class' => 'form-control cost-variation-2']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('labor_expense_cost_variation[]', null, ['class' => 'form-control cost-variation-3']) !!}
+								</div>
+							</td>
+							<td>
+								<div class = "form-group">
+									{!! Form::text('labor_expense_cost_variation[]', null, ['class' => 'form-control cost-variation-4']) !!}
+								</div>
+							</td>
+							<td></td>
+						</tr>
 						</tfoot>
+					</table>
+					<table class = "table">
+						<tr>
+							<td>Total Cost Variation 1</td>
+							<td>
+								<div class = "input-group">
+									<span class = "input-group-addon" id = "basic-addon1">$</span>
+									{!! Form::text('sum_of_cost_variation_1[]', null, ['class' => 'form-control sum_of_cost_variation_1']) !!}
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>Total Cost Variation 2</td>
+							<td>
+								<div class = "input-group">
+									<span class = "input-group-addon" id = "basic-addon1">$</span>
+									{!! Form::text('sum_of_cost_variation_2[]', null, ['class' => 'form-control sum_of_cost_variation_2']) !!}
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>Total Cost Variation 3</td>
+							<td>
+								<div class = "input-group">
+									<span class = "input-group-addon" id = "basic-addon1">$</span>
+									{!! Form::text('sum_of_cost_variation_3[]', null, ['class' => 'form-control sum_of_cost_variation_3']) !!}
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>Total Cost Variation 4</td>
+							<td>
+								<div class = "input-group">
+									<span class = "input-group-addon" id = "basic-addon1">$</span>
+									{!! Form::text('sum_of_cost_variation_4[]', null, ['class' => 'form-control sum_of_cost_variation_4']) !!}
+								</div>
+							</td>
+						</tr>
 					</table>
 				</div>
 			</div>
@@ -252,11 +338,75 @@
 			e.preventDefault();
 			var clone = $("#cost-variable-table-body tr:last").clone().find('input').val('').end().insertAfter("#cost-variable-table-body tr:last");
 		});
-		$(document).on('keyup', '#cost-variable-table-body', function (e)
+		$(document).on('keyup', '#cost-variable-table-body input', function (e)
 		{
 			e.preventDefault();
-			$("#cost-variable-table-body")
+			var classes = $(this).attr('class').split(" ");
+			if ( classes.length > 1 ) {
+				var column_class = classes[1];
+				var sum = getTotalCostVariation(column_class);
+				/*
+				 * CLASS for column: cost-variation-1
+				 * CLASS for  total: cost-variation-1-total
+				 */
+				$("#cost-variable-table-footer td." + column_class + "-total").html(sum);
+				setSumOfCostVariation();
+			}
 		});
+
+		$(document).on('keyup', '#cost-variable-table-footer input', function (e)
+		{
+			e.preventDefault();
+			setSumOfCostVariation();
+		});
+
+
+		function setSumOfCostVariation ()
+		{
+			var sum = 0.0;
+			$(".cost-variation-1").each(function(){
+				var parsed = parseFloat($(this).val());
+				sum += parsed ? parsed : 0.0;
+			});
+
+			$(".sum_of_cost_variation_1").val(sum);
+
+			var sum = 0.0;
+			$(".cost-variation-2").each(function(){
+				var parsed = parseFloat($(this).val());
+				sum += parsed ? parsed : 0.0;
+			});
+
+			$(".sum_of_cost_variation_2").val(sum);
+
+			var sum = 0.0;
+			$(".cost-variation-3").each(function(){
+				var parsed = parseFloat($(this).val());
+				sum += parsed ? parsed : 0.0;
+			});
+
+			$(".sum_of_cost_variation_3").val(sum);
+
+			var sum = 0.0;
+			$(".cost-variation-4").each(function(){
+				var parsed = parseFloat($(this).val());
+				sum += parsed ? parsed : 0.0;
+			});
+
+			$(".sum_of_cost_variation_4").val(sum);
+		}
+
+		function getTotalCostVariation (class_name)
+		{
+			var sum = 0.0;
+			$("#cost-variable-table-body input." + class_name).each(function ()
+			{
+				var parsed = parseFloat($(this).val());
+				sum += parsed ? parsed : 0.0;
+			});
+
+			return sum.toFixed(2);
+		}
 	</script>
 </body>
 </html>
