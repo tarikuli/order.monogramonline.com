@@ -72,7 +72,7 @@
 					<li><a href = "/stations/bulk">Bulk batch change</a></li>
 					<li><a href = "/items/active_batch_group">Active batch by SKU group</a></li>
 					<li>
-						<a href = "/products_specifications/step/1"><em><strong>Product specification sheet</strong></em></a>
+						<a href = "/products_specifications"><em><strong>Product specification sheet</strong></em></a>
 					</li>
 				</ul>
 				<hr />

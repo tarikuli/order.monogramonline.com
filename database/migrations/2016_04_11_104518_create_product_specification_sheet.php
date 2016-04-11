@@ -24,7 +24,7 @@ class CreateProductSpecificationSheet extends Migration
 			$table->string('packaging_size');
 			$table->double('packaging_weight');
 			$table->double('total_weight');
-			$table->integer('production_category');
+			$table->integer('production_category_id');
 			$table->string('art_work_location');
 			$table->string('temperature');
 			$table->string('dwell_time');
@@ -49,6 +49,8 @@ class CreateProductSpecificationSheet extends Migration
 			$table->text('labor_expense_cost_variation');
 
 			$table->text('images');
+
+			$table->enum('is_deleted', [0, 1])->default(0);
 			$table->timestamps();
 		});
 	}

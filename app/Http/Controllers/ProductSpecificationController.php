@@ -12,6 +12,68 @@ use App\Http\Controllers\Controller;
 
 class ProductSpecificationController extends Controller
 {
+	public function index (Request $request)
+	{
+		$specSheets = SpecificationSheet::with('production_category')
+										->searchCriteria($request->get('search_for_1'), $request->get('search_in_1'))
+										->searchCriteria($request->get('search_for_2'), $request->get('search_in_2'))
+										->searchInProductionCategory($request->get('production_category'))
+										->where('is_deleted', 0)
+										->paginate(50);
+		$production_categories = ProductionCategory::where('is_deleted', 0)
+												   ->get()
+												   ->lists('description_with_code', 'id')
+												   ->prepend('Select a production category', '0');
+
+		#return $specSheets;
+		return view('product_specifications.index')
+			->with('specSheets', $specSheets)
+			->with('count', 1)
+			->with('production_categories', $production_categories)
+			->with('request', $request);
+	}
+
+	public function show ($id)
+	{
+		// redirect to edit page
+		return $this->edit($id);
+		$spec = SpecificationSheet::find($id);
+		if ( !$spec ) {
+			return app()->abort(404);
+		}
+
+		return $spec;
+	}
+
+	public function edit ($id)
+	{
+		$spec = SpecificationSheet::find($id);
+		if ( !$spec ) {
+			return app()->abort(404);
+		}
+
+		$production_categories = ProductionCategory::where('is_deleted', 0)
+												   ->get()
+												   ->lists('description_with_code', 'id')
+												   ->prepend('Select a production category', '0');
+
+		return view('product_specifications.edit')
+			->with('spec', $spec)
+			->with('production_categories', $production_categories);
+	}
+
+	public function update (Request $request, $id)
+	{
+		$spec = SpecificationSheet::find($id);
+		if ( !$spec ) {
+			return app()->abort(404);
+		}
+		$updatedSpecSheet = $this->insertOrUpdateSpec($request, $spec);
+		session()->flush('proposed_sku');
+
+		return redirect('/products_specifications')->with('success', 'Spec sheet is updated successfully.');
+	}
+
 	public function getSteps (Request $request, $id = 1)
 	{
 		/*
@@ -74,7 +136,8 @@ class ProductSpecificationController extends Controller
 			case 2:
 				$specSheet = $this->insertOrUpdateSpec($request);
 				session()->flush('proposed_sku');
-				return redirect('/products_specifications/step')->with('success', 'Spec sheet is created successfully.');
+
+				return redirect('/products_specifications')->with('success', 'Spec sheet is created successfully.');
 			default:
 				return redirect()
 					->to('/products_specifications/step')
@@ -88,10 +151,11 @@ class ProductSpecificationController extends Controller
 	{
 		if ( is_null($specSheet) ) {
 			$specSheet = new SpecificationSheet();
+			// product sku is one time insert able. only on insertion time.
+			$specSheet->product_sku = trim($request->get('product_sku'));
 		}
 
 		$specSheet->product_name = trim($request->get('product_name'));
-		$specSheet->product_sku = trim($request->get('product_sku'));
 		$specSheet->product_description = trim($request->get('product_description'));
 		$specSheet->product_weight = floatval($request->get('product_weight'));
 		$specSheet->product_length = floatval($request->get('product_length'));
@@ -101,7 +165,7 @@ class ProductSpecificationController extends Controller
 		$specSheet->packaging_size = trim($request->get('packaging_size'));
 		$specSheet->packaging_weight = floatval($request->get('packaging_weight'));
 		$specSheet->total_weight = floatval($request->get('total_weight'));
-		$specSheet->production_category = intval($request->get('production_category'));
+		$specSheet->production_category_id = intval($request->get('production_category'));
 		$specSheet->art_work_location = trim($request->get('art_work_location'));
 		$specSheet->temperature = trim($request->get('temperature'));
 		$specSheet->dwell_time = trim($request->get('dwell_time'));
@@ -156,8 +220,10 @@ class ProductSpecificationController extends Controller
 
 		$specSheet->labor_expense_cost_variation = json_encode($request->get('labor_expense_cost_variation'));
 
-		$paths = $this->image_manipulator($request->file('product_images'), $request->get('product_sku'));
-		$specSheet->images = json_encode($paths);
+		if ( $request->hasFile('product_images') ) {
+			$paths = $this->image_manipulator($request->file('product_images'), $request->get('product_sku'));
+			$specSheet->images = json_encode($paths);
+		}
 		$specSheet->save();
 
 		return $specSheet;
@@ -193,5 +259,18 @@ class ProductSpecificationController extends Controller
 		}
 
 		return $sku;
+	}
+
+	public function destroy (Request $request, $id)
+	{
+		$spec = SpecificationSheet::find($id);
+		if ( $spec ) {
+			$spec->is_deleted = 1;
+			$spec->save();
+		}
+
+		return redirect()
+			->to('/products_specifications')
+			->with('success', 'Spec is deleted successfully');
 	}
 }
