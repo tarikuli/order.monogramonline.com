@@ -148,6 +148,10 @@
 				{!! $specSheets->appends($request->all())->render() !!}
 			</div>
 		@else
+			<h3 class = "page-header">
+				Specs <a style = "margin-bottom:20px" class = "btn btn-success btn-sm pull-right"
+				         href = "{{url('products_specifications/step/1')}}">Create product spec</a>
+			</h3>
 			<div class = "col-xs-12">
 				<div class = "alert alert-warning text-center">
 					<h3>No product spec found.</h3>
