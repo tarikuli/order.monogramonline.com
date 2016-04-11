@@ -18,7 +18,7 @@
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
-		{!! Form::open(['url' => url('/products_specifications/step/2'), 'method' => 'post']) !!}
+		{!! Form::open(['url' => url('/products_specifications/step/2'), 'method' => 'post', 'files' => true, 'novalidate']) !!}
 		<div class = "col-md-12">
 			<ul class = "nav nav-tabs" role = "tablist">
 				<li role = "presentation" class = "active">
@@ -43,7 +43,7 @@
 				</li>
 			</ul>
 
-			<!-- Tab panes -->
+			<!-- Tab panels -->
 			<div class = "tab-content" style = "margin-top: 20px;">
 				<div role = "tabpanel" class = "tab-pane fade in active" id = "tab-general">
 					<div class = "form-group col-md-12">
@@ -121,7 +121,142 @@
 						</div>
 					</div>
 				</div>
-				<div role = "tabpanel" class = "tab-pane fade" id = "tab-instruction"></div>
+				<div role = "tabpanel" class = "tab-pane fade" id = "tab-instruction">
+					<div class = "form-group col-md-12">
+						{!! Form::label('production_category', 'Production category', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::select('production_category', $production_categories, $selected_production_category, ['id' => 'production_category', 'class' => "form-control"]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('art_work_location', 'Art work location', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::text('art_work_location', null,['id' => 'art-work-location', 'class' => 'form-control']) !!}
+						</div>
+					</div>
+					<div class = "col-md-12">
+						<div class = "col-md-6">
+							<table class = "table">
+								<caption class = "text-center">Production Settings</caption>
+								<tbody>
+								<tr>
+									<td>Temperature</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('temperature', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>Dwell time</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('dwell_time', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>Pressure</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('pressure', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>Run Time</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('run_time', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+								</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<div class = "col-md-6">
+							<table class = "table">
+								<caption class = "text-center">Personalization Details</caption>
+								<tbody>
+								<tr>
+									<td>Type</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('type', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>Font</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('font', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>Variation name</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('variation_name', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>Details</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('details', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+								</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class = "col-md-12">
+							<table class = "table">
+								<thead>
+								<tr>
+									<th>Special Notes for Product Options</th>
+									<th>Option Name</th>
+									<th>Details</th>
+								</tr>
+								</thead>
+								<tbody id = "product-instruction-table-body">
+								<tr>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('special_note[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('option_name[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('details[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+								</tr>
+								</tbody>
+								<tfoot>
+								<tr>
+									<td></td>
+									<td></td>
+									<td>
+										<div class = "form-group">
+											{!! Form::button('Add new row', ['id' => 'add-new-instruction-row', 'class' => 'btn btn-success btn-block']) !!}
+										</div>
+									</td>
+								</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-note">
 					<div class = "form-group col-md-12">
 						{!! Form::label('product_note', 'Product note', ['class' => 'col-md-2 control-label']) !!}
@@ -338,6 +473,11 @@
 			e.preventDefault();
 			var clone = $("#cost-variable-table-body tr:last").clone().find('input').val('').end().insertAfter("#cost-variable-table-body tr:last");
 		});
+
+		$("#add-new-instruction-row").on('click', function(e){
+			e.preventDefault();
+			var clone = $("#product-instruction-table-body tr:last").clone().find('input').val('').end().insertAfter("#product-instruction-table-body tr:last");
+		});
 		$(document).on('keyup', '#cost-variable-table-body input', function (e)
 		{
 			e.preventDefault();
@@ -364,7 +504,8 @@
 		function setSumOfCostVariation ()
 		{
 			var sum = 0.0;
-			$(".cost-variation-1").each(function(){
+			$(".cost-variation-1").each(function ()
+			{
 				var parsed = parseFloat($(this).val());
 				sum += parsed ? parsed : 0.0;
 			});
@@ -372,7 +513,8 @@
 			$(".sum_of_cost_variation_1").val(sum);
 
 			var sum = 0.0;
-			$(".cost-variation-2").each(function(){
+			$(".cost-variation-2").each(function ()
+			{
 				var parsed = parseFloat($(this).val());
 				sum += parsed ? parsed : 0.0;
 			});
@@ -380,7 +522,8 @@
 			$(".sum_of_cost_variation_2").val(sum);
 
 			var sum = 0.0;
-			$(".cost-variation-3").each(function(){
+			$(".cost-variation-3").each(function ()
+			{
 				var parsed = parseFloat($(this).val());
 				sum += parsed ? parsed : 0.0;
 			});
@@ -388,7 +531,8 @@
 			$(".sum_of_cost_variation_3").val(sum);
 
 			var sum = 0.0;
-			$(".cost-variation-4").each(function(){
+			$(".cost-variation-4").each(function ()
+			{
 				var parsed = parseFloat($(this).val());
 				sum += parsed ? parsed : 0.0;
 			});
