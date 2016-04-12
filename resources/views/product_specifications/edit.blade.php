@@ -405,26 +405,46 @@
 								</thead>
 								<tbody id = "product-instruction-table-body">
 								@setvar($i = 0)
-								@foreach(json_decode($spec->special_note) as $row)
+								@if(json_decode($spec->special_note))
+									@foreach(json_decode($spec->special_note) as $row)
+										<tr>
+											<td>
+												<div class = "form-group">
+													{!! Form::text("special_note[$i]", $row[0], ['class' => 'form-control']) !!}
+												</div>
+											</td>
+											<td>
+												<div class = "form-group">
+													{!! Form::text("option_name[$i]", $row[1], ['class' => 'form-control']) !!}
+												</div>
+											</td>
+											<td>
+												<div class = "form-group">
+													{!! Form::text("details[$i]", $row[2], ['class' => 'form-control']) !!}
+												</div>
+											</td>
+										</tr>
+										@setvar(++$i)
+									@endforeach
+								@else
 									<tr>
 										<td>
 											<div class = "form-group">
-												{!! Form::text("special_note[$i]", $row[0], ['class' => 'form-control']) !!}
+												{!! Form::text("special_note[]", null, ['class' => 'form-control']) !!}
 											</div>
 										</td>
 										<td>
 											<div class = "form-group">
-												{!! Form::text("option_name[$i]", $row[1], ['class' => 'form-control']) !!}
+												{!! Form::text("option_name[]", null, ['class' => 'form-control']) !!}
 											</div>
 										</td>
 										<td>
 											<div class = "form-group">
-												{!! Form::text("details[$i]", $row[2], ['class' => 'form-control']) !!}
+												{!! Form::text("details[]", null, ['class' => 'form-control']) !!}
 											</div>
 										</td>
 									</tr>
-									@setvar(++$i)
-								@endforeach
+								@endif
 								</tbody>
 								<tfoot>
 								<tr>
@@ -506,43 +526,81 @@
 						</tr>
 						</thead>
 						<tbody id = "cost-variable-table-body">
-						@foreach(json_decode($spec->content_cost_info) as $row)
+						@if(json_decode($spec->content_cost_info))
+							@foreach(json_decode($spec->content_cost_info) as $row)
+								<tr>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('parts_name[]', $row[0], ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('cost_variation[]', $row[1], ['class' => 'form-control cost-variation-1']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('cost_variation[]', $row[2], ['class' => 'form-control cost-variation-2']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('cost_variation[]', $row[3], ['class' => 'form-control cost-variation-3']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('cost_variation[]', $row[4], ['class' => 'form-control cost-variation-4']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('supplier_name[]', $row[5], ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<a href = "" class = "btn btn-link remove-parts-info-row">Remove</a>
+									</td>
+								</tr>
+							@endforeach
+						@else
 							<tr>
 								<td>
 									<div class = "form-group">
-										{!! Form::text('parts_name[]', $row[0], ['class' => 'form-control']) !!}
+										{!! Form::text('parts_name[]', null, ['class' => 'form-control']) !!}
 									</div>
 								</td>
 								<td>
 									<div class = "form-group">
-										{!! Form::text('cost_variation[]', $row[1], ['class' => 'form-control cost-variation-1']) !!}
+										{!! Form::text('cost_variation[]', null, ['class' => 'form-control cost-variation-1']) !!}
 									</div>
 								</td>
 								<td>
 									<div class = "form-group">
-										{!! Form::text('cost_variation[]', $row[2], ['class' => 'form-control cost-variation-2']) !!}
+										{!! Form::text('cost_variation[]', null, ['class' => 'form-control cost-variation-2']) !!}
 									</div>
 								</td>
 								<td>
 									<div class = "form-group">
-										{!! Form::text('cost_variation[]', $row[3], ['class' => 'form-control cost-variation-3']) !!}
+										{!! Form::text('cost_variation[]', null, ['class' => 'form-control cost-variation-3']) !!}
 									</div>
 								</td>
 								<td>
 									<div class = "form-group">
-										{!! Form::text('cost_variation[]', $row[4], ['class' => 'form-control cost-variation-4']) !!}
+										{!! Form::text('cost_variation[]', null, ['class' => 'form-control cost-variation-4']) !!}
 									</div>
 								</td>
 								<td>
 									<div class = "form-group">
-										{!! Form::text('supplier_name[]', $row[5], ['class' => 'form-control']) !!}
+										{!! Form::text('supplier_name[]', null, ['class' => 'form-control']) !!}
 									</div>
 								</td>
 								<td>
 									<a href = "" class = "btn btn-link remove-parts-info-row">Remove</a>
 								</td>
 							</tr>
-						@endforeach
+						@endif
 						</tbody>
 						<tfoot id = "cost-variable-table-footer">
 						<tr>
