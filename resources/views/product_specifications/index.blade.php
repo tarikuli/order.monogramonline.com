@@ -99,11 +99,12 @@
 				<a style = "margin-bottom:20px" class = "btn btn-success btn-sm pull-right"
 				   href = "{{url('products_specifications/step/1')}}">Create product spec</a>
 			</h3>
+			{{-- redaundant form --}}
 			{!! Form::open(['url' => url('/prints/sheets'), 'method' => 'get']) !!}
 			<table class = "table">
 				<thead>
 				<tr>
-					<th></th>
+					<th>Print</th>
 					<th>Remove</th>
 					<th>#</th>
 					<th>Product Spec name</th>
@@ -117,7 +118,7 @@
 				@foreach($specSheets as $specSheet)
 					<tr data-id = "{{$specSheet->id}}" class = "text-center">
 						<td>
-							{!! Form::checkbox('spec_id[]', $specSheet->id, false, ['class' => 'printable']) !!}
+							<a href = "{{  url(sprintf("/prints/sheets?spec_id[]=%d",$specSheet->id)) }}">Print</a>
 						</td>
 						<td>
 							<a href = "#" class = "delete" data-toggle = "tooltip" data-placement = "top"
@@ -147,7 +148,7 @@
 					</tr>
 				@endforeach
 				</tbody>
-				<tfoot>
+				{{--<tfoot>
 				<tr colspan = "7">
 					<td>
 						{!! Form::submit('Print slip', ['id' => 'print-slip', 'class' => 'btn btn-link']) !!}
@@ -159,7 +160,7 @@
 					<td></td>
 					<td></td>
 				</tr>
-				</tfoot>
+				</tfoot>--}}
 			</table>
 			{!! Form::close() !!}
 			{!! Form::open(['url' => url('/products_specifications/id'), 'method' => 'delete', 'id' => 'delete-product']) !!}
@@ -214,7 +215,7 @@
 			if ( count == 0 ) {
 				alert('Select checkbox to print');
 				return false;
-			} else{
+			} else {
 				$(this).closest('form').submit();
 			}
 		});
