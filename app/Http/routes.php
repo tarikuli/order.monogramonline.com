@@ -54,9 +54,11 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 		get('batches/{batch_number}/{station_name}', 'ItemController@getBatchItems');
 		post('batches/{batch_number}/{station_name}', 'ItemController@postBatchItems');
+		post('change_station_by_sku/{sku}', 'ItemController@changeStationBySKU');
+		post('items/sku_station_done_reject', 'ItemController@rejectDoneFromSKUList');
 
 		get('items/active_batch_group', 'ItemController@get_active_batch_by_sku');
-		get('items/active_batch/sku/{sku}', 'ItemController@get_sku_on_stations');
+		get('items/active_batch/sku/{sku}/{station_name}', 'ItemController@get_sku_on_stations');
 		put('batches/{batch_number}', 'ItemController@updateBatchItems');
 		get('items/batch', 'ItemController@getBatch');
 		get('batch_details/{batch_number}', 'ItemController@batch_details');

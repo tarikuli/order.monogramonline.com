@@ -47,5 +47,6 @@ class Access extends Model
 		'stations/bulk'            => 'Bulk station update',
 		'export_station'           => 'Export station log',
 		'products_specifications'  => 'Product specifications',
+		'change_station_by_sku'    => 'Change station by SKU group',
 	];
 }

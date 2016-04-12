@@ -2,7 +2,7 @@
 <html lang = "en">
 <head>
 	<meta charset = "UTF-8">
-	<title>Batch view</title>
+	<title>Active SKU</title>
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -38,58 +38,28 @@
 	<div class = "container">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
-			<li><a href = "{{url('/items/grouped')}}">Batch list</a></li>
-			<li class = "active">Batch View</li>
+			<li><a href = "{{url('/items/active_batch_group')}}">Active batch by SKU group</a></li>
+			<li class = "active">Items on station</li>
 		</ol>
 		@include('includes.error_div')
 		<div class = "col-xs-12">
 			@if($items)
+				{!! Form::open(['method'=>'post', 'url' => url('/items/sku_station_done_reject'), 'id' => 'action_changer']) !!}
+				{!! Form::hidden('action', null) !!}
+				{!! Form::hidden('sku', $sku) !!}
+				{!! Form::hidden('station_name', $station_name) !!}
+				{!! Form::close() !!}
 				<div class = "col-xs-8">
-					<p>Batch: # <span>{{$batch_number}}</span></p>
-					<a href = "{{url('exports/batch/'.$batch_number)}}">Export batch</a>
-					<p>Batch creation date: <span>{{substr($items[0]->batch_creation_date, 0, 10)}}</span></p>
-					{{--<div class = "col-xs-12">
-						--}}{{--<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>--}}{{--
-						--}}{{--{!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
-						<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, []) !!}</p>
-						{!! Form::submit('Change status', ['id' => 'change-status',]) !!}
-						{!! Form::close() !!}--}}{{--
-					</div>--}}
-					{{--<div class = "col-xs-12">
-						<div class = "btn-group" role = "group" aria-label = "...">
-							--}}{{--<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>--}}{{--
-							--}}{{--<button type = "button" class = "btn btn-success" id = "done-all">Done all</button>--}}{{--
+					{!! Form::open(['url' => url(sprintf("change_station_by_sku/%s", $sku))]) !!}
+					<div class = "form-group">
+						{!! Form::label('station_change_dropdown', 'Station: ', ['class' => 'control-label col-md-2']) !!}
+						<div class = "col-md-6">
+							{!! Form::select('station', $stations, null, ['id' => 'station_change_dropdown', 'class' => 'form-control']) !!}
 						</div>
-						{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
-						{!! Form::hidden('action', null) !!}
-						{!! Form::close() !!}
-					</div>--}}
-					{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
-					{!! Form::hidden('action', null) !!}
+					</div>
 					{!! Form::close() !!}
-					<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>
-					<p>Template:
-						<a href = "{{url(sprintf("/templates/%d", $route->template->id))}}">{!! $route->template->template_name !!}</a>
-					</p>
-					<p>Route: {{$route['batch_code']}} / {{$route['batch_route_name']}} => {!! $stations !!}</p>
-					<p>Department: {{ $department_name }}</p>
-					<p>Current Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, ['disabled' => 'disabled']) !!}</p>
-					{{-- {!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
-					<p>Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, []) !!}</p>
-					{!! Form::submit('Change station', ['id' => 'change-status',]) !!}
-					{!! Form::close() !!} --}}
 				</div>
-				<div class = "col-xs-4">
-					{!! \Monogram\Helper::getHtmlBarcode($batch_number) !!}
-					<br />
-					{{--@if($items->first())
-						<img src = "{{$items->first()->item_thumb}}" />
-						<br />
-					@endif--}}
-					<a href = "{{url('prints/batches?batch_number[]='.$batch_number)}}"
-					   target = "_blank">Print batch</a>
-				</div>
-				<div class = "col-xs-12">
+				<div class = "col-xs-12" style = "margin-top: 20px;">
 					<table class = "table table-bordered" id = "batch-items-table">
 						<thead>
 						<tr>
@@ -124,14 +94,15 @@
 								<td>
 									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
 									   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a> - {{$item->id}}
-									<br/>
+									<br />
 									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
 								</td>
 								{{--<td>
 									<a href = "{{url('/orders/details/'.$item->order->order_id)}}">{{$item->order->short_order}}</a>
 								</td>
 								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>--}}
-								<td><a href = "{{ $item->product->product_url }}" target="_blank"><img src = "{{$item->item_thumb}}" /></a>
+								<td><a href = "{{ $item->product->product_url }}" target = "_blank"><img
+												src = "{{$item->item_thumb}}" /></a>
 								</td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
@@ -207,6 +178,15 @@
 
 			$("table#batch-items-table tfoot td#item-quantity-in-total").text("Total quantity: " + totalQuantity);
 		});
+
+		$("select#station_change_dropdown").on('change', function ()
+		{
+			var selected = parseInt($(this).val());
+			if ( selected !== 0 ) {
+				$(this).closest('form').submit();
+			}
+		});
+
 		$("a.reject").on('click', function (event)
 		{
 			event.preventDefault();

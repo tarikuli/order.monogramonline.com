@@ -637,7 +637,7 @@ class ItemController extends Controller
 					'item_name'      => $sku_groups->first() ? $sku_groups->first()->item_description : "-",
 					'min_order_date' => $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
 					'item_count'     => $count,
-					'action'         => url(sprintf('items/active_batch/sku/%s', $sku)),
+					'action'         => url(sprintf('items/active_batch/sku/%s/%s', $sku, $station_name)),
 				];
 			}
 		}
@@ -649,13 +649,14 @@ class ItemController extends Controller
 			->with('total_count', $total_count);
 	}
 
-	public function get_sku_on_stations (Request $request, $sku)
+	public function get_sku_on_stations (Request $request, $sku, $station_name)
 	{
-		$items = Item::with('lowest_order_date')
+		$items = Item::with('lowest_order_date', 'order')
 					 ->where('batch_number', '!=', 0)
 					 ->whereNotNull('station_name')
 					 ->Where('station_name', '!=', '')
 					 ->where('item_code', $sku)
+					 ->where('station_name', $station_name)
 					 ->groupBy('batch_number')
 					 ->get([
 						 '*',
@@ -675,9 +676,159 @@ class ItemController extends Controller
 			];
 		}
 
-		return view('routes.active_sku')
-			->with('rows', $rows)
+		$stations = Station::where('is_deleted', 0)
+						   ->get()
+						   ->lists('custom_station_name', 'id')
+						   ->prepend('Select a station to change', '0');
+		$count = 1;
+
+		$items_in_stations = Station::whereIn('station_name', $items->lists('station_name'))
+									->lists('id')
+									->toArray();
+
+		$rejection_reasons = RejectionReason::whereIn('station_id', $items_in_stations)
+											->orWhereNull('station_id')
+											->where('is_deleted', 0)
+											->orderBy('station_id', 'desc')
+											->lists('rejection_message', 'id')
+											->prepend('Select a reason', 0);
+
+		return view('routes.active_sku_show')
+			->with('stations', $stations)
+			->with('station_name', $station_name)
+			->with('count', $count)
+			->with('sku', $sku)
+			->with('rejection_reasons', $rejection_reasons)
+			->with('items', $items)
 			->with('total', $total);
 
+	}
+
+	public function changeStationBySKU (Request $request, $sku)
+	{
+		$station_id = $request->get('station');
+		$station = Station::find($station_id);
+		if ( !$station ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'Not a valid station selected',
+				]);
+		}
+		$station_name = $station->station_name;
+
+		$items = Item::where('batch_number', '!=', 0)
+					 ->whereNotNull('station_name')
+					 ->Where('station_name', '!=', '')
+					 ->where('item_code', $sku)
+					 ->get();
+		foreach ( $items as $item ) {
+			$station_log = new StationLog();
+			$station_log->item_id = $item->id;
+			$station_log->batch_number = $item->batch_number;
+			$station_log->station_id = $station_id;
+			#$station_log->started_at = date('Y-m-d h:i:s', strtotime("now"));
+			$station_log->started_at = date('Y-m-d', strtotime("now"));
+			$station_log->user_id = Auth::user()->id;
+			$station_log->save();
+		}
+
+		Item::with('lowest_order_date', 'order')
+			->where('batch_number', '!=', 0)
+			->whereNotNull('station_name')
+			->Where('station_name', '!=', '')
+			->where('item_code', $sku)
+			->update([
+				'station_name' => $station_name,
+			]);
+
+		return redirect()
+			->to(url('/items/active_batch_group'))
+			->with('success', 'Stations changed successfully.');
+	}
+
+	public function rejectDoneFromSKUList (Request $request)
+	{
+		$action = $request->get('action');
+		$station_name = $request->get('station_name');
+		$sku = $request->get('sku');
+
+		switch ( $action ) {
+			case 'done':
+				// TODO: complete the following;
+				return redirect()->back();
+				$item = Item::where('item_code', $sku)
+							->where('station_name', $station_name)
+							->first();
+
+				if ( count($item) == 0 ) {
+					return redirect()->back();
+				}
+				$next_station_name = Helper::getNextStationName($item->batch_route_id, $item->station_name);
+				if ( in_array($next_station_name, Helper::$shippingStations) ) {
+					$items = Item::where('batch_number', $batch_number)
+								 ->where('station_name', $station_name)
+								 ->get();
+					Helper::populateShippingData($items);
+				}
+				$updates = [
+					'station_name' => $next_station_name,
+				];
+
+				if ( $next_station_name == '' ) {
+					$updates['item_order_status_2'] = 3;
+					$updates['item_order_status'] = 'complete';
+				} else {
+					$updates['item_order_status'] = 'active';
+				}
+				$previousItems = Item::where('batch_number', $batch_number)
+									 ->where('station_name', $station_name)
+									 ->get();
+				$items = Item::where('batch_number', $batch_number)
+							 ->where('station_name', $station_name)
+							 ->update($updates);
+				if ( $next_station_name ) {
+					foreach ( $previousItems as $item ) {
+						$station_log = new StationLog();
+						$station_log->item_id = $item->id;
+						$station_log->batch_number = $item->batch_number;
+						$station_log->station_id = Station::where('station_name', $station_name)
+														  ->first()->id;
+						#$station_log->started_at = date('Y-m-d h:i:s', strtotime("now"));
+						$station_log->started_at = date('Y-m-d', strtotime("now"));
+						$station_log->user_id = Auth::user()->id;
+						$station_log->save();
+					}
+				}
+
+				break;
+			case 'reject':
+				$supervisor_station = Helper::getSupervisorStationName();
+
+				$rules = [
+					'rejection_reason'  => 'required|exists:rejection_reasons,id',
+					'rejection_message' => 'required',
+				];
+				$validation = Validator::make($request->all(), $rules);
+				if ( $validation->fails() ) {
+					return redirect()
+						->back()
+						->withErrors($validation);
+				}
+
+
+				$items = Item::where('station_name', $station_name)
+							 ->where('item_code', $sku)
+							 ->update([
+								 'station_name'      => $supervisor_station,
+								 'rejection_reason'  => $request->get('rejection_reason'),
+								 'rejection_message' => trim($request->get('rejection_message')),
+								 'previous_station'  => $station_name,
+							 ]);
+
+				return redirect()->to('/items/active_batch_group');
+			default:
+				return redirect()->to('/');
+		}
 	}
 }
