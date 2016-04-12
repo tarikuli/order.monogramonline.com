@@ -81,6 +81,12 @@
 				</div>
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-specification">
 					<div class = "form-group col-md-12">
+						{!! Form::label('make_sample', 'Make sample?: ', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::text('make_sample', $spec->make_sample, ['id' => 'product_weight', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
 						{!! Form::label('product_weight', 'Product Weight (lb) :', ['class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
 							{!! Form::number('product_weight', $spec->product_weight, ['id' => 'product_weight', 'steps' => 'any', 'class' => "form-control",]) !!}
@@ -140,7 +146,8 @@
 								<th>Supplier URL</th>
 								<th>Material</th>
 								<th>Size</th>
-								<th>Color Type</th>
+								<th>Color</th>
+								<th>Type</th>
 								<th>Price</th>
 								<th>Note</th>
 								<th></th>
@@ -201,6 +208,11 @@
 											</div>
 										</td>
 										<td>
+											<div class = "form-group">
+												{!! Form::text('spec_table_data[]', $row[9], ['class' => 'form-control']) !!}
+											</div>
+										</td>
+										<td>
 											<a class = "btn btn-link remove-row">Remove</a>
 											<a class = "btn btn-link copy-row">Copy</a>
 										</td>
@@ -257,6 +269,11 @@
 										</div>
 									</td>
 									<td>
+										<div class = "form-group">
+											{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
 										<a class = "btn btn-link remove-row">Remove</a>
 										<a class = "btn btn-link copy-row">Copy</a>
 									</td>
@@ -265,6 +282,7 @@
 							</tbody>
 							<tfoot>
 							<tr>
+								<td></td>
 								<td></td>
 								<td></td>
 								<td></td>
@@ -484,6 +502,7 @@
 							<th>Cost Variation 3, $</th>
 							<th>Cost Variation 4, $</th>
 							<th>Supplier Name</th>
+							<th></th>
 						</tr>
 						</thead>
 						<tbody id = "cost-variable-table-body">
@@ -518,6 +537,9 @@
 									<div class = "form-group">
 										{!! Form::text('supplier_name[]', $row[5], ['class' => 'form-control']) !!}
 									</div>
+								</td>
+								<td>
+									<a href = "" class = "btn btn-link remove-parts-info-row">Remove</a>
 								</td>
 							</tr>
 						@endforeach
@@ -681,6 +703,12 @@
 			event.preventDefault();
 			var clone = $(this).closest('tr').clone().insertAfter($(this).closest('tbody').find('tr:last'));
 			regenerateSerial();
+		});
+
+		$(document).on('click', "a.remove-parts-info-row", function (e)
+		{
+			event.preventDefault();
+			$(this).closest('tr').remove();
 		});
 
 		$("a.add-new-spec-row").click(function (event)

@@ -99,8 +99,11 @@
 				<a style = "margin-bottom:20px" class = "btn btn-success btn-sm pull-right"
 				   href = "{{url('products_specifications/step/1')}}">Create product spec</a>
 			</h3>
-			<table class = "table table-bordered">
+			{!! Form::open(['url' => url('/prints/sheets'), 'method' => 'get']) !!}
+			<table class = "table">
+				<thead>
 				<tr>
+					<th></th>
 					<th>Remove</th>
 					<th>#</th>
 					<th>Product Spec name</th>
@@ -109,8 +112,13 @@
 					{{--<th>Image</th>--}}
 					<th>Action</th>
 				</tr>
+				</thead>
+				<tbody>
 				@foreach($specSheets as $specSheet)
 					<tr data-id = "{{$specSheet->id}}" class = "text-center">
+						<td>
+							{!! Form::checkbox('spec_id[]', $specSheet->id, false, ['class' => 'printable']) !!}
+						</td>
 						<td>
 							<a href = "#" class = "delete" data-toggle = "tooltip" data-placement = "top"
 							   title = "Delete this product"><i class = 'fa fa-times text-danger'></i></a>
@@ -138,7 +146,22 @@
 						</td>
 					</tr>
 				@endforeach
+				</tbody>
+				<tfoot>
+				<tr colspan = "7">
+					<td>
+						{!! Form::submit('Print slip', ['id' => 'print-slip', 'class' => 'btn btn-link']) !!}
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				</tfoot>
 			</table>
+			{!! Form::close() !!}
 			{!! Form::open(['url' => url('/products_specifications/id'), 'method' => 'delete', 'id' => 'delete-product']) !!}
 			{!! Form::close() !!}
 
@@ -181,6 +204,18 @@
 				var url = form.attr('action');
 				form.attr('action', url.replace('id', id));
 				form.submit();
+			}
+		});
+
+		$("#print-slip").click(function (e)
+		{
+			e.preventDefault();
+			var count = $(".printable:checked").length;
+			if ( count == 0 ) {
+				alert('Select checkbox to print');
+				return false;
+			} else{
+				$(this).closest('form').submit();
 			}
 		});
 	</script>

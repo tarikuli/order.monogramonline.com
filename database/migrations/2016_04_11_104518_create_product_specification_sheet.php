@@ -24,6 +24,8 @@ class CreateProductSpecificationSheet extends Migration
 			$table->string('packaging_size');
 			$table->double('packaging_weight');
 			$table->double('total_weight');
+			$table->text('spec_table_data');
+			$table->text('make_sample');
 			$table->integer('production_category_id');
 			$table->string('art_work_location');
 			$table->string('temperature');

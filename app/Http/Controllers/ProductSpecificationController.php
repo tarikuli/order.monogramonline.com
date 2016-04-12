@@ -192,10 +192,11 @@ class ProductSpecificationController extends Controller
 		$specSheet->type = trim($request->get('type'));
 		$specSheet->font = trim($request->get('font'));
 		$specSheet->variation_name = trim($request->get('variation_name'));
+		$specSheet->make_sample = trim($request->get('make_sample'));
 
 		/* spec table data */
 		$table_data = [ ];
-		foreach ( array_chunk($request->get('spec_table_data'), 9) as $row ) {
+		foreach ( array_chunk($request->get('spec_table_data'), 10) as $row ) {
 			if ( empty( $row[0] ) ) {
 				continue;
 			}
@@ -286,9 +287,11 @@ class ProductSpecificationController extends Controller
 	{
 		$sku = sprintf("%s", $production_category_code);
 
-		$products_stored = Product::where('product_model', 'LIKE', sprintf("%s%%", $production_category_code))
+		/*$products_stored = Product::where('product_model', 'LIKE', sprintf("%s%%", $production_category_code))
 								  ->count();
-		$total = $products_stored ? ++$products_stored : 1;
+		$total = $products_stored ? ++$products_stored : 1;*/
+		$products_stored = Product::count();
+		$total = ++$products_stored;
 		$sku = sprintf("%s%04d", $sku, $total);
 
 		if ( $is_gift_wrapped ) {

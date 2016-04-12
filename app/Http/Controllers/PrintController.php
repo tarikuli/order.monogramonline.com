@@ -6,6 +6,7 @@ use App\BatchRoute;
 use App\Item;
 use App\Order;
 use App\Purchase;
+use App\SpecificationSheet;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -238,5 +239,32 @@ class PrintController extends Controller
 		}
 
 		return $modules;
+	}
+
+	public function print_spec_sheet (Request $request)
+	{
+		$specs = SpecificationSheet::with('production_category')
+								   ->whereIn('id', $request->get('spec_id'))
+								   ->get();
+		if ( !$specs ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'No spec sheet was chosen',
+				]);
+		}
+		$modules = [ ];
+		foreach ( $specs as $spec ) {
+			$modules[] = $this->spec_print_module($spec);
+		}
+
+		return view('prints.spec_sheet')->with('modules', $modules);
+	}
+
+	private function spec_print_module ($spec)
+	{
+		return view('prints.includes.print_spec_partial')
+			->with('spec', $spec)
+			->render();
 	}
 }
