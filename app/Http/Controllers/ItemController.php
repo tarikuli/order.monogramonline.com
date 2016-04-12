@@ -128,8 +128,11 @@ class ItemController extends Controller
 					 ->get();*/
 		$items = Item::groupBy('batch_number')
 					 ->where('batch_number', '!=', 0)
+					 ->latest('batch_number')// newly added line, because, just count will overlap the batch again.
 					 ->get();
-		$last_batch_number = 10000 + count($items);
+		$fixed_value = 10000;
+		$max_batch_number = count($items) ? $items->first()->batch_number : $fixed_value;
+		$last_batch_number = $max_batch_number;
 		$current_group = -1;
 
 		foreach ( $batches as $preferredBatch ) {
