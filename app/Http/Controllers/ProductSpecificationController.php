@@ -290,8 +290,8 @@ class ProductSpecificationController extends Controller
 		/*$products_stored = Product::where('product_model', 'LIKE', sprintf("%s%%", $production_category_code))
 								  ->count();
 		$total = $products_stored ? ++$products_stored : 1;*/
-		$products_stored = Product::count();
-		$total = ++$products_stored;
+		$products_stored = SpecificationSheet::count();
+		$total = 4140 + $products_stored;
 		$sku = sprintf("%s%04d", $sku, $total);
 
 		if ( $is_gift_wrapped ) {
