@@ -14,6 +14,7 @@
 	<div class = "container">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
+			<li><a href = "{{url('/products_specifications')}}">Product specifications</a></li>
 			<li>Product specifications step- 2</li>
 		</ol>
 		@include('includes.error_div')
@@ -61,7 +62,7 @@
 					<div class = "form-group col-md-12">
 						{!! Form::label('product_sku', 'Product SKU', ['class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
-							{!! Form::text('product_sku', $sku, ['id' => 'product_sku', 'class' => "form-control", 'readonly' => 'readonly']) !!}
+							{!! Form::text('product_sku', $sku, ['id' => 'product_sku', 'class' => "form-control"/*, 'readonly' => 'readonly'*/]) !!}
 						</div>
 					</div>
 					<div class = "form-group col-md-12">
@@ -119,6 +120,99 @@
 						<div class = "col-md-4">
 							{!! Form::number('total_weight', null, ['id' => 'total_weight', 'steps' => 'any', 'class' => "form-control",]) !!}
 						</div>
+					</div>
+					<div class = "col-md-12">
+						<table class = "table">
+							<caption>Product purchase information</caption>
+							<thead>
+							<tr>
+								<th>SL</th>
+								<th>Parts Name</th>
+								<th>Supplier SKU #</th>
+								<th>Supplier Name</th>
+								<th>Supplier URL</th>
+								<th>Material</th>
+								<th>Size</th>
+								<th>Color Type</th>
+								<th>Price</th>
+								<th>Note</th>
+								<th></th>
+							</tr>
+							</thead>
+							<tbody id = "product-specification-table-body">
+							<tr>
+								<td>
+									1.
+								</td>
+								<td>
+									<div class = "form-group">
+										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+									</div>
+								</td>
+								<td>
+									<div class = "form-group">
+										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+									</div>
+								</td>
+								<td>
+									<div class = "form-group">
+										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+									</div>
+								</td>
+								<td>
+									<div class = "form-group">
+										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+									</div>
+								</td>
+								<td>
+									<div class = "form-group">
+										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+									</div>
+								</td>
+								<td>
+									<div class = "form-group">
+										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+									</div>
+								</td>
+								<td>
+									<div class = "form-group">
+										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+									</div>
+								</td>
+								<td>
+									<div class = "form-group">
+										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+									</div>
+								</td>
+								<td>
+									<div class = "form-group">
+										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+									</div>
+								</td>
+								<td>
+									<a class = "btn btn-link remove-row">Remove</a>
+									<a class = "btn btn-link copy-row">Copy</a>
+								</td>
+							</tr>
+							</tbody>
+							<tfoot>
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td>
+									<a class = "btn btn-block btn-success add-new-spec-row">Add new row</a>
+								</td>
+							</tr>
+							</tfoot>
+						</table>
 					</div>
 				</div>
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-instruction">
@@ -474,7 +568,8 @@
 			var clone = $("#cost-variable-table-body tr:last").clone().find('input').val('').end().insertAfter("#cost-variable-table-body tr:last");
 		});
 
-		$("#add-new-instruction-row").on('click', function(e){
+		$("#add-new-instruction-row").on('click', function (e)
+		{
 			e.preventDefault();
 			var clone = $("#product-instruction-table-body tr:last").clone().find('input').val('').end().insertAfter("#product-instruction-table-body tr:last");
 		});
@@ -500,6 +595,46 @@
 			setSumOfCostVariation();
 		});
 
+		$(document).on('click', "a.remove-row", function (event)
+		{
+			event.preventDefault();
+			$(this).closest('tr').remove();
+			regenerateSerial();
+		});
+
+		$(document).on('click', "a.copy-row", function (event)
+		{
+			event.preventDefault();
+			var clone = $(this).closest('tr').clone().insertAfter($(this).closest('tbody').find('tr:last'));
+			regenerateSerial();
+		});
+
+		$("a.add-new-spec-row").click(function (event)
+		{
+			var clone = $("tbody#product-specification-table-body tr:last").clone().find('input').val('').end().insertAfter("tbody#product-specification-table-body tr:last");
+			regenerateSerial();
+		});
+
+		function regenerateSerial ()
+		{
+			var node = "tbody#product-specification-table-body";
+			var i = 1;
+			$(node).find('tr').each(function ()
+			{
+				// TODO: none remove able first row
+				/*if ( i == 1 ) {
+				 $(this).find('a.remove-row').first().disable();
+				 }*/
+				$(this).find('td').eq(0).text(i++);
+			});
+
+			nonRemoveAbleFirstRow(node);
+		}
+
+		function nonRemoveAbleFirstRow (parentNode)
+		{
+			$(parentNode).find('tr').first().find('a.remove-row').first().remove();
+		}
 
 		function setSumOfCostVariation ()
 		{
@@ -551,6 +686,14 @@
 
 			return sum.toFixed(2);
 		}
+		$("form").on('submit', function (event)
+		{
+			var product_name = $("input#product_name").val().trim();
+			if ( product_name == "" ) {
+				alert('Product name cannot be empty');
+				return false;
+			}
+		});
 	</script>
 </body>
 </html>

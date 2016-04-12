@@ -14,6 +14,7 @@
 	<div class = "container">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
+			<li><a href = "{{url('/products_specifications')}}">Product specifications</a></li>
 			<li>Product specifications step- 1</li>
 		</ol>
 		@include('includes.error_div')

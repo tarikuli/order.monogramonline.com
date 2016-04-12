@@ -69,9 +69,16 @@ class ProductSpecificationController extends Controller
 			return app()->abort(404);
 		}
 		$updatedSpecSheet = $this->insertOrUpdateSpec($request, $spec);
+		if ( $updatedSpecSheet == false ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'Product name cannot be empty.',
+				]);
+		}
 		session()->flush('proposed_sku');
 
-		return redirect('/products_specifications')->with('success', 'Spec sheet is updated successfully.');
+		return redirect("/products_specifications/$id")->with('success', 'Spec sheet is updated successfully.');
 	}
 
 	public function getSteps (Request $request, $id = 1)
@@ -135,6 +142,14 @@ class ProductSpecificationController extends Controller
 				return redirect()->to(sprintf("products_specifications/step/2?sku=%s&production_category=%d", $proposed_sku, $request->get('production_category')));
 			case 2:
 				$specSheet = $this->insertOrUpdateSpec($request);
+				if ( $specSheet == false ) {
+					return redirect()
+						->back()
+						->withInput()
+						->withErrors([
+							'error' => 'Product name cannot be empty.',
+						]);
+				}
 				session()->flush('proposed_sku');
 
 				return redirect('/products_specifications')->with('success', 'Spec sheet is created successfully.');
@@ -154,8 +169,11 @@ class ProductSpecificationController extends Controller
 			// product sku is one time insert able. only on insertion time.
 			$specSheet->product_sku = trim($request->get('product_sku'));
 		}
-
-		$specSheet->product_name = trim($request->get('product_name'));
+		$product_name = trim($request->get('product_name'));
+		if ( empty( $product_name ) ) {
+			return false;
+		}
+		$specSheet->product_name = $product_name;
 		$specSheet->product_description = trim($request->get('product_description'));
 		$specSheet->product_weight = floatval($request->get('product_weight'));
 		$specSheet->product_length = floatval($request->get('product_length'));
@@ -175,10 +193,26 @@ class ProductSpecificationController extends Controller
 		$specSheet->font = trim($request->get('font'));
 		$specSheet->variation_name = trim($request->get('variation_name'));
 
+		/* spec table data */
+		$table_data = [ ];
+		foreach ( array_chunk($request->get('spec_table_data'), 9) as $row ) {
+			if ( empty( $row[0] ) ) {
+				continue;
+			}
+			$table_data[] = $row;
+		}
+
+		$specSheet->spec_table_data = json_encode($table_data);
+
+
 		/* Special note segment */
 		$i = 0;
 		$arr = [ ];
 		foreach ( $request->get('special_note') as $note ) {
+			// if special note col is left empty, don't insert
+			if ( empty( trim($note) ) ) {
+				continue;
+			}
 			$arr[] = [
 				trim($note),
 				trim($request->get('option_name')[$i]),
@@ -203,6 +237,9 @@ class ProductSpecificationController extends Controller
 		$j = 0;
 
 		foreach ( $request->get('parts_name') as $part ) {
+			if ( empty( trim($part) ) ) {
+				continue;
+			}
 			$arr[] = [
 				trim($part),
 				$request->get('cost_variation')[$j++],

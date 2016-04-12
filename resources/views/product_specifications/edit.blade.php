@@ -14,6 +14,7 @@
 	<div class = "container">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
+			<li><a href = "{{url('/products_specifications')}}">Product specifications</a></li>
 			<li>Edit Product specifications</li>
 		</ol>
 		@include('includes.error_div')
@@ -60,7 +61,7 @@
 						</div>
 					</div>
 					<div class = "form-group col-md-12">
-						{!! Form::label('product_name', 'Product name', ['class' => 'col-md-2 control-label']) !!}
+						{!! Form::label('product_name', 'Product name', [ 'id' => 'product_name', 'class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
 							{!! Form::text('product_name', $spec->product_name, ['id' => 'product_name', 'class' => "form-control"]) !!}
 						</div>
@@ -126,6 +127,160 @@
 						<div class = "col-md-4">
 							{!! Form::number('total_weight', $spec->total_weight, ['id' => 'total_weight', 'steps' => 'any', 'class' => "form-control",]) !!}
 						</div>
+					</div>
+					<div class = "col-md-12">
+						<table class = "table">
+							<caption>Product purchase information</caption>
+							<thead>
+							<tr>
+								<th>SL</th>
+								<th>Parts Name</th>
+								<th>Supplier SKU #</th>
+								<th>Supplier Name</th>
+								<th>Supplier URL</th>
+								<th>Material</th>
+								<th>Size</th>
+								<th>Color Type</th>
+								<th>Price</th>
+								<th>Note</th>
+								<th></th>
+							</tr>
+							</thead>
+							<tbody id = "product-specification-table-body">
+							@setvar($serial = 1)
+							@setvar($x = 0)
+							@if(json_decode($spec->spec_table_data))
+								@foreach(json_decode($spec->spec_table_data) as $row)
+									<tr>
+										<td>
+											{{$serial++}}.
+										</td>
+										<td>
+											<div class = "form-group">
+												{!! Form::text('spec_table_data[]', $row[0], ['class' => 'form-control']) !!}
+											</div>
+										</td>
+										<td>
+											<div class = "form-group">
+												{!! Form::text('spec_table_data[]', $row[1], ['class' => 'form-control']) !!}
+											</div>
+										</td>
+										<td>
+											<div class = "form-group">
+												{!! Form::text('spec_table_data[]', $row[2], ['class' => 'form-control']) !!}
+											</div>
+										</td>
+										<td>
+											<div class = "form-group">
+												{!! Form::text('spec_table_data[]', $row[3], ['class' => 'form-control']) !!}
+											</div>
+										</td>
+										<td>
+											<div class = "form-group">
+												{!! Form::text('spec_table_data[]', $row[4], ['class' => 'form-control']) !!}
+											</div>
+										</td>
+										<td>
+											<div class = "form-group">
+												{!! Form::text('spec_table_data[]', $row[5], ['class' => 'form-control']) !!}
+											</div>
+										</td>
+										<td>
+											<div class = "form-group">
+												{!! Form::text('spec_table_data[]', $row[6], ['class' => 'form-control']) !!}
+											</div>
+										</td>
+										<td>
+											<div class = "form-group">
+												{!! Form::text('spec_table_data[]', $row[7], ['class' => 'form-control']) !!}
+											</div>
+										</td>
+										<td>
+											<div class = "form-group">
+												{!! Form::text('spec_table_data[]', $row[8], ['class' => 'form-control']) !!}
+											</div>
+										</td>
+										<td>
+											<a class = "btn btn-link remove-row">Remove</a>
+											<a class = "btn btn-link copy-row">Copy</a>
+										</td>
+									</tr>
+								@endforeach
+							@else
+								<tr>
+									<td>
+										1.
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<div class = "form-group">
+											{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										</div>
+									</td>
+									<td>
+										<a class = "btn btn-link remove-row">Remove</a>
+										<a class = "btn btn-link copy-row">Copy</a>
+									</td>
+								</tr>
+							@endif
+							</tbody>
+							<tfoot>
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td>
+									<a class = "btn btn-block btn-success add-new-spec-row">Add new row</a>
+								</td>
+							</tr>
+							</tfoot>
+						</table>
 					</div>
 				</div>
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-instruction">
@@ -514,6 +669,46 @@
 			setSumOfCostVariation();
 		});
 
+		$(document).on('click', "a.remove-row", function (event)
+		{
+			event.preventDefault();
+			$(this).closest('tr').remove();
+			regenerateSerial();
+		});
+
+		$(document).on('click', "a.copy-row", function (event)
+		{
+			event.preventDefault();
+			var clone = $(this).closest('tr').clone().insertAfter($(this).closest('tbody').find('tr:last'));
+			regenerateSerial();
+		});
+
+		$("a.add-new-spec-row").click(function (event)
+		{
+			var clone = $("tbody#product-specification-table-body tr:last").clone().find('input').val('').end().insertAfter("tbody#product-specification-table-body tr:last");
+			regenerateSerial();
+		});
+
+		function regenerateSerial ()
+		{
+			var node = "tbody#product-specification-table-body";
+			var i = 1;
+			$(node).find('tr').each(function ()
+			{
+				// TODO: none remove able first row
+				/*if ( i == 1 ) {
+				 $(this).find('a.remove-row').first().disable();
+				 }*/
+				$(this).find('td').eq(0).text(i++);
+			});
+
+			nonRemoveAbleFirstRow(node);
+		}
+
+		function nonRemoveAbleFirstRow (parentNode)
+		{
+			$(parentNode).find('tr').first().find('a.remove-row').first().remove();
+		}
 
 		function setSumOfCostVariation ()
 		{
@@ -580,6 +775,14 @@
 			$("#cost-variable-table-body input.cost-variation-4:first").trigger(esc);
 		}
 
+		$("form").on('submit', function (event)
+		{
+			var product_name = $("input#product_name").val().trim();
+			if ( product_name == "" ) {
+				alert('Product name cannot be empty');
+				return false;
+			}
+		});
 		bootstrap();
 	</script>
 </body>
