@@ -127,6 +127,7 @@ class ItemController extends Controller
 					 ->groupBy('batch_number')
 					 ->get();*/
 		$items = Item::groupBy('batch_number')
+					 ->where('batch_number', '!=', 0)
 					 ->get();
 		$last_batch_number = 10000 + count($items);
 		$current_group = -1;
