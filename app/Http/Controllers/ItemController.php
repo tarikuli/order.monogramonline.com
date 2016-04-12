@@ -129,7 +129,7 @@ class ItemController extends Controller
 		$items = Item::groupBy('batch_number')
 					 ->where('batch_number', '!=', 0)
 					 ->get();
-		$last_batch_number = 10000 + count($items) + 1;
+		$last_batch_number = 10000 + count($items);
 		$current_group = -1;
 
 		foreach ( $batches as $preferredBatch ) {
@@ -195,8 +195,8 @@ class ItemController extends Controller
 					 ->searchRoute($request->get('route'))
 					 ->searchStation(session('station', 'all'))
 					 ->searchStatus($request->get('status'))
-					 ->groupBy('batch_number')
-					 ->latest('batch_creation_date')
+					 ->groupBy('batch_number')#->latest('batch_creation_date')
+					 ->latest('batch_number')
 					 ->paginate(50);
 
 		$routes = BatchRoute::where('is_deleted', 0)
