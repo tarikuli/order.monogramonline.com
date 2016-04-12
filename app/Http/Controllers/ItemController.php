@@ -129,7 +129,7 @@ class ItemController extends Controller
 		$items = Item::groupBy('batch_number')
 					 ->where('batch_number', '!=', 0)
 					 ->get();
-		$last_batch_number = 10000 + count($items);
+		$last_batch_number = 10000 + count($items) + 1;
 		$current_group = -1;
 
 		foreach ( $batches as $preferredBatch ) {
