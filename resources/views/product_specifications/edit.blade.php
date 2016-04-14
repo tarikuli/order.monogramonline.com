@@ -55,6 +55,12 @@
 						</div>
 					@endif
 					<div class = "form-group col-md-12">
+						{!! Form::label('status', 'Status', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::select('status', \App\SpecificationSheet::$statuses, $spec->status, ['id' => 'status', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
 						{!! Form::label('product_images', 'Product images', ['class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
 							{!! Form::file('product_images[]', ['id' => 'product_images', 'multiple' => true, 'accept' => 'image/*',  'class' => "form-control",]) !!}
@@ -309,7 +315,13 @@
 						</div>
 					</div>
 					<div class = "form-group col-md-12">
-						{!! Form::label('art_work_location', 'Art work location', ['class' => 'col-md-2 control-label']) !!}
+						{!! Form::label('production_image_location', 'Production image location', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::text('production_image_location', $spec->production_image_location,['id' => 'production_image_location', 'class' => 'form-control']) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('art_work_location', 'Art work image location', ['class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
 							{!! Form::text('art_work_location', $spec->art_work_location,['id' => 'art-work-location', 'class' => 'form-control']) !!}
 						</div>

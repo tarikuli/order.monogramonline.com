@@ -8,6 +8,15 @@ class SpecificationSheet extends Model
 {
 	protected $table = 'product_specification_sheet';
 
+	public static $statuses = [
+		0 => 'Initial',
+		1 => 'Need graphic artwork',
+		2 => 'Need production automation',
+		3 => 'Need web photo',
+		4 => 'Ready to publish',
+		5 => 'Published/Live',
+	];
+
 	public static $searchable_fields = [
 		'name'        => 'Name',
 		'sku'         => "SKU",
@@ -35,6 +44,15 @@ class SpecificationSheet extends Model
 		}
 
 		return;
+	}
+
+	public function scopeSearchStatus ($query, $status)
+	{
+		if ( $status == 'all' || is_null($status) ) {
+			return;
+		}
+
+		return $query->where('status', $status);
 	}
 
 	public function scopeSearchInProductionCategory ($query, $production_category_id)

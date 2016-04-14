@@ -17,6 +17,7 @@ class ProductSpecificationController extends Controller
 		$specSheets = SpecificationSheet::with('production_category')
 										->searchCriteria($request->get('search_for_1'), $request->get('search_in_1'))
 										->searchCriteria($request->get('search_for_2'), $request->get('search_in_2'))
+										->searchStatus($request->get('status'))
 										->searchInProductionCategory($request->get('production_category'))
 										->where('is_deleted', 0)
 										->paginate(50);
@@ -24,12 +25,14 @@ class ProductSpecificationController extends Controller
 												   ->get()
 												   ->lists('description_with_code', 'id')
 												   ->prepend('Select a production category', '0');
-
+		$statuses = array_merge([ 'all' => "Select a status" ], SpecificationSheet::$statuses);
+		#return $statuses;
 		#return $specSheets;
 		return view('product_specifications.index')
 			->with('specSheets', $specSheets)
 			->with('count', 1)
 			->with('production_categories', $production_categories)
+			->with('statuses', $statuses)
 			->with('request', $request);
 	}
 
@@ -164,14 +167,18 @@ class ProductSpecificationController extends Controller
 
 	private function insertOrUpdateSpec (Request $request, $specSheet = null)
 	{
+		$product_name = trim($request->get('product_name'));
+		if ( empty( $product_name ) ) {
+			return false;
+		}
+
 		if ( is_null($specSheet) ) {
 			$specSheet = new SpecificationSheet();
 			// product sku is one time insert able. only on insertion time.
 			$specSheet->product_sku = trim($request->get('product_sku'));
-		}
-		$product_name = trim($request->get('product_name'));
-		if ( empty( $product_name ) ) {
-			return false;
+			$specSheet->status = 0;
+		} else {
+			$specSheet->status = intval($request->get('status'));
 		}
 		$specSheet->product_name = $product_name;
 		$specSheet->product_description = trim($request->get('product_description'));
@@ -185,6 +192,7 @@ class ProductSpecificationController extends Controller
 		$specSheet->total_weight = floatval($request->get('total_weight'));
 		$specSheet->production_category_id = intval($request->get('production_category'));
 		$specSheet->art_work_location = trim($request->get('art_work_location'));
+		$specSheet->production_image_location = trim($request->get('production_image_location'));
 		$specSheet->temperature = trim($request->get('temperature'));
 		$specSheet->dwell_time = trim($request->get('dwell_time'));
 		$specSheet->pressure = trim($request->get('pressure'));

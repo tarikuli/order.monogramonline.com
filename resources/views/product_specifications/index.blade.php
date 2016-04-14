@@ -79,6 +79,10 @@
 							<label for = "production_category">Search in production category</label>
 							{!! Form::select('production_category', $production_categories, $request->get('production_category') ?: 'all', ['id'=>'production_category', 'class' => 'form-control']) !!}
 						</div>
+						<div class = "form-group  col-xs-3">
+							<label for = "status">Search in status</label>
+							{!! Form::select('status', $statuses, $request->get('status') ?: 'all', ['id'=>'production_category', 'class' => 'form-control']) !!}
+						</div>
 						<div class = "form-group col-xs-2">
 							<label for = "" class = ""></label>
 							{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}

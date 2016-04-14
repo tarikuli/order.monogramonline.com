@@ -236,7 +236,13 @@
 						</div>
 					</div>
 					<div class = "form-group col-md-12">
-						{!! Form::label('art_work_location', 'Art work location', ['class' => 'col-md-2 control-label']) !!}
+						{!! Form::label('production_image_location', 'Production image location', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::text('production_image_location', null, ['id' => 'production_image_location', 'class' => 'form-control']) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('art_work_location', 'Art work image location', ['class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
 							{!! Form::text('art_work_location', null,['id' => 'art-work-location', 'class' => 'form-control']) !!}
 						</div>
@@ -619,7 +625,8 @@
 			regenerateSerial();
 		});
 
-		$(document).on('click', "a.remove-parts-info-row", function(e){
+		$(document).on('click', "a.remove-parts-info-row", function (e)
+		{
 			event.preventDefault();
 			$(this).closest('tr').remove();
 		});
