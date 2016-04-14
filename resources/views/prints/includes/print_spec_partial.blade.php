@@ -64,8 +64,16 @@
 						<td>{{ $spec->production_category->production_category_code }} : {{ $spec->production_category->production_category_description }}</td>
 					</tr>
 					<tr>
-						<td align = "left">Product art work location</td>
+						<td align = "left">Production image location</td>
+						<td>{{ $spec->production_image_location }}</td>
+					</tr>
+					<tr>
+						<td align = "left">Product art work image location</td>
 						<td>{{ $spec->art_work_location }}</td>
+					</tr>
+					<tr>
+						<td align = "left">Status</td>
+						<td>{{ \App\SpecificationSheet::$statuses[$spec->status] }}</td>
 					</tr>
 					<tr>
 						<td align = "left">Product note</td>
@@ -223,7 +231,9 @@
 						@endforeach
 					@endif
 					<tr>
-						<td colspan="6"><hr/></td>
+						<td colspan = "6">
+							<hr />
+						</td>
 					</tr>
 					<tr valign = "top">
 						<td align = "center" style = "width:6mm;">Total (SUM), $</td>
@@ -234,36 +244,54 @@
 						<td align = "center" style = "width:6mm;"></td>
 					</tr>
 					<tr>
-						<td colspan="6"><hr/></td>
+						<td colspan = "6">
+							<hr />
+						</td>
 					</tr>
 					<tr valign = "top">
 						<td align = "center" style = "width:6mm;">Delivery to us, $</td>
-						<td align = "center" style = "width:6mm;">{{ json_decode($spec->delivery_cost_variation)[0] }}</td>
-						<td align = "center" style = "width:6mm;">{{ json_decode($spec->delivery_cost_variation)[1] }}</td>
-						<td align = "center" style = "width:6mm;">{{ json_decode($spec->delivery_cost_variation)[2] }}</td>
-						<td align = "center" style = "width:6mm;">{{ json_decode($spec->delivery_cost_variation)[3] }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ json_decode($spec->delivery_cost_variation)[0] }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ json_decode($spec->delivery_cost_variation)[1] }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ json_decode($spec->delivery_cost_variation)[2] }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ json_decode($spec->delivery_cost_variation)[3] }}</td>
 						<td align = "center" style = "width:6mm;"></td>
 					</tr>
 					<tr>
-						<td colspan="6"><hr/></td>
+						<td colspan = "6">
+							<hr />
+						</td>
 					</tr>
 					<tr valign = "top">
 						<td align = "center" style = "width:6mm;">Labor Expense to complete Production Process, $</td>
-						<td align = "center" style = "width:6mm;">{{ json_decode($spec->labor_expense_cost_variation)[0] }}</td>
-						<td align = "center" style = "width:6mm;">{{ json_decode($spec->labor_expense_cost_variation)[1] }}</td>
-						<td align = "center" style = "width:6mm;">{{ json_decode($spec->labor_expense_cost_variation)[2] }}</td>
-						<td align = "center" style = "width:6mm;">{{ json_decode($spec->labor_expense_cost_variation)[3] }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ json_decode($spec->labor_expense_cost_variation)[0] }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ json_decode($spec->labor_expense_cost_variation)[1] }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ json_decode($spec->labor_expense_cost_variation)[2] }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ json_decode($spec->labor_expense_cost_variation)[3] }}</td>
 						<td align = "center" style = "width:6mm;"></td>
 					</tr>
 					<tr>
-						<td colspan="6"><hr/></td>
+						<td colspan = "6">
+							<hr />
+						</td>
 					</tr>
 					<tr valign = "top">
 						<td align = "center" style = "width:6mm;">Total cost variation, $</td>
-						<td align = "center" style = "width:6mm;">{{ intval(json_decode($spec->labor_expense_cost_variation)[0]) + intval(json_decode($spec->labor_expense_cost_variation)[0]) + $total_cost_var_1 }}</td>
-						<td align = "center" style = "width:6mm;">{{ intval(json_decode($spec->labor_expense_cost_variation)[1]) + intval(json_decode($spec->labor_expense_cost_variation)[1]) + $total_cost_var_2 }}</td>
-						<td align = "center" style = "width:6mm;">{{ intval(json_decode($spec->labor_expense_cost_variation)[2]) + intval(json_decode($spec->labor_expense_cost_variation)[2]) + $total_cost_var_3 }}</td>
-						<td align = "center" style = "width:6mm;">{{ intval(json_decode($spec->labor_expense_cost_variation)[3]) + intval(json_decode($spec->labor_expense_cost_variation)[3]) + $total_cost_var_4 }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ intval(json_decode($spec->labor_expense_cost_variation)[0]) + intval(json_decode($spec->labor_expense_cost_variation)[0]) + $total_cost_var_1 }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ intval(json_decode($spec->labor_expense_cost_variation)[1]) + intval(json_decode($spec->labor_expense_cost_variation)[1]) + $total_cost_var_2 }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ intval(json_decode($spec->labor_expense_cost_variation)[2]) + intval(json_decode($spec->labor_expense_cost_variation)[2]) + $total_cost_var_3 }}</td>
+						<td align = "center"
+						    style = "width:6mm;">{{ intval(json_decode($spec->labor_expense_cost_variation)[3]) + intval(json_decode($spec->labor_expense_cost_variation)[3]) + $total_cost_var_4 }}</td>
 						<td align = "center" style = "width:6mm;"></td>
 					</tr>
 				</table>

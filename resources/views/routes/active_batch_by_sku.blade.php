@@ -58,7 +58,7 @@
 						{{--<th>View batch</th>--}}
 						{{--<th>Batch creation date</th>--}}
 						{{--<th>Route</th>--}}
-						<th>Station</th>
+						{{--<th>Station</th>--}}
 						<th>SKU</th>
 						<th>Name</th>
 						<th>Quantity</th>
@@ -68,7 +68,7 @@
 					{{--{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}--}}
 					@foreach($rows as $row)
 						<tr>
-							<td>{{ $row['station_name'] }}</td>
+							{{--<td>{{ $row['station_name'] }}</td>--}}
 							<td>{{ $row['sku'] }}</td>
 							<td class = "description">{{ $row['item_name'] }}</td>
 							<td>{{ $row['item_count'] }}</td>
@@ -77,7 +77,7 @@
 						</tr>
 					@endforeach
 					<tr>
-						<td></td>
+						{{--<td></td>--}}
 						<td></td>
 						<td></td>
 						<td>{{ $total_count }}</td>

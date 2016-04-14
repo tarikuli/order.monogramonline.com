@@ -47,7 +47,7 @@
 				{!! Form::open(['method'=>'post', 'url' => url('/items/sku_station_done_reject'), 'id' => 'action_changer']) !!}
 				{!! Form::hidden('action', null) !!}
 				{!! Form::hidden('sku', $sku) !!}
-				{!! Form::hidden('station_name', $station_name) !!}
+				{{--{!! Form::hidden('station_name', $station_name) !!}--}}
 				{!! Form::close() !!}
 				<div class = "col-xs-8">
 					{!! Form::open(['url' => url(sprintf("change_station_by_sku/%s", $sku))]) !!}
@@ -67,6 +67,8 @@
 								<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>
 							</th>
 							<th>SL#</th>
+							<th>Batch#</th>
+							<th>Station</th>
 							<th>
 								Order
 								<br />
@@ -90,6 +92,8 @@
 							<tr data-id = "{{$item->id}}">
 								<td><a href = "#" class = "btn btn-danger reject">Reject</a></td>
 								<td>{{$count++}}</td>
+								<td>{{ $item->batch_number }}</td>
+								<td>{{ $item->station_details ? $item->station_details->station_description : "-" }}</td>
 								{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
 								<td>
 									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
@@ -122,10 +126,10 @@
 							<td></td>
 							<td></td>
 							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
 							<td id = "item-quantity-in-total"></td>
-							<td></td>
-							<td></td>
-							<td></td>
 							<td></td>
 							<td></td>
 						</tr>
@@ -173,7 +177,7 @@
 			var totalQuantity = 0;
 			$("table#batch-items-table tbody tr").each(function ()
 			{
-				totalQuantity += parseInt($(this).find('td:eq(5)').text());
+				totalQuantity += parseInt($(this).find('td:eq(7)').text());
 			});
 
 			$("table#batch-items-table tfoot td#item-quantity-in-total").text("Total quantity: " + totalQuantity);
@@ -200,6 +204,10 @@
 					.attr("name", "action")
 					.attr("value", 'reject')
 					.appendTo($("form#station-action"));
+			$("<input type='hidden' value='' />")
+					.attr("name", "return_to")
+					.attr("value", "back")
+					.appendTo($("form#station-action"));
 
 			$("#rejection-modal").modal('show');
 			/*var answer = confirm('Are you sure to reject?');
@@ -216,6 +224,7 @@
 			 $("form#station-action").submit();
 			 }*/
 		});
+
 		$("button#reject-all").on('click', function (event)
 		{
 			event.preventDefault();
@@ -265,6 +274,10 @@
 			$("<input type='hidden' value='' />")
 					.attr("name", "action")
 					.attr("value", 'done')
+					.appendTo($("form#station-action"));
+			$("<input type='hidden' value='' />")
+					.attr("name", "return_to")
+					.attr("value", "back")
 					.appendTo($("form#station-action"));
 			$("form#station-action").submit();
 		});

@@ -211,11 +211,14 @@ class StationController extends Controller
 			$item->save();
 		}
 
+
 		$batch_item_count = Item::where('batch_route_id', $batch_route_id)
 								->where('station_name', $current_station_name)
 								->where('is_deleted', 0)
 								->count();
-
+		if ( $request->has('return_to') && $request->get('return_to') == "back" ) {
+			return redirect()->back();
+		}
 		if ( $batch_item_count ) {
 			return redirect()->back();
 		} else {

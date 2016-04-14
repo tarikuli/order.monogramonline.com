@@ -448,7 +448,7 @@ class ItemController extends Controller
 				$next_station_name = Helper::getNextStationName($item->batch_route_id, $item->station_name);
 				if ( in_array($next_station_name, Helper::$shippingStations) ) {
 					$items = Item::where('batch_number', $batch_number)
-								 ->where('station_name', $station_name)#->where('station_name', $station_name)
+								 ->where('station_name', $station_name)
 								 ->get();
 					Helper::populateShippingData($items);
 				}
@@ -630,7 +630,7 @@ class ItemController extends Controller
 						   ->prepend('Select a station', '');
 		$rows = [ ];
 		$total_count = 0;
-		foreach ( $items->groupBy('station_name') as $station_name => $items_on_station ) {
+		/*foreach ( $items->groupBy('station_name') as $station_name => $items_on_station ) {
 			$groupBySKU = $items_on_station->groupBy('item_code');
 			foreach ( $groupBySKU as $sku => $sku_groups ) {
 				$count = $sku_groups->count();
@@ -644,6 +644,17 @@ class ItemController extends Controller
 					'action'         => url(sprintf('items/active_batch/sku/%s/%s', $sku, $station_name)),
 				];
 			}
+		}*/
+		foreach ( $items->groupBy('item_code') as $sku => $sku_groups ) {
+			$count = $sku_groups->count();
+			$total_count += $count;
+			$rows[] = [
+				'sku'            => $sku,
+				'item_name'      => $sku_groups->first() ? $sku_groups->first()->item_description : "-",
+				'min_order_date' => $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
+				'item_count'     => $count,
+				'action'         => url(sprintf('items/active_batch/sku/%s', $sku)),
+			];
 		}
 
 		return view('routes.active_batch_by_sku')
@@ -653,19 +664,17 @@ class ItemController extends Controller
 			->with('total_count', $total_count);
 	}
 
-	public function get_sku_on_stations (Request $request, $sku, $station_name)
+	#public function get_sku_on_stations (Request $request, $sku, $station_name)
+
+	public function get_sku_on_stations (Request $request, $sku)
 	{
-		$items = Item::with('lowest_order_date', 'order')
+		$items = Item::with('lowest_order_date', 'order', 'station_details')
 					 ->where('batch_number', '!=', 0)
 					 ->whereNotNull('station_name')
 					 ->Where('station_name', '!=', '')
-					 ->where('item_code', $sku)
-					 ->where('station_name', $station_name)
-					 ->groupBy('batch_number')
-					 ->get([
-						 '*',
-						 DB::raw('SUM(item_quantity) as total'),
-					 ]);
+					 ->where('item_code', $sku)#->where('station_name', $station_name)#->groupBy('batch_number')
+					 ->get([ '*', ]);
+
 		$rows = [ ];
 		$total = 0;
 		foreach ( $items as $item ) {
@@ -698,8 +707,7 @@ class ItemController extends Controller
 											->prepend('Select a reason', 0);
 
 		return view('routes.active_sku_show')
-			->with('stations', $stations)
-			->with('station_name', $station_name)
+			->with('stations', $stations)#->with('station_name', $station_name)
 			->with('count', $count)
 			->with('sku', $sku)
 			->with('rejection_reasons', $rejection_reasons)
@@ -731,7 +739,6 @@ class ItemController extends Controller
 			$station_log->item_id = $item->id;
 			$station_log->batch_number = $item->batch_number;
 			$station_log->station_id = $station_id;
-			#$station_log->started_at = date('Y-m-d h:i:s', strtotime("now"));
 			$station_log->started_at = date('Y-m-d', strtotime("now"));
 			$station_log->user_id = Auth::user()->id;
 			$station_log->save();
@@ -754,58 +761,63 @@ class ItemController extends Controller
 	public function rejectDoneFromSKUList (Request $request)
 	{
 		$action = $request->get('action');
-		$station_name = $request->get('station_name');
+		#$station_name = $request->get('station_name');
 		$sku = $request->get('sku');
 
 		switch ( $action ) {
 			case 'done':
-				// TODO: complete the following;
-				return redirect()->back();
-				$item = Item::where('item_code', $sku)
-							->where('station_name', $station_name)
-							->first();
+				$items = Item::where('item_code', $sku)
+							 ->where('batch_number', '!=', 0)
+							 ->get();
 
-				if ( count($item) == 0 ) {
+				if ( count($items) == 0 ) {
 					return redirect()->back();
 				}
-				$next_station_name = Helper::getNextStationName($item->batch_route_id, $item->station_name);
-				if ( in_array($next_station_name, Helper::$shippingStations) ) {
-					$items = Item::where('batch_number', $batch_number)
-								 ->where('station_name', $station_name)
-								 ->get();
-					Helper::populateShippingData($items);
-				}
-				$updates = [
-					'station_name' => $next_station_name,
-				];
 
-				if ( $next_station_name == '' ) {
-					$updates['item_order_status_2'] = 3;
-					$updates['item_order_status'] = 'complete';
-				} else {
-					$updates['item_order_status'] = 'active';
-				}
-				$previousItems = Item::where('batch_number', $batch_number)
-									 ->where('station_name', $station_name)
+				foreach ( $items as $item ) {
+					$batch_number = $item->batch_number;
+					$current_item_station = $item->station_name;
+					$next_station_name = Helper::getNextStationName($item->batch_route_id, $current_item_station);
+					if ( in_array($next_station_name, Helper::$shippingStations) ) {
+						$items = Item::where('batch_number', $batch_number)
+									 ->where('station_name', $current_item_station)
+									 ->where('item_code', $sku)
 									 ->get();
-				$items = Item::where('batch_number', $batch_number)
-							 ->where('station_name', $station_name)
-							 ->update($updates);
-				if ( $next_station_name ) {
-					foreach ( $previousItems as $item ) {
-						$station_log = new StationLog();
-						$station_log->item_id = $item->id;
-						$station_log->batch_number = $item->batch_number;
-						$station_log->station_id = Station::where('station_name', $station_name)
-														  ->first()->id;
-						#$station_log->started_at = date('Y-m-d h:i:s', strtotime("now"));
-						$station_log->started_at = date('Y-m-d', strtotime("now"));
-						$station_log->user_id = Auth::user()->id;
-						$station_log->save();
+						Helper::populateShippingData($items);
+					}
+					$updates = [
+						'station_name' => $next_station_name,
+					];
+
+					if ( $next_station_name == '' ) {
+						$updates['item_order_status_2'] = 3;
+						$updates['item_order_status'] = 'complete';
+					} else {
+						$updates['item_order_status'] = 'active';
+					}
+					$previousItems = Item::where('batch_number', $batch_number)
+										 ->where('station_name', $current_item_station)
+										 ->get();
+					$update_items = Item::where('batch_number', $batch_number)
+										->where('station_name', $current_item_station)
+										->where('item_code', $sku)
+										->update($updates);
+					if ( $next_station_name ) {
+						foreach ( $previousItems as $item ) {
+							$station_log = new StationLog();
+							$station_log->item_id = $item->id;
+							$station_log->batch_number = $item->batch_number;
+							$station_log->station_id = Station::where('station_name', $current_item_station)
+															  ->first()->id;
+
+							$station_log->started_at = date('Y-m-d', strtotime("now"));
+							$station_log->user_id = Auth::user()->id;
+							$station_log->save();
+						}
 					}
 				}
 
-				break;
+				return redirect()->to('/items/active_batch_group');
 			case 'reject':
 				$supervisor_station = Helper::getSupervisorStationName();
 
@@ -820,15 +832,28 @@ class ItemController extends Controller
 						->withErrors($validation);
 				}
 
+				$items = Item::where('item_code', $sku)
+							 ->whereNotNull('station_name')
+							 ->Where('station_name', '!=', '')
+							 ->get();
+				foreach ( $items as $rejected_item ) {
+					$rejected_from_station = $rejected_item->station_name;
+					$rejected_item->station_name = $supervisor_station;
+					$rejected_item->rejection_reason = $request->get('rejection_reason');
+					$rejected_item->rejection_message = trim($request->get('rejection_message'));
+					$rejected_item->previous_station = $rejected_from_station;
+					$rejected_item->save();
+				}
 
-				$items = Item::where('station_name', $station_name)
-							 ->where('item_code', $sku)
+				/*$items = Item::where('item_code', $sku)
+							 ->whereNotNull('station_name')
+							 ->Where('station_name', '!=', '')
 							 ->update([
 								 'station_name'      => $supervisor_station,
 								 'rejection_reason'  => $request->get('rejection_reason'),
 								 'rejection_message' => trim($request->get('rejection_message')),
 								 'previous_station'  => $station_name,
-							 ]);
+							 ]);*/
 
 				return redirect()->to('/items/active_batch_group');
 			default:
