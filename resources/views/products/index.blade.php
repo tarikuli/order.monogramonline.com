@@ -132,6 +132,7 @@
 					<th>SKU</th>
 					<th>Product name</th>
 					<th>Image</th>
+					<th>Allow Mixing</th>
 					<th>Route code</th>
 					<th>Action</th>
 				</tr>
@@ -159,6 +160,9 @@
 						</td>
 						<td>{{ $product->product_name }}</td>
 						<td><img src = "{{ $product->product_thumb }}" width = "50" height = "50" /></td>
+						<td>
+							{!! Form::select('mixing', \App\Product::$mixingStatues, $product->allow_mixing, ['class' => 'form-control', 'style' => 'min-width: 75px;']) !!}
+						</td>
 						<td>{!! Form::select('batch_route_id', $batch_routes, $product->batch_route_id, ['class' => 'form-control changable']) !!}</td>
 						<td>
 							<a href = "{{ url(sprintf("/products/%d", $product->id)) }}" data-toggle = "tooltip"

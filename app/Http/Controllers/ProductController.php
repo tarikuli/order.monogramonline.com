@@ -491,6 +491,9 @@ class ProductController extends Controller
 		if ( $request->exists('ship_weight') ) {
 			$product->ship_weight = floatval($request->get('ship_weight'));
 		}
+		if ( $request->has('allow_mixing') ) {
+			$product->allow_mixing = $request->get('allow_mixing') == 1 ? 1 : 0;
+		}
 		/*if ( $request->exists('product_category') ) {
 			$product->product_category = $request->get('product_category');
 		}
