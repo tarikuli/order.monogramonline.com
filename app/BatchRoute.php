@@ -22,6 +22,7 @@ class BatchRoute extends Model
 						'products.batch_route_id',
 						'products.id_catalog',
 						'products.product_model',
+						'products.allow_mixing',
 					]);
 	}
 
