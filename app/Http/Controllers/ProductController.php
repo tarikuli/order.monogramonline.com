@@ -688,9 +688,11 @@ class ProductController extends Controller
 	public function unassigned (Request $request)
 	{
 		$products = Product::with('batch_route', 'master_category')
+						   ->where(function ($query) {
+							   return $query->whereNull('batch_route_id')
+											->orWhere('batch_route_id', Helper::getDefaultRouteId());
+						   })
 						   ->where('is_deleted', 0)
-						   ->whereNull('batch_route_id')
-						   ->orWhere('batch_route_id', Helper::getDefaultRouteId())
 						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
 						   ->searchProductSalesCategory($request->get('product_sales_category'))
 						   ->searchRoute($request->get('route'))

@@ -45,8 +45,10 @@ class ItemController extends Controller
 
 		#return $items;
 
-		$unassignedProducts = Product::whereNull('batch_route_id')
-									 ->orWhere('batch_route_id', Helper::getDefaultRouteId())
+		$unassignedProducts = Product::where(function ($query) {
+			return $query->whereNull('batch_route_id')
+						 ->orWhere('batch_route_id', Helper::getDefaultRouteId());
+		})
 									 ->where('is_deleted', 0)
 									 ->get();
 		$unassignedProductCount = $unassignedProducts->count();
@@ -649,7 +651,7 @@ class ItemController extends Controller
 		foreach ( $items->groupBy('item_code') as $sku => $sku_groups ) {
 			$route = $sku_groups->first()->route;
 			$batch_stations = $route->stations->lists('custom_station_name', 'id')
-											 ->prepend('Select station to change', '0');
+											  ->prepend('Select station to change', '0');
 			$count = $sku_groups->count();
 			$total_count += $count;
 			$rows[] = [
