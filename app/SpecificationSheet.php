@@ -11,10 +11,11 @@ class SpecificationSheet extends Model
 	public static $statuses = [
 		0 => 'Initial',
 		1 => 'Need graphic artwork',
-		2 => 'Need production automation',
-		3 => 'Need web photo',
-		4 => 'Ready to publish',
-		5 => 'Published/Live',
+		2 => 'Graphic Artwork Approval',
+		3 => 'Need production automation',
+		4 => 'Need web photo',
+		5 => 'Ready to publish',
+		6 => 'Published/Live',
 	];
 
 	public static $searchable_fields = [

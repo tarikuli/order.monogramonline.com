@@ -618,7 +618,7 @@ class ItemController extends Controller
 
 	public function get_active_batch_by_sku (Request $request)
 	{
-		$items = Item::with('lowest_order_date')
+		$items = Item::with('lowest_order_date', 'route.stations')
 					 ->searchActiveByStation($request->get('station'))
 					 ->where('batch_number', '!=', '0')
 					 ->get();
@@ -645,7 +645,11 @@ class ItemController extends Controller
 				];
 			}
 		}*/
+		#return $items->groupBy('item_code');
 		foreach ( $items->groupBy('item_code') as $sku => $sku_groups ) {
+			$route = $sku_groups->first()->route;
+			$batch_stations = $route->stations->lists('custom_station_name', 'id')
+											 ->prepend('Select station to change', '0');
 			$count = $sku_groups->count();
 			$total_count += $count;
 			$rows[] = [
@@ -654,6 +658,8 @@ class ItemController extends Controller
 				'min_order_date' => $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
 				'item_count'     => $count,
 				'action'         => url(sprintf('items/active_batch/sku/%s', $sku)),
+				'route'          => sprintf("%s : %s", $route->batch_code, $route->batch_route_name),
+				'batch_stations' => $batch_stations,
 			];
 		}
 
@@ -718,7 +724,9 @@ class ItemController extends Controller
 
 	public function changeStationBySKU (Request $request, $sku)
 	{
-		$station_id = $request->get('station');
+		#return $request->all();
+		#$station_id = $request->get('station');
+		$station_id = $request->get('batch_stations');
 		$station = Station::find($station_id);
 		if ( !$station ) {
 			return redirect()

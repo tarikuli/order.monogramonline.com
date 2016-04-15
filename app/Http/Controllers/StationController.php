@@ -331,6 +331,7 @@ class StationController extends Controller
 			$summary['items_count'] = $items_count;
 			$summary['earliest_batch_creation_date'] = substr($earliest_batch_creation_date, 0, 10);
 			$summary['earliest_order_date'] = substr($earliest_order_date, 0, 10);
+			$summary['link'] = url(sprintf("/items/active_batch_group?station=%s", $station_name));
 
 			$summaries[] = $summary;
 		}

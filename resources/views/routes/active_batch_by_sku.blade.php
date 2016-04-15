@@ -10,8 +10,6 @@
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/css/bootstrap-select.min.css">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-	<style>
-	</style>
 </head>
 <body>
 	@include('includes.header_menu')
@@ -63,17 +61,27 @@
 						<th>Name</th>
 						<th>Quantity</th>
 						<th>Min-Order date</th>
-						<th>Action</th>
+						{{--<th>Action</th>--}}
+						<th>Route</th>
+						<th>Assign station</th>
 					</tr>
 					{{--{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}--}}
 					@foreach($rows as $row)
-						<tr>
+						<tr data-sku = "{{ $row['sku'] }}">
 							{{--<td>{{ $row['station_name'] }}</td>--}}
 							<td>{{ $row['sku'] }}</td>
 							<td class = "description">{{ $row['item_name'] }}</td>
 							<td>{{ $row['item_count'] }}</td>
 							<td>{{ $row['min_order_date'] }}</td>
-							<td><a href = "{{ $row['action'] }}">Details</a></td>
+							{{--<td><a href = "{{ $row['action'] }}">Details</a></td>--}}
+							<td>{{ $row['route'] }}</td>
+							<td>
+								{!! Form::open(['url' => url(sprintf("change_station_by_sku/%s", $row['sku']))]) !!}
+								<div class = "form-group">
+									{!! Form::select('batch_stations', $row['batch_stations'], null, ['id'=>'batch_stations', 'class' => 'form-control']) !!}
+								</div>
+								{!! Form::close() !!}
+							</td>
 						</tr>
 					@endforeach
 					<tr>
@@ -131,6 +139,15 @@
 		{
 			state = !state;
 			$(".checkbox").prop('checked', state);
+		});
+
+		$("select#batch_stations").on('change', function (event)
+		{
+			event.preventDefault();
+			var selected = parseInt($(this).val());
+			if ( selected !== 0 ) {
+				$(this).closest('form').submit();
+			}
 		});
 	</script>
 </body>
