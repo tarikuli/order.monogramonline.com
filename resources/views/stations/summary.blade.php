@@ -31,13 +31,17 @@
 					<th># of lines</th>
 					<th>Earliest batch creation date</th>
 					<th>Earliest order date</th>
+					<th>Active SKUs</th>
 				</tr>
 				@foreach($summaries as $summary)
 					<tr>
-						<td><a href="{{url(sprintf("/items/grouped?station=%s", $summary['station_id']))}}">{{$summary['station_name']}} - {{$summary['station_description']}}</a> </td>
+						<td>
+							<a href = "{{url(sprintf("/items/grouped?station=%s", $summary['station_id']))}}">{{$summary['station_name']}} - {{$summary['station_description']}}</a>
+						</td>
 						<td>{{$summary['items_count']}}</td>
 						<td>{{$summary['earliest_batch_creation_date']}}</td>
 						<td>{{$summary['earliest_order_date']}}</td>
+						<td><a href = "{{$summary['link']}}" target = "_blank">View active sku</a></td>
 					</tr>
 				@endforeach
 			</table>
