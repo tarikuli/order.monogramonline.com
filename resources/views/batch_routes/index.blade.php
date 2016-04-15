@@ -30,6 +30,9 @@
 			</table>
 
 		</div>
+		<div class = "col-md-12">
+			<a class = "btn btn-link" href = "{{url('/exports/batch_routes')}}">Export</a>
+		</div>
 		@if(count($batch_routes) > 0)
 			<table>
 				<tr>
