@@ -12,6 +12,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('logout', 'AuthenticationController@getLogout');
 
 		post('imports/inventory', 'ImportController@importInventory');
+		post('imports/batch_route', 'ImportController@importBatchRoute');
 
 		resource('customers', 'CustomerController');
 
