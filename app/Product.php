@@ -34,6 +34,10 @@ class Product extends Model
 		'product_caption'        => 'Caption',
 		'product_label'          => 'Label',
 	];
+	public static $mixingStatues = [
+		0 => "No",
+		1 => "Yes",
+	];
 
 	private function tableColumns ()
 	{

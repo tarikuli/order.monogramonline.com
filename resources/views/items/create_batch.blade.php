@@ -62,7 +62,9 @@
 				@foreach($batch_routes as $batch_route)
 					@if($batch_route->itemGroups)
 						@if($batch_route->batch_max_units)
-							@foreach($batch_route->itemGroups->chunk($batch_route->batch_max_units) as $chunkedRows)
+							@setvar($mixed_groups = $batch_route->itemGroups->groupBy('allow_mixing'))
+							@foreach($mixed_groups as $group_key => $group_values) {{-- $group_key = 0/no mix, = 1 / mix --}}
+							@foreach($group_values->chunk($batch_route->batch_max_units) as $chunkedRows)
 								@if($batch_route->stations_list->count())
 									<div class = "col-xs-12">
 										<table class = "table" style = "margin-top: 5px;">
@@ -111,6 +113,7 @@
 										</table>
 									</div>
 								@endif
+							@endforeach
 							@endforeach
 						@endif
 					@endif

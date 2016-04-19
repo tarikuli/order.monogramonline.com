@@ -12,6 +12,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('logout', 'AuthenticationController@getLogout');
 
 		post('imports/inventory', 'ImportController@importInventory');
+		post('imports/batch_route', 'ImportController@importBatchRoute');
 
 		resource('customers', 'CustomerController');
 
@@ -35,6 +36,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 		resource('inventories', 'InventoryController');
 		get('exports/inventory', 'ExportController@inventory');
+		get('exports/batch_routes', 'ExportController@batch_routes');
 
 		get('exports/batch/{id}', 'ItemController@export_batch');
 

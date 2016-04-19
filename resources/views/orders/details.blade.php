@@ -223,7 +223,9 @@
 		<hr style = "width: 100%; color: black; background-color:black;margin-top:  10px" size = "1" />
 		<table>
 			@setvar($ind = 0)
+			@setvar($sub_total = 0)
 			@foreach($order->items as $item)
+				@setvar( $sub_total += ($item->item_quantity * $item->item_unit_price))
 				<tr>
 					{!! Form::hidden("item_id[$ind]", $item->id) !!}
 					<td><img src = "{{$item->item_thumb}}" /></td>
@@ -280,7 +282,7 @@
 		<table style = "margin-left:775px">
 			<tr>
 				<td align = "right" style = "padding-right:40px ">Subtotal:</td>
-				<td align = "right">${{sprintf("%02.2f",$order->sub_total)}}</td>
+				<td align = "right">${{sprintf("%02.2f",$sub_total)}}</td>
 			</tr>
 			<tr>
 				<td align = "right" style = "padding-right:40px ">Coupon <b>(ggibi7t4kun2f)</b>:</td>

@@ -192,6 +192,12 @@
 						</div>
 					</div>
 					<div class = "form-group">
+						{!!Form::label('allow_mixing','Allow mixing: ',['class'=>'control-label col-xs-2'])!!}
+						<div class = "col-xs-5">
+							{!! Form::select('allow_mixing', \App\Product::$mixingStatues, $product->allow_mixing, ['id' => 'allow_mixing','class'=>'form-control']) !!}
+						</div>
+					</div>
+					<div class = "form-group">
 						{!!Form::label('batch_route_id','Route: ',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">
 							{!! Form::select('batch_route_id', $batch_routes, $product->batch_route_id, ['id' => 'batch_route_id','class'=>'form-control']) !!}

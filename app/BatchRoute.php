@@ -7,6 +7,26 @@ use Illuminate\Support\Facades\DB;
 
 class BatchRoute extends Model
 {
+	private function tableColumns ()
+	{
+		$columns = $this->getConnection()
+						->getSchemaBuilder()
+						->getColumnListing($this->getTable());
+		$remove_columns = [
+			'updated_at',
+			'created_at',
+			'id',
+			'is_deleted',
+		];
+
+		return array_diff($columns, $remove_columns);
+	}
+
+	public static function getTableColumns ()
+	{
+		return (new static())->tableColumns();
+	}
+
 	public function template ()
 	{
 		return $this->belongsTo('App\Template', 'export_template', 'id');
@@ -22,6 +42,7 @@ class BatchRoute extends Model
 						'products.batch_route_id',
 						'products.id_catalog',
 						'products.product_model',
+						'products.allow_mixing',
 					]);
 	}
 

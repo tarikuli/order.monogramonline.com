@@ -30,69 +30,106 @@
 			</table>
 
 		</div>
-		@if(count($batch_routes) > 0)
-			<table>
-				<tr>
-					<th style = "padding-bottom:10px"><b> </b></th>
-					<th style = "padding-bottom:10px"><b>Batch code</b></th>
-					<th style = "padding-bottom:10px"><b>Route name</b></th>
-					<th style = "padding-bottom:10px"><b>Max unit</b></th>
-					<th style = "padding-bottom:10px"><b>Stations</b></th>
-					<th style = "padding-bottom:10px"><b>Export template</b></th>
-					<th style = "padding-bottom:10px"><b>Options( Comma delimited )</b></th>
-					<th style = "padding-bottom:10px"><b>Action</b></th>
-				</tr>
+		<div class = "row">
+			<div class = "col-md-12">
+				<ul class = "nav nav-tabs" role = "tablist">
+					<li role = "presentation">
+						<a href = "#tab-export-import" aria-controls = "info" role = "tab"
+						   data-toggle = "tab">Export/Import</a>
+					</li>
+					<li role = "presentation" class = "active">
+						<a href = "#tab-batch-list" aria-controls = "description" role = "tab"
+						   data-toggle = "tab">Batches</a>
+					</li>
+				</ul>
+				<div class = "clearfix"></div>
+				<div class = "tab-content" style = "margin-top: 20px;">
+					<div role = "tabpanel" class = "tab-pane fade" id = "tab-export-import">
+						<div class = "col-xs-6">
+							{!! Form::open(['url' => url('imports/batch_route'), 'files' => true, 'id' => 'importer']) !!}
+							<div class = "form-group">
+								{!! Form::file('csv_file', ['required' => 'required', 'class' => 'form-control', 'accept' => '.csv']) !!}
+							</div>
+							<div class = "form-group">
+								{!! Form::submit('Import', ['class' => 'btn btn-info']) !!}
+							</div>
+							{!! Form::close() !!}
+						</div>
+						<div class = "col-xs-6">
+							<a class = "btn btn-info pull-right"
+							   href = "{{url('/exports/batch_routes')}}">Export Batch routes</a>
+						</div>
+					</div>
+					<div role = "tabpanel" class = "tab-pane fade in active" id = "tab-batch-list">
+						<div class = "col-xs-12">
+							@if(count($batch_routes) > 0)
+								<table>
+									<tr>
+										<th style = "padding-bottom:10px"><b> </b></th>
+										<th style = "padding-bottom:10px"><b>Batch code</b></th>
+										<th style = "padding-bottom:10px"><b>Route name</b></th>
+										<th style = "padding-bottom:10px"><b>Max unit</b></th>
+										<th style = "padding-bottom:10px"><b>Stations</b></th>
+										<th style = "padding-bottom:10px"><b>Export template</b></th>
+										<th style = "padding-bottom:10px"><b>Options( Comma delimited )</b></th>
+										<th style = "padding-bottom:10px"><b>Action</b></th>
+									</tr>
 
-				@foreach($batch_routes as $batch_route)
-					<tr data-id = "{{$batch_route->id}}">
-						<td style = "vertical-align: top;margin-right:20px;padding-bottom:7px"><a href = "#"
-						                                                                          class = "delete"
-						                                                                          data-toggle = "tooltip"
-						                                                                          data-placement = "top"
-						                                                                          title = "Delete this item">
-								<i class = "fa fa-times text-danger"></i> </a></td>
-						<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_code', $batch_route->batch_code, ['style'=>'width:100px;margin-right:10px;margin-left:5px','readonly'=>'readonly']) !!}</td>
-						<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_route_name', $batch_route->batch_route_name, ['style'=>'width:250px;margin-right:10px']) !!}</td>
-						<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_max_units', $batch_route->batch_max_units, ['style'=>'width:70px;margin-right:25px']) !!}</td>
-						<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_stations', implode(",\n", array_map(function($station) { return $station['station_name']; }, $batch_route->stations_list->toArray())), ['style'=>'width:120px;height:80px;margin-right:10px;overflow-y: scroll;']) !!}</td>
-						<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::select('s_export_template', $templates, $batch_route->export_template, ['style'=>'width:70px;margin-right:25px']) !!}</td>
-						<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_options', $batch_route->batch_options, ['style'=>'width:120px;height:80px;margin-left:25px;margin-right:70px']) !!}</td>
-						<td style = "vertical-align: top;padding-bottom:7px;">
-							<a href = "#" class = "update" data-toggle = "tooltip" data-placement = "top"
-							   title = "Edit this item">
-								<button>update</button>
-							</a>
+									@foreach($batch_routes as $batch_route)
+										<tr data-id = "{{$batch_route->id}}">
+											<td style = "vertical-align: top;margin-right:20px;padding-bottom:7px"><a
+														href = "#"
+														class = "delete"
+														data-toggle = "tooltip"
+														data-placement = "top"
+														title = "Delete this item">
+													<i class = "fa fa-times text-danger"></i> </a></td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_code', $batch_route->batch_code, ['style'=>'width:100px;margin-right:10px;margin-left:5px','readonly'=>'readonly']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_route_name', $batch_route->batch_route_name, ['style'=>'width:250px;margin-right:10px']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_max_units', $batch_route->batch_max_units, ['style'=>'width:70px;margin-right:25px']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_stations', implode(",\n", array_map(function($station) { return $station['station_name']; }, $batch_route->stations_list->toArray())), ['style'=>'width:120px;height:80px;margin-right:10px;overflow-y: scroll;']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::select('s_export_template', $templates, $batch_route->export_template, ['style'=>'width:70px;margin-right:25px']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_options', $batch_route->batch_options, ['style'=>'width:120px;height:80px;margin-left:25px;margin-right:70px']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">
+												<a href = "#" class = "update" data-toggle = "tooltip"
+												   data-placement = "top"
+												   title = "Edit this item">
+													<button>update</button>
+												</a>
 
-						</td>
-					</tr>
-				@endforeach
-			</table>
+											</td>
+										</tr>
+									@endforeach
+								</table>
 
-			<div class = "col-xs-12 text-center">
-				{!! $batch_routes->render() !!}
-			</div>
-			{!! Form::open(['url' => url('/batch_routes/id'), 'method' => 'delete', 'id' => 'delete-batch-route']) !!}
-			{!! Form::close() !!}
+								<div class = "col-xs-12 text-center">
+									{!! $batch_routes->render() !!}
+								</div>
+								{!! Form::open(['url' => url('/batch_routes/id'), 'method' => 'delete', 'id' => 'delete-batch-route']) !!}
+								{!! Form::close() !!}
 
-			{!! Form::open(['url' => url('/batch_routes/id'), 'method' => 'put', 'id' => 'update-batch-routes']) !!}
-			{!! Form::hidden('batch_code', null, ['id' => 'update_batch_code']) !!}
-			{!! Form::hidden('batch_route_name', null, ['id' => 'update_batch_route_name']) !!}
-			{!! Form::hidden('batch_max_units', null, ['id' => 'update_batch_max_units']) !!}
-			{!! Form::hidden('batch_export_template', null, ['id' => 'update_batch_export_template']) !!}
-			{!! Form::hidden('batch_stations', null, ['id' => 'update_batch_stations']) !!}
-			{!! Form::hidden('batch_options', null, ['id' => 'update_batch_options']) !!}
-			{!! Form::close() !!}
+								{!! Form::open(['url' => url('/batch_routes/id'), 'method' => 'put', 'id' => 'update-batch-routes']) !!}
+								{!! Form::hidden('batch_code', null, ['id' => 'update_batch_code']) !!}
+								{!! Form::hidden('batch_route_name', null, ['id' => 'update_batch_route_name']) !!}
+								{!! Form::hidden('batch_max_units', null, ['id' => 'update_batch_max_units']) !!}
+								{!! Form::hidden('batch_export_template', null, ['id' => 'update_batch_export_template']) !!}
+								{!! Form::hidden('batch_stations', null, ['id' => 'update_batch_stations']) !!}
+								{!! Form::hidden('batch_options', null, ['id' => 'update_batch_options']) !!}
+								{!! Form::close() !!}
 
-		@else
-			<div class = "col-xs-12">
-				<div class = "alert alert-warning text-center">
-					<h3>No batch route found.</h3>
+							@else
+								<div class = "col-xs-12">
+									<div class = "alert alert-warning text-center">
+										<h3>No batch route found.</h3>
+									</div>
+								</div>
+							@endif
+						</div>
+					</div>
 				</div>
 			</div>
-		@endif
-
+		</div>
 		<hr style = "width: 100%; color: black; background-color:black;margin-top: 10px" size = "2" />
-
 		<div class = "col-xs-12 ">
 			{!! Form::open(['url' => url('/batch_routes'), 'method' => 'post', 'id' => 'create-batch-route']) !!}
 			<table>
@@ -115,28 +152,26 @@
 		<hr style = "width: 100%; color: black; background-color:black;margin-top: 10px" size = "1" />
 	</div>
 
-	<script type = "text/javascript" src = "{{ url('assets/js/jquery-1.7.2.min.js') }}"></script>
-	<script type = "text/javascript" src = "{{ url('assets/js/jquery-ui.js') }}"></script>
-	<script type = "text/javascript" src = "{{ url('assets/js/ui.multiselect.js') }}"></script>
-	<script type = "text/javascript">
-
-		$(function ()
-		{
-			$(".multiselect").multiselect();
-		});
-
-	</script>
-
-
 	{{--<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>--}}
 	{{--<script type = "text/javascript"
 			src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/js/bootstrap-select.min.js"></script>--}}
+	<script type = "text/javascript" src = "{{ url('assets/js/jquery-1.7.2.min.js') }}"></script>
+	<script type = "text/javascript" src = "{{ url('assets/js/jquery-ui.js') }}"></script>
+	<script type = "text/javascript" src = "{{ url('assets/js/ui.multiselect.js') }}"></script>
+	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script type="text/javascript">
+		var newer = jQuery.noConflict();
+	</script>
+	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script type = "text/javascript">
-
 		$(function ()
 		{
 			$(".multiselect").multiselect();
 		});
+		/*$(function ()
+		{
+			$(".multiselect").multiselect();
+		});*/
 		var message = {
 			delete: 'Are you sure you want to delete?',
 		};
