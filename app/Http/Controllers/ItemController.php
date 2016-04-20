@@ -598,11 +598,6 @@ class ItemController extends Controller
 					}
 				}
 				$row[] = $result;
-				/*if ( $found ) {
-	
-				} else {
-				$row[] = '';
-				}*/
 			}
 	
 			$csv->insertOne($row);
