@@ -295,6 +295,7 @@ class LogisticsController extends Controller
 
 		$parameters = Parameter::whereIn('id', $parameter_ids)
 							   ->get();
+
 		#$options = $options->toArray();
 
 		return view('logistics.edit_sku_converter', compact('options', 'parameters'));
