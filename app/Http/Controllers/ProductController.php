@@ -355,7 +355,16 @@ class ProductController extends Controller
 		$product = Product::with('batch_route', 'specifications', 'images')
 						  ->where('is_deleted', 0)
 						  ->find($id);
-		#return $product;
+		$category_hierarchy = new Collection();
+		Helper::getCategoryHierarchy($product->product_master_category, $category_hierarchy);
+
+		$textual_hierarchy_array = array_map(function ($category) {
+			return $category['master_category_description'];
+		}, $category_hierarchy->reverse()
+							  ->toArray());
+
+		$textual_hierarchy = implode(" > ", $textual_hierarchy_array);
+
 		if ( !$product ) {
 			return view('errors.404');
 		}
@@ -406,6 +415,7 @@ class ProductController extends Controller
 
 		return view('products.edit', compact('product', 'title', 'stores', 'product_occasions', 'product_collections', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
 			->with('categories', $master_categories)
+			->with('textual_hierarchy', $textual_hierarchy)
 			->with('id', 0)
 			->with('sales_categories', $sales_categories)
 			->with('vendors', $vendors)
