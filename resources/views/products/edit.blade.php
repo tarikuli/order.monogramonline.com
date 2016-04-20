@@ -271,8 +271,9 @@
 					</div>
 				</div>
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-categories">
+					<p class="text-left" style="margin-left: 15px;">Product category: <b>{{ $textual_hierarchy }}</b> </p>
 					<div class = "form-group">
-						{!!Form::label('product_master_category','Product category: ',['class'=>'control-label col-xs-2'])!!}
+						{!!Form::label('product_master_category','Assign new category: ',['class'=>'control-label col-xs-2'])!!}
 						{!! Form::hidden('product_master_category', $product->product_master_category, ['id' => 'product_master_category']) !!}
 						<div class = "col-sm-8" style = "overflow: auto;">
 							<div class = "row row-horizon">

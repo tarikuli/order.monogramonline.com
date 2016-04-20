@@ -3,6 +3,7 @@
 use App\BatchRoute;
 use App\Customer;
 use App\Item;
+use App\MasterCategory;
 use App\Parameter;
 use App\Product;
 use App\Rule;
@@ -189,7 +190,7 @@ class Helper
 	public static function scrollableCheckbox ($name, $options, $value = null)
 	{
 		$container = <<<Container
-<div style="height: 6em; width: 12em; overflow: auto;">
+<div style="height: 12em; width: 20em; overflow: auto;">
 				<div class="checkbox">
 Container;
 
@@ -262,6 +263,17 @@ APPEND;
 	public static function getBatchStatus ($index = null)
 	{
 		return $index && array_key_exists($index, static::$batchStatuses) ? static::$batchStatuses[$index] : 'not started';
+	}
+
+	public static function getCategoryHierarchy ($category_id, &$holder)
+	{
+		$category = MasterCategory::find($category_id);
+		if ( $category ) {
+			$holder->push($category);
+			if ( $category->parent != 0 ) {
+				self::getCategoryHierarchy($category->parent, $holder);
+			}
+		}
 	}
 
 	public static function jsonTransformer ($json, $separator = "\n")
