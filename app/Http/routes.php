@@ -150,5 +150,5 @@ Route::group([ 'prefix' => 'auth' ], function () {
 });
 
 Event::listen('illuminate.query', function ($q) {
-	#Log::info($q);
+	Log::info($q);
 });

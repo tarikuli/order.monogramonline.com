@@ -63,6 +63,7 @@
 						<th>Min-Order date</th>
 						{{--<th>Action</th>--}}
 						<th>Route</th>
+						{{--<th>Items to shift</th>--}}
 						<th>Assign station</th>
 					</tr>
 					{{--{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}--}}
@@ -75,8 +76,16 @@
 							<td>{{ $row['min_order_date'] }}</td>
 							{{--<td><a href = "{{ $row['action'] }}">Details</a></td>--}}
 							<td>{{ $row['route'] }}</td>
+							{{--<td>
+								<div class = "form-group">
+									{!! Form::number('item_to_shift', $row['item_count'], ['class' => 'form-control']) !!}
+								</div>
+							</td>--}}
 							<td>
 								{!! Form::open(['url' => url(sprintf("change_station_by_sku/%s", $row['sku']))]) !!}
+								<div class = "form-group">
+									{!! Form::number('item_to_shift', $row['item_count'], ['class' => 'form-control']) !!}
+								</div>
 								<div class = "form-group">
 									{!! Form::select('batch_stations', $row['batch_stations'], null, ['id'=>'batch_stations', 'class' => 'form-control']) !!}
 								</div>
@@ -147,6 +156,13 @@
 			var selected = parseInt($(this).val());
 			if ( selected !== 0 ) {
 				$(this).closest('form').submit();
+			}
+		});
+
+		$("input[name='item_to_shift']").on('keypress', function (event)
+		{
+			if ( event.keyCode == 13 ) {
+				return false;
 			}
 		});
 	</script>

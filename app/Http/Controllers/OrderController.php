@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\MessageBag;
 use Monogram\ApiClient;
+use Monogram\Helper;
 
 class OrderController extends Controller
 {
@@ -776,6 +777,7 @@ class OrderController extends Controller
 			#$product->product_model = $item->item_code;
 			#$product->id_catalog = $item->item_id;
 			$product->product_url = $item->item_url;
+			$product->batch_route_id = Helper::getDefaultRouteId();
 			$product->product_name = $item->item_description;
 			$product->product_price = $item->item_unit_price;
 			$product->is_taxable = ( $item->item_taxable == 'Yes' ? 1 : 0 );

@@ -8,6 +8,14 @@
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<style>
+		tbody#product-specification-table-body tr td input{
+			width: 100px;
+		}
+		tbody#product-specification-table-body tr td .wide-input {
+			width: 210px;
+		}
+	</style>
 </head>
 <body>
 	@include('includes.header_menu')
@@ -163,12 +171,12 @@
 								</td>
 								<td>
 									<div class = "form-group">
-										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										{!! Form::select('spec_table_data[]', $vendors, 0, ['class' => 'form-control wide-input']) !!}
 									</div>
 								</td>
 								<td>
 									<div class = "form-group">
-										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control']) !!}
+										{!! Form::text('spec_table_data[]', null, ['class' => 'form-control wide-input']) !!}
 									</div>
 								</td>
 								<td>
@@ -247,6 +255,12 @@
 							{!! Form::text('art_work_location', null,['id' => 'art-work-location', 'class' => 'form-control']) !!}
 						</div>
 					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_details_file', 'Product details file', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::file('product_details_file[]', ['id' => 'product_details_file', 'accept' => 'image/*',  'class' => "form-control",]) !!}
+						</div>
+					</div>
 					<div class = "col-md-12">
 						<div class = "col-md-6">
 							<table class = "table">
@@ -304,7 +318,7 @@
 									<td>Font</td>
 									<td>
 										<div class = "form-group">
-											{!! Form::text('font', null, ['class' => 'form-control']) !!}
+											{!! Form::textarea('font', null, ['class' => 'form-control', 'rows' => 6]) !!}
 										</div>
 									</td>
 								</tr>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Product;
 use App\ProductionCategory;
 use App\SpecificationSheet;
+use App\Vendor;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -60,7 +61,12 @@ class ProductSpecificationController extends Controller
 												   ->lists('description_with_code', 'id')
 												   ->prepend('Select a production category', '0');
 
+		$vendors = Vendor::where('is_deleted', 0)
+						 ->lists('vendor_name', 'vendor_name')
+						 ->prepend('Select a vendor', 0);
+
 		return view('product_specifications.edit')
+			->with('vendors', $vendors)
 			->with('spec', $spec)
 			->with('production_categories', $production_categories);
 	}
@@ -117,7 +123,12 @@ class ProductSpecificationController extends Controller
 														   ->lists('description_with_code', 'id')
 														   ->prepend('Select a production category', '0');
 
+				$vendors = Vendor::where('is_deleted', 0)
+								 ->lists('vendor_name', 'vendor_name')
+								 ->prepend('Select a vendor', 0);
+
 				return view('product_specifications.spec_sheet_step_2')
+					->with('vendors', $vendors)
 					->with('sku', $request->get('sku'))
 					->with('production_categories', $production_categories)
 					->with('selected_production_category', $request->get('production_category'));
@@ -168,6 +179,7 @@ class ProductSpecificationController extends Controller
 	private function insertOrUpdateSpec (Request $request, $specSheet = null)
 	{
 		$product_name = trim($request->get('product_name'));
+
 		if ( empty( $product_name ) ) {
 			return false;
 		}
@@ -269,6 +281,11 @@ class ProductSpecificationController extends Controller
 		if ( $request->hasFile('product_images') ) {
 			$paths = $this->image_manipulator($request->file('product_images'), $request->get('product_sku'));
 			$specSheet->images = json_encode($paths);
+		}
+
+		if ( $request->hasFile('product_details_file') ) {
+			$paths = $this->image_manipulator($request->file('product_details_file'), $request->get('product_sku'));
+			$specSheet->product_details_file = json_encode($paths);
 		}
 		$specSheet->save();
 
