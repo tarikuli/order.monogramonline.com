@@ -334,13 +334,6 @@
 							{!! Form::text('art_work_location', $spec->art_work_location,['id' => 'art-work-location', 'class' => 'form-control']) !!}
 						</div>
 					</div>
-					@if(json_decode($spec->product_details_file))
-						<div class = "col-md-12">
-							@foreach(json_decode($spec->product_details_file) as $image)
-								<img src = "{{$image}}" width = "500" height = "500">
-							@endforeach
-						</div>
-					@endif
 					<div class = "form-group col-md-12">
 						{!! Form::label('product_details_file', 'Product details file', ['class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
@@ -348,6 +341,13 @@
 						</div>
 					</div>
 					<div class = "col-md-12">
+						@if(json_decode($spec->product_details_file))
+							<div class = "col-md-6 pull-right" style="margin-left: 15px;">
+								@foreach(json_decode($spec->product_details_file) as $image)
+									<img src = "{{$image}}" width = "500" height = "500">
+								@endforeach
+							</div>
+						@endif
 						<div class = "col-md-6">
 							<table class = "table">
 								<caption class = "text-center">Production Settings</caption>
@@ -387,7 +387,6 @@
 								</tbody>
 							</table>
 						</div>
-
 						<div class = "col-md-6">
 							<table class = "table">
 								<caption class = "text-center">Personalization Details</caption>
