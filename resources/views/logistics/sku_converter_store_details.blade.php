@@ -50,22 +50,24 @@
 					@endforeach
 					{{--<th>Edit</th>--}}
 				</tr>
-				@foreach($options->chunk(count($parameters->lists('parameter_value'))) as $option_array)
-					<tr>
-						<td>
-							@setvar($value = $option_array->first())
-							{!! Form::open(['url' => url('/logistics/delete_sku/'.$value->unique_row_value), 'method' => 'delete']) !!}
-							{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
-							{!! Form::close() !!}
-						</td>
-						@foreach($option_array as $option)
-							<td>{{$option->parameter_option}}</td>
-						@endforeach
-						{{--<td>
-							<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s", $value->store_id, $value->unique_row_value))}}">Edit</a>
-						</td>--}}
-					</tr>
-				@endforeach
+				@if($parameters->lists('parameter_value'))
+					@foreach($options->chunk(count($parameters->lists('parameter_value'))) as $option_array)
+						<tr>
+							<td>
+								@setvar($value = $option_array->first())
+								{!! Form::open(['url' => url('/logistics/delete_sku/'.$value->unique_row_value), 'method' => 'delete']) !!}
+								{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
+								{!! Form::close() !!}
+							</td>
+							@foreach($option_array as $option)
+								<td>{{$option->parameter_option}}</td>
+							@endforeach
+							{{--<td>
+								<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s", $value->store_id, $value->unique_row_value))}}">Edit</a>
+							</td>--}}
+						</tr>
+					@endforeach
+				@endif
 			</table>
 			<div class = "col-xs-12 text-center">
 				{!! $options->appends($request->all())->render() !!}
