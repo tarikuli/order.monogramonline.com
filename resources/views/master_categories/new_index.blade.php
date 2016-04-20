@@ -249,7 +249,7 @@
 			delete_tabular_data();
 			if ( !selected_parent_category ) {
 				disable_form();
-				var parent_id = $(this).closest('div.col-sm-3').attr('data-parent');
+				var parent_id = $(this).closest('div.col-sm-4').attr('data-parent');
 				set_parent_category(parent_id);
 				return false;
 			}
@@ -270,7 +270,7 @@
 
 		function delete_next (node)
 		{
-			$(node).closest('div.col-sm-3').nextAll().each(function ()
+			$(node).closest('div.col-sm-4').nextAll().each(function ()
 			{
 				$(this).remove();
 			});
@@ -283,7 +283,7 @@
 
 		function set_select_form_data (node, data)
 		{
-			$(node).closest('div.col-sm-3').after(data);
+			$(node).closest('div.col-sm-4').after(data);
 		}
 
 		function set_tabular_data (data)

@@ -12,7 +12,7 @@
 	      href = "/assets/css/bootstrap-horizon.css" />
 	<style>
 		.parent-selector {
-			width: 135px;
+			width: 200px;
 			overflow: auto;
 		}
 	</style>
@@ -272,7 +272,7 @@
 			delete_next(node);
 
 			if ( !selected_parent_category ) {
-				var parent_id = $(this).closest('div.col-sm-3').attr('data-parent');
+				var parent_id = $(this).closest('div.col-sm-4').attr('data-parent');
 				set_parent_category(parent_id);
 				return false;
 			}
@@ -283,7 +283,7 @@
 
 		function delete_next (node)
 		{
-			$(node).closest('div.col-sm-3').nextAll().each(function ()
+			$(node).closest('div.col-sm-4').nextAll().each(function ()
 			{
 				$(this).remove();
 			});
@@ -296,7 +296,7 @@
 
 		function set_select_form_data (node, data)
 		{
-			$(node).closest('div.col-sm-3').after(data);
+			$(node).closest('div.col-sm-4').after(data);
 		}
 
 		function ajax_performer (category_id, node)

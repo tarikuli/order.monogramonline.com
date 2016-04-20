@@ -65,7 +65,10 @@ class ItemController extends Controller
 							 ->join('products', 'items.item_code', '=', 'products.product_model')
 							 ->where('items.batch_number', '=', 0)
 							 ->where('items.is_deleted', '=', 0)
-							 ->where('products.batch_route_id', '!=', Helper::getDefaultRouteId())
+							 ->where(function ($q) {
+								 return $q->where('products.batch_route_id', '!=', Helper::getDefaultRouteId())
+										  ->orWhereNull('products.batch_route_id');
+							 })
 							 ->get();
 
 		$unassigned = count($unassignedItems) > 0 ? $unassignedItems[0]->aggregate : 0;
@@ -114,7 +117,8 @@ class ItemController extends Controller
 								  ->where('batch_routes.is_deleted', 0)
 								  ->get();
 
-		#return $batch_routes;
+		return $batch_routes;
+
 		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));
 	}
 
@@ -726,7 +730,7 @@ class ItemController extends Controller
 
 	public function changeStationBySKU (Request $request, $sku)
 	{
-		#return $request->all();
+		$items_to_shift = intval($request->get('item_to_shift'));
 		#$station_id = $request->get('station');
 		$station_id = $request->get('batch_stations');
 		$station = Station::find($station_id);
@@ -759,6 +763,7 @@ class ItemController extends Controller
 			->whereNotNull('station_name')
 			->Where('station_name', '!=', '')
 			->where('item_code', $sku)
+			->limit($items_to_shift)
 			->update([
 				'station_name' => $station_name,
 			]);

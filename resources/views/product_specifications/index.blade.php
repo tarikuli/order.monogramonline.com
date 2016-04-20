@@ -12,7 +12,7 @@
 	      href = "/assets/css/bootstrap-horizon.css" />
 	<style>
 		.parent-selector {
-			width: 135px;
+			width: 200px;
 			overflow: auto;
 		}
 	</style>
