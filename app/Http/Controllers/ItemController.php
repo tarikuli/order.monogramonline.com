@@ -527,50 +527,50 @@ class ItemController extends Controller
 			return view('errors.404');
 		}
 		$batch_id = intval($id);
-	
+
 		// Get list of Items from Item Table by Batch Number
 		$items = Item::where('batch_number', $batch_id)
-		->get();
-	
+					 ->get();
+
 		// If items not found belong to this Batch numbe then return to error page.
 		if ( !$items ) {
 			return view('errors.404');
 		}
-	
+
 		// Get Batch Route Id from first Item, because all Items route id are same.
 		$route_id = $items[0]->batch_route_id;
-	
+
 		// Get batch_route_id from templates table
 		$route = BatchRoute::find($route_id);
-	
-		// 		echo "<pre>"; print_r($route); echo "</pre>";
-	
-	
+
+		//echo "<pre>"; print_r($route); echo "</pre>";
+
+
 		$template_id = $route->export_template;
 		// Get templates information by template Id from templates table.
 		$template = Template::with('exportable_options')
-		->find($template_id);
-	
+							->find($template_id);
+
 		// Get all list of options name from template_options by options name.
 		$columns = $template->exportable_options->lists('option_name')
-		->toArray(); #->prepend('Order id');
-	
+												->toArray(); #->prepend('Order id');
+
 		$file_path = sprintf("%s/assets/exports/batches/", public_path());
 		$file_name = sprintf("%s.csv", $batch_id);
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
 		$csv->insertOne($columns);
-	
+
 		foreach ( $items as $item ) {
 			$row = [ ];
 			#$row[] = explode("-", $item->order_id)[2];
 			$options = $item->item_option;
 			$decoded_options = json_decode($options, true);
-	
+
 			foreach ( $template->exportable_options as $column ) {
 
 				$result = '';
-	
+
 				if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
 					#$result = array_slice(explode("-", $item->order_id), -1, 1);
 					$exp = explode("-", $item->order_id); // explode the short order
@@ -599,10 +599,10 @@ class ItemController extends Controller
 				}
 				$row[] = $result;
 			}
-	
+
 			$csv->insertOne($row);
 		}
-	
+
 		return response()->download($fully_specified_path);
 	}
 

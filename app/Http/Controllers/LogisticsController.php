@@ -61,8 +61,7 @@ class LogisticsController extends Controller
 
 	public function sku_converter_update (Request $request, $store_id)
 	{
-		Parameter::where('store_id', $store_id)
-				 ->delete();
+		#Parameter::where('store_id', $store_id)->delete();
 		if ( $request->has('parameters') ) {
 			/*foreach ( $request->get('parameters') as $parameter_value ) {
 				$parameter = new Parameter();
@@ -78,12 +77,41 @@ class LogisticsController extends Controller
 
 	private function insert_parameters_into_table ($parameters, $store_id)
 	{
+		$before_operation = [ ];
+		$after_operation = [ ];
+
+		// get the row ids before the update/insert
+		$before_operation = Parameter::where('store_id', $store_id)
+									 ->lists('id')
+									 ->toArray();
+
 		foreach ( $parameters as $parameter_value ) {
-			$parameter = new Parameter();
-			$parameter->store_id = $store_id;
-			$parameter->parameter_value = trim($parameter_value);
-			$parameter->save();
+			$trimmed_parameter_value = trim($parameter_value);
+			if ( empty( $trimmed_parameter_value ) ) {
+				continue;
+			}
+
+			$parameter = Parameter::where('parameter_value', $trimmed_parameter_value)
+								  ->where('store_id', $store_id)
+								  ->first();
+			if ( !$parameter ) {
+				$parameter = new Parameter();
+				$parameter->store_id = $store_id;
+				$parameter->parameter_value = trim($parameter_value);
+				$parameter->save();
+			}
+			// gather the parameter ids while insert/update
+			$after_operation[] = $parameter->id;
 		}
+
+		#delete the other ids
+		$difference = array_diff($before_operation, $after_operation);
+		if ( count($difference) ) {
+			// if the difference is greater than 0
+			// delete those ids
+			Parameter::destroy(array_diff($before_operation, $after_operation));
+		}
+
 	}
 
 	public function get_sku_import ()
