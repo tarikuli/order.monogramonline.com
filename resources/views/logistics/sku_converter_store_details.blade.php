@@ -38,7 +38,7 @@
 			<li class = "active">SKU Converter details</li>
 		</ol>
 		@include('includes.error_div')
-		@if($parameters)
+		@if($parameters && (count($parameters->lists('parameter_value')) > 0))
 			<h3 class = "page-header">
 				Parameters
 			</h3>
@@ -50,7 +50,7 @@
 					@endforeach
 					{{--<th>Edit</th>--}}
 				</tr>
-				@if($parameters->lists('parameter_value'))
+
 					@foreach($options->chunk(count($parameters->lists('parameter_value'))) as $option_array)
 						<tr>
 							<td>
@@ -67,7 +67,6 @@
 							</td>--}}
 						</tr>
 					@endforeach
-				@endif
 			</table>
 			<div class = "col-xs-12 text-center">
 				{!! $options->appends($request->all())->render() !!}
