@@ -115,6 +115,7 @@
 							{!! Form::button('Select / Deselect all', ['id' => 'select_deselect', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Packing Slip', ['id' => 'packing_slip', 'class' => 'btn btn-link']) !!}
+							{!! Form::button('Release Batch', ['id' => 'release_batch', 'class' => 'btn btn-link']) !!}
 						</td>
 					</tr>
 					{!! Form::close() !!}
@@ -142,6 +143,12 @@
 		$("button#packing_slip").on('click', function (event)
 		{
 			var url = "{{ url('/prints/batch_packing') }}";
+			setFormUrlAndSubmit(url);
+		});
+
+		$("button#release_batch").on('click', function(event){
+			event.preventDefault();
+			var url = "{{ url('/items/release_batch') }}";
 			setFormUrlAndSubmit(url);
 		});
 

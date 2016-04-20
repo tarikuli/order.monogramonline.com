@@ -870,4 +870,31 @@ class ItemController extends Controller
 				return redirect()->to('/');
 		}
 	}
+
+	public function releaseBatches (Request $request)
+	{
+		$batch_numbers = $request->get('batch_number');
+
+		$changes = [
+			'batch_number'        => 0,
+			'batch_route_id'      => null,
+			'station_name'        => null,
+			'item_order_status'   => null,
+			'batch_creation_date' => null,
+			'tracking_number'     => null,
+			'item_order_status_2' => null,
+			'previous_station'    => null,
+			'item_status'         => null,
+			'rejection_message'   => null,
+			'rejection_reason'    => null,
+		];
+
+		Item::whereIn('batch_number', $batch_numbers)
+			->update($changes);
+		$message = sprintf("%s batches are released.", implode(", ", $batch_numbers));
+
+		return redirect()
+			->back()
+			->with('success', $message);
+	}
 }
