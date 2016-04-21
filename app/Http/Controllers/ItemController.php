@@ -112,12 +112,12 @@ class ItemController extends Controller
 							 'orders.order_id',
 							 'orders.order_date',
 						 ])
-						 ->paginate(10000);
+						 ->paginate(50000);
 			},
 		])
 								  ->where('batch_routes.is_deleted', 0)
 								  ->get();
-		
+
 		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));
 	}
 
@@ -553,8 +553,17 @@ class ItemController extends Controller
 
 		// Get all list of options name from template_options by options name.
 		$columns = $template->exportable_options->lists('option_name')
-												->add('graphic_sku')// added, as per requirement
 												->toArray();
+
+		// add graphic sku column immediately after the sku
+		// if there is no sku in template, then that'll be inserted at the end of the array
+		$key = array_search("sku", array_map("strtolower", $columns));
+		if ( $key !== false ) {
+			$place = $key + 1;
+			array_splice($columns, $place, 0, [ 'graphic_sku' ]);
+		} else {
+			$columns = array_merge($columns, [ 'graphic_sku' ]);
+		}
 
 		$file_path = sprintf("%s/assets/exports/batches/", public_path());
 		$file_name = sprintf("%s.csv", $batch_id);
@@ -567,7 +576,8 @@ class ItemController extends Controller
 			#$row[] = explode("-", $item->order_id)[2];
 			$options = $item->item_option;
 			$decoded_options = json_decode($options, true);
-
+			// is sku found flag to check if the sku column exists
+			$isSkuFieldFound = false;
 			foreach ( $template->exportable_options as $column ) {
 				$result = '';
 				if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
@@ -576,7 +586,16 @@ class ItemController extends Controller
 					$result = $exp[count($exp) - 1];
 					#$result = $item->order_id;
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "sku" ) { // if the template value is sku
+					$isSkuFieldFound = true;
 					$result = $item->item_code;
+					// as the sku exists, the next column is the graphic sku
+					// insert result to the row
+					$row[] = $result;
+
+					// get the graphic sku, and the result will be saving the graphic sku value
+					$result = $this->getGraphicSKU($item);
+					// this result will be inserted to the row array below
+
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "po#" ) { // if string is po/batch number
 					$result = $item->batch_number;
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "orderdate" ) {//if the string is order date
@@ -599,7 +618,9 @@ class ItemController extends Controller
 				$row[] = $result;
 			}
 			// insert graphic sku to the row
-			$row[] = $this->getGraphicSKU($item);
+			if ( !$isSkuFieldFound ) {
+				$row[] = $this->getGraphicSKU($item);
+			}
 
 			$csv->insertOne($row);
 		}

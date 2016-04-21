@@ -58,7 +58,7 @@
 					@if(json_decode($spec->images))
 						<div class = "col-md-12">
 							@foreach(json_decode($spec->images) as $image)
-								<img src = "{{$image}}" width = "500" height = "500">
+								<img src = "{{$image}}" width = "200" height = "200">
 							@endforeach
 						</div>
 					@endif
@@ -316,35 +316,37 @@
 					</div>
 				</div>
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-instruction">
-					<div class = "form-group col-md-12">
-						{!! Form::label('production_category', 'Production category', ['class' => 'col-md-2 control-label']) !!}
-						<div class = "col-md-4">
-							{!! Form::select('production_category', $production_categories, $spec->production_category_id, ['id' => 'production_category', 'class' => "form-control"]) !!}
+					<div class="col-md-12">
+						<div class = "form-group col-md-12">
+							{!! Form::label('production_category', 'Production category', ['class' => 'col-md-2 control-label']) !!}
+							<div class = "col-md-4">
+								{!! Form::select('production_category', $production_categories, $spec->production_category_id, ['id' => 'production_category', 'class' => "form-control"]) !!}
+							</div>
 						</div>
-					</div>
-					<div class = "form-group col-md-12">
-						{!! Form::label('production_image_location', 'Production image location', ['class' => 'col-md-2 control-label']) !!}
-						<div class = "col-md-4">
-							{!! Form::text('production_image_location', $spec->production_image_location,['id' => 'production_image_location', 'class' => 'form-control']) !!}
+						<div class = "form-group col-md-12">
+							{!! Form::label('production_image_location', 'Production image location', ['class' => 'col-md-2 control-label']) !!}
+							<div class = "col-md-4">
+								{!! Form::text('production_image_location', $spec->production_image_location,['id' => 'production_image_location', 'class' => 'form-control']) !!}
+							</div>
 						</div>
-					</div>
-					<div class = "form-group col-md-12">
-						{!! Form::label('art_work_location', 'Art work image location', ['class' => 'col-md-2 control-label']) !!}
-						<div class = "col-md-4">
-							{!! Form::text('art_work_location', $spec->art_work_location,['id' => 'art-work-location', 'class' => 'form-control']) !!}
+						<div class = "form-group col-md-12">
+							{!! Form::label('art_work_location', 'Art work image location', ['class' => 'col-md-2 control-label']) !!}
+							<div class = "col-md-4">
+								{!! Form::text('art_work_location', $spec->art_work_location,['id' => 'art-work-location', 'class' => 'form-control']) !!}
+							</div>
 						</div>
-					</div>
-					<div class = "form-group col-md-12">
-						{!! Form::label('product_details_file', 'Product details file', ['class' => 'col-md-2 control-label']) !!}
-						<div class = "col-md-4">
-							{!! Form::file('product_details_file[]', ['id' => 'product_details_file', 'accept' => 'image/*',  'class' => "form-control",]) !!}
+						<div class = "form-group col-md-12">
+							{!! Form::label('product_details_file', 'Product image', ['class' => 'col-md-2 control-label']) !!}
+							<div class = "col-md-4">
+								{!! Form::file('product_details_file[]', ['id' => 'product_details_file', 'accept' => 'image/*',  'class' => "form-control",]) !!}
+							</div>
 						</div>
 					</div>
 					<div class = "col-md-12">
 						@if(json_decode($spec->product_details_file))
 							<div class = "col-md-6 pull-right" style="margin-left: 15px;">
 								@foreach(json_decode($spec->product_details_file) as $image)
-									<img src = "{{$image}}" width = "500" height = "500">
+									<img src = "{{$image}}" width = "200" height = "200">
 								@endforeach
 							</div>
 						@endif

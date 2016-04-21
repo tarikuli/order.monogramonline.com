@@ -91,7 +91,7 @@ class LogisticsController extends Controller
 				continue;
 			}
 
-			$parameter = Parameter::where('parameter_value', $trimmed_parameter_value)
+			$parameter = Parameter::where(DB::raw('BINARY `parameter_value`'), $trimmed_parameter_value)// binary for case sensitivity
 								  ->where('store_id', $store_id)
 								  ->first();
 			if ( !$parameter ) {
