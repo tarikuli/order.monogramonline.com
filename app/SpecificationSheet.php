@@ -16,6 +16,7 @@ class SpecificationSheet extends Model
 		4 => 'Need web photo',
 		5 => 'Ready to publish',
 		6 => 'Published/Live',
+		7 => 'Add Product Info',
 	];
 
 	public static $searchable_fields = [
