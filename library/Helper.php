@@ -376,12 +376,12 @@ APPEND;
 	{
 		// double underscore is for protection
 		// in case a single underscore found on string won't be replaced
-		return str_replace(" ", "__", $text);
+		return str_replace(" ", "_", $text);
 	}
 
 	public static function htmlFormNameToText ($text)
 	{
-		return str_replace("__", " ", $text);
+		return str_replace("_", " ", $text);
 	}
 
 	public static function routeThroughStations ($route_id, $station_name = null)

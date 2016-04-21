@@ -3,6 +3,7 @@
 use App\BatchRoute;
 use App\Department;
 use App\Item;
+use App\Option;
 use App\Parameter;
 use App\Product;
 use App\RejectionReason;
@@ -528,8 +529,7 @@ class ItemController extends Controller
 		$batch_id = intval($id);
 
 		// Get list of Items from Item Table by Batch Number
-		$items = Item::with('parameter_options')
-					 ->where('batch_number', $batch_id)
+		$items = Item::where('batch_number', $batch_id)
 					 ->get();
 
 		// If items not found belong to this Batch numbe then return to error page.
@@ -645,9 +645,12 @@ class ItemController extends Controller
 								   ->lists('parameter_value')
 								   ->toArray();
 
-			// get the common in the keys
-			$options_in_common = array_intersect($item_option_keys, $parameters);
+			$parameter_to_html_form_name = array_map(function ($element) {
+				return Helper::textToHTMLFormName($element);
+			}, $parameters);
 
+			// get the common in the keys
+			$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
 			//generate the new sku
 			$child_sku_postfix = implode("-", array_map(function ($node) use ($item_options) {
 				// replace the spaces with empty string
@@ -659,8 +662,12 @@ class ItemController extends Controller
 			// make the new child sku
 			$child_sku = sprintf("%s-%s", $item->item_code, $child_sku_postfix);
 
+			$parameter_options = Option::where('store_id', $store_id)
+									   ->where('parameter_option', 'LIKE', sprintf("%%%s%%", $item->item_code))
+									   ->get();
+
 			// loop through the item parameter options
-			foreach ( $item->parameter_options as $option_row ) {
+			foreach ( $parameter_options as $option_row ) {
 				// decode the json value
 				$decoded_options = json_decode($option_row->parameter_option, true);
 				// if the code key exists
