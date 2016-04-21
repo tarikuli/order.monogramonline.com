@@ -9,9 +9,10 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<style>
-		tbody#product-specification-table-body tr td input{
+		tbody#product-specification-table-body tr td input {
 			width: 100px;
 		}
+
 		tbody#product-specification-table-body tr td .wide-input {
 			width: 210px;
 		}
@@ -316,40 +317,53 @@
 					</div>
 				</div>
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-instruction">
-					<div class="col-md-12">
-						<div class = "form-group col-md-12">
-							{!! Form::label('production_category', 'Production category', ['class' => 'col-md-2 control-label']) !!}
-							<div class = "col-md-4">
-								{!! Form::select('production_category', $production_categories, $spec->production_category_id, ['id' => 'production_category', 'class' => "form-control"]) !!}
+					<div class = "col-md-12">
+						<div class = "col-md-6">
+							<div class = "form-group col-md-12">
+								{!! Form::label('production_category', 'Production category', ['class' => 'col-md-5 control-label']) !!}
+								<div class = "col-md-7">
+									{!! Form::select('production_category', $production_categories, $spec->production_category_id, ['id' => 'production_category', 'class' => "form-control"]) !!}
+								</div>
+							</div>
+							<div class = "form-group col-md-12">
+								{!! Form::label('production_image_location', 'Production image location', ['class' => 'col-md-5 control-label']) !!}
+								<div class = "col-md-7">
+									{!! Form::text('production_image_location', $spec->production_image_location,['id' => 'production_image_location', 'class' => 'form-control']) !!}
+								</div>
+							</div>
+							<div class = "form-group col-md-12">
+								{!! Form::label('art_work_location', 'Art work image location', ['class' => 'col-md-5 control-label']) !!}
+								<div class = "col-md-7">
+									{!! Form::text('art_work_location', $spec->art_work_location,['id' => 'art-work-location', 'class' => 'form-control']) !!}
+								</div>
 							</div>
 						</div>
-						<div class = "form-group col-md-12">
-							{!! Form::label('production_image_location', 'Production image location', ['class' => 'col-md-2 control-label']) !!}
-							<div class = "col-md-4">
-								{!! Form::text('production_image_location', $spec->production_image_location,['id' => 'production_image_location', 'class' => 'form-control']) !!}
+						<div class = "col-md-6">
+							<div class = "form-group col-md-12">
+								{!! Form::label('product_details_file', 'Product image', ['class' => 'col-md-4 control-label']) !!}
+								<div class = "col-md-8">
+									{!! Form::file('product_details_file[]', ['id' => 'product_details_file', 'accept' => 'image/*',  'class' => "form-control",]) !!}
+								</div>
 							</div>
-						</div>
-						<div class = "form-group col-md-12">
-							{!! Form::label('art_work_location', 'Art work image location', ['class' => 'col-md-2 control-label']) !!}
-							<div class = "col-md-4">
-								{!! Form::text('art_work_location', $spec->art_work_location,['id' => 'art-work-location', 'class' => 'form-control']) !!}
-							</div>
-						</div>
-						<div class = "form-group col-md-12">
-							{!! Form::label('product_details_file', 'Product image', ['class' => 'col-md-2 control-label']) !!}
-							<div class = "col-md-4">
-								{!! Form::file('product_details_file[]', ['id' => 'product_details_file', 'accept' => 'image/*',  'class' => "form-control",]) !!}
-							</div>
+							@if(json_decode($spec->product_details_file))
+								<div class = "col-md-12" style = "margin-left: 15px;">
+									@foreach(json_decode($spec->product_details_file) as $image)
+										<img src = "{{$image}}" width = "200" height = "200">
+									@endforeach
+									<div class = "form-group col-md-12">
+										<div class = "checkbox">
+											<label>
+												<input type = "checkbox" id = 'delete_product_details_image'
+												       name = 'delete_product_details_image'
+												       value = 'yes'> Delete this product image
+											</label>
+										</div>
+									</div>
+								</div>
+							@endif
 						</div>
 					</div>
 					<div class = "col-md-12">
-						@if(json_decode($spec->product_details_file))
-							<div class = "col-md-6 pull-right" style="margin-left: 15px;">
-								@foreach(json_decode($spec->product_details_file) as $image)
-									<img src = "{{$image}}" width = "200" height = "200">
-								@endforeach
-							</div>
-						@endif
 						<div class = "col-md-6">
 							<table class = "table">
 								<caption class = "text-center">Production Settings</caption>

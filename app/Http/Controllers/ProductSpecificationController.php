@@ -283,7 +283,9 @@ class ProductSpecificationController extends Controller
 			$specSheet->images = json_encode($paths);
 		}
 
-		if ( $request->hasFile('product_details_file') ) {
+		if ( $request->has('delete_product_details_image') && strtolower($request->get('delete_product_details_image', 'no')) == 'yes' ) {
+			$specSheet->product_details_file = json_encode([ ]); // delete the image already in
+		} elseif ( $request->hasFile('product_details_file') ) {
 			$paths = $this->image_manipulator($request->file('product_details_file'), $request->get('product_sku'));
 			$specSheet->product_details_file = json_encode($paths);
 		}
