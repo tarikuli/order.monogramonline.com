@@ -60,7 +60,13 @@
 							{!! Form::close() !!}
 						</td>
 						@foreach($parameters as $parameter)
-							<td>{{ $decoded[$parameter->parameter_value] }}</td>
+							<td>
+								@if(in_array($parameter->parameter_value, array_keys($decoded)))
+									{{ $decoded[$parameter->parameter_value] }}
+								@else
+									-
+								@endif
+							</td>
 						@endforeach
 						<td>
 							<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s", $option->store_id, $option->unique_row_value))}}">Edit</a>
