@@ -681,7 +681,7 @@ class ItemController extends Controller
 		}
 		// if it's not returned from the above,
 		// return the default item code as graphic sku
-		return $graphic_sku;
+		return null;
 	}
 
 	public function release ($item_id)
