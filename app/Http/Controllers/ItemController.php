@@ -117,9 +117,7 @@ class ItemController extends Controller
 		])
 								  ->where('batch_routes.is_deleted', 0)
 								  ->get();
-
-		return $batch_routes;
-
+		
 		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));
 	}
 
