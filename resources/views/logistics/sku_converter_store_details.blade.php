@@ -64,7 +64,7 @@
 								@if(in_array($parameter->parameter_value, array_keys($decoded)))
 									{{ $decoded[$parameter->parameter_value] }}
 								@else
-									-
+									---
 								@endif
 							</td>
 						@endforeach
