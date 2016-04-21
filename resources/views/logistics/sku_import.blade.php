@@ -58,7 +58,8 @@
 			<div class = "form-group">
 				<div class = "col-sm-offset-2 col-sm-10">
 					<button type = "button" id = "validate" class = "btn btn-warning">Validate</button>
-					<button type = "button" id = "upload" class = "btn btn-primary">Upload</button>
+					<button type = "button" id = "upload-bulk" class = "btn btn-primary">Upload Bulk</button>
+					<button type = "button" id = "upload-new" class = "btn btn-default">Upload New</button>
 					<button type = "button" id = "export" class = "btn btn-success">Export</button>
 					<button type = "button" id = "show" class = "btn btn-info">Show</button>
 				</div>
@@ -97,7 +98,7 @@
 			$("div#show-info").empty();
 			$("div#show-info").html(parameters);
 		});
-		$("button#upload").on('click', function (event)
+		$("button#upload-bulk").on('click', function (event)
 		{
 			var store_id = $("select#store_id").val();
 			var file = $("input#file").val();
@@ -111,7 +112,26 @@
 				return;
 			}
 
-			$("input#action").val('upload');
+			$("input#action").val('upload-bulk');
+
+			$("form#sku-import-form").submit();
+		});
+
+		$("button#upload-new").on('click', function (event)
+		{
+			var store_id = $("select#store_id").val();
+			var file = $("input#file").val();
+			if ( store_id == 'all' ) {
+				alert('Please, select a store');
+				return;
+			}
+
+			if ( !file ) {
+				alert('Please, select a file');
+				return;
+			}
+
+			$("input#action").val('upload-new');
 
 			$("form#sku-import-form").submit();
 		});

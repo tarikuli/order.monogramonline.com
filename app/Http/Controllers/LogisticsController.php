@@ -157,21 +157,22 @@ class LogisticsController extends Controller
 			$columns = $parameters->lists('parameter_value')
 								  ->toArray();
 			$options = Option::where('store_id', $store_id)
-							 ->whereIn('parameter_id', $parameters->lists('id')
-																  ->toArray())
 							 ->get();
-
 			$file_path = sprintf("%s/assets/exports/skus/", public_path());
 			$file_name = sprintf("skus_exports-%s-%s.csv", date("y-m-d", strtotime('now')), str_random(5));
 			$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
 
 			$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'a+'), 'w');
 			$csv->insertOne($columns);
-			foreach ( $options->chunk(count($columns)) as $option ) {
-				$row = [ ];
-				foreach ( $option as $column_value ) {
+
+			foreach ( $options as $option ) {
+				//$row = [ ];
+				// option has parameter options in json format
+				// extract it and find the values
+				/*foreach ( json_decode($option->parameter_option, true) as $column_value ) {
 					$row[] = $column_value->parameter_option;
-				}
+				}*/
+				$row = json_decode($option->parameter_option, true);
 				$csv->insertOne($row);
 			}
 
@@ -228,20 +229,20 @@ class LogisticsController extends Controller
 			return redirect()->back();
 		}
 
-		if ( $request->get('action') == 'upload' ) {
-			$rows = $reader->setOffset(1)
-						   ->fetchAssoc(Helper::$column_names);
-			foreach ( $rows as $row ) {
-				$unique_row_value = sprintf("%s_%s", strtotime("now"), str_random(5));
-				foreach ( Helper::$column_names as $column_name ) {
-					$option = new Option();
-					$option->store_id = $store_id;
-					$option->unique_row_value = $unique_row_value;
-					$option->parameter_id = Helper::$columns[$column_name];
-					$option->parameter_option = $row[$column_name];
-					$option->save();
-				}
-			}
+		$message = '';
+		if ( $request->get('action') == 'upload-bulk' ) {
+			// if upload bulk,
+			// delete all the saved data
+			// and insert new
+			Option::where('store_id', $store_id)
+				  ->delete();
+			// save csv values to database
+			$this->save_parameters($reader, $store_id);
+			// set message
+			$message = 'Bulk upload is complete.';
+		} elseif ( $request->get('action') == 'upload-new' ) {
+			$this->save_parameters($reader, $store_id);
+			$message = 'Upload new is complete';
 		} else {
 			return redirect()
 				->back()
@@ -250,8 +251,29 @@ class LogisticsController extends Controller
 				]));
 		}
 
-		return redirect()->back();
+		return redirect()
+			->back()
+			->with('success', $message);
 
+	}
+
+	private function save_parameters ($reader, $store_id)
+	{
+		$rows = $reader->setOffset(1)
+					   ->fetchAssoc(Helper::$column_names);
+		set_time_limit(0);
+		foreach ( $rows as $row ) {
+			$unique_row_value = sprintf("%s_%s", strtotime("now"), str_random(5));
+			$option = new Option();
+			$option->store_id = $store_id;
+			$option->unique_row_value = $unique_row_value;
+			$parameter_options = [ ];
+			foreach ( Helper::$column_names as $column_name ) {
+				$parameter_options[$column_name] = $row[$column_name];
+			}
+			$option->parameter_option = json_encode($parameter_options);
+			$option->save();
+		}
 	}
 
 	public function get_sku_show (Request $request)
@@ -277,11 +299,13 @@ class LogisticsController extends Controller
 		// by parameter id relation
 		// and paginate as of the length of the parameter
 		// here in paginate, the multiple is the number of parameter column
-		$relation_array = $parameters->lists('id')
-									 ->toArray();
+		/*$relation_array = $parameters->lists('id')
+									 ->toArray();*/
 
-		$options = Option::whereIn('parameter_id', $relation_array)#->orderBy(DB::raw(sprintf('FIELD(parameter_id, %s)', implode(", ", $relation_array))))
-						 ->paginate(50 * count($parameters));
+		/*$options = Option::whereIn('parameter_id', $relation_array)#->orderBy(DB::raw(sprintf('FIELD(parameter_id, %s)', implode(", ", $relation_array))))
+						 ->paginate(50 * count($parameters));*/
+		$options = Option::where('store_id', $store_id)
+						 ->paginate(50);
 
 		#return $options;
 		return view('logistics.sku_converter_store_details', compact('parameters', 'options', 'request'));
@@ -309,29 +333,76 @@ class LogisticsController extends Controller
 		}
 
 		$options = Option::where($inputs)
-						 ->get();
+						 ->first();
 
-		if ( count($options) == 0 ) {
+		if ( !$options ) {
 			return redirect()
 				->back()
 				->withErrors([
 					'error' => 'Your input is wrong',
 				]);
 		}
-
-		$parameter_ids = $options->lists('parameter_id');
-
-		$parameters = Parameter::whereIn('id', $parameter_ids)
+		$decoded_options = json_decode($options->parameter_option, true);
+		$parameter_values = array_keys($decoded_options);
+		$parameters = Parameter::whereIn('parameter_value', $parameter_values)
+							   ->where('store_id', $request->get('store_id'))
 							   ->get();
 
 		#$options = $options->toArray();
+		#return $parameters;
 
 		return view('logistics.edit_sku_converter', compact('options', 'parameters'));
 	}
 
 	public function update_sku_converter (Request $request)
 	{
-		return $request->all();
+		$rules = [
+			'store_id'         => 'required',
+			'unique_row_value' => 'required',
+		];
+
+		$inputs = [
+			'store_id'         => $request->get('store_id'),
+			'unique_row_value' => $request->get('unique_row_value'),
+		];
+
+		$validator = Validator::make($inputs, $rules);
+
+		if ( $validator->fails() ) {
+			return redirect()
+				->back()
+				->withErrors($validator);
+		}
+		$store_id = $request->get('store_id');
+		$unique_row_value = $request->get('unique_row_value');
+
+		$parameters = Parameter::where('store_id', $store_id)
+							   ->get();
+		if ( $parameters->count() == 0 ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'Not a valid store selected',
+				]);
+		}
+
+		$dataToStore = [ ];
+		foreach ( $parameters as $parameter ) {
+			$parameter_value = $parameter->parameter_value;
+			$form_field = Helper::textToHTMLFormName($parameter_value);
+			$dataToStore[$parameter_value] = $request->get($form_field, '');
+		}
+		#return $request->all();
+		#return $dataToStore;
+		Option::where('store_id', $store_id)
+			  ->where('unique_row_value', $unique_row_value)
+			  ->update([
+				  'parameter_option' => json_encode($dataToStore),
+			  ]);
+
+		return redirect()
+			->to(url(sprintf("logistics/sku_show?store_id=%s", $store_id)))
+			->with('success', "Data updated.");
 	}
 
 	public function delete_sku (Request $request, $unique_row_value)
@@ -343,6 +414,8 @@ class LogisticsController extends Controller
 				  ->delete();
 		}
 
-		return redirect()->back();
+		return redirect()
+			->back()
+			->with('success', "Row is deleted.");
 	}
 }

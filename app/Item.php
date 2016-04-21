@@ -22,6 +22,11 @@ class Item extends Model
 					]);
 	}
 
+	public function parameter_options ()
+	{
+		return $this->hasMany('App\Option', 'store_id', 'store_id');
+	}
+
 	public function lowest_order_date ()
 	{
 		return $this->belongsTo('App\Order', 'order_id', 'order_id')
@@ -88,6 +93,7 @@ class Item extends Model
 		if ( !$station_name ) {
 			return;
 		}
+
 		return $query->where('station_name', $station_name);
 	}
 

@@ -38,6 +38,7 @@
 			<li class = "active">SKU Converter details</li>
 		</ol>
 		@include('includes.error_div')
+		@include('includes.success_div')
 		@if($parameters && (count($parameters->lists('parameter_value')) > 0))
 			<h3 class = "page-header">
 				Parameters
@@ -48,10 +49,24 @@
 					@foreach($parameters as $parameter)
 						<th>{{$parameter->parameter_value}}</th>
 					@endforeach
-					{{--<th>Edit</th>--}}
+					<th>Edit</th>
 				</tr>
-
-					@foreach($options->chunk(count($parameters->lists('parameter_value'))) as $option_array)
+				@foreach($options as $option)
+					@setvar($decoded = json_decode($option->parameter_option, true))
+					<tr>
+						<td>
+							{!! Form::open(['url' => url('/logistics/delete_sku/'.$option->unique_row_value), 'method' => 'delete']) !!}
+							{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
+							{!! Form::close() !!}
+						</td>
+						@foreach($parameters as $parameter)
+							<td>{{ $decoded[$parameter->parameter_value] }}</td>
+						@endforeach
+						<td>
+							<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s", $option->store_id, $option->unique_row_value))}}">Edit</a>
+						</td>
+					</tr>
+					{{--@foreach($options->chunk(count($parameters->lists('parameter_value'))) as $option_array)
 						<tr>
 							<td>
 								@setvar($value = $option_array->first())
@@ -62,11 +77,12 @@
 							@foreach($option_array as $option)
 								<td>{{$option->parameter_option}}</td>
 							@endforeach
-							{{--<td>
+							<td>
 								<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s", $value->store_id, $value->unique_row_value))}}">Edit</a>
-							</td>--}}
+							</td>
 						</tr>
-					@endforeach
+					@endforeach--}}
+				@endforeach
 			</table>
 			<div class = "col-xs-12 text-center">
 				{!! $options->appends($request->all())->render() !!}

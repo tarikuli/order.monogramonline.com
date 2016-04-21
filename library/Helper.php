@@ -363,7 +363,6 @@ APPEND;
 										 ->toArray();
 		self::$columns = $parameters->lists('id', 'parameter_value')
 									->toArray();
-
 		#$parameters->lists('parameter_value')->toArray()
 		$different = array_diff(self::$column_names, $row);
 		if ( $different ) {
@@ -371,6 +370,18 @@ APPEND;
 		}
 
 		return count($parameters) && !$different;
+	}
+
+	public static function textToHTMLFormName ($text)
+	{
+		// double underscore is for protection
+		// in case a single underscore found on string won't be replaced
+		return str_replace(" ", "__", $text);
+	}
+
+	public static function htmlFormNameToText ($text)
+	{
+		return str_replace("__", " ", $text);
 	}
 
 	public static function routeThroughStations ($route_id, $station_name = null)

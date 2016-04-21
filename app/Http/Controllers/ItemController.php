@@ -3,6 +3,7 @@
 use App\BatchRoute;
 use App\Department;
 use App\Item;
+use App\Parameter;
 use App\Product;
 use App\RejectionReason;
 use App\Setting;
@@ -529,7 +530,8 @@ class ItemController extends Controller
 		$batch_id = intval($id);
 
 		// Get list of Items from Item Table by Batch Number
-		$items = Item::where('batch_number', $batch_id)
+		$items = Item::with('parameter_options')
+					 ->where('batch_number', $batch_id)
 					 ->get();
 
 		// If items not found belong to this Batch numbe then return to error page.
@@ -553,7 +555,8 @@ class ItemController extends Controller
 
 		// Get all list of options name from template_options by options name.
 		$columns = $template->exportable_options->lists('option_name')
-												->toArray(); #->prepend('Order id');
+												->add('graphic_sku')// added, as per requirement
+												->toArray();
 
 		$file_path = sprintf("%s/assets/exports/batches/", public_path());
 		$file_name = sprintf("%s.csv", $batch_id);
@@ -568,9 +571,7 @@ class ItemController extends Controller
 			$decoded_options = json_decode($options, true);
 
 			foreach ( $template->exportable_options as $column ) {
-
 				$result = '';
-
 				if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
 					#$result = array_slice(explode("-", $item->order_id), -1, 1);
 					$exp = explode("-", $item->order_id); // explode the short order
@@ -599,11 +600,62 @@ class ItemController extends Controller
 				}
 				$row[] = $result;
 			}
+			// insert graphic sku to the row
+			$row[] = $this->getGraphicSKU($item);
 
 			$csv->insertOne($row);
 		}
 
 		return response()->download($fully_specified_path);
+	}
+
+	private function getGraphicSKU ($item)
+	{
+		$graphic_sku = $item->item_code;
+		// if item has parameter option available with the store id
+		// related to parameter options table
+		if ( $item->parameter_options ) {
+			// get the item options from order
+			$item_options = json_decode($item->item_option, true);
+			// get the keys from that order options
+			$item_option_keys = array_keys($item_options);
+
+			$store_id = $item->store_id;
+			// get the keys available as parameter
+			$parameters = Parameter::where('store_id', $store_id)
+								   ->lists('parameter_value')
+								   ->toArray();
+
+			// get the common in the keys
+			$options_in_common = array_intersect($item_option_keys, $parameters);
+
+			//generate the new sku
+			$child_sku_postfix = implode("-", array_map(function ($node) use ($item_options) {
+				// replace the spaces with empty string
+				// make the string lower
+				// and the values from the item options
+				return str_replace(" ", "", strtolower($item_options[$node]));
+			}, $options_in_common));
+
+			// make the new child sku
+			$child_sku = sprintf("%s-%s", $item->item_code, $child_sku_postfix);
+
+			// loop through the item parameter options
+			foreach ( $item->parameter_options as $option_row ) {
+				// decode the json value
+				$decoded_options = json_decode($option_row->parameter_option, true);
+				// if the code key exists
+				//  and is equal to child sku newly generated
+				// return the graphic sku
+
+				if ( in_array("code", array_keys($decoded_options)) && trim($decoded_options['code']) == $child_sku ) {
+					return $decoded_options['graphic_sku'];
+				}
+			}
+		}
+		// if it's not returned from the above,
+		// return the default item code as graphic sku
+		return $graphic_sku;
 	}
 
 	public function release ($item_id)

@@ -42,14 +42,14 @@
 			<h3 class = "page-header">Edit</h3>
 			@setvar($i = 0)
 			{!! Form::open(['url' => url('/logistics/edit_sku_converter'), 'method' => 'put', 'class' => 'form-horizontal']) !!}
-			{!! Form::hidden("store_id", $options->first()->store_id) !!}
-			{!! Form::hidden("unique_row_value", $options->first()->unique_row_value) !!}
+			{!! Form::hidden("store_id", $options->store_id) !!}
+			{!! Form::hidden("unique_row_value", $options->unique_row_value) !!}
 			@foreach($parameters as $parameter)
 				<div class = "form-group">
 					@setvar($parameter_value = $parameter->parameter_value)
-					{!! Form::label(str_replace(" ", "_", strtolower($parameter_value)), ucfirst($parameter_value), ['class' => 'col-md-2 control-label']) !!}
+					{!! Form::label(\Monogram\Helper::textToHTMLFormName($parameter_value), ucfirst($parameter_value), ['class' => 'col-md-2 control-label']) !!}
 					<div class = "col-sm-10">
-						{!! Form::text($parameter_value, $options->get($i)->parameter_option, ['class'=> 'form-control', 'id' => $parameter_value]) !!}
+						{!! Form::text(\Monogram\Helper::textToHTMLFormName($parameter_value), json_decode($options->parameter_option, true)[$parameter_value], ['class'=> 'form-control', 'id' => \Monogram\Helper::textToHTMLFormName($parameter_value)]) !!}
 					</div>
 				</div>
 				@setvar($i++)
