@@ -44,12 +44,13 @@
 			{!! Form::open(['url' => url('/logistics/edit_sku_converter'), 'method' => 'put', 'class' => 'form-horizontal']) !!}
 			{!! Form::hidden("store_id", $options->store_id) !!}
 			{!! Form::hidden("unique_row_value", $options->unique_row_value) !!}
+			@setvar($decoded_options = json_decode($options->parameter_option, true))
 			@foreach($parameters as $parameter)
 				<div class = "form-group">
 					@setvar($parameter_value = $parameter->parameter_value)
 					{!! Form::label(\Monogram\Helper::textToHTMLFormName($parameter_value), ucfirst($parameter_value), ['class' => 'col-md-2 control-label']) !!}
 					<div class = "col-sm-10">
-						{!! Form::text(\Monogram\Helper::textToHTMLFormName($parameter_value), json_decode($options->parameter_option, true)[$parameter_value], ['class'=> 'form-control', 'id' => \Monogram\Helper::textToHTMLFormName($parameter_value)]) !!}
+						{!! Form::text(\Monogram\Helper::textToHTMLFormName($parameter_value), in_array($parameter_value, array_keys($decoded_options)) ? $decoded_options[$parameter_value] : null, ['class'=> 'form-control', 'id' => \Monogram\Helper::textToHTMLFormName($parameter_value)]) !!}
 					</div>
 				</div>
 				@setvar($i++)

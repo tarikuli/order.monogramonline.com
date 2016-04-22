@@ -342,10 +342,9 @@ class LogisticsController extends Controller
 					'error' => 'Your input is wrong',
 				]);
 		}
-		$decoded_options = json_decode($options->parameter_option, true);
-		$parameter_values = array_keys($decoded_options);
-		$parameters = Parameter::whereIn('parameter_value', $parameter_values)
-							   ->where('store_id', $request->get('store_id'))
+		#$decoded_options = json_decode($options->parameter_option, true);
+		#$parameter_values = array_keys($decoded_options);
+		$parameters = Parameter::where('store_id', $request->get('store_id'))
 							   ->get();
 
 		#$options = $options->toArray();
