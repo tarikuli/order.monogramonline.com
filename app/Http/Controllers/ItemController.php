@@ -561,8 +561,6 @@ class ItemController extends Controller
 		if ( $key !== false ) {
 			$place = $key + 1;
 			array_splice($columns, $place, 0, [ 'graphic_sku' ]);
-		} else {
-			$columns = array_merge($columns, [ 'graphic_sku' ]);
 		}
 
 		$file_path = sprintf("%s/assets/exports/batches/", public_path());
@@ -576,8 +574,6 @@ class ItemController extends Controller
 			#$row[] = explode("-", $item->order_id)[2];
 			$options = $item->item_option;
 			$decoded_options = json_decode($options, true);
-			// is sku found flag to check if the sku column exists
-			$isSkuFieldFound = false;
 			foreach ( $template->exportable_options as $column ) {
 				$result = '';
 				if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
@@ -616,10 +612,6 @@ class ItemController extends Controller
 					}
 				}
 				$row[] = $result;
-			}
-			// insert graphic sku to the row
-			if ( !$isSkuFieldFound ) {
-				$row[] = $this->getGraphicSKU($item);
 			}
 
 			$csv->insertOne($row);
