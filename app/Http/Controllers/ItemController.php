@@ -625,61 +625,62 @@ class ItemController extends Controller
 		$graphic_sku = $item->item_code;
 		// if item has parameter option available with the store id
 		// related to parameter options table
-		if ( $item->parameter_options ) {
-			// get the item options from order
-			$item_options = json_decode($item->item_option, true);
-			// get the keys from that order options
-			$item_option_keys = array_keys($item_options);
+		/*if ( $item->parameter_options ) {
 
-			$store_id = $item->store_id;
-			// get the keys available as parameter
-			$parameters = Parameter::where('store_id', $store_id)
-								   ->lists('parameter_value')
-								   ->toArray();
+		}*/
+		// get the item options from order
+		$item_options = json_decode($item->item_option, true);
+		// get the keys from that order options
+		$item_option_keys = array_keys($item_options);
 
-			$parameter_to_html_form_name = array_map(function ($element) {
-				return Helper::textToHTMLFormName($element);
-			}, $parameters);
+		$store_id = $item->store_id;
+		// get the keys available as parameter
+		$parameters = Parameter::where('store_id', $store_id)
+							   ->lists('parameter_value')
+							   ->toArray();
 
-			// get the common in the keys
-			$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
-			//generate the new sku
-			/*$child_sku_postfix = implode("-", array_map(function ($node) use ($item_options) {
-				// replace the spaces with empty string
-				// make the string lower
-				// and the values from the item options
-				return str_replace(" ", "", strtolower($item_options[$node]));
-			}, $options_in_common));*/
+		$parameter_to_html_form_name = array_map(function ($element) {
+			return Helper::textToHTMLFormName($element);
+		}, $parameters);
 
-			// make the new child sku
-			//$child_sku = sprintf("%s-%s", $item->item_code, $child_sku_postfix);
+		// get the common in the keys
+		$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
+		//generate the new sku
+		/*$child_sku_postfix = implode("-", array_map(function ($node) use ($item_options) {
+			// replace the spaces with empty string
+			// make the string lower
+			// and the values from the item options
+			return str_replace(" ", "", strtolower($item_options[$node]));
+		}, $options_in_common));*/
 
-			$parameter_options = Option::where('store_id', $store_id)
-									   ->where('parameter_option', 'LIKE', sprintf("%%%s%%", $item->item_code))
-									   ->get();
+		// make the new child sku
+		//$child_sku = sprintf("%s-%s", $item->item_code, $child_sku_postfix);
 
-			// loop through the item parameter options
-			foreach ( $parameter_options as $option_row ) {
-				// decode the json value
-				$decoded_options = json_decode($option_row->parameter_option, true);
-				// if the code key exists
-				//  and is equal to child sku newly generated
-				// return the graphic sku
+		$parameter_options = Option::where('store_id', $store_id)
+								   ->where('parameter_option', 'LIKE', sprintf("%%%s%%", $item->item_code))
+								   ->get();
 
-				/*if ( in_array("code", array_keys($decoded_options)) && trim($decoded_options['code']) == $child_sku ) {
-					return $decoded_options['graphic_sku'];
-				}*/
-				$total_match = count($options_in_common);
-				foreach ( $options_in_common as $common ) {
-					$underscore_replaced = Helper::htmlFormNameToText($common);
-					if ( $decoded_options[$underscore_replaced] == $item_options[$common] ) {
-						--$total_match;
-					}
+		// loop through the item parameter options
+		foreach ( $parameter_options as $option_row ) {
+			// decode the json value
+			$decoded_options = json_decode($option_row->parameter_option, true);
+			// if the code key exists
+			//  and is equal to child sku newly generated
+			// return the graphic sku
+
+			/*if ( in_array("code", array_keys($decoded_options)) && trim($decoded_options['code']) == $child_sku ) {
+				return $decoded_options['graphic_sku'];
+			}*/
+			$total_match = count($options_in_common);
+			foreach ( $options_in_common as $common ) {
+				$underscore_replaced = Helper::htmlFormNameToText($common);
+				if ( $decoded_options[$underscore_replaced] == $item_options[$common] ) {
+					--$total_match;
 				}
+			}
 
-				if ( $total_match == 0 ) {
-					return $decoded_options['graphic_sku'];
-				}
+			if ( $total_match == 0 ) {
+				return $decoded_options['graphic_sku'];
 			}
 		}
 		// if it's not returned from the above,
