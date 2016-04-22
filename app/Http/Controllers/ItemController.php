@@ -672,9 +672,9 @@ class ItemController extends Controller
 				return $decoded_options['graphic_sku'];
 			}*/
 			$total_match = count($options_in_common);
-			foreach ( $options_in_common as $common ) {
-				$underscore_replaced = Helper::htmlFormNameToText($common);
-				if ( $decoded_options[$underscore_replaced] == $item_options[$common] ) {
+			foreach ( $options_in_common as $common_key ) {
+				$underscore_replaced_key = Helper::htmlFormNameToText($common_key);
+				if ( in_array($underscore_replaced_key, array_keys($decoded_options)) && in_array($common_key, array_keys($item_options)) && $decoded_options[$underscore_replaced_key] == $item_options[$common_key] ) {
 					--$total_match;
 				}
 			}
