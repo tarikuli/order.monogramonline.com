@@ -39,9 +39,27 @@
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
+		<div class = "panel panel-default">
+			<div class = "panel-heading">Search</div>
+			<div class = "panel-body">
+				{!! Form::open(['method' => 'get', 'url' => $request->url(), 'class' => 'form-inline']) !!}
+				{!! Form::hidden('store_id', $store_id) !!}
+				<div class = "form-group">
+					{!! Form::label('search_for', "Search for:", ['class' => 'control-label']) !!}
+					{!! Form::text('search_for', $request->get('search_for'), ['id' => 'search_for', 'class' => 'form-control', 'placeholder' => "Search in selected field"]) !!}
+				</div>
+				<div class = "form-group">
+					{!! Form::label('search_in', "Search in:", ['class' => 'control-label']) !!}
+					{!! Form::select('search_in', $parameters->lists('parameter_value', 'parameter_value')->prepend('Select a field', ""), $request->get('search_in'), ['id' => 'search_in', 'class' => 'form-control']) !!}
+				</div>
+
+				<button type = "submit" class = "btn btn-success">Search</button>
+				{!! Form::close() !!}
+			</div>
+		</div>
 		@if($parameters && (count($parameters->lists('parameter_value')) > 0))
 			<h3 class = "page-header">
-				Parameters
+				Parameters ({{ $options->total() }} items found / {{$options->currentPage()}} of {{$options->lastPage()}} pages)
 			</h3>
 			<table class = "table table-bordered">
 				<tr>

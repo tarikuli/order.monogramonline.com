@@ -305,10 +305,14 @@ class LogisticsController extends Controller
 		/*$options = Option::whereIn('parameter_id', $relation_array)#->orderBy(DB::raw(sprintf('FIELD(parameter_id, %s)', implode(", ", $relation_array))))
 						 ->paginate(50 * count($parameters));*/
 		$options = Option::where('store_id', $store_id)
-						 ->paginate(50);
+						 ->searchInParameterOption($store_id, $request->get('search_for'), $request->get('search_in'))
+						 ->paginate(100);
+
+		// split the url into parts
+		$submit_url = sprintf("%s?store_id=%s", $request->url(), $store_id);
 
 		#return $options;
-		return view('logistics.sku_converter_store_details', compact('parameters', 'options', 'request'));
+		return view('logistics.sku_converter_store_details', compact('parameters', 'options', 'request', 'submit_url', 'store_id'));
 
 	}
 
