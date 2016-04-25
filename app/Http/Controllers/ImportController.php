@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\MessageBag;
 use League\Csv\Reader;
 
@@ -109,11 +110,9 @@ class ImportController extends Controller
 
 		$rows = $reader->setOffset(1)
 					   ->fetchAssoc($needed_columns);
-
+		$errors = [ ];
 		foreach ( $rows as $row ) {
-
 			$batch_code = trim($row['batch_code']);
-
 			if ( empty( $batch_code ) ) {
 				continue;
 			}
@@ -129,7 +128,8 @@ class ImportController extends Controller
 				} elseif ( $column == 'batch_route_name' ) {
 					$batch_route->batch_route_name = trim($row['batch_route_name']);
 				} elseif ( $column == 'batch_max_units' ) {
-					$batch_route->batch_max_units = intval(trim($row['batch_max_units']));
+					$batch_max_units = intval(trim($row['batch_max_units']));
+					$batch_route->batch_max_units = $batch_max_units >= 0 ? $batch_max_units : 0;
 				} elseif ( $column == 'export_template' ) {
 					$template_name = trim($row['export_template']);
 					$template = Template::where('template_name', $template_name)
@@ -148,15 +148,35 @@ class ImportController extends Controller
 			foreach ( $extra_columns as $column ) {
 				if ( $column == 'stations' ) {
 					$stationsFromFile = trim($row['stations']);
-					$stationsArray = explode(",", str_replace(" ", "", $stationsFromFile));
+					$stationsArray = array_filter(explode(",", str_replace(" ", "", $stationsFromFile)));
 					$stationsFromTable = Station::whereIn("station_name", $stationsArray)
-												->lists('id')
-												->toArray();
+												->orderBy(DB::raw(sprintf("FIELD ( station_name, '%s' )", implode("','", $stationsArray))))
+												->get();
+
+					if ( $stationsFromTable->count() != count($stationsArray) ) {
+						$differences = array_diff($stationsArray, $stationsFromTable->lists('station_name')
+																					->toArray());
+						$errors[] = sprintf("%s has %d wrong stations code: %s", $row['batch_route_name'], ( count($stationsArray) - count($stationsFromTable) ), implode(", ", $differences));
+					}
+					// detach all the previous relations
 					$batch_route->stations()
-								->sync($stationsFromTable);
+								->detach();
+
+					// attach new relations
+					$batch_route->stations()
+								->attach($stationsFromTable->lists('id')
+														   ->toArray());
 				}
 			}
 		}
+		if ( count($errors) ) {
+			session()->flash('success', "Batch routes update with stated errors.");
+
+			return redirect()
+				->to(url('batch_routes'))
+				->withErrors($errors);
+		}
+		// if there's no error on station name
 		session()->flash('success', 'Batch routes are successfully updated.');
 
 		return redirect(url('batch_routes'));
