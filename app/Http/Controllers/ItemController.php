@@ -62,7 +62,7 @@ class ItemController extends Controller
 		//todo:: we'll use in future
 		//$unassignedItems = DB::select(DB::raw(sprintf("SELECT COUNT(*) as aggregate FROM items LEFT JOIN products ON items.item_code = products.product_model WHERE items.batch_number = 0 AND items.is_deleted = '0' AND products.batch_route_id != %d", Helper::getDefaultRouteId())));
 
-		$unassignedItems = DB::table('items')
+		/*$unassignedItems = DB::table('items')
 							 ->select(DB::raw('count(*) as aggregate'))
 							 ->join('products', 'items.item_code', '=', 'products.product_model')
 							 ->where('items.batch_number', '=', 0)
@@ -72,8 +72,16 @@ class ItemController extends Controller
 										  ->orWhereNull('products.batch_route_id');
 							 })
 							 ->get();
+		$unassigned = count($unassignedItems) > 0 ? $unassignedItems[0]->aggregate : 0;*/
 
-		$unassigned = count($unassignedItems) > 0 ? $unassignedItems[0]->aggregate : 0;
+		$batch_routes = Helper::createAbleBatches();
+		$unassigned = 0;
+		foreach ( $batch_routes as $batch_route ) {
+			if ( $batch_route->itemGroups ) {
+				$unassigned += $batch_route->itemGroups->count();
+			}
+		}
+
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
@@ -94,30 +102,7 @@ class ItemController extends Controller
 	{
 		$count = 1;
 		$serial = 1;
-		$batch_routes = BatchRoute::with([
-			'stations_list',
-			'itemGroups' => function ($q) {
-				/*return $q->join('items', 'products.id_catalog', '=', 'items.item_id')*/
-				return $q->join('items', 'products.product_model', '=', 'items.item_code')
-						 ->where('items.is_deleted', 0)
-						 ->where('items.batch_number', '0')
-						 ->join('orders', 'orders.order_id', '=', 'items.order_id')
-						 ->where('orders.is_deleted', 0)
-						 ->addSelect([
-							 DB::raw('items.id AS item_table_id'),
-							 'items.item_id',
-							 'items.item_code',
-							 'items.order_id',
-							 'items.item_quantity',
-							 DB::raw('orders.id as order_table_id'),
-							 'orders.order_id',
-							 'orders.order_date',
-						 ])
-						 ->paginate(50000);
-			},
-		])
-								  ->where('batch_routes.is_deleted', 0)
-								  ->get();
+		$batch_routes = Helper::createAbleBatches(true);
 
 		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));
 	}

@@ -547,4 +547,64 @@ APPEND;
 	{
 		return sprintf("uniqueness_in_model:%s,%d,%s", $model, $id, $field);
 	}
+
+	public static function createAbleBatches ($paginate = false)
+	{
+		return BatchRoute::with([
+			'stations_list',
+			'itemGroups' => function ($q) use ($paginate) {
+				$joining = $q->join('items', 'products.product_model', '=', 'items.item_code')
+							 ->join('orders', 'orders.order_id', '=', 'items.order_id')
+							 ->where('orders.is_deleted', 0)
+							 ->where('items.batch_number', '0')
+							 ->where('items.is_deleted', 0)
+							 ->where(function ($query) {
+								 return $query->where('products.batch_route_id', '!=', 115)
+											  ->whereNotNull('products.batch_route_id');
+							 })
+							 ->where('products.is_deleted', 0)
+							 ->addSelect([
+								 DB::raw('items.id AS item_table_id'),
+								 'items.item_id',
+								 'items.item_code',
+								 'items.order_id',
+								 'items.item_quantity',
+								 DB::raw('orders.id as order_table_id'),
+								 'orders.order_id',
+								 'orders.order_date',
+							 ]);//->paginate(50000);
+				return $paginate ? $joining->get() : $joining->paginate(10000);
+			},
+		])
+						 ->where('batch_routes.is_deleted', 0)
+						 ->where('batch_routes.batch_max_units', '>', 0)
+						 ->get();
+
+		/*
+		 * PREVIOUS QUERY
+		 return BatchRoute::with([
+			'stations_list',
+			'itemGroups' => function ($q) use ($paginate) {
+				$joining = $q->join('items', 'products.product_model', '=', 'items.item_code')
+							 ->where('items.is_deleted', 0)
+							 ->where('items.batch_number', '0')
+							 ->join('orders', 'orders.order_id', '=', 'items.order_id')
+							 ->where('orders.is_deleted', 0)
+							 ->addSelect([
+								 DB::raw('items.id AS item_table_id'),
+								 'items.item_id',
+								 'items.item_code',
+								 'items.order_id',
+								 'items.item_quantity',
+								 DB::raw('orders.id as order_table_id'),
+								 'orders.order_id',
+								 'orders.order_date',
+							 ]);//->paginate(50000);
+				return $paginate ? $joining->get() : $joining->paginate(10000);
+			},
+		])
+						 ->where('batch_routes.is_deleted', 0)
+						 ->where('batch_routes.batch_max_units', '>', 0)
+						 ->get();*/
+	}
 }
