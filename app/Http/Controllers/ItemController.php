@@ -21,6 +21,7 @@ use Illuminate\Support\Collection;
 use DNS1D;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use League\Csv\Writer;
 use Monogram\Helper;
 
@@ -405,9 +406,39 @@ class ItemController extends Controller
 		#return $items;
 		$count = 1;
 
-		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'rejection_reasons', 'statuses', 'route', 'stations', 'count', 'department_name'));
+		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'rejection_reasons', 'statuses', 'route', 'stations', 'count', 'department_name', 'current_batch_station'));
 	}
 
+	// By Jewel 
+	public function changeBatchStation (Request $request, $batch_number)
+	{
+		
+		if ( $request->has('station_name') && ( $request->ajax()) ) {
+			// Get From Station Name
+			$current_station_name = $request->get('current_station_name');
+			
+			// Get To Station Name
+			$toStationName = $request->get('station_name');
+			
+			// Get all Batch on in Same Station
+			$items = Item::where('batch_number', $batch_number)
+						->where('station_name', $current_station_name)
+						->get();
+			
+			foreach ( $items as $item ) {
+				$item->station_name = $toStationName;
+// 				Log::info('Current_station_name : '.$current_station_name.' ---- '.'ToStationName : '.$toStationName);
+				$item->save();
+			}
+			
+			return response()->json([
+					'error' => false,
+					'data'  => 'Product batch is successfully updated',
+			], 200);
+
+		}
+	}
+	
 	public function updateBatchItems (Request $request, $batch_number)
 	{
 		$items = Item::where('batch_number', $batch_number)
@@ -941,6 +972,7 @@ class ItemController extends Controller
 							 ->whereNotNull('station_name')
 							 ->Where('station_name', '!=', '')
 							 ->get();
+				
 				foreach ( $items as $rejected_item ) {
 					$rejected_from_station = $rejected_item->station_name;
 					$rejected_item->station_name = $supervisor_station;
@@ -986,6 +1018,7 @@ class ItemController extends Controller
 
 		Item::whereIn('batch_number', $batch_numbers)
 			->update($changes);
+			
 		$message = sprintf("%s batches are released.", implode(", ", $batch_numbers));
 
 		return redirect()

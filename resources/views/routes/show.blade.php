@@ -64,16 +64,24 @@
 						{!! Form::hidden('action', null) !!}
 						{!! Form::close() !!}
 					</div>--}}
+					
 					{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
 					{!! Form::hidden('action', null) !!}
 					{!! Form::close() !!}
+					
 					<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>
 					<p>Template:
 						<a href = "{{url(sprintf("/templates/%d", $route->template->id))}}">{!! $route->template->template_name !!}</a>
 					</p>
 					<p>Route: {{$route['batch_code']}} / {{$route['batch_route_name']}} => {!! $stations !!}</p>
 					<p>Department: {{ $department_name }}</p>
-					<p>Current Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, ['disabled' => 'disabled']) !!}</p>
+					
+					{!! Form::open(['url' =>  url(sprintf("/items/%d", $batch_number)), 'method' => 'put', 'id' => 'chabgeBatchStation']) !!}
+					{!! Form::hidden('current_station_name', $current_batch_station->station_name, ['id' => 'current_station_name']) !!}					
+					{!! Form::close() !!}
+			
+					<p>Current Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, array('id' => 'station')) !!}</p>									
+					
 					{{-- {!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
 					<p>Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, []) !!}</p>
 					{!! Form::submit('Change station', ['id' => 'change-status',]) !!}
@@ -206,6 +214,39 @@
 			});
 
 			$("table#batch-items-table tfoot td#item-quantity-in-total").text("Total quantity: " + totalQuantity);
+
+			// By Jewel
+			$("#station").on('change', function (event)
+			{
+				var value = $(this).val();
+				
+				if ( value === '' ) {
+					alert("Not a valid batch");
+					return ;
+				}
+
+				var form = $("form#chabgeBatchStation");
+				var formUrl = form.attr('action');
+
+				var token = $(form).find('input[name="_token"]').val();
+				var current_station_name = $(form).find('input[name="current_station_name"]').val();
+				
+// 				console.log(current_station_name);
+				$.ajax({
+					method: 'PUT', url: formUrl, data: {
+						_token: token, station_name: value, current_station_name: current_station_name,
+					}, success: function (data, textStatus, xhr)
+					{
+						// Reload in Same page
+						location.reload('/items/grouped');
+					}, error: function (xhr, textStatus, errorThrown)
+					{
+						alert('Could not update product route');
+					}
+				});
+				
+// 				console.log(formUrl);				
+			});
 		});
 		$("a.reject").on('click', function (event)
 		{
@@ -258,19 +299,23 @@
 				alert('Rejection message cannot be empty!');
 				return false;
 			}
+			
 			var rejection_reason = $("#reason-to-reject").val();
 			if ( !rejection_reason || rejection_reason == 0 ) {
 				alert('Rejection reason cannot be unselected!');
 				return false;
 			}
+			
 			$("<input type='hidden' value='' />")
 					.attr("name", "rejection_reason")
 					.attr("value", rejection_reason)
 					.appendTo($(form));
+			
 			$("<input type='hidden' value='' />")
 					.attr("name", "rejection_message")
 					.attr("value", rejection_message)
 					.appendTo($(form));
+			
 			$(form).submit();
 		});
 
@@ -288,13 +333,14 @@
 					.appendTo($("form#station-action"));
 			$("form#station-action").submit();
 		});
+		
 		$("button#done-all").on('click', function (event)
 		{
 			event.preventDefault();
 			var value = 'done'
 			$("input[name='action']").val(value);
 			$("form#action_changer").submit();
-		})
+		})		
 	</script>
 </body>
 </html>
