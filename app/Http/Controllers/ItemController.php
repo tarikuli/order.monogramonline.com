@@ -397,33 +397,36 @@ class ItemController extends Controller
 	// By Jewel 
 	public function changeBatchStation (Request $request, $batch_number)
 	{
-		
-		if ( $request->has('station_name') && ( $request->ajax()) ) {
+
+		if ( $request->has('station_name') && ( $request->ajax() ) ) {
 			// Get From Station Name
 			$current_station_name = $request->get('current_station_name');
-			
+
 			// Get To Station Name
 			$toStationName = $request->get('station_name');
-			
+
 			// Get all Batch on in Same Station.
 			$items = Item::where('batch_number', $batch_number)
-						->where('station_name', $current_station_name)
-						->get();
-			
+						 ->where('station_name', $current_station_name)
+						 ->get();
+
 			foreach ( $items as $item ) {
 				$item->station_name = $toStationName;
-// 				Log::info('Current_station_name : '.$current_station_name.' ---- '.'ToStationName : '.$toStationName);
 				$item->save();
 			}
-			
+
+			Helper::saveStationLog($items, $toStationName);
+
 			return response()->json([
-					'error' => false,
-					'data'  => 'Product batch is successfully updated',
+				'error' => false,
+				'data'  => [
+					'route' => url(sprintf("/batches/%s/%s", $batch_number, $toStationName)),
+				],
 			], 200);
 
 		}
 	}
-	
+
 	public function updateBatchItems (Request $request, $batch_number)
 	{
 		$items = Item::where('batch_number', $batch_number)
@@ -491,7 +494,7 @@ class ItemController extends Controller
 							 ->where('station_name', $station_name)
 							 ->update($updates);
 				if ( $next_station_name ) {
-					foreach ( $previousItems as $item ) {
+					/*foreach ( $previousItems as $item ) {
 						$station_log = new StationLog();
 						$station_log->item_id = $item->id;
 						$station_log->batch_number = $item->batch_number;
@@ -501,7 +504,9 @@ class ItemController extends Controller
 						$station_log->started_at = date('Y-m-d', strtotime("now"));
 						$station_log->user_id = Auth::user()->id;
 						$station_log->save();
-					}
+					}*/
+
+					Helper::saveStationLog($previousItems, $station_name);
 				}
 
 				break;
@@ -957,7 +962,7 @@ class ItemController extends Controller
 							 ->whereNotNull('station_name')
 							 ->Where('station_name', '!=', '')
 							 ->get();
-				
+
 				foreach ( $items as $rejected_item ) {
 					$rejected_from_station = $rejected_item->station_name;
 					$rejected_item->station_name = $supervisor_station;
@@ -1003,7 +1008,7 @@ class ItemController extends Controller
 
 		Item::whereIn('batch_number', $batch_numbers)
 			->update($changes);
-			
+
 		$message = sprintf("%s batches are released.", implode(", ", $batch_numbers));
 
 		return redirect()

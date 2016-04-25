@@ -14,6 +14,7 @@ use App\Ship;
 use App\Station;
 use App\StationLog;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use DNS1D;
 
@@ -606,5 +607,20 @@ APPEND;
 						 ->where('batch_routes.is_deleted', 0)
 						 ->where('batch_routes.batch_max_units', '>', 0)
 						 ->get();*/
+	}
+
+	public static function saveStationLog ($items, $new_station_name)
+	{
+		foreach ( $items as $item ) {
+			$station_log = new StationLog();
+			$station_log->item_id = $item->id;
+			$station_log->batch_number = $item->batch_number;
+			$station_log->station_id = Station::where('station_name', $new_station_name)
+											  ->first()->id;
+
+			$station_log->started_at = date('Y-m-d', strtotime("now"));
+			$station_log->user_id = Auth::user()->id;
+			$station_log->save();
+		}
 	}
 }
