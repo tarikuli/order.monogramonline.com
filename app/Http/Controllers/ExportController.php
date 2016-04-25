@@ -34,6 +34,7 @@ class ExportController extends Controller
 	{
 		$batch_routes = BatchRoute::with('stations_list', 'template')
 								  ->where('is_deleted', 0)
+								  ->orderBy('batch_route_name')
 								  ->latest()
 								  ->get();
 

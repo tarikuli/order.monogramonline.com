@@ -229,6 +229,7 @@ class StationController extends Controller
 	public function supervisor (Request $request)
 	{
 		$routes = BatchRoute::where('is_deleted', 0)
+							->orderBy('batch_route_name')
 							->latest()
 							->lists('batch_route_name', 'id')
 							->prepend('Select a route', 'all');

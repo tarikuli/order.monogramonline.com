@@ -53,6 +53,7 @@ class ProductController extends Controller
 						   ->paginate(50);
 
 		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->orderBy('batch_route_name')
 								  ->lists('batch_route_name', 'id');
 
 		$searchInRoutes = Collection::make($batch_routes);
@@ -101,6 +102,7 @@ class ProductController extends Controller
 					   ->lists('store_name', 'store_id');
 
 		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->orderBy('batch_route_name')
 								  ->lists('batch_route_name', 'id')
 								  ->prepend('Select a Route', '');
 		$is_taxable = [
@@ -372,6 +374,7 @@ class ProductController extends Controller
 					   ->lists('store_name', 'store_id');
 
 		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->orderBy('batch_route_name')
 								  ->lists('batch_route_name', 'id')
 								  ->prepend('Select a Route', '');
 		$is_taxable = [
@@ -728,6 +731,7 @@ class ProductController extends Controller
 						   ->latest()
 						   ->paginate(50);*/
 		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->orderBy('batch_route_name')
 								  ->lists('batch_route_name', 'id');
 
 		$searchInRoutes = Collection::make($batch_routes);

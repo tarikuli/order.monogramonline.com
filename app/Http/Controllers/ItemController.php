@@ -195,6 +195,7 @@ class ItemController extends Controller
 					 ->paginate(50);
 
 		$routes = BatchRoute::where('is_deleted', 0)
+							->orderBy('batch_route_name')
 							->latest()
 							->lists('batch_route_name', 'id')
 							->prepend('Select a route', 'all');
