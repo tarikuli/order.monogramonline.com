@@ -215,7 +215,7 @@
 
 			$("table#batch-items-table tfoot td#item-quantity-in-total").text("Total quantity: " + totalQuantity);
 
-			// By Jewel
+			// By Jewel 04-25-2016
 			$("#station").on('change', function (event)
 			{
 				var value = $(this).val();
