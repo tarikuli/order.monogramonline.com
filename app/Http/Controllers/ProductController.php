@@ -811,9 +811,8 @@ class ProductController extends Controller
 		#dd($table_columns, $needed_columns, $csv_columns, count(array_intersect($needed_columns, $csv_columns)));
 		$rows = $reader->setOffset(1)
 					   ->fetchAssoc($needed_columns);
-
+		set_time_limit(0);
 		foreach ( $rows as $row ) {
-
 			$id_catalog = trim($row['id_catalog']);
 			$model = trim($row['id_catalog']);
 			if ( empty( $id_catalog ) || empty( $model ) ) {
@@ -824,6 +823,7 @@ class ProductController extends Controller
 			if ( !$product ) {
 				$product = new Product();
 				$product->id_catalog = $row['id_catalog'];
+				$product->product_model = $row['product_model'];
 			}
 			foreach ( $table_columns as $column ) {
 				if ( $column == 'id_catalog' ) {
@@ -986,6 +986,7 @@ class ProductController extends Controller
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
 
 		$csv->insertOne($columns);
+		set_time_limit(0);
 		foreach ( $products as $product ) {
 			$row = [ ];
 			foreach ( $columns as $column ) {
