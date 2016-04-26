@@ -619,6 +619,8 @@ class ItemController extends Controller
 					$result = $item->batch_number;
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "orderdate" ) {//if the string is order date
 					$result = substr($item->order->order_date, 0, 10);
+				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "itemqty" ) {//if the string is item quantity = Item Qty
+					$result = intval($item->item_quantity);
 				} else {
 					$keys = explode(",", $column->value);
 					$found = false;

@@ -160,8 +160,8 @@
 							<td></td>
 							<td></td>
 							<td></td>
-							<td id = "item-quantity-in-total"></td>
 							<td></td>
+							<td id = "item-quantity-in-total"></td>
 							<td></td>
 							<td></td>
 							<td></td>
