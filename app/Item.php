@@ -122,8 +122,14 @@ class Item extends Model
 			return $query->where('store_id', 'REGEXP', implode("|", $values));
 
 		} elseif ( $search_in == 'state' ) {
+			$order_ids = Customer::where('ship_state', 'REGEXP', implode("|", $values))
+								 ->lists('order_id')
+								 ->toArray();
+			if ( count($order_ids) ) {
+				return $query->whereIn('order_id', $order_ids);
+			}
 
-			return $query->where('state', 'REGEXP', implode("|", $values));
+			return;
 
 		} elseif ( $search_in == 'description' ) {
 
