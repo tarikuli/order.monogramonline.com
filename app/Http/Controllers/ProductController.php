@@ -778,6 +778,7 @@ class ProductController extends Controller
 
 		$mimes = [
 			'application/vnd.ms-excel',
+			'application/octet-stream',
 			'text/plain',
 			'text/csv',
 			'text/tsv',
@@ -811,6 +812,7 @@ class ProductController extends Controller
 		#dd($table_columns, $needed_columns, $csv_columns, count(array_intersect($needed_columns, $csv_columns)));
 		$rows = $reader->setOffset(1)
 					   ->fetchAssoc($needed_columns);
+
 		set_time_limit(0);
 		foreach ( $rows as $row ) {
 			$id_catalog = trim($row['id_catalog']);
@@ -984,8 +986,8 @@ class ProductController extends Controller
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
 
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
-
 		$csv->insertOne($columns);
+
 		set_time_limit(0);
 		foreach ( $products as $product ) {
 			$row = [ ];

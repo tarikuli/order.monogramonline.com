@@ -119,7 +119,8 @@
 				@foreach($items as $item)
 					<tr data-id = "{{$item->id}}">
 						<td><a href = "{{ url("orders/details/".$item->order_id) }}" target = "_blank"
-						       class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a></td>
+						       class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a><br>Y: {{$item->order->short_order}}
+						</td>
 						{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
 						<td><img src = "{{$item->item_thumb}}" /></td>
 						<td>{{substr($item->order->order_date, 0, 10)}}</td>
@@ -138,7 +139,15 @@
 						{{--<td>{{\Monogram\Helper::jsonTransformer($item->item_option)}}</td>--}}
 						<td>{!! Form::textarea('opt', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '3', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
 						<td>{{$item->item_quantity}}</td>
-						<td>{{$item->batch_number ?: 'N/A' }}</td>
+						{{-- Add Batch Link --}}
+						<td>
+							@if($item->batch_number)
+								<a href = "{{ url(sprintf('/batches/%d/%s', $item->batch_number, $item->station_name)) }}"
+								   target = "_blank">{{$item->batch_number}}</a>
+							@else
+								N/A
+							@endif
+						</td>
 						<td>{{$item->batch_creation_date ?: 'N/A'}}</td>
 						<td>
 							@if(is_null($item->route))

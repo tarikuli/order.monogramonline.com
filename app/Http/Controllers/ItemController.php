@@ -591,6 +591,7 @@ class ItemController extends Controller
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
 		$csv->insertOne($columns);
 
+		set_time_limit(0);
 		foreach ( $items as $item ) {
 			$row = [ ];
 			#$row[] = explode("-", $item->order_id)[2];

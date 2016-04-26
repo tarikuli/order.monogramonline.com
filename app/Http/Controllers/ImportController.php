@@ -22,6 +22,7 @@ class ImportController extends Controller
 
 		$mime_types = [
 			'application/vnd.ms-excel',
+			'application/octet-stream',
 			'text/plain',
 			'text/csv',
 			'text/tsv',
@@ -57,6 +58,7 @@ class ImportController extends Controller
 		} elseif ( $request->get('todo') == 'upload' ) {
 			$rows = $reader->setOffset(1)
 						   ->fetchAssoc($csv_columns);
+			set_time_limit(0);
 			foreach ( $rows as $row ) {
 				$table_field_values = array_intersect_key($row, array_flip($table_columns));
 				$inventory = new Inventory();
@@ -78,6 +80,7 @@ class ImportController extends Controller
 
 		$mimes = [
 			'application/vnd.ms-excel',
+			'application/octet-stream',
 			'text/plain',
 			'text/csv',
 			'text/tsv',
@@ -110,6 +113,7 @@ class ImportController extends Controller
 
 		$rows = $reader->setOffset(1)
 					   ->fetchAssoc($needed_columns);
+		set_time_limit(0);
 		$errors = [ ];
 		foreach ( $rows as $row ) {
 			$batch_code = trim($row['batch_code']);

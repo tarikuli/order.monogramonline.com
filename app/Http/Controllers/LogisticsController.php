@@ -165,6 +165,7 @@ class LogisticsController extends Controller
 			$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'a+'), 'w');
 			$csv->insertOne($columns);
 
+			set_time_limit(0);
 			foreach ( $options as $option ) {
 				//$row = [ ];
 				// option has parameter options in json format
@@ -185,6 +186,7 @@ class LogisticsController extends Controller
 
 		$mimes = [
 			'application/vnd.ms-excel',
+			'application/octet-stream',
 			'text/plain',
 			'text/csv',
 			'text/tsv',
