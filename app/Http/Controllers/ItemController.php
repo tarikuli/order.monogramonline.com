@@ -305,7 +305,7 @@ class ItemController extends Controller
 			$row['next_station_description'] = $next_station_description;
 			$row['min_order_date'] = substr($item->lowest_order_date->order_date, 0, 10);
 			$row['batch_status'] = $batch_status;
-			$row['current_station_item_count'] = $items_on_station[$current_station_name];
+			$row['current_station_item_count'] = ( isset( $items_on_station[$current_station_name] ) ? $items_on_station[$current_station_name] : '?' );
 
 			$rows[] = $row;
 		}
