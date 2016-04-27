@@ -102,7 +102,9 @@
 														   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item, "order_table_id")}}</a>
 													</td>
 													<td>{{substr($item->order_date, 0, 10)}}</td>
-													<td>{{$item->item_code}}</td>
+													<td>
+														<a href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $item->item_code)) }}"
+														   target = "_blank">{{$item->item_code}}</a></td>
 													<td>{{$item->item_quantity}}</td>
 												</tr>
 											@endforeach
