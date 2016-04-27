@@ -216,7 +216,7 @@
 				<td style = "padding-left:60px">Inv</td>
 				<td style = "padding-left:60px">Each</td>
 				<td style = "padding-left:20px">Options</td>
-				<td style = "padding-left:130px">D/Shipper<br><a href = "#">(Transmit)</a></td>
+				<td style = "padding-left:130px">Item status</td>
 				<td style = "padding-left:160px">B/O</td>
 			</tr>
 		</table>
@@ -235,7 +235,16 @@
 					<td style = "width:130px"></td>
 					<td>${{$item->item_unit_price}}</td>
 					<td style = "padding-left:20px">{!! Form::textarea("item_option[$ind]", \Monogram\Helper::jsonTransformer($item->item_option), ['id' => 'item_option', 'rows' => '3','style'=>'width:150px;color:#686869;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 9px']) !!}</td>
-					<td></td>
+					<td>
+						{!! Form::select("item_order_status[$ind]", \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->item_order_status, ['id' => 'order_status_id',])  !!}
+						@if($item->batch_number)
+							<br />
+							<p>View batch: <a
+										href = "{{ url(sprintf("/batches/%d/%s", $item->batch_number, $item->station_name)) }}"
+										target = "_blank">{{ $item->batch_number }}</a>
+							</p>
+						@endif
+					</td>
 					<td></td>
 					@setvar($ind++)
 				</tr>
