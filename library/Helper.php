@@ -570,6 +570,7 @@ APPEND;
 								 'items.item_code',
 								 'items.order_id',
 								 'items.item_quantity',
+							 	 'items.item_thumb',
 								 DB::raw('orders.id as order_table_id'),
 								 'orders.order_id',
 								 'orders.order_date',

@@ -85,11 +85,10 @@
 											</tr>
 											@foreach($chunkedRows as $item)
 												<tr>
-													<td></td>
+													<td><img src = "{{$item->item_thumb}}" /></td>
 													<td>{{$serial++}}</td>
 													<td>{!! Form::checkbox('batches[]', sprintf("%s|%s|%s", $count, $batch_route->id, /*$item->product_table_id, */$item->item_table_id) ,false, ['class' => 'checkable']) !!}</td>
 													<td>
-														{{--<a href = "{{url("orders/details/$item->order_id")}}" target="_blank">{{explode("-", $item->order_id)[2]}}</a>--}}
 														<a href = "{{url("orders/details/$item->order_id")}}"
 														   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item, "order_table_id")}}</a>
 													</td>
