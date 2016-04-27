@@ -1,8 +1,11 @@
 <?php
 
 get('test/batch', function () {
-	#return 'test';
-	#return date('Y-m-d', strtotime('30-03-2015'));
+	return [
+		'a.b' => 1,
+		'b.c' => 2,
+		'c.d' => 3,
+	];
 });
 
 // auth middleware enabled controller
@@ -40,6 +43,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 		get('exports/batch/{id}', 'ItemController@export_batch');
 
+		post('products/change_mixing_status', 'ProductController@change_mixing_status');
 		get('products/unassigned', 'ProductController@unassigned');
 		get('products/sync', 'ProductController@getSync');
 		post('products/sync', 'ProductController@postSync');
@@ -67,10 +71,10 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('items/batch', 'ItemController@getBatch');
 		get('batch_details/{batch_number}', 'ItemController@batch_details');
 		post('items/batch', 'ItemController@postBatch');
-		
+
 		// Add changeBatchStation 
 		put('items/{batch_number}', 'ItemController@changeBatchStation');
-		
+
 		get('items/grouped', 'ItemController@getGroupedBatch');
 		get('items/release/{item_id}', 'ItemController@release');
 		get('items/release_batch', 'ItemController@releaseBatches');

@@ -19,8 +19,8 @@
 		td {
 			width: auto;
 		}
-		
-		img{
+
+		img {
 			width: 50px;
 			height: 50px;
 		}
@@ -56,6 +56,7 @@
 						<tr>
 							<th>Batch#</th>
 							<th>S.L#</th>
+							<th>Batch S.L#</th>
 							<th>Route</th>
 							<th>ID</th>
 							<th>Order date</th>
@@ -76,6 +77,7 @@
 											<tr data-id = "{{$batch_route->id}}">
 												<td>{{ $count }}</td>
 												<td></td>
+												<td></td>
 												<td>
 													<div class = "checkbox">
 														<label>
@@ -88,10 +90,12 @@
 												<td></td>
 												<td></td>
 											</tr>
-											@foreach($chunkedRows as $item)
+											@setvar($row_serial = 1)
+											@foreach($chunkedRows->sortBy('product_model') as $item)
 												<tr>
 													<td><img src = "{{$item->item_thumb}}" /></td>
 													<td>{{$serial++}}</td>
+													<td>{{$row_serial++}}</td>
 													<td>{!! Form::checkbox('batches[]', sprintf("%s|%s|%s", $count, $batch_route->id, /*$item->product_table_id, */$item->item_table_id) ,false, ['class' => 'checkable']) !!}</td>
 													<td>
 														<a href = "{{url("orders/details/$item->order_id")}}"
@@ -109,7 +113,9 @@
 												<td></td>
 												<td></td>
 												<td></td>
-												<td><span class = "item_selected">0</span> of <span
+												<td></td>
+												<td>
+													<span class = "item_selected">0</span> of <span
 															class = "item_total">{{$batch_route->batch_max_units}}</span>
 												</td>
 											</tr>

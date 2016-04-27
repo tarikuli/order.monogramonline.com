@@ -772,6 +772,36 @@ class ProductController extends Controller
 			->with('sales_categories', $sales_categories);
 	}
 
+	public function change_mixing_status (Request $request)
+	{
+		if ( !$request->ajax() ) {
+			return redirect()->back();
+		}
+		$mixing_status = $request->get('mixing_status', 1);
+		$mixing_status = in_array($mixing_status, [
+			0,
+			1,
+		]) ? $mixing_status : 1;
+		$product_id = $request->get('id', 0);
+
+		$product = Product::find($product_id);
+
+		if ( !$product ) {
+			return response()->json([
+				'error' => true,
+				'data'  => 'Not a valid product id',
+			], 422);
+		}
+
+		$product->allow_mixing = $mixing_status;
+		$product->save();
+
+		return response()->json([
+			'error' => false,
+			'data'  => 'Allow mixing status changed successfully',
+		], 200);
+	}
+
 	public function import (Request $request)
 	{
 		$file = $request->file('csv_file');

@@ -161,7 +161,7 @@
 						<td>{{ $product->product_name }}</td>
 						<td><img src = "{{ $product->product_thumb }}" width = "50" height = "50" /></td>
 						<td>
-							{!! Form::select('mixing', \App\Product::$mixingStatues, $product->allow_mixing, ['class' => 'form-control', 'style' => 'min-width: 75px;']) !!}
+							{!! Form::select('mixing', \App\Product::$mixingStatues, $product->allow_mixing, ['class' => 'form-control mixing-status', 'style' => 'min-width: 75px;']) !!}
 						</td>
 						<td>{!! Form::select('batch_route_id', $batch_routes, $product->batch_route_id, ['class' => 'form-control changable']) !!}</td>
 						<td>
@@ -225,6 +225,31 @@
 			}
 		});
 
+		$("select.mixing-status").on('change', function ()
+		{
+			var value = $(this).val();
+			if ( value == "null" ) {
+				alert("Not a valid mixing status");
+				return;
+			}
+			var id = $(this).closest('tr').attr('data-id');
+
+			var form = $("form#update-product"); // to get the token
+			var url = "/products/change_mixing_status";
+			var token = $(form).find('input[name="_token"]').val();
+			$.ajax({
+				method: 'POST', url: url, data: {
+					_token: token, mixing_status: value, id: id
+				}, success: function (data, textStatus, xhr)
+				{
+					// operation was successful
+				}, error: function (xhr, textStatus, errorThrown)
+				{
+					alert('Could not update allow mixing for this product.');
+				}
+			});
+		});
+
 		$("select.changable").on('change', function ()
 		{
 			var value = $(this).val();
@@ -239,7 +264,6 @@
 			formUrl = formUrl.replace('id', id);
 
 			var token = $(form).find('input[name="_token"]').val();
-			console.log(token);
 			$.ajax({
 				method: 'PUT', url: formUrl, data: {
 					_token: token, batch_route_id: value, update_batch: true,
