@@ -244,6 +244,30 @@ APPEND;
 		}
 	}
 
+	public static function getAllOrdersFromOrderId ($order_id)
+	{
+		// get all the items of an order,
+		// order by reached shipping station flag in descending order
+		$items = Item::where('order_id', $order_id)
+					 ->orderBy('reached_shipping_station', 'DESC')
+					 ->get();
+		// if the first item has the value of 1
+		// then at least one item reached the shipping stations
+		// return the items
+		if ( $items->first()->reached_shipping_station == 1 ) {
+			return $items;
+		}
+		// no item reached the shipping station,
+		// return nothing
+		return [ ];
+	}
+
+	public static function generateShippingUniqueId ($order)
+	{
+		return sprintf("%s-%s", static::orderNameFormatter($order), Ship::where('order_number', $order->order_id)
+																		->count());
+	}
+
 	public static function getHtmlBarcode ($value, $width = 1)
 	{
 		#return DNS1D::getBarcodeHTML($value, "C39", $width);
@@ -412,11 +436,34 @@ APPEND;
 	public static function populateShippingData ($items)
 	{
 		if ( $items instanceof Item ) {
-			static::insertDataIntoShipping($items);
+			// set
+			static::setShippingFlag($items);
 		} else {
 			foreach ( $items as $item ) {
-				static::insertDataIntoShipping($item);
+				static::setShippingFlag($item);
 			}
+		}
+	}
+
+	public static function setShippingFlag ($item)
+	{
+		// set reached_shipping_station to 1, as it reaches the shipping station
+		$item->reached_shipping_station = 1;
+		$item->save();
+
+		// if all items in a same order does pass shipping stations
+		$items = Item::where('order_id', $item->order_id)
+					 ->get();
+
+		$reached_shipping_station_count = 0;
+		foreach ( $items as $current ) {
+			if ( $current->reached_shipping_station ) {
+				++$reached_shipping_station_count;
+			}
+		}
+
+		if ( $items->count() == $reached_shipping_station_count ) { // move to shipping table
+			static::insertDataIntoShipping($item);
 		}
 	}
 
@@ -570,7 +617,7 @@ APPEND;
 								 'items.item_code',
 								 'items.order_id',
 								 'items.item_quantity',
-							 	 'items.item_thumb',
+								 'items.item_thumb',
 								 DB::raw('orders.id as order_table_id'),
 								 'orders.order_id',
 								 'orders.order_date',

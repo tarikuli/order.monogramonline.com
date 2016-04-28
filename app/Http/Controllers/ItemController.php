@@ -363,11 +363,11 @@ class ItemController extends Controller
 		$statuses = Helper::getBatchStatusList();
 		$route = BatchRoute::with('stations')
 						   ->find($items[0]->batch_route_id);
-
-		$department_id = DB::table('department_station')
-						   ->where('station_id', Station::where('station_name', $station_name)
-														->first()->id)
-						   ->first()->department_id;
+		$dept_station = DB::table('department_station')
+						  ->where('station_id', Station::where('station_name', $station_name)
+													   ->first()->id)
+						  ->first();
+		$department_id = $dept_station ? $dept_station->department_id : 0;
 		$rejection_reasons = new Collection();
 		if ( $items->count() ) {
 			$station_name = $items[0]->station_name;
@@ -382,7 +382,7 @@ class ItemController extends Controller
 		}
 
 		$department = Department::find($department_id);
-		$department_name = $department ? $department->department_name : '';
+		$department_name = $department ? $department->department_name : 'NO DEPARTMENT IS SET';
 		/*$stations = implode(" > ", array_map(function ($elem) {
 			return $elem['station_name'];
 		}, $route->stations->toArray()));
@@ -416,6 +416,9 @@ class ItemController extends Controller
 				$item->save();
 			}
 
+			if ( in_array($toStationName, Helper::$shippingStations) ) {
+				Helper::populateShippingData($items);
+			}
 			Helper::saveStationLog($items, $toStationName);
 
 			return response()->json([
@@ -732,6 +735,7 @@ class ItemController extends Controller
 		$item->item_status = null;
 		$item->rejection_message = null;
 		$item->rejection_reason = null;
+		$item->reached_shipping_station = 0;
 		$item->save();
 
 		return redirect()->back();
@@ -789,6 +793,22 @@ class ItemController extends Controller
 			->withRequest($request)
 			->with('stations', $stations)
 			->with('total_count', $total_count);
+	}
+
+	public function waiting_for_another_item (Request $request)
+	{
+		// SELECT id, order_id, COUNT( 1 ) AS counts FROM items GROUP BY order_id HAVING counts >1
+		// get the
+		$items = Item::with('order')
+					 ->where('batch_number', '!=', 0)
+					 ->groupBy('order_id')
+					 ->having('row_count', '>', 1)
+					 ->get([
+						 '*',
+						 DB::raw("COUNT(1) as row_count"),
+					 ]);
+
+		return view('shipping.waiting_for_another_item')->with('items', $items);
 	}
 
 	#public function get_sku_on_stations (Request $request, $sku, $station_name)
@@ -997,26 +1017,40 @@ class ItemController extends Controller
 		$batch_numbers = $request->get('batch_number');
 
 		$changes = [
-			'batch_number'        => 0,
-			'batch_route_id'      => null,
-			'station_name'        => null,
-			'item_order_status'   => null,
-			'batch_creation_date' => null,
-			'tracking_number'     => null,
-			'item_order_status_2' => null,
-			'previous_station'    => null,
-			'item_status'         => null,
-			'rejection_message'   => null,
-			'rejection_reason'    => null,
+			'batch_number'             => 0,
+			'batch_route_id'           => null,
+			'station_name'             => null,
+			'item_order_status'        => null,
+			'batch_creation_date'      => null,
+			'tracking_number'          => null,
+			'item_order_status_2'      => null,
+			'previous_station'         => null,
+			'item_status'              => null,
+			'rejection_message'        => null,
+			'rejection_reason'         => null,
+			'reached_shipping_station' => 0,
 		];
 
 		Item::whereIn('batch_number', $batch_numbers)
 			->update($changes);
 
-		$message = sprintf("%s batches are released.", implode(", ", $batch_numbers));
+		$message = sprintf("Batches: %s are released.", implode(", ", $batch_numbers));
 
 		return redirect()
 			->back()
 			->with('success', $message);
+	}
+
+	public function partial_shipping (Request $request)
+	{
+		$item_id_array = $request->get('item_id', [ ]);
+		if ( !$item_id_array ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'No item was selected',
+				]);
+		}
+		return $item_id_array;
 	}
 }

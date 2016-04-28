@@ -64,6 +64,7 @@
 					<li><a href = "/stations/supervisor">Supervisor</a></li>
 					<li><a href = "/rules">Shipping Rules</a></li>
 					<li><a href = "/shipping">Shipping list</a></li>
+					<li><a href = "/items/waiting_for_another_item"><em><strong>Waiting for another items</strong></em></a></li>
 					<li><a href = "/summary">Stations summary</a></li>
 					<li><a href = "/export_station">Export station log</a></li>
 					<li><a href = "/rejection_reasons">Rejection reasons</a></li>
@@ -71,9 +72,7 @@
 					<li><a href = "/purchases/create">Add purchase</a></li>
 					<li><a href = "/stations/bulk">Bulk batch change</a></li>
 					<li><a href = "/items/active_batch_group">Active batch by SKU group</a></li>
-					<li>
-						<a href = "/products_specifications"><em><strong>Product specification sheet</strong></em></a>
-					</li>
+					<li><a href = "/products_specifications">Product specification sheet</a></li>
 				</ul>
 				<hr />
 				<ul>

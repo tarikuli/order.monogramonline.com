@@ -215,7 +215,7 @@ class OrderController extends Controller
 		foreach ( $items as $item_id_number ) {
 			$item = Item::find($item_id_number);
 			$item->item_quantity = $item_quantities[$index];
-			$item->item_order_status = isset( $item_order_statuses[$index] ) ? $item_order_statuses[$index] : 1;
+			$item->item_order_status_2 = isset( $item_order_statuses[$index] ) ? $item_order_statuses[$index] : 1;
 			$option = $item_options[$index];
 			$pieces = preg_split('/\r\n|[\r\n]/', $option);
 			$index++;

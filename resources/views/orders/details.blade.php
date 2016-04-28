@@ -236,7 +236,7 @@
 					<td>${{$item->item_unit_price}}</td>
 					<td style = "padding-left:20px">{!! Form::textarea("item_option[$ind]", \Monogram\Helper::jsonTransformer($item->item_option), ['id' => 'item_option', 'rows' => '3','style'=>'width:150px;color:#686869;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 9px']) !!}</td>
 					<td>
-						{!! Form::select("item_order_status[$ind]", \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->item_order_status, ['id' => 'order_status_id',])  !!}
+						{!! Form::select("item_order_status[$ind]", \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->item_order_status_2, ['id' => 'order_status_id',])  !!}
 						@if($item->batch_number)
 							<br />
 							<p>View batch: <a
