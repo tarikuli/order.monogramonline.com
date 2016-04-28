@@ -103,7 +103,7 @@
 							<td>Sub total</td>
 							<td>{{ $sub_total }}</td>
 							<td></td>
-							<td><a class = "push-shipping" href = "#">Push shipping</a></td>
+							<td><a class = "btn btn-success push-shipping" href = "#">Push shipping</a></td>
 							{{--<td></td>--}}
 						</tr>
 					@endif
