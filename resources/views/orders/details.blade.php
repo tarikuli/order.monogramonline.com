@@ -239,9 +239,9 @@
 						{!! Form::select("item_order_status[$ind]", \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->item_order_status_2, ['id' => 'order_status_id',])  !!}
 						@if($item->batch_number)
 							<br />
-							<p>View batch: <a
-										href = "{{ url(sprintf("/batches/%d/%s", $item->batch_number, $item->station_name)) }}"
-										target = "_blank">{{ $item->batch_number }}</a>
+							<p>View batch:
+								<a href = "{{ url(sprintf("/batches/%d/%s", $item->batch_number, $item->station_name)) }}"
+								   target = "_blank">{{ $item->batch_number }}</a>
 							</p>
 						@endif
 					</td>

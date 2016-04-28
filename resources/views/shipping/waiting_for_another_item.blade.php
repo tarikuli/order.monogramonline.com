@@ -36,6 +36,7 @@
 					<th>Order number</th>
 					<th>Item id</th>
 					<th>Item SL#</th>
+					<th>Batch</th>
 					<th>SKU</th>
 					<th>Image</th>
 					<th>Name</th>
@@ -55,21 +56,39 @@
 					@if($multiple_item_rows)
 						@setvar($order = $multiple_item_rows->first()->order)
 						@setvar($has_table_row = true)
-						<tr class="blank_row">
-							<td colspan="9"></td>
+						<tr class = "blank_row">
+							<td colspan = "10"></td>
 						</tr>
 						@foreach( $multiple_item_rows as $item)
 							@setvar($sub_total += $item->item_quantity)
 							<tr data-item-id = "{{ $item->id }}">
-								<td>{{ \Monogram\Helper::orderNameFormatter($item->order) }}</td>
+								<td>
+									<a href = "{{ url(sprintf("/orders/details/%s", $item->order_id)) }}"
+									   target = "_blank">{{ \Monogram\Helper::orderNameFormatter($item->order) }}</a>
+								</td>
 								<td>{{ $item->id }}</td>
 								<td>{{ $count++ }}</td>
-								<td>{{ $item->item_code }}</td>
+								<td>
+									@if($item->station_name)
+										<a href = "{{ url(sprintf("/batches/%d/%s", $item->batch_number, $item->station_name)) }}"
+										   target = "_blank">{{ $item->batch_number }}</a>
+									@else
+										{{ $item->batch_number }}
+									@endif
+								</td>
+								<td>
+									<a href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $item->item_code)) }}"
+									   target = "_blank">{{$item->item_code}}</a>
+								</td>
 								<td><img src = "{{ $item->item_thumb }}" /></td>
 								<td>{{ $item->item_description }}</td>
 								<td>{{ $item->item_quantity }}</td>
 								<td>{{ $item->station_name }}</td>
-								<td class = "text-center">{!! Form::checkbox("partial-shipping-checkbox", $item->id, false, ['class' => 'partial-shipping-checkbox']) !!}</td>
+								<td class = "text-center">
+									@if($item->reached_shipping_station)
+										{!! Form::checkbox("partial-shipping-checkbox", $item->id, false, ['class' => 'partial-shipping-checkbox']) !!}
+									@endif
+								</td>
 								{{--<td>{{ "" }}</td>--}}
 							</tr>
 						@endforeach
@@ -77,6 +96,7 @@
 						<tr>
 							<td>Shipping unique id</td>
 							<td>{{ \Monogram\Helper::generateShippingUniqueId( $order ) }}</td>
+							<td></td>
 							<td></td>
 							<td></td>
 							<td></td>
@@ -89,10 +109,11 @@
 					@endif
 				@endforeach
 				@if($has_table_row)
-					<tr class="blank_row">
-						<td colspan="9"></td>
+					<tr class = "blank_row">
+						<td colspan = "10"></td>
 					</tr>
 					<tr>
+						<td></td>
 						<td></td>
 						<td></td>
 						<td></td>
