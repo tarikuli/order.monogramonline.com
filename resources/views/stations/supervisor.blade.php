@@ -116,7 +116,7 @@
 						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['class' => 'order_status'])  !!}</td>
 					</tr>
 					<tr>
-						<td colspan = "13" class = "text-center">
+						<td colspan = "14" class = "text-center">
 							@if($item->route)
 								{{$item->route->batch_route_name}} => {!! str_replace($item->previous_station, sprintf("<b>%s</b>", $item->previous_station), \Monogram\Helper::routeThroughStations($item->route->id)) !!}
 							@endif

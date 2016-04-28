@@ -71,10 +71,12 @@
 			{!! Form::close() !!}
 		</div>
 
+		<h3 class = "page-header">
+			Shipping list @if(count($ships) > 0 ) ({{ $ships->total() }} items found / {{$ships->currentPage()}} of {{$ships->lastPage()}} pages) @endif
+			<a href="/items/waiting_for_another_item" style="font-size: 12px;">Go to waiting for another items</a>
+		</h3>
+
 		@if(count($ships) > 0)
-			<h3 class = "page-header">
-				Shipping list ({{ $ships->total() }} items found / {{$ships->currentPage()}} of {{$ships->lastPage()}} pages)
-			</h3>
 			<table class = "table table-bordered">
 				<tr>
 					<th>Order number</th>

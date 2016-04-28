@@ -27,10 +27,10 @@
 		@include('includes.error_div')
 		@include('includes.success_div')
 
+		<h3 class = "page-header">
+			Waiting for another items <a href="/shipping" style="font-size: 12px;">Go to ships list</a>
+		</h3>
 		@if(count($items) > 0)
-			<h3 class = "page-header">
-				Waiting for another items
-			</h3>
 			<table class = "table table-bordered">
 				<tr>
 					<th>Order number</th>
