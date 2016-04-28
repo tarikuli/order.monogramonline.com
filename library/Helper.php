@@ -248,14 +248,21 @@ APPEND;
 	{
 		// get all the items of an order,
 		// order by reached shipping station flag in descending order
+
+		// joining is done, because, one or more items may be added on the shipping table before
 		$items = Item::where('order_id', $order_id)
-					 ->orderBy('reached_shipping_station', 'DESC')
+					 ->orderBy('items.reached_shipping_station', 'DESC')
 					 ->get();
 		// if the first item has the value of 1
 		// then at least one item reached the shipping stations
 		// return the items
-		if ( $items->first()->reached_shipping_station == 1 ) {
-			return $items;
+		$first_item = $items->first();
+		// if ( $first_item->reached_shipping_station == 1 || ( $first_item->reached_shipping_station == 0 && $first_item->item_id == null ) ) {
+		if ( $first_item->reached_shipping_station == 1 ) {
+			return $items->filter(function ($row) {
+				return !Ship::where('item_id', $row->id)
+							->first();
+			});
 		}
 		// no item reached the shipping station,
 		// return nothing
@@ -266,6 +273,18 @@ APPEND;
 	{
 		return sprintf("%s-%s", static::orderNameFormatter($order), Ship::where('order_number', $order->order_id)
 																		->count());
+	}
+
+	public static function itemsMovedToShippingTable ($order_id)
+	{
+		// get all the items with the order id
+		$items = Item::where('order_id', $order_id)
+					 ->get();
+		// if any item has reached shipping station
+		// then it is not moved to shipping station
+		// otherwise, it's moved to shipping station
+		return $items->groupBy('reached_shipping_station')
+					 ->get(0);
 	}
 
 	public static function getHtmlBarcode ($value, $width = 1)
@@ -467,7 +486,7 @@ APPEND;
 		}
 	}
 
-	private static function insertDataIntoShipping ($item)
+	public static function insertDataIntoShipping ($item, $unique_order_id = null)
 	{
 		$post_value = $item->item_quantity * $item->item_unit_price;
 		$sku = $item->item_code;
@@ -544,7 +563,8 @@ APPEND;
 		$phone = trim($customer->ship_phone) ? $customer->ship_phone : $customer->bill_phone;
 		$item_id = $item->id;
 
-		$unique_order_id = sprintf("%06s", $item->order->id);
+		#$unique_order_id = sprintf("%06s", $item->order->id);
+		$unique_order_id = $unique_order_id ?: static::generateShippingUniqueId($item->order);
 
 		$ship = new Ship();
 		$ship->order_number = $order_number;

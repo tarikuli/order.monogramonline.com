@@ -799,16 +799,52 @@ class ItemController extends Controller
 	{
 		// SELECT id, order_id, COUNT( 1 ) AS counts FROM items GROUP BY order_id HAVING counts >1
 		// get the
-		$items = Item::with('order')
-					 ->where('batch_number', '!=', 0)
-					 ->groupBy('order_id')
-					 ->having('row_count', '>', 1)
-					 ->get([
-						 '*',
-						 DB::raw("COUNT(1) as row_count"),
-					 ]);
+		$rows = Item::with('order')
+					->where('batch_number', '!=', 0)
+					->groupBy('order_id')
+					->having('row_count', '>', 1)
+					->get([
+						'*',
+						DB::raw("COUNT(1) as row_count"),
+					]);
+
+		$items = $rows->filter(function ($row) {
+			return Helper::itemsMovedToShippingTable($row->order_id);
+		});
 
 		return view('shipping.waiting_for_another_item')->with('items', $items);
+	}
+
+	public function partial_shipping (Request $request)
+	{
+		$item_id_array = $request->get('item_id', [ ]);
+		if ( !$item_id_array ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'No item was selected',
+				]);
+		}
+
+		$items = Item::with('order')
+					 ->whereIn('id', $item_id_array)
+					 ->get();
+		if ( $items->count() ) {
+			$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
+			foreach ( $items as $item ) {
+				Helper::insertDataIntoShipping($item, $unique_order_id);
+			}
+
+			return redirect()
+				->back()
+				->with('success', sprintf("New shipping is listed."));
+		}
+
+		return redirect()
+			->back()
+			->withErrors([
+				'error' => 'No items are given to push to shipping',
+			]);
 	}
 
 	#public function get_sku_on_stations (Request $request, $sku, $station_name)
@@ -1039,18 +1075,5 @@ class ItemController extends Controller
 		return redirect()
 			->back()
 			->with('success', $message);
-	}
-
-	public function partial_shipping (Request $request)
-	{
-		$item_id_array = $request->get('item_id', [ ]);
-		if ( !$item_id_array ) {
-			return redirect()
-				->back()
-				->withErrors([
-					'error' => 'No item was selected',
-				]);
-		}
-		return $item_id_array;
 	}
 }
