@@ -736,6 +736,7 @@ class ItemController extends Controller
 		$item->rejection_message = null;
 		$item->rejection_reason = null;
 		$item->reached_shipping_station = 0;
+		$item->supervisor_message = null;
 		$item->save();
 
 		return redirect()->back();
@@ -1064,6 +1065,7 @@ class ItemController extends Controller
 			'item_status'              => null,
 			'rejection_message'        => null,
 			'rejection_reason'         => null,
+			'supervisor_message'       => null,
 			'reached_shipping_station' => 0,
 		];
 

@@ -276,6 +276,8 @@ class StationController extends Controller
 		if ( $request->has('station_name') ) {
 			$station_name = $request->get('station_name');
 			$item->station_name = $station_name;
+			$supervisor_message = trim($request->get('supervisor_message'));
+			$item->supervisor_message = !empty( $supervisor_message ) ? $supervisor_message : null;
 			$item->rejection_message = null;
 			$item->rejection_reason = null;
 			$item->save();
@@ -287,7 +289,6 @@ class StationController extends Controller
 				$order->order_status = $order_status;
 				$order->save();
 			}
-
 		} elseif ( $request->has('item_order_status_2') ) {
 			$item_order_status_2 = $request->get('item_order_status_2');
 			$item->item_order_status_2 = $item_order_status_2;

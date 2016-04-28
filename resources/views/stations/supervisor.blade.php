@@ -107,6 +107,7 @@
 							@endif
 						</td>
 						<td>{{$item->batch_creation_date ? substr($item->batch_creation_date, 0, 10) : "N/A"}}</td>
+						<td>{!! Form::text('supervisor_message', null, ['class' => 'supervisor_message', 'placeholder' => 'Place a message']) !!}</td>
 						<td>
 							{!! Form::select('next_station', $item->route ? $item->route->stations_list->lists('station_description', 'station_name')->prepend('Select a next station', '') : [], $item->station_name, ['class' => 'next_station']) !!}
 						</td>
@@ -149,8 +150,10 @@
 		$("select.next_station").on('change', function ()
 		{
 			$(this).prop('disabled', 'disabled');
+			var tr = $(this).closest('tr');
 			var station_name = $(this).val();
-			var item_id = $(this).closest('tr').attr('data-id');
+			var item_id = tr.attr('data-id');
+			var supervisor_message = $(tr).find('.supervisor_message').val();
 
 			$("<input type='hidden' value='' />")
 					.attr("name", "item_id")
@@ -159,6 +162,10 @@
 			$("<input type='hidden' value='' />")
 					.attr("name", "station_name")
 					.attr("value", station_name)
+					.appendTo($("form#on-change-apply"));
+			$("<input type='hidden' value='' />")
+					.attr("name", "supervisor_message")
+					.attr("value", supervisor_message)
 					.appendTo($("form#on-change-apply"));
 
 			$("form#on-change-apply").submit();

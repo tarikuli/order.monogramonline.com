@@ -148,8 +148,12 @@
 								{{--<td>{{$item->item_description}}</td>--}}
 								<td class = "description">{{$item->item_description}}</td>
 								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
-								<td>{{--<a href = "#" class = "btn btn-danger reject">Reject</a> |--}} <a href = "#"
-								                                                                          class = "btn btn-success done">Done</a>
+								<td>{{--<a href = "#" class = "btn btn-danger reject">Reject</a> |--}}
+									@if($item->supervisor_message)
+										{{ $item->supervisor_message }}
+										<br />
+									@endif
+									<a href = "#" class = "btn btn-success done">Done</a>
 								</td>
 							</tr>
 						@endforeach
