@@ -677,6 +677,7 @@ class OrderController extends Controller
 		$order->space_id = $request->get('Space-Id');
 		$order->store_id = $request->get('Store-Id');
 		$order->store_name = $request->get('Store-Name');
+		$order->order_status = 4;
 		$order->save();
 		// -------------- Orders table data insertion ended ----------------------//
 

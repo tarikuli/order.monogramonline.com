@@ -4,6 +4,7 @@ use App\BatchRoute;
 use App\Department;
 use App\Item;
 use App\Option;
+use App\Order;
 use App\Parameter;
 use App\Product;
 use App\RejectionReason;
@@ -164,6 +165,14 @@ class ItemController extends Controller
 				$item->batch_creation_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->item_order_status_2 = 2;
 				$item->save();
+
+				/* add order status to order table*/
+				$order = Order::where('order_id', $item->order_id)
+							  ->first();
+				if ( $order ) {
+					$order->order_status = 4;
+					$order->save();
+				}
 
 				/*$station_log = new StationLog();
 				$station_log->item_id = $item_id;

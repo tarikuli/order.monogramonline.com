@@ -4,6 +4,7 @@ use App\BatchRoute;
 use App\Customer;
 use App\Item;
 use App\MasterCategory;
+use App\Order;
 use App\Parameter;
 use App\Product;
 use App\Rule;
@@ -483,7 +484,7 @@ APPEND;
 			}
 		}
 
-		if ( $items->count() == $reached_shipping_station_count ) { // move to shipping table
+		if ( $items->count() && ( $items->count() == $reached_shipping_station_count ) ) { // move to shipping table
 			// get the item id from the shipping table
 			$items_exist_in_shipping = Ship::where('order_number', $order_id)
 										   ->lists('item_id');
@@ -505,6 +506,14 @@ APPEND;
 					static::insertDataIntoShipping($current_item, $unique_order_id);
 				}
 			}*/
+		} elseif ( $items->count() ) {
+			// order has more than 0
+			// any of the items has not reached the shipping station
+			Order::where('order_id', $order_id)
+				 ->update([
+					 'order_status' => 9,
+					 // WAITING FOR ANOTHER PC
+				 ]);
 		}
 	}
 
