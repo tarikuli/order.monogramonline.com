@@ -73,7 +73,7 @@
 
 		<h3 class = "page-header">
 			Shipping list @if(count($ships) > 0 ) ({{ $ships->total() }} items found / {{$ships->currentPage()}} of {{$ships->lastPage()}} pages) @endif
-			<a href="/items/waiting_for_another_item" style="font-size: 12px;">Go to waiting for another items</a>
+			<a href = "/items/waiting_for_another_item" style = "font-size: 12px;">Go to waiting for another items</a>
 		</h3>
 
 		@if(count($ships) > 0)
@@ -81,6 +81,7 @@
 				<tr>
 					<th>Order number</th>
 					<th>Mail class</th>
+					<th>Item id</th>
 					<th>Package shape</th>
 					<th>Tracking type</th>
 					<th>Length</th>
@@ -99,12 +100,14 @@
 					<th>Email</th>
 					<th>Phone</th>
 				</tr>
-				@foreach($ships as $ship)
+				@foreach($ships->groupBy('unique_order_id') as $groupByUniqueOrderId)
+					@setvar($ship = $groupByUniqueOrderId->first())
 					<tr data-id = "{{$ship->id}}" class = "text-center">
 						<td>
 							<a href = "{{url(sprintf("orders/details/%s", $ship->order_number))}}">{{ $ship->unique_order_id }}</a>
 						</td>
 						<td>{{$ship->mail_class}}</td>
+						<td>{{ $groupByUniqueOrderId->implode('item_id', ", ") }}</td>
 						<td>{{$ship->package_shape}}</td>
 						<td>{{$ship->tracking_type}}</td>
 						<td>{{$ship->length}}</td>

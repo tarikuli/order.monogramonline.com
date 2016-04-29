@@ -281,7 +281,7 @@ APPEND;
 		$items = Item::where('order_id', $order_id)
 					 ->get();
 		// if any item has reached shipping station
-		// then it is not moved to shipping station
+		// then it is not moved to shipping table
 		// otherwise, it's moved to shipping station
 		return $items->groupBy('reached_shipping_station')
 					 ->get(0);
@@ -471,7 +471,9 @@ APPEND;
 		$item->save();
 
 		// if all items in a same order does pass shipping stations
-		$items = Item::where('order_id', $item->order_id)
+		$order_id = $item->order_id;
+		$items = Item::with('order')
+					 ->where('order_id', $order_id)
 					 ->get();
 
 		$reached_shipping_station_count = 0;
@@ -482,7 +484,27 @@ APPEND;
 		}
 
 		if ( $items->count() == $reached_shipping_station_count ) { // move to shipping table
-			static::insertDataIntoShipping($item);
+			// get the item id from the shipping table
+			$items_exist_in_shipping = Ship::where('order_number', $order_id)
+										   ->lists('item_id');
+			// filter the item ids those are available in shipping table
+			$items = $items->filter(function ($row) use ($items_exist_in_shipping) {
+				// return false if the shipping table has the item id
+				return $items_exist_in_shipping->contains($row->id) ? false : true;
+			});
+			#dd($items);
+			// generate new order id
+			$unique_order_id = static::generateShippingUniqueId($items->first()->order);
+			foreach ( $items as $current_item ) {
+				// push all the items to shipping table with the unique order id
+				static::insertDataIntoShipping($current_item, $unique_order_id);
+			}
+			/*foreach ( $items->groupBy('order_id') as $order_id => $move_able_items ) {
+				$unique_order_id = static::generateShippingUniqueId($item->order);
+				foreach ( $move_able_items as $current_item ) {
+					static::insertDataIntoShipping($current_item, $unique_order_id);
+				}
+			}*/
 		}
 	}
 

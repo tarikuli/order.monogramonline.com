@@ -798,7 +798,7 @@ class ItemController extends Controller
 
 	public function waiting_for_another_item (Request $request)
 	{
-		// SELECT id, order_id, COUNT( 1 ) AS counts FROM items GROUP BY order_id HAVING counts >1
+		// SELECT id, order_id, COUNT( 1 ) AS counts FROM items GROUP BY order_id HAVING counts > 1
 		// get the
 		$rows = Item::with('order')
 					->where('batch_number', '!=', 0)
