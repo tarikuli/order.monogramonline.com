@@ -657,6 +657,14 @@ APPEND;
 							 ->where('orders.is_deleted', 0)
 							 ->where('items.batch_number', '0')
 							 ->where('items.is_deleted', 0)
+							 ->whereNotIn('orders.order_status', [ // don't create batch, if the following order statuses are there
+																   3,
+																   // On hold
+																   7,
+																   // returned
+																   8,
+																   // cancelled
+							 ])
 							 ->where(function ($query) {
 								 return $query->where('products.batch_route_id', '!=', 115)
 											  ->whereNotNull('products.batch_route_id');
