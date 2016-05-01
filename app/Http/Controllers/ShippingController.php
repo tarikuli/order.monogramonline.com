@@ -30,11 +30,12 @@ class ShippingController extends Controller
 
 	public function index (Request $request)
 	{
-		$ships = Ship::where('is_deleted', 0)
+		$ships = Ship::with('item.product')
+					 ->where('is_deleted', 0)
 					 ->searchCriteria($request->get('search_for_first'), $request->get('search_in_first'))
 					 ->searchCriteria($request->get('search_for_second'), $request->get('search_in_second'))
 					 ->searchWithinDate($request->get('start_date'), $request->get('end_date'))
-					 ->orderBy('unique_order_id')
+					 ->latest('postmark_date')
 					 ->paginate(50);
 
 		return view('shipping.index', compact('ships', 'request'))->with('search_in', static::$search_in);

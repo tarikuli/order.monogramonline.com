@@ -23,6 +23,11 @@ class Ship extends Model
 		return (new static())->tableColumns();
 	}
 
+	public function item ()
+	{
+		return $this->belongsTo('App\Item', 'item_id', 'id');
+	}
+
 	public function scopeSearchCriteria ($query, $search_for, $search_in)
 	{
 		$search_for = trim($search_for);

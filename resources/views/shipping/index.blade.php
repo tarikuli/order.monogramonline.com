@@ -81,14 +81,20 @@
 				<tr>
 					<th>Order number</th>
 					<th>Mail class</th>
+					<th>Batch</th>
 					<th>Item id</th>
-					<th>Package shape</th>
-					<th>Tracking type</th>
+					<th>SKU</th>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Qty</th>
+					<th>Tracking #</th>
 					<th>Length</th>
 					<th>Height</th>
 					<th>Width</th>
 					<th>Billed weight</th>
 					<th>Actual weight</th>
+					<th>Package shape</th>
+					<th>Tracking type</th>
 					<th>Name</th>
 					<th>Company</th>
 					<th>Address 1</th>
@@ -101,31 +107,79 @@
 					<th>Phone</th>
 				</tr>
 				@foreach($ships->groupBy('unique_order_id') as $groupByUniqueOrderId)
+					@setvar($count = $groupByUniqueOrderId->count())
 					@setvar($ship = $groupByUniqueOrderId->first())
-					<tr data-id = "{{$ship->id}}" class = "text-center">
-						<td>
-							<a href = "{{url(sprintf("orders/details/%s", $ship->order_number))}}">{{ $ship->unique_order_id }}</a>
+					<tr data-id = "{{ $ship->id }}" class = "text-center">
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">
+							<a href = "{{url(sprintf("orders/details/%s", $ship->order_number))}}"
+							   target = "_blank">{{ $ship->unique_order_id }}</a>
 						</td>
-						<td>{{$ship->mail_class}}</td>
-						<td>{{ $groupByUniqueOrderId->implode('item_id', ", ") }}</td>
-						<td>{{$ship->package_shape}}</td>
-						<td>{{$ship->tracking_type}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->mail_class}}</td>
+						<td>
+							@if($ship->item->batch_number)
+								<a href = "{{ url(sprintf("/batches/%d/%s", $ship->item->batch_number, $ship->item->station_name)) }}"
+								   target = "_blank">{{ $ship->item->batch_number }}</a>
+							@else
+								{{ $ship->item->batch_number }}
+							@endif
+						</td>
+						<td>{{ $ship->item->id }}</td>
+						<td>
+							<a href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $ship->item->item_code)) }}"
+							   target = "_blank">{{ $ship->item->item_code }}
+							</a>
+						</td>
+						<td><img src = "{{ $ship->item->item_thumb }}" /></td>
+						<td>{{ $ship->item->item_description }}</td>
+						<td>{{ $ship->item->item_quantity }}</td>
+						<td>{{ $ship->item->tracking_number ?: "N/A" }}</td>
 						<td>{{$ship->length}}</td>
 						<td>{{$ship->height}}</td>
 						<td>{{$ship->width}}</td>
 						<td>{{$ship->billed_weight}}</td>
 						<td>{{$ship->actual_weight}}</td>
-						<td>{{$ship->name}}</td>
-						<td>{{$ship->company}}</td>
-						<td>{{$ship->address1}}</td>
-						<td>{{$ship->address2}}</td>
-						<td>{{$ship->city}}</td>
-						<td>{{$ship->state_city}}</td>
-						<td>{{$ship->postal_code}}</td>
-						<td>{{$ship->country}}</td>
-						<td>{{$ship->email}}</td>
-						<td>{{$ship->phone}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->package_shape}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->tracking_type}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->name}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->company}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->address1}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->address2}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->city}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->state_city}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->postal_code}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->country}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->email}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->phone}}</td>
 					</tr>
+
+					@foreach($groupByUniqueOrderId->slice(1) as $ship)
+						<tr class = "text-center">
+							<td>
+								@if($ship->item->batch_number)
+									<a href = "{{ url(sprintf("/batches/%d/%s", $ship->item->batch_number, $ship->item->station_name)) }}"
+									   target = "_blank">{{ $ship->item->batch_number }}</a>
+								@else
+									{{ $ship->item->batch_number }}
+								@endif
+							</td>
+							<td>{{ $ship->item->id }}</td>
+							<td>
+								<a href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $ship->item->item_code)) }}"
+								   target = "_blank">{{ $ship->item->item_code }}
+								</a>
+							</td>
+							<td><img src = "{{ $ship->item->item_thumb }}" /></td>
+							<td>{{ $ship->item->item_description }}</td>
+							<td>{{ $ship->item->item_quantity }}</td>
+							<td>{{ $ship->item->tracking_number ?: "N/A" }}</td>
+							<td>{{$ship->length}}</td>
+							<td>{{$ship->height}}</td>
+							<td>{{$ship->width}}</td>
+							<td>{{$ship->billed_weight}}</td>
+							<td>{{$ship->actual_weight}}</td>
+						</tr>
+					@endforeach
+
 				@endforeach
 			</table>
 
