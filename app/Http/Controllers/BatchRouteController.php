@@ -83,7 +83,11 @@ class BatchRouteController extends Controller
 					->attach($newStations);
 
 		#return redirect(url('batch_routes'));
-		return redirect()->back();
+		// create a jumpable url
+		$url = sprintf("%s#%s", redirect()
+			->getUrlGenerator()
+			->previous(), $batch_route->batch_code);
+		return redirect($url);
 	}
 
 	public function destroy ($id)

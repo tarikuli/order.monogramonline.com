@@ -77,7 +77,7 @@
 									</tr>
 
 									@foreach($batch_routes as $batch_route)
-										<tr data-id = "{{$batch_route->id}}">
+										<tr data-id = "{{$batch_route->id}}" id = "{{ $batch_route->batch_code }}">
 											<td style = "vertical-align: top;margin-right:20px;padding-bottom:7px"><a
 														href = "#"
 														class = "delete"
@@ -160,7 +160,7 @@
 	<script type = "text/javascript" src = "{{ url('assets/js/jquery-ui.js') }}"></script>
 	<script type = "text/javascript" src = "{{ url('assets/js/ui.multiselect.js') }}"></script>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
-	<script type="text/javascript">
+	<script type = "text/javascript">
 		var newer = jQuery.noConflict();
 	</script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
@@ -170,9 +170,9 @@
 			$(".multiselect").multiselect();
 		});
 		/*$(function ()
-		{
-			$(".multiselect").multiselect();
-		});*/
+		 {
+		 $(".multiselect").multiselect();
+		 });*/
 		var message = {
 			delete: 'Are you sure you want to delete?',
 		};
