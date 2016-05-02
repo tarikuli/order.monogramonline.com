@@ -18,8 +18,8 @@ class BatchRouteController extends Controller
 						   ->lists('station_description', 'id');
 		$batch_routes = BatchRoute::with('stations_list')
 								  ->where('is_deleted', 0)
-								  ->latest()
-								  ->paginate(50);
+								  ->orderBy('batch_code')
+								  ->paginate(200);
 		$templates = Template::where('is_deleted', 0)
 							 ->lists('template_name', 'id')
 							 ->prepend('Select template', '');
