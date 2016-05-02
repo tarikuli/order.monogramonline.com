@@ -56,7 +56,7 @@
 						<th>Action</th>
 					</tr>
 					@foreach($stations as $station)
-						<tr data-id = "{{$station->id}}">
+						<tr data-id = "{{$station->id}}" id="{{ $station->station_name }}">
 							<td>{{ $count++ }}</td>
 							<td><input class = "form-control" name = "station_name" type = "text"
 							           value = "{{$station->station_name}}"></td>

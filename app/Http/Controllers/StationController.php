@@ -98,8 +98,11 @@ class StationController extends Controller
 		$station->save();
 
 		session()->flash('success', 'Station is successfully updated.');
-
-		return redirect(url('stations'));
+		$url = sprintf("%s#%s", redirect()
+			->getUrlGenerator()
+			->previous(), $station->station_name);
+		return redirect($url);
+		#return redirect(url('stations'));
 	}
 
 	public function destroy ($id)
