@@ -597,6 +597,16 @@ class ItemController extends Controller
 			array_splice($columns, $place, 0, [ 'graphic_sku' ]);
 		}
 
+		// change the sku to parent sku
+		// change the graphic sku to sku
+		foreach ( $columns as &$column ) {
+			if ( strtolower($column) == "sku" ) {
+				$column = "Parent SKU";
+			} elseif ( strtolower($column) == "graphic_sku" ) {
+				$column = "SKU";
+			}
+		}
+
 		$file_path = sprintf("%s/assets/exports/batches/", public_path());
 		$file_name = sprintf("%s.csv", $batch_id);
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
@@ -617,7 +627,9 @@ class ItemController extends Controller
 					$result = $exp[count($exp) - 1];
 					#$result = $item->order_id;
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "sku" ) { // if the template value is sku
-					$isSkuFieldFound = true;
+					// previous line is commented after the sku became parent sku
+					// and, graphic_sku became sku
+					//} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "parentsku" ) { // if the template value is sku
 					$result = $item->item_code;
 					// as the sku exists, the next column is the graphic sku
 					// insert result to the row
