@@ -155,7 +155,26 @@ class ProductSpecificationController extends Controller
 
 				return redirect()->to(sprintf("products_specifications/step/2?sku=%s&production_category=%d", $proposed_sku, $request->get('production_category')));
 			case 2:
-				$specSheet = $this->insertOrUpdateSpec($request);
+				$specSheet = false;
+				$previous_sku = trim($request->get('previous_sku', ''));
+				if ( !empty( $previous_sku ) ) {
+					$specSheet = SpecificationSheet::where('product_sku', $previous_sku)
+												   ->first();
+					if ( !$specSheet ) {
+						return redirect()
+							->back()
+							#->withInput()
+							->withErrors([
+								'error' => 'Not a valid product sku is chosen to copy',
+							]);
+					} else {
+						$newSpecSheet = $specSheet->replicate();
+						$newSpecSheet->product_sku = trim($request->get('product_sku'));
+						$newSpecSheet->save();
+					}
+				} else {
+					$specSheet = $this->insertOrUpdateSpec($request);
+				}
 				if ( $specSheet == false ) {
 					return redirect()
 						->back()

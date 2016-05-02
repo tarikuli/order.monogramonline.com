@@ -9,9 +9,10 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<style>
-		tbody#product-specification-table-body tr td input{
+		tbody#product-specification-table-body tr td input {
 			width: 100px;
 		}
+
 		tbody#product-specification-table-body tr td .wide-input {
 			width: 210px;
 		}
@@ -72,6 +73,9 @@
 						<div class = "col-md-4">
 							{!! Form::text('product_sku', $sku, ['id' => 'product_sku', 'class' => "form-control"/*, 'readonly' => 'readonly'*/]) !!}
 						</div>
+						<div class = "col-md-4">
+							{!! Form::text('previous_sku', null, ['id' => 'previous_sku', 'class' => "form-control", 'placeholder' => 'Enter previous SKU to copy or leave empty']) !!}
+						</div>
 					</div>
 					<div class = "form-group col-md-12">
 						{!! Form::label('product_description', 'Product description', ['class' => 'col-md-2 control-label']) !!}
@@ -84,7 +88,7 @@
 					<div class = "form-group col-md-12">
 						{!! Form::label('make_sample', 'Make sample?: ', ['class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
-							{!! Form::text('make_sample', null, ['id' => 'product_weight', 'class' => "form-control",]) !!}
+							{!! Form::select('make_sample', \Monogram\Helper::$specSheetSampleDataArray, "Yes", ['id' => 'product_weight', 'class' => "form-control",]) !!}
 						</div>
 					</div>
 					<div class = "form-group col-md-12">
@@ -732,9 +736,12 @@
 		$("form").on('submit', function (event)
 		{
 			var product_name = $("input#product_name").val().trim();
-			if ( product_name == "" ) {
+			var previous_sku = $("input#previous_sku").val().trim();
+			if ( product_name == "" && previous_sku == "" ) {
 				alert('Product name cannot be empty');
 				return false;
+			} else if ( previous_sku != "" ) {
+				return true;
 			}
 		});
 	</script>

@@ -170,6 +170,11 @@ class Helper
 		'complete'    => "Complete",
 	];
 
+	public static $specSheetSampleDataArray = [
+		'Yes' => 'Yes',
+		'No'  => 'No',
+	];
+
 	public static $shippingStations = [
 		'J-SHP',
 		'R-SHP',

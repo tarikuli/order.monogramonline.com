@@ -98,7 +98,7 @@
 					<div class = "form-group col-md-12">
 						{!! Form::label('make_sample', 'Make sample?: ', ['class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
-							{!! Form::text('make_sample', $spec->make_sample, ['id' => 'product_weight', 'class' => "form-control",]) !!}
+							{!! Form::select('make_sample', \Monogram\Helper::$specSheetSampleDataArray, $spec->make_sample, ['id' => 'product_weight', 'class' => "form-control",]) !!}
 						</div>
 					</div>
 					<div class = "form-group col-md-12">
