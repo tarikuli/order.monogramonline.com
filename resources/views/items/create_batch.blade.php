@@ -72,7 +72,7 @@
 							@foreach($mixed_groups as $group_key => $group_values) {{-- $group_key = 0/no mix, = 1 / mix --}}
 							@foreach($group_values->chunk($batch_route->batch_max_units) as $chunkedRows)
 								@if($batch_route->stations_list->count())
-									<div class = "col-xs-12"> Allow Mixing : {{ $group_key }}
+									<div class = "col-xs-12">
 										<table class = "table" style = "margin-top: 5px;">
 											<tr data-id = "{{$batch_route->id}}">
 												<td>{{ $count }}</td>
