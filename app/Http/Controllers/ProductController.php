@@ -37,7 +37,7 @@ class ProductController extends Controller
 
 	public function index (Request $request)
 	{
-		$products = Product::with('batch_route', 'master_category')
+		$products = Product::with('batch_route.template', 'master_category')
 						   ->where('is_deleted', 0)/*->searchIdCatalog($request->get('id_catalog'))
 						   ->searchProductModel($request->get('product_model'))
 						   ->searchProductName($request->get('product_name'))*/
