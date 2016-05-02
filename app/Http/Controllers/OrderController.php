@@ -769,6 +769,7 @@ class OrderController extends Controller
 				$product = new Product();
 				$product->id_catalog = $item->item_id;
 				$product->product_model = $item->item_code;
+				$product->batch_route_id = Helper::getDefaultRouteId();
 			} else {
 				if ( $product->id_catalog == $item->item_id ) { // if product id catalog exists update product model
 					$product->product_model = $item->item_code;
@@ -781,7 +782,6 @@ class OrderController extends Controller
 			#$product->product_model = $item->item_code;
 			#$product->id_catalog = $item->item_id;
 			$product->product_url = $item->item_url;
-			$product->batch_route_id = Helper::getDefaultRouteId();
 			$product->product_name = $item->item_description;
 			$product->product_price = $item->item_unit_price;
 			$product->is_taxable = ( $item->item_taxable == 'Yes' ? 1 : 0 );
