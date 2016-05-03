@@ -359,7 +359,7 @@ class OrderController extends Controller
 
 	public function details ($order_id)
 	{
-		$order = Order::with('customer', 'items.shipInfo', 'order_sub_total', 'notes.user')
+		$order = Order::with('customer', 'items.shipInfo', 'items.product', 'order_sub_total', 'notes.user')
 					  ->where('is_deleted', 0)
 					  ->where('order_id', $order_id)
 					  ->latest()
@@ -738,6 +738,7 @@ class OrderController extends Controller
 			$item->item_unit_price = $request->get('Item-Unit-Price-' . $item_count_index);
 			$item->item_url = $request->get('Item-Url-' . $item_count_index);
 			$item->item_taxable = $request->get('Item-Taxable-' . $item_count_index);
+			$item->item_order_status_2 = 4; // set item in order status to "TO BE PROCESSED"
 			$item->data_parse_type = 'hook';
 			$item->save();
 			// -------------- Items table data insertion ended ---------------------- //

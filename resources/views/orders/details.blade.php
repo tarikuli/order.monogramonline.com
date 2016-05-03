@@ -14,6 +14,19 @@
 			font-size: 10px;
 			color: #000000;
 		}
+
+		table#items-table th {
+			min-width: 100px;
+		}
+
+		table#items-table td {
+			min-width: 100px;
+			text-align: center;
+		}
+		table#items-table td img{
+			min-width: 100px;
+			float: left;
+		}
 	</style>
 </head>
 <body>
@@ -207,7 +220,7 @@
 				</td>
 			</tr>
 		</table>
-		<table>
+		{{--<table>
 			<tr>
 				<td style = "padding-left:50px">Image</td>
 				<td style = "padding-left:50px">Name</td>
@@ -219,9 +232,34 @@
 				<td style = "padding-left:130px">Item status</td>
 				<td style = "padding-left:160px">B/O</td>
 			</tr>
-		</table>
+		</table>--}}
 		<hr style = "width: 100%; color: black; background-color:black;margin-top:  10px" size = "1" />
-		<table>
+		<table id = "items-table">
+			<thead>
+			{{--<tr>
+				<th style = "padding-left:50px">Image</th>
+				<th style = "padding-left:50px">Name</th>
+				<th style = "padding-left:180px">Code</th>
+				<th style = "padding-left:90px">Quantity</th>
+				<th style = "padding-left:60px">Inv</th>
+				<th style = "padding-left:60px">Each</th>
+				<th style = "padding-left:20px">Options</th>
+				<th style = "padding-left:130px">Item status</th>
+				<th style = "padding-left:160px">B/O</th>
+			</tr>--}}
+			<tr>
+				<th>Image</th>
+				<th>Name</th>
+				<th>Code</th>
+				<th>Quantity</th>
+				<th>Inv</th>
+				<th>Each</th>
+				<th>Options</th>
+				<th>Item status</th>
+				<th>B/O</th>
+			</tr>
+			</thead>
+			<tbody>
 			@setvar($ind = 0)
 			@setvar($sub_total = 0)
 			@foreach($order->items as $item)
@@ -229,12 +267,19 @@
 				<tr>
 					{!! Form::hidden("item_id[$ind]", $item->id) !!}
 					<td><img src = "{{$item->item_thumb}}" /></td>
-					<td style = 'width: 200px;padding-left:30px'><a href = "#">{{$item->item_description}}</a></td>
-					<td><a style = 'color:red' href = "#">{{$item->item_code}}</a></td>
-					<td style = "padding-left:80px">{!! Form::text("item_quantity[$ind]", $item->item_quantity, ['id' => 'item_quantity','style'=>'width:35px']) !!}</td>
-					<td style = "width:130px"></td>
+					<td>
+						<a href = "{{ url($item->product->product_url) }}"
+						   target = "_blank">{{$item->item_description}}</a>
+					</td>
+					<td>
+						<a style = 'color:red'
+						   href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $item->item_code)) }}"
+						   target = "_blank">{{$item->item_code}}</a>
+					</td>
+					<td>{!! Form::text("item_quantity[$ind]", $item->item_quantity, ['id' => 'item_quantity','style'=>'width:35px']) !!}</td>
+					<td></td>
 					<td>${{$item->item_unit_price}}</td>
-					<td style = "padding-left:20px">{!! Form::textarea("item_option[$ind]", \Monogram\Helper::jsonTransformer($item->item_option), ['id' => 'item_option', 'rows' => '3','style'=>'width:150px;color:#686869;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 9px']) !!}</td>
+					<td>{!! Form::textarea("item_option[$ind]", \Monogram\Helper::jsonTransformer($item->item_option), ['id' => 'item_option', 'rows' => '3','style'=>'width:150px;color:#686869;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 9px']) !!}</td>
 					<td>
 						{!! Form::select("item_order_status[$ind]", \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->item_order_status_2, ['id' => 'order_status_id',])  !!}
 						@if($item->batch_number)
@@ -244,7 +289,7 @@
 								<a href = "{{ url(sprintf("/batches/%d/%s", $item->batch_number, $item->station_name)) }}"
 								   target = "_blank">{{ $item->batch_number }}</a>
 								@if($item->station_name)
-									<br/>
+									<br />
 									<span>Current station: {{ $item->station_name }}</span>
 								@endif
 							</p>
@@ -254,7 +299,6 @@
 					@setvar($ind++)
 				</tr>
 				<tr colspan = "10">
-					<td></td>
 					<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>
 				</tr>
 				@if($item->shipInfo && $item->shipInfo->tracking_number)
@@ -263,6 +307,7 @@
 					</tr>
 				@endif
 			@endforeach
+			</tbody>
 		</table>
 		<hr style = "width: 100%; color: black; background-color:black;margin-top:  10px" size = "1" />
 		<table>
@@ -333,12 +378,22 @@
 		<div align = "right">
 			<button type = "submit" class = "btn btn-primary">Update Order</button>
 		</div>
+		<table style = "margin-bottom: 30px;">
+			<tr>
+				<td>
+					<a href = "{{ url(sprintf('prints/packing/%s', $order->order_id)) }}">Print Packing slip</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href = "{{ url(sprintf('prints/invoice/%s', $order->order_id)) }}">Print Invoice</a>
+				</td>
+			</tr>
+		</table>
 	</div>
 	{!! Form::close() !!}
 	<div class = "col-md-12">
-		<a href = "{{ url(sprintf('prints/packing/%s', $order->order_id)) }}">Print Packing slip</a>
-		|
-		<a href = "{{ url(sprintf('prints/invoice/%s', $order->order_id)) }}">Print Invoice</a>
+
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript">

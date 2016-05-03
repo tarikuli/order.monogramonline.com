@@ -84,11 +84,12 @@
 							<td>
 								{!! Form::open(['url' => url(sprintf("change_station_by_sku/%s", $row['sku']))]) !!}
 								<div class = "form-group">
-									{!! Form::number('item_to_shift', $row['item_count'], ['class' => 'form-control']) !!}
+									{!! Form::number('item_to_shift', $row['item_count'], ['class' => 'form-control', 'style' => 'max-width: 20px;']) !!}
+									{!! Form::select('batch_stations', $row['batch_stations'], null, ['id'=>'batch_stations', 'class' => 'form-control', 'style' => 'max-width: 170px;']) !!}
 								</div>
-								<div class = "form-group">
+								{{--<div class = "form-group">
 									{!! Form::select('batch_stations', $row['batch_stations'], null, ['id'=>'batch_stations', 'class' => 'form-control']) !!}
-								</div>
+								</div>--}}
 								{!! Form::close() !!}
 							</td>
 						</tr>

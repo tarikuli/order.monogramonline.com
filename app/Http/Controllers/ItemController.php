@@ -226,11 +226,6 @@ class ItemController extends Controller
 		$rows = [ ];
 		foreach ( $items as $item ) {
 			$row = [ ];
-			$row['batch_number'] = $item->batch_number;
-			$row['batch_creation_date'] = substr($item->batch_creation_date, 0, 10);
-			$row['route_code'] = $item->route->batch_code;
-			$row['route_name'] = $item->route->batch_route_name;
-			$row['lines'] = count($item->groupedItems);
 			#$item_first_station = $item->groupedItems[0]->station_name;
 			$previous_station = '';
 			$start = true;
@@ -247,7 +242,6 @@ class ItemController extends Controller
 				$this_station = $singleRow->station_name;
 				$items_on_station[$this_station] = array_key_exists($this_station, $items_on_station) ? ++$items_on_station[$this_station] : 1;
 			}
-
 			$current_station_name = '';
 			$current_station_description = '';
 
@@ -307,20 +301,27 @@ class ItemController extends Controller
 				$current_station_name = Helper::getSupervisorStationName();
 				$current_station_description = "Supervisor station";
 			}
-			$row['current_station_name'] = $current_station_name;
-			$row['current_station_description'] = $current_station_description;
-			$row['current_station_since'] = substr($item->batch_creation_date, 0, 10);
-			$row['next_station_name'] = $next_station_name;
-			$row['next_station_description'] = $next_station_description;
-			$row['min_order_date'] = substr($item->lowest_order_date->order_date, 0, 10);
-			$row['batch_status'] = $batch_status;
-			$row['current_station_item_count'] = isset( $items_on_station[$current_station_name] ) ? $items_on_station[$current_station_name] : 0;
-
-			$rows[] = $row;
+			// Sum Total number of Item in batch
+			$current_station_item_count = array_sum($items_on_station);
+			
+			foreach ($items_on_station as $station_name => $total_items){
+				$row['batch_number'] = $item->batch_number;
+				$row['batch_creation_date'] = substr($item->batch_creation_date, 0, 10);
+				$row['route_code'] = $item->route->batch_code;
+				$row['route_name'] = $item->route->batch_route_name;
+				$row['lines'] = $total_items;
+				$row['current_station_name'] = $station_name;
+				$row['current_station_description'] = $current_station_description;
+				$row['current_station_since'] = substr($item->batch_creation_date, 0, 10);
+				$row['next_station_name'] = $next_station_name;
+				$row['next_station_description'] = $next_station_description;
+				$row['min_order_date'] = substr($item->lowest_order_date->order_date, 0, 10);
+				$row['batch_status'] = $batch_status;
+				$row['current_station_item_count'] = $current_station_item_count;
+				$rows[] = $row;
+			}
+			
 		}
-		#return $rows;
-
-		#$statuses = (new Collection($this->statuses))->prepend('Select status', 'all');
 		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
 
 		return view('routes.index', compact('rows', 'items', 'request', 'routes', 'stations', 'statuses'));
@@ -372,12 +373,16 @@ class ItemController extends Controller
 		$statuses = Helper::getBatchStatusList();
 		$route = BatchRoute::with('stations')
 						   ->find($items[0]->batch_route_id);
+		
 		$dept_station = DB::table('department_station')
 						  ->where('station_id', Station::where('station_name', $station_name)
-													   ->first()->id)
+						  ->first()->id)
 						  ->first();
+		
 		$department_id = $dept_station ? $dept_station->department_id : 0;
+		
 		$rejection_reasons = new Collection();
+		
 		if ( $items->count() ) {
 			$station_name = $items[0]->station_name;
 			$current_batch_station = Station::where('station_name', $station_name)
@@ -392,10 +397,6 @@ class ItemController extends Controller
 
 		$department = Department::find($department_id);
 		$department_name = $department ? $department->department_name : 'NO DEPARTMENT IS SET';
-		/*$stations = implode(" > ", array_map(function ($elem) {
-			return $elem['station_name'];
-		}, $route->stations->toArray()));
-		$stations = str_replace($station_name, sprintf("<strong>%s</strong>", $station_name), $stations);*/
 		$stations = Helper::routeThroughStations($items[0]->batch_route_id, $station_name);
 
 		#return $items;
