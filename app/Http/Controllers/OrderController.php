@@ -289,7 +289,10 @@ class OrderController extends Controller
 		$stores->prepend('All', 'all');
 
 		$shipping_methods = Customer::groupBy('shipping')
-									->lists('shipping', 'shipping');
+									->lists('shipping', 'shipping')
+									->filter(function ($row) {
+										return !empty($row);
+									});
 		$shipping_methods->prepend('All', 'all');
 
 		$total_money = Order::with('customer')
