@@ -26,15 +26,27 @@
 				</tr>
 				<tr valign = "top"></tr>
 				<tr valign = "top">
-					<td colspan = "3"> MonogramOnline.com <br>
-					                   575 Underhill Blvd <br>
-					                   Suite 216<br> Syosset, NY 11791
+					<td colspan = "3">
+						@if($order->store_id == "yhst-132060549835833")
+							ShopOnlineDeals.com
+						@elseif($order->store_id == "yhst-128796189915726")
+							MonogramOnline.com
+						@endif
+						<br>
+							575 Underhill Blvd <br>
+							Suite 216<br> Syosset, NY 11791
 						<br />
-					                   cs@MonogramOnline.com <br>
-					                   www.MonogramOnline.com
+						@if($order->store_id == "yhst-132060549835833")
+							cs@ShopOnlineDeals.com <br>
+							www.ShopOnlineDeals.com
+						@elseif($order->store_id == "yhst-128796189915726")
+							cs@MonogramOnline.com <br>
+							www.MonogramOnline.com
+						@endif
+
 					</td>
 					<td colspan = "2" align = "right" style = "padding-top:10px;">
-						<img src = "{{url('/assets/images/yhst-128796189915726.jpg')}}"
+						<img src = "{{url(sprintf('/assets/images/%s.jpg', $order->store_id))}}"
 						     border = "0">
 					</td>
 				</tr>
