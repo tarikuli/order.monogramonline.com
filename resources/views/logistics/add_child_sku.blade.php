@@ -2,7 +2,7 @@
 <html lang = "en">
 <head>
 	<meta charset = "UTF-8">
-	<title>Edit sku data</title>
+	<title>Add child sku</title>
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -35,40 +35,30 @@
 	<div class = "container">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
-			<li class = "active">SKU Converter details</li>
+			<li class = "active">Add new child sku</li>
 		</ol>
 		@include('includes.error_div')
-		@if($options)
-			<h3 class = "page-header">Edit</h3>
-			@setvar($i = 0)
-			{!! Form::open(['url' => url('/logistics/edit_sku_converter'), 'method' => 'put', 'class' => 'form-horizontal']) !!}
-			{!! Form::hidden("store_id", $options->store_id) !!}
-			{!! Form::hidden("unique_row_value", $options->unique_row_value) !!}
-			{!! Form::hidden("return_to", $returnTo) !!}
-			@setvar($decoded_options = json_decode($options->parameter_option, true))
-			@foreach($parameters as $parameter)
-				<div class = "form-group">
-					@setvar($parameter_value = $parameter->parameter_value)
-					{!! Form::label(\Monogram\Helper::textToHTMLFormName($parameter_value), ucfirst($parameter_value), ['class' => 'col-md-2 control-label']) !!}
-					<div class = "col-sm-10">
-						{!! Form::text(\Monogram\Helper::textToHTMLFormName($parameter_value), in_array($parameter_value, array_keys($decoded_options)) ? $decoded_options[$parameter_value] : null, ['class'=> 'form-control', 'id' => \Monogram\Helper::textToHTMLFormName($parameter_value)]) !!}
-					</div>
-				</div>
-				@setvar($i++)
-			@endforeach
+		<h3 class = "page-header">Edit</h3>
+		@setvar($i = 0)
+		{!! Form::open(['url' => url('/logistics/add_child_sku'), 'method' => 'post', 'class' => 'form-horizontal']) !!}
+		{!! Form::hidden("store_id", $store_id) !!}
+		{!! Form::hidden("return_to", $returnTo) !!}
+		@foreach($parameters as $parameter)
 			<div class = "form-group">
-				<div class = "col-sm-offset-2 col-sm-10">
-					<button type = "submit" class = "btn btn-primary">Update</button>
+				@setvar($parameter_value = $parameter->parameter_value)
+				{!! Form::label(\Monogram\Helper::textToHTMLFormName($parameter_value), ucfirst($parameter_value), ['class' => 'col-md-2 control-label']) !!}
+				<div class = "col-sm-10">
+					{!! Form::text(\Monogram\Helper::textToHTMLFormName($parameter_value), null, ['class'=> 'form-control', 'id' => \Monogram\Helper::textToHTMLFormName($parameter_value)]) !!}
 				</div>
 			</div>
-			{!! Form::close() !!}
-		@else
-			<div class = "col-xs-12">
-				<div class = "alert alert-warning text-center">
-					<h3>No sku converter parameter found.</h3>
-				</div>
+			@setvar($i++)
+		@endforeach
+		<div class = "form-group">
+			<div class = "col-sm-offset-2 col-sm-10">
+				<button type = "submit" class = "btn btn-primary">Add new child sku</button>
 			</div>
-		@endif
+		</div>
+		{!! Form::close() !!}
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>

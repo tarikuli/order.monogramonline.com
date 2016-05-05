@@ -37,85 +37,96 @@
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li class = "active">SKU Converter details</li>
 		</ol>
-		@include('includes.error_div')
-		@include('includes.success_div')
-		<div class = "panel panel-default">
-			<div class = "panel-heading">Search</div>
-			<div class = "panel-body">
-				{!! Form::open(['method' => 'get', 'url' => $request->url(), 'class' => 'form-inline']) !!}
-				{!! Form::hidden('store_id', $store_id) !!}
-				<div class = "form-group">
-					{!! Form::label('search_for', "Search for:", ['class' => 'control-label']) !!}
-					{!! Form::text('search_for', $request->get('search_for'), ['id' => 'search_for', 'class' => 'form-control', 'placeholder' => "Search in selected field"]) !!}
-				</div>
-				<div class = "form-group">
-					{!! Form::label('search_in', "Search in:", ['class' => 'control-label']) !!}
-					{!! Form::select('search_in', $parameters->lists('parameter_value', 'parameter_value')->prepend('Select a field', ""), $request->get('search_in'), ['id' => 'search_in', 'class' => 'form-control']) !!}
-				</div>
+		<div class = "col-md-12">
+			@include('includes.error_div')
+			@include('includes.success_div')
+		</div>
+		<div class = "col-md-12 text-right" style="margin-bottom: 10px;">
+			<a class = "btn btn-success" href="{{ url(sprintf("/logistics/add_child_sku?store_id=%s&return_to=%s", request('store_id'),$returnTo)) }}">Add new child sku</a>
+		</div>
+		<div class = "col-md-12">
+			<div class = "panel panel-default">
+				<div class = "panel-heading">Search</div>
+				<div class = "panel-body">
+					{!! Form::open(['method' => 'get', 'url' => $request->url(), 'class' => 'form-inline']) !!}
+					{!! Form::hidden('store_id', $store_id) !!}
+					<div class = "form-group">
+						{!! Form::label('search_for', "Search for:", ['class' => 'control-label']) !!}
+						{!! Form::text('search_for', $request->get('search_for'), ['id' => 'search_for', 'class' => 'form-control', 'placeholder' => "Search in selected field"]) !!}
+					</div>
+					<div class = "form-group">
+						{!! Form::label('search_in', "Search in:", ['class' => 'control-label']) !!}
+						{!! Form::select('search_in', $parameters->lists('parameter_value', 'parameter_value')->prepend('Select a field', ""), $request->get('search_in'), ['id' => 'search_in', 'class' => 'form-control']) !!}
+					</div>
 
-				<button type = "submit" class = "btn btn-success">Search</button>
-				{!! Form::close() !!}
+					<button type = "submit" class = "btn btn-success">Search</button>
+					{!! Form::close() !!}
+				</div>
 			</div>
 		</div>
-		@if($parameters && (count($parameters->lists('parameter_value')) > 0))
-			<h3 class = "page-header">
-				Parameters ({{ $options->total() }} items found / {{$options->currentPage()}} of {{$options->lastPage()}} pages)
-			</h3>
-			<table class = "table table-bordered">
-				<tr>
-					<th>Delete</th>
-					@foreach($parameters as $parameter)
-						<th>{{$parameter->parameter_value}}</th>
-					@endforeach
-					<th>Edit</th>
-				</tr>
-				@foreach($options as $option)
-					@setvar($decoded = json_decode($option->parameter_option, true))
-					<tr>
-						<td>
-							{!! Form::open(['url' => url('/logistics/delete_sku/'.$option->unique_row_value), 'method' => 'delete']) !!}
-							{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
-							{!! Form::close() !!}
-						</td>
-						@foreach($parameters as $parameter)
-							<td>
-								@if(in_array($parameter->parameter_value, array_keys($decoded)))
-									{{ $decoded[$parameter->parameter_value] }}
-								@endif
-							</td>
-						@endforeach
-						<td>
-							<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s", $option->store_id, $option->unique_row_value))}}">Edit</a>
-						</td>
-					</tr>
-					{{--@foreach($options->chunk(count($parameters->lists('parameter_value'))) as $option_array)
+		<div class="row">
+			<div class="col-md-12">
+				@if($parameters && (count($parameters->lists('parameter_value')) > 0))
+					<h3 class = "page-header">
+						Parameters ({{ $options->total() }} items found / {{$options->currentPage()}} of {{$options->lastPage()}} pages)
+					</h3>
+					<table class = "table table-bordered">
 						<tr>
-							<td>
-								@setvar($value = $option_array->first())
-								{!! Form::open(['url' => url('/logistics/delete_sku/'.$value->unique_row_value), 'method' => 'delete']) !!}
-								{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
-								{!! Form::close() !!}
-							</td>
-							@foreach($option_array as $option)
-								<td>{{$option->parameter_option}}</td>
+							<th>Delete</th>
+							@foreach($parameters as $parameter)
+								<th>{{$parameter->parameter_value}}</th>
 							@endforeach
-							<td>
-								<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s", $value->store_id, $value->unique_row_value))}}">Edit</a>
-							</td>
+							<th>Edit</th>
 						</tr>
-					@endforeach--}}
-				@endforeach
-			</table>
-			<div class = "col-xs-12 text-center">
-				{!! $options->appends($request->all())->render() !!}
+						@foreach($options as $option)
+							@setvar($decoded = json_decode($option->parameter_option, true))
+							<tr>
+								<td>
+									{!! Form::open(['url' => url('/logistics/delete_sku/'.$option->unique_row_value), 'method' => 'delete']) !!}
+									{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
+									{!! Form::close() !!}
+								</td>
+								@foreach($parameters as $parameter)
+									<td>
+										@if(in_array($parameter->parameter_value, array_keys($decoded)))
+											{{ $decoded[$parameter->parameter_value] }}
+										@endif
+									</td>
+								@endforeach
+								<td>
+									<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s&return_to=%s", $option->store_id, $option->unique_row_value, $returnTo))}}">Edit</a>
+								</td>
+							</tr>
+							{{--@foreach($options->chunk(count($parameters->lists('parameter_value'))) as $option_array)
+								<tr>
+									<td>
+										@setvar($value = $option_array->first())
+										{!! Form::open(['url' => url('/logistics/delete_sku/'.$value->unique_row_value), 'method' => 'delete']) !!}
+										{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
+										{!! Form::close() !!}
+									</td>
+									@foreach($option_array as $option)
+										<td>{{$option->parameter_option}}</td>
+									@endforeach
+									<td>
+										<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s", $value->store_id, $value->unique_row_value))}}">Edit</a>
+									</td>
+								</tr>
+							@endforeach--}}
+						@endforeach
+					</table>
+					<div class = "col-xs-12 text-center">
+						{!! $options->appends($request->all())->render() !!}
+					</div>
+				@else
+					<div class = "col-xs-12">
+						<div class = "alert alert-warning text-center">
+							<h3>No sku converter parameter found.</h3>
+						</div>
+					</div>
+				@endif
 			</div>
-		@else
-			<div class = "col-xs-12">
-				<div class = "alert alert-warning text-center">
-					<h3>No sku converter parameter found.</h3>
-				</div>
 			</div>
-		@endif
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>

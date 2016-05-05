@@ -265,7 +265,7 @@ class LogisticsController extends Controller
 					   ->fetchAssoc(Helper::$column_names);
 		set_time_limit(0);
 		foreach ( $rows as $row ) {
-			$unique_row_value = sprintf("%s_%s", strtotime("now"), str_random(5));
+			$unique_row_value = $this->get_unique_id();
 			$option = new Option();
 			$option->store_id = $store_id;
 			$option->unique_row_value = $unique_row_value;
@@ -276,6 +276,16 @@ class LogisticsController extends Controller
 			$option->parameter_option = json_encode($parameter_options);
 			$option->save();
 		}
+	}
+
+	private function get_unique_id ()
+	{
+		return sprintf("%s_%s", strtotime("now"), str_random(5));
+	}
+
+	public function get_add_new_option (Request $request)
+	{
+		return $request->all();
 	}
 
 	public function get_sku_show (Request $request)
@@ -314,7 +324,9 @@ class LogisticsController extends Controller
 		$submit_url = sprintf("%s?store_id=%s", $request->url(), $store_id);
 
 		#return $options;
-		return view('logistics.sku_converter_store_details', compact('parameters', 'options', 'request', 'submit_url', 'store_id'));
+		$returnTo = urlencode($request->fullUrl());
+
+		return view('logistics.sku_converter_store_details', compact('parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo'));
 
 	}
 
@@ -355,8 +367,91 @@ class LogisticsController extends Controller
 
 		#$options = $options->toArray();
 		#return $parameters;
+		$returnTo = $request->get('return_to');
 
-		return view('logistics.edit_sku_converter', compact('options', 'parameters'));
+		return view('logistics.edit_sku_converter', compact('options', 'parameters', 'returnTo'));
+	}
+
+	public function get_add_child_sku (Request $request)
+	{
+		$store_id = $request->get('store_id');
+		$parameters = Parameter::where('store_id', $store_id)
+							   ->get();
+		$returnTo = $request->get('return_to');
+
+		return view('logistics.add_child_sku', compact('parameters', 'returnTo', 'store_id'));
+	}
+
+	public function post_add_child_sku (Request $request)
+	{
+		$rules = [
+			'store_id' => 'required',
+		];
+
+		$inputs = [
+			'store_id' => $request->get('store_id'),
+		];
+
+		$validator = Validator::make($inputs, $rules);
+
+		if ( $validator->fails() ) {
+			return redirect()
+				->back()
+				->withErrors($validator);
+		}
+		$store_id = $request->get('store_id');
+		$unique_row_value = $this->get_unique_id();
+
+		$parameters = Parameter::where('store_id', $store_id)
+							   ->get();
+		if ( $parameters->count() == 0 ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'Not a valid store selected',
+				]);
+		}
+
+		// check if the code is found on request
+		// match, if the code found
+		// update the value
+		$is_code_field_found = false;
+		$code = '';
+		$dataToStore = [ ];
+		foreach ( $parameters as $parameter ) {
+			$parameter_value = $parameter->parameter_value;
+			$form_field = Helper::textToHTMLFormName($parameter_value);
+			if ( $form_field == 'code' ) {
+				$is_code_field_found = true;
+				$code = $request->get($form_field, '');
+			}
+			$dataToStore[$parameter_value] = $request->get($form_field, '');
+		}
+		// check if the code is already existing on database or not
+		$option = null;
+		if ( $is_code_field_found ) {
+			$match_against = sprintf('%%"code":"%s"%%', $code);
+
+			$option = Option::where('store_id', $store_id)
+							->where('parameter_option', "LIKE", $match_against)
+							->first();
+
+		}
+
+		if ( !$option ) {
+			$option = new Option();
+			$option->store_id = $store_id;
+			$option->unique_row_value = $unique_row_value;
+		}
+		$option->parameter_option = json_encode($dataToStore);
+		$option->save();
+
+		$return_to = $request->get('return_to', '');
+		$return_to = empty( $return_to ) ? url(sprintf("logistics/sku_show?store_id=%s", $store_id)) : $return_to;
+
+		return redirect()
+			->to($return_to)
+			->with('success', "Child sku inserted.");
 	}
 
 	public function update_sku_converter (Request $request)
@@ -405,8 +500,11 @@ class LogisticsController extends Controller
 				  'parameter_option' => json_encode($dataToStore),
 			  ]);
 
+		$return_to = $request->get('return_to', '');
+		$return_to = empty( $return_to ) ? url(sprintf("logistics/sku_show?store_id=%s", $store_id)) : $return_to;
+
 		return redirect()
-			->to(url(sprintf("logistics/sku_show?store_id=%s", $store_id)))
+			->to($return_to)
 			->with('success', "Data updated.");
 	}
 
