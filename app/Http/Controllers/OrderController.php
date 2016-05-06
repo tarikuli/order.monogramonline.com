@@ -291,7 +291,7 @@ class OrderController extends Controller
 		$shipping_methods = Customer::groupBy('shipping')
 									->lists('shipping', 'shipping')
 									->filter(function ($row) {
-										return !empty($row);
+										return !empty( $row );
 									});
 		$shipping_methods->prepend('All', 'all');
 
@@ -743,7 +743,9 @@ class OrderController extends Controller
 			$item->item_taxable = $request->get('Item-Taxable-' . $item_count_index);
 			$item->item_order_status_2 = 4; // set item in order status to "TO BE PROCESSED"
 			$item->data_parse_type = 'hook';
+			$item->child_sku = Helper::getChildSku($item);
 			$item->save();
+
 			// -------------- Items table data insertion ended ---------------------- //
 
 			// -------------- Products table data insertion started ---------------------- //

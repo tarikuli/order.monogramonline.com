@@ -1,11 +1,7 @@
 <?php
 
 get('test/batch', function () {
-	return [
-		'a.b' => 1,
-		'b.c' => 2,
-		'c.d' => 3,
-	];
+	return \Monogram\Helper::getChildSku(\App\Item::find(244));
 });
 
 // auth middleware enabled controller

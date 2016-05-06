@@ -136,7 +136,7 @@
 						{{--<td>{{$item->item_description}}</td>--}}
 						{{--<td>{!! Form::textarea('desc', $item->item_description, ['rows' => '2', 'cols' => '20']) !!}</td>--}}
 						<td class = "description">{{$item->item_description}}</td>
-						<td>{{$item->item_code}}</td>
+						<td>{{$item->child_sku}}</td>
 						{{--<td>{{\Monogram\Helper::jsonTransformer($item->item_option)}}</td>--}}
 						<td>{!! Form::textarea('opt', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '3', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
 						<td>{{$item->item_quantity}}</td>

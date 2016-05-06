@@ -4,6 +4,7 @@ use App\BatchRoute;
 use App\Customer;
 use App\Item;
 use App\MasterCategory;
+use App\Option;
 use App\Order;
 use App\Parameter;
 use App\Product;
@@ -734,5 +735,42 @@ APPEND;
 			$station_log->user_id = Auth::user()->id;
 			$station_log->save();
 		}
+	}
+
+	public static function getChildSku ($item)
+	{
+		$child_sku = $item->item_code;
+		// if item has parameter option available with the store id
+		// related to parameter options table
+		/*if ( $item->parameter_options ) {
+
+		}*/
+		// get the item options from order
+		$item_options = json_decode($item->item_option, true);
+		// get the keys from that order options
+		$item_option_keys = array_keys($item_options);
+
+		$store_id = $item->store_id;
+		// get the keys available as parameter
+		$parameters = Parameter::where('store_id', $store_id)
+							   ->lists('parameter_value')
+							   ->toArray();
+
+		$parameter_to_html_form_name = array_map(function ($element) {
+			return Helper::textToHTMLFormName($element);
+		}, $parameters);
+
+		// get the common in the keys
+		$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
+		//generate the new sku
+		$child_sku_postfix = implode("-", array_map(function ($node) use ($item_options) {
+			// replace the spaces with empty string
+			// make the string lower
+			// and the values from the item options
+			return str_replace(" ", "", strtolower($item_options[$node]));
+		}, $options_in_common));
+
+		// return the child sku if the postfix is not found
+		return empty( $child_sku_postfix ) ? $child_sku : sprintf("%s-%s", $item->item_code, $child_sku_postfix);
 	}
 }

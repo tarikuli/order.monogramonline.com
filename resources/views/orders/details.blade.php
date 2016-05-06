@@ -23,7 +23,8 @@
 			min-width: 100px;
 			text-align: center;
 		}
-		table#items-table td img{
+
+		table#items-table td img {
 			min-width: 100px;
 			float: left;
 		}
@@ -272,6 +273,7 @@
 						   target = "_blank">{{$item->item_description}}</a>
 					</td>
 					<td>
+						{{ $item->child_sku }} /
 						<a style = 'color:red'
 						   href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $item->item_code)) }}"
 						   target = "_blank">{{$item->item_code}}</a>

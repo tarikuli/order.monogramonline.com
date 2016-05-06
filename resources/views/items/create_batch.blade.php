@@ -103,7 +103,7 @@
 													</td>
 													<td>{{substr($item->order_date, 0, 10)}}</td>
 													<td>
-														<a href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $item->item_code)) }}"
+														<a href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $item->child_sku)) }}"
 														   target = "_blank">{{$item->item_code}}</a></td>
 													<td>{{$item->item_quantity}}</td>
 												</tr>
