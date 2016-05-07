@@ -77,7 +77,18 @@ class LogisticsController extends Controller
 
 	private function insert_parameters_into_table ($parameters, $store_id)
 	{
-		$before_operation = [ ];
+		Parameter::where('store_id', $store_id)
+				 ->delete();
+		// filter the empty values array_filter($parameters)
+		// create new rows with parameter_value and store_id
+		$rows = array_map(function ($row) use ($store_id) {
+			return [
+				'parameter_value' => trim($row),
+				'store_id'        => $store_id,
+			];
+		}, array_filter($parameters));
+		Parameter::insert($rows);
+		/*$before_operation = [ ];
 		$after_operation = [ ];
 
 		// get the row ids before the update/insert
@@ -110,7 +121,7 @@ class LogisticsController extends Controller
 			// if the difference is greater than 0
 			// delete those ids
 			Parameter::destroy(array_diff($before_operation, $after_operation));
-		}
+		}*/
 
 	}
 
