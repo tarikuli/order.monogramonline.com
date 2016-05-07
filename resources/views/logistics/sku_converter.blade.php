@@ -28,68 +28,97 @@
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li class = "active">Set store options to SKU conversion parameters</li>
 		</ol>
-		<div class = "col-xs-12" style = "margin-bottom: 10px;">
-			{!! Form::open(['method' => 'get', 'class' => "form-inline"]) !!}
+		<div class = "col-md-6 col-md-offset-3" style = "margin-bottom: 10px;">
+			{!! Form::open(['method' => 'get',]) !!}
 			<div class = "form-group">
-				<label for = "store_id">Store id</label>
+				<label for = "store_id">Store</label>
 				{!! Form::select('store_id', $stores, $store_id, ['id'=>'store_id', 'class' => 'form-control']) !!}
 			</div>
 			{!! Form::close() !!}
 		</div>
 		@if($store_id && $store_id != 'all')
-			<div class = "col-xs-12">
+			<div class = "col-md-6 col-md-offset-3">
 				{!! Form::open(['url' => url(sprintf("logistics/%s/update", $store_id)), 'method' => 'put', 'class' => 'form-horizontal', 'id' => 'parameter-list-form']) !!}
-				@if(count($parameters))
-					@foreach($parameters as $parameter)
-						<div class = "form-group">
-							{!! Form::label(sprintf('parameter-%d', $index), "Parameter field", ['class'=> 'col-xs-2 control-label']) !!}
-							<div class = "col-sm-6">
-								<div class = "input-group">
-									{!! Form::text('parameters[]', $parameter->parameter_value, ['class' => 'form-control parameter', 'id' => sprintf("parameter-%d", $index++), 'placeholder' => 'Parameter value']) !!}
-									<span class = "input-group-addon" data-toggle = "tooltip" data-placement = "top"
-									      title = "Remove" id = "addon-{{$index}}"><i
-												class = "fa fa-times text-danger"></i> </span>
-								</div>
-							</div>
-						</div>
-					@endforeach
-				@else
+				@unless(count($parameters))
 					<div class = "alert alert-warning">No parameter is set yet for this shop</div>
-				@endif
-
+				@endunless
+				<table class = "table table-bordered" id = "parameters-table">
+					<thead>
+					<tr>
+						<th class = "text-center">Parameters</th>
+					</tr>
+					</thead>
+					<tbody id = "parameters-table-body">
+					@if(count($parameters))
+						@foreach($parameters as $parameter)
+							<tr>
+								<td>
+									<div class = "input-group">
+										{!! Form::text('parameters[]', $parameter->parameter_value, ['class' => 'form-control parameter', 'id' => sprintf("parameter-%d", $index++), 'placeholder' => 'Parameter value']) !!}
+										<div class = "input-group-btn">
+											<button type = "button" class = "btn btn-default move-up"
+											        data-toggle = "tooltip"
+											        data-placement = "top" title = "Move up">
+												<span class = "fa fa-caret-up"></span>
+											</button>
+											<button type = "button" class = "btn btn-default move-down"
+											        data-toggle = "tooltip"
+											        data-placement = "top" title = "Move down">
+												<span class = "fa fa-caret-down"></span>
+											</button>
+											<button type = "button" class = "btn btn-default removable"
+											        data-toggle = "tooltip"
+											        data-placement = "top" title = "Remove" id = "addon-{{$index}}">
+												<span class = "fa fa-times text-danger"></span>
+											</button>
+										</div>
+									</div>
+								</td>
+							</tr>
+						@endforeach
+					@endif
+					</tbody>
+					<tfoot>
+					<tr class = "text-right">
+						<td>
+							<button type = "button" class = "btn btn-primary btn-sm add-new-parameter-to-table">
+								Add new parameter
+							</button>
+						</td>
+					</tr>
+					</tfoot>
+				</table>
 				<div class = "form-group">
-					<div class = "col-sm-offset-2 col-sm-10">
+					<div class = "col-sm-6">
 						<button type = "submit" class = "btn btn-success">Update</button>
-						<button type = "button" class = "btn btn-info add-new-parameter">Add new parameter field
-						</button>
 					</div>
 				</div>
 				{!! Form::close() !!}
 			</div>
 		@else
-			<div class = "col-xs-12">
+			<div class = "col-md-12">
 				<div class = "alert alert-warning">Select a shop to update the sku parameter.</div>
 			</div>
 		@endif
-		<div class = "col-xs-12">
+		<div class = "col-md-12">
 			<h3 class = "page-header" role = "button" data-toggle = "collapse" href = "#collapsible"
 			    aria-expanded = "false" aria-controls = "collapsible">Create new SKU converter</h3>
-			<div class = "collapse" id="collapsible">
+			<div class = "collapse" id = "collapsible">
 				{!! Form::open(['url' => url('logistics/sku_converter'), 'id' => 'create-sku-converter', 'class' => 'form-horizontal']) !!}
 				<div class = "form-group">
-					{!! Form::label("store_id", "Store id", ['class'=> 'col-xs-2 control-label']) !!}
+					{!! Form::label("store_id", "Store id", ['class'=> 'col-md-2 control-label']) !!}
 					<div class = "col-sm-6">
 						{!! Form::text('store_id', null, ['class' => 'form-control', 'id' => 'store_id', 'placeholder' => 'Store id']) !!}
 					</div>
 				</div>
 				<div class = "form-group">
-					{!! Form::label("store_name", "Store name", ['class'=> 'col-xs-2 control-label']) !!}
+					{!! Form::label("store_name", "Store name", ['class'=> 'col-md-2 control-label']) !!}
 					<div class = "col-sm-6">
 						{!! Form::text('store_name', null, ['class' => 'form-control', 'id' => 'store_name', 'placeholder' => 'Store name']) !!}
 					</div>
 				</div>
 				<div class = "form-group">
-					{!! Form::label(sprintf('new-parameter-%d', $index), "Parameter field", ['class'=> 'col-xs-2 control-label']) !!}
+					{!! Form::label(sprintf('new-parameter-%d', $index), "Parameter field", ['class'=> 'col-md-2 control-label']) !!}
 					<div class = "col-sm-6">
 						<div class = "input-group">
 							{!! Form::text('parameters[]', null, ['class' => 'form-control parameter', 'id' => sprintf("parameter-%d", $index++), 'placeholder' => 'Parameter value']) !!}
@@ -116,37 +145,95 @@
 		$(function ()
 		{
 			$("body").tooltip({selector: '[data-toggle="tooltip"]'});
+			table_row_repositioning_method();
 		});
-		$("button.add-new-parameter").on('click', function (event)
+		function add_new_row (position)
 		{
-			//var form = $("form#parameter-list-form");
-			var form = $(this).closest('form');
-			var row = '<div class="form-group">\
-							<label for="parameter-INDEX_NUMBER" class="col-xs-2 control-label">Parameter field</label>\
-							<div class="col-sm-6">\
-								<div class="input-group">\
-									<input class="form-control parameter" id="parameter-INDEX_NUMBER" placeholder="Parameter value" name="parameters[]" type="text">\
-									<span class="input-group-addon" data-toggle="tooltip" data-placement="top" title="" id="addon-INDEX_NUMBER" data-original-title="Remove"><i class="fa fa-times text-danger"></i> </span>\
+			var row = '<tr>\
+						<td>\
+							<div class="input-group">\
+								<input class="form-control parameter" id="parameter-INDEX_NUMBER" placeholder="Parameter value" name="parameters[]" type="text">\
+								<div class="input-group-btn">\
+									<button type="button" class="btn btn-default move-up" data-toggle="tooltip" data-placement="top" title="Move up">\
+										<span class="fa fa-caret-up"></span>\
+									</button>\
+									<button type="button" class="btn btn-default move-down" data-toggle="tooltip" data-placement="top" title="Move down">\
+										<span class="fa fa-caret-down"></span>\
+									</button>\
+									<button type="button" class="btn btn-default removable" data-toggle="tooltip" data-placement="top" title="Remove" id="addon-19">\
+										<span class="fa fa-times text-danger"></span>\
+									</button>\
 								</div>\
 							</div>\
-						</div>';
+						</td>\
+					</tr>';
+			if ( $(position).length ) {
+				$(position).after($(row));
+			} else {
+				var parent = $("table#parameters-table tbody#parameters-table-body");
+				$(parent).append($(row));
+			}
 
-			var divs = $(form).find('div.form-group').not(':last');
-			var number_of_divs = divs.length;
-			var new_row = row.replace(/INDEX_NUMBER/g, (++number_of_divs).toString());
-			$(form).find('div.form-group:last').before($(new_row));
+			table_row_repositioning_method();
+		}
+		function table_row_repositioning_method ()
+		{
+			$("tbody#parameters-table-body tr").each(function ()
+			{
+				var has_next = $(this).next().length ? true : false;
+				var has_previous = $(this).prev().length ? true : false;
+
+				if ( has_next ) {
+					$(this).find('button.move-down').show();
+				} else {
+					$(this).find('button.move-down').hide();
+				}
+
+				if ( has_previous ) {
+					$(this).find('button.move-up').show();
+				} else {
+					$(this).find('button.move-up').hide();
+				}
+			});
+		}
+		$("button.add-new-parameter-to-table").on('click', function (event)
+		{
+			var tr = $("table tbody#parameters-table-body tr:last");
+			if ( !tr ) {
+				tr = $("tbody#draggable-table-rows");
+			}
+			add_new_row(tr);
 		});
 		$("select#store_id").on('change', function ()
 		{
 			$(this).closest('form').submit();
 		});
+		$("body").on('click', 'button.move-up', function (event)
+		{
+			var current_row = $(this).closest('tr');
+			var previous_row = current_row.prev();
+			if ( previous_row.length ) {
+				previous_row.before(current_row);
+			}
+			table_row_repositioning_method();
+		});
+		$("body").on('click', 'button.move-down', function (event)
+		{
+			var current_row = $(this).closest('tr');
+			var next_row = current_row.next();
+			if ( next_row.length ) {
+				next_row.after(current_row);
+			}
+			table_row_repositioning_method();
+		});
 
-		$("body").on('click', "span.input-group-addon", function ()
+		$("body").on('click', "button.removable", function ()
 		{
 			var answer = confirm('Are you sure to remove this parameter?');
 			if ( answer ) {
-				$(this).closest('div.form-group').remove();
+				$(this).closest('tr').remove();
 			}
+			table_row_repositioning_method();
 		});
 	</script>
 </body>
