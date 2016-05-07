@@ -86,6 +86,7 @@
 									{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
 									{!! Form::close() !!}
 								</td>
+								
 								@foreach($parameters as $parameter)
 									<td>
 										@if(in_array($parameter->parameter_value, array_keys($decoded)))
