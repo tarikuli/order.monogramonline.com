@@ -658,7 +658,7 @@ APPEND;
 		return BatchRoute::with([
 			'stations_list',
 			'itemGroups' => function ($q) use ($paginate) {
-				$joining = $q->join('items', 'products.product_model', '=', 'items.item_code')
+				$joining = $q->join('items', 'items.child_sku', '=', 'parameter_options.child_sku')
 							 ->join('orders', 'orders.order_id', '=', 'items.order_id')
 							 ->where('orders.is_deleted', 0)
 							 ->where('items.batch_number', '0')
@@ -672,10 +672,9 @@ APPEND;
 																   // cancelled
 							 ])
 							 ->where(function ($query) {
-								 return $query->where('products.batch_route_id', '!=', 115)
-											  ->whereNotNull('products.batch_route_id');
+								 return $query->where('parameter_options.batch_route_id', '!=', 115)
+											  ->whereNotNull('parameter_options.batch_route_id');
 							 })
-							 ->where('products.is_deleted', 0)
 							 ->addSelect([
 								 DB::raw('items.id AS item_table_id'),
 								 'items.item_id',
@@ -686,7 +685,8 @@ APPEND;
 								 DB::raw('orders.id as order_table_id'),
 								 'orders.order_id',
 								 'orders.order_date',
-							 ]);//->paginate(50000);
+							 ]);
+
 				return $paginate ? $joining->get() : $joining->paginate(10000);
 			},
 		])

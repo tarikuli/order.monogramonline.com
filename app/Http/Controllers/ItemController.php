@@ -303,8 +303,8 @@ class ItemController extends Controller
 			}
 			// Sum Total number of Item in batch
 			$current_station_item_count = array_sum($items_on_station);
-			
-			foreach ($items_on_station as $station_name => $total_items){
+
+			foreach ( $items_on_station as $station_name => $total_items ) {
 				$row['batch_number'] = $item->batch_number;
 				$row['batch_creation_date'] = substr($item->batch_creation_date, 0, 10);
 				$row['route_code'] = $item->route->batch_code;
@@ -320,7 +320,7 @@ class ItemController extends Controller
 				$row['current_station_item_count'] = $current_station_item_count;
 				$rows[] = $row;
 			}
-			
+
 		}
 		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
 
@@ -373,16 +373,16 @@ class ItemController extends Controller
 		$statuses = Helper::getBatchStatusList();
 		$route = BatchRoute::with('stations')
 						   ->find($items[0]->batch_route_id);
-		
+
 		$dept_station = DB::table('department_station')
 						  ->where('station_id', Station::where('station_name', $station_name)
-						  ->first()->id)
+													   ->first()->id)
 						  ->first();
-		
+
 		$department_id = $dept_station ? $dept_station->department_id : 0;
-		
+
 		$rejection_reasons = new Collection();
-		
+
 		if ( $items->count() ) {
 			$station_name = $items[0]->station_name;
 			$current_batch_station = Station::where('station_name', $station_name)

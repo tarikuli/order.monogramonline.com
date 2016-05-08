@@ -32,7 +32,7 @@ class BatchRoute extends Model
 		return $this->belongsTo('App\Template', 'export_template', 'id');
 	}
 
-	public function itemGroups ()
+	/*public function itemGroups ()
 	{
 		return $this->hasMany('App\Product')
 					->where('products.is_deleted', 0)
@@ -43,6 +43,19 @@ class BatchRoute extends Model
 						'products.id_catalog',
 						'products.product_model',
 						'products.allow_mixing',
+					]);
+	}*/
+
+	public function itemGroups ()
+	{
+		return $this->hasMany('App\Option')
+					->select([
+						//DB::raw('parameter_options.id as product_table_id'),
+						'parameter_options.store_id',
+						'parameter_options.batch_route_id',
+						'parameter_options.allow_mixing',
+						'parameter_options.parent_sku',
+						'parameter_options.child_sku',
 					]);
 	}
 
