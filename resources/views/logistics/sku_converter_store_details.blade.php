@@ -41,8 +41,9 @@
 			@include('includes.error_div')
 			@include('includes.success_div')
 		</div>
-		<div class = "col-md-12 text-right" style="margin-bottom: 10px;">
-			<a class = "btn btn-success" href="{{ url(sprintf("/logistics/add_child_sku?store_id=%s&return_to=%s", request('store_id'),$returnTo)) }}">Add new child sku</a>
+		<div class = "col-md-12 text-right" style = "margin-bottom: 10px;">
+			<a class = "btn btn-success"
+			   href = "{{ url(sprintf("/logistics/add_child_sku?store_id=%s&return_to=%s", request('store_id'),$returnTo)) }}">Add new child sku</a>
 		</div>
 		<div class = "col-md-12">
 			<div class = "panel panel-default">
@@ -64,8 +65,8 @@
 				</div>
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-md-12">
+		<div class = "row">
+			<div class = "col-md-12">
 				@if($parameters && (count($parameters->lists('parameter_value')) > 0))
 					<h3 class = "page-header">
 						Parameters ({{ $options->total() }} items found / {{$options->currentPage()}} of {{$options->lastPage()}} pages)
@@ -73,6 +74,8 @@
 					<table class = "table table-bordered">
 						<tr>
 							<th>Delete</th>
+							<th>Allow Mixing</th>
+							<th>Route</th>
 							@foreach($parameters as $parameter)
 								<th>{{$parameter->parameter_value}}</th>
 							@endforeach
@@ -83,7 +86,20 @@
 							<tr>
 								<td>
 									{!! Form::open(['url' => url('/logistics/delete_sku/'.$option->unique_row_value), 'method' => 'delete']) !!}
+									{!! Form::hidden('return_to', $returnTo) !!}
 									{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
+									{!! Form::close() !!}
+								</td>
+								<td>
+									{!! Form::open(['url' => url('/logistics/update_parameter_option/'.$option->unique_row_value), 'method' => 'post']) !!}
+									{!! Form::hidden('return_to', $returnTo) !!}
+									{!! Form::select('allow_mixing', \App\Product::$mixingStatues, $option->allow_mixing, ['class' => 'form-control changeable', 'style' => 'min-width: 75px;']) !!}
+									{!! Form::close() !!}
+								</td>
+								<td>
+									{!! Form::open(['url' => url('/logistics/update_parameter_option/'.$option->unique_row_value), 'method' => 'post']) !!}
+									{!! Form::hidden('return_to', $returnTo) !!}
+									{!! Form::select('batch_route_id', $batch_routes, $option->batch_route_id, ['class' => 'form-control changeable', 'style' => 'width: 150px']) !!}
 									{!! Form::close() !!}
 								</td>
 								@foreach($parameters as $parameter)
@@ -97,22 +113,6 @@
 									<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s&return_to=%s", $option->store_id, $option->unique_row_value, $returnTo))}}">Edit</a>
 								</td>
 							</tr>
-							{{--@foreach($options->chunk(count($parameters->lists('parameter_value'))) as $option_array)
-								<tr>
-									<td>
-										@setvar($value = $option_array->first())
-										{!! Form::open(['url' => url('/logistics/delete_sku/'.$value->unique_row_value), 'method' => 'delete']) !!}
-										{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
-										{!! Form::close() !!}
-									</td>
-									@foreach($option_array as $option)
-										<td>{{$option->parameter_option}}</td>
-									@endforeach
-									<td>
-										<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s", $value->store_id, $value->unique_row_value))}}">Edit</a>
-									</td>
-								</tr>
-							@endforeach--}}
 						@endforeach
 					</table>
 					<div class = "col-xs-12 text-center">
@@ -126,7 +126,7 @@
 					</div>
 				@endif
 			</div>
-			</div>
+		</div>
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
@@ -146,6 +146,13 @@
 				$(this).closest('form').submit();
 			}
 			//return false;
+		});
+
+		$("select.changeable").on('change', function (event)
+		{
+			event.preventDefault();
+			var form = $(this).closest('form');
+			$(form).submit();
 		});
 	</script>
 </body>

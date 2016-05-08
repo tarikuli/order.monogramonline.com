@@ -59,7 +59,7 @@ class ProductController extends Controller
 		$searchInRoutes = Collection::make($batch_routes);
 		$searchInRoutes->prepend('All', '0');
 
-		$batch_routes->prepend('Not selected', 'null');
+		$batch_routes->prepend('Not selected', 0);
 
 		/*$product_master_category = MasterCategory::where('is_deleted', 0)
 												 ->lists('master_category_description', 'id')

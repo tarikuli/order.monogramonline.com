@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use App\BatchRoute;
 use App\Option;
 use App\Parameter;
 use App\Store;
@@ -281,9 +282,18 @@ class LogisticsController extends Controller
 			$option->store_id = $store_id;
 			$option->unique_row_value = $unique_row_value;
 			$parameter_options = [ ];
+			$parent_sku = '';
+			$child_sku = '';
 			foreach ( Helper::$column_names as $column_name ) {
 				$parameter_options[$column_name] = $row[$column_name];
+				if ( $column_name == 'id' ) {
+					$parent_sku = $row[$column_name];
+				} elseif ( $column_name == 'code' ) {
+					$child_sku = $row[$column_name];
+				}
 			}
+			$option->parent_sku = $parent_sku;
+			$option->child_sku = $child_sku;
 			$option->parameter_option = json_encode($parameter_options);
 			$option->save();
 		}
@@ -337,7 +347,12 @@ class LogisticsController extends Controller
 		#return $options;
 		$returnTo = urlencode($request->fullUrl());
 
-		return view('logistics.sku_converter_store_details', compact('parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo'));
+		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->orderBy('batch_route_name')
+								  ->lists('batch_route_name', 'id')
+								  ->prepend('Select a route', 0);
+
+		return view('logistics.sku_converter_store_details', compact('batch_routes', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo'));
 
 	}
 
@@ -458,7 +473,7 @@ class LogisticsController extends Controller
 		$option->save();
 
 		$return_to = $request->get('return_to', '');
-		$return_to = empty( $return_to ) ? url(sprintf("logistics/sku_show?store_id=%s", $store_id)) : $return_to;
+		$return_to = empty( $return_to ) ? url(sprintf("logistics/sku_show?store_id=%s", $store_id)) : urldecode($return_to);
 
 		return redirect()
 			->to($return_to)
@@ -512,7 +527,7 @@ class LogisticsController extends Controller
 			  ]);
 
 		$return_to = $request->get('return_to', '');
-		$return_to = empty( $return_to ) ? url(sprintf("logistics/sku_show?store_id=%s", $store_id)) : $return_to;
+		$return_to = empty( $return_to ) ? url(sprintf("logistics/sku_show?store_id=%s", $store_id)) : urldecode($return_to);
 
 		return redirect()
 			->to($return_to)
@@ -531,5 +546,36 @@ class LogisticsController extends Controller
 		return redirect()
 			->back()
 			->with('success', "Row is deleted.");
+	}
+
+	public function update_parameter_option (Request $request, $unique_row)
+	{
+		$parameter_option = Option::where('unique_row_value', $unique_row)
+								  ->first();
+		if ( !$parameter_option ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => "Not a valid row selected",
+				]);
+		}
+		$message = '';
+		if ( $request->has('allow_mixing') ) {
+			$parameter_option->allow_mixing = intval($request->get('allow_mixing'));
+			$parameter_option->save();
+			$message = "Allow mixing is successfully changed";
+		} elseif ( $request->has('batch_route_id') ) {
+			$batch_route_id = intval($request->get('batch_route_id'));
+			$batch_route_id = $batch_route_id > 0 ? $batch_route_id : Helper::getDefaultRouteId();
+			$parameter_option->batch_route_id = $batch_route_id;
+			$parameter_option->save();
+			$message = "Batch route is successfully changed";
+		}
+		$otherwise = url('/logistics/sku_show?store_id=%s', $parameter_option->store_id);
+		$return_to = $request->get('return_to', '');
+		$return_to = empty( $return_to ) ? $otherwise : urldecode($return_to);
+		return redirect()
+			->to($return_to)
+			->with('success', $message);
 	}
 }
