@@ -7,6 +7,5 @@ Homestead.json
 *.zip
 .settings
 .buildpath
-sll
 .project
 *.sql
