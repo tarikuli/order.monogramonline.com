@@ -794,17 +794,14 @@ APPEND;
 			// then the match_broken will be false always
 			// break the outer loop
 			// return the value
+
+			// if the match is not broken.
+			// if all the matches are found
+			// will not
 			if ( !$match_broken ) {
 				return $selected_option->child_sku;
 				//break;
 			}
-		}
-
-		// if the match is not broken.
-		// if all the matches are found
-		// will not
-		if ( !$match_broken ) {
-			return $selected_option->child_sku;
 		}
 		// child sku suggestion
 		// no option was found matching
