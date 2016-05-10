@@ -24,7 +24,7 @@ class HomeController extends Controller
 
 	public function test (Request $request)
 	{
-
+		set_time_limit(0);
 		foreach ( range(0, 1000) as $count ) {
 			$items = Item::where('is_deleted', '0')
 						 ->take(1000)
