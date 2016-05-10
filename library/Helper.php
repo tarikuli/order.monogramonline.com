@@ -762,23 +762,12 @@ APPEND;
 		$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
 
 		//generate the new sku
-		$child_sku = static::generateChildSKU($options_in_common, $parameter_options, $item_options);
+		$child_sku = static::generateChildSKU($options_in_common, $parameter_options, $item_options, $store_id);
 
-		return [
-			'child_sku'         => $child_sku,
-			'matches'           => $options_in_common,
-			'parameter_options' => $parameter_options->lists('parameter_option')
-													 ->transform(function ($row) {
-														 return json_decode($row);
-													 }),
-			'item_options'      => $item_options,
-		];
-
-		// return the child sku if the postfix is not found
-
+		return $child_sku;
 	}
 
-	private static function generateChildSKU ($matches, $parameter_options, $item_options)
+	private static function generateChildSKU ($matches, $parameter_options, $item_options, $store_id)
 	{
 		$selected_option = null;
 		// parameter options is an array of rows
@@ -800,9 +789,22 @@ APPEND;
 					break;
 				}
 			}
+			// if the inner loop
+			// executes thoroughly
+			// then the match_broken will be false always
+			// break the outer loop
+			// return the value
+			if ( !$match_broken ) {
+				return $selected_option->child_sku;
+				//break;
+			}
 		}
+
+		// if the match is not broken.
+		// if all the matches are found
+		// will not
 		if ( !$match_broken ) {
-			$selected_option->child_sku;
+			return $selected_option->child_sku;
 		}
 		// child sku suggestion
 		// no option was found matching
@@ -816,6 +818,29 @@ APPEND;
 		$child_sku = empty( $child_sku_postfix ) ? $selected_option->parent_sku : sprintf("%s-%s", $selected_option->parent_sku, $child_sku_postfix);
 		// no child sku was found
 		// insert into database
+		$option = new Option();
+		$option->store_id = $store_id;
+		$option->unique_row_value = static::generateUniqueRowId();
+		$option->parent_sku = $selected_option->parent_sku;
+		$option->child_sku = $child_sku;
+		$option->allow_mixing = 1;
+		$option->batch_route_id = static::getDefaultRouteId();
+		$option_array = [
+			'graphic_sku' => 'NeedGraphicFile',
+		];
+		// add the found parameters
+		foreach ( $matches as $match ) {
+			$option_array[static::htmlFormNameToText($match)] = $item_options[$match];
+		}
+
+		$option->parameter_option = json_encode($option_array);
+		$option->save();
+
 		return $child_sku;
+	}
+
+	public static function generateUniqueRowId ()
+	{
+		return sprintf("%s_%s", strtotime("now"), str_random(5));
 	}
 }

@@ -277,7 +277,7 @@ class LogisticsController extends Controller
 					   ->fetchAssoc(Helper::$column_names);
 		set_time_limit(0);
 		foreach ( $rows as $row ) {
-			$unique_row_value = $this->get_unique_id();
+			$unique_row_value = Helper::generateUniqueRowId();
 			$option = new Option();
 			$option->store_id = $store_id;
 			$option->unique_row_value = $unique_row_value;
@@ -352,7 +352,7 @@ class LogisticsController extends Controller
 								  ->orderBy('batch_route_name')
 								  ->lists('batch_route_name', 'id')
 								  ->prepend('Select a route', 0);
-		
+
 		return view('logistics.sku_converter_store_details', compact('batch_routes', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo'));
 
 	}
@@ -427,7 +427,7 @@ class LogisticsController extends Controller
 				->withErrors($validator);
 		}
 		$store_id = $request->get('store_id');
-		$unique_row_value = $this->get_unique_id();
+		$unique_row_value = Helper::generateUniqueRowId();
 
 		$parameters = Parameter::where('store_id', $store_id)
 							   ->get();
