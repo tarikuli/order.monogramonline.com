@@ -4,8 +4,9 @@ get('test/batch', function () {
 	return \Monogram\Helper::getChildSku(\App\Item::find(244));
 });
 
-get('update_items', function () {
-	return \Monogram\Helper::getChildSku(\App\Item::find(2008));
+get('update_items', function (\Illuminate\Http\Request $request) {
+	$id = $request->get('id', 2008);
+	return \Monogram\Helper::getChildSku(\App\Item::find($id));
 });
 
 // auth middleware enabled controller

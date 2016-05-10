@@ -762,8 +762,8 @@ APPEND;
 
 		// get the common in the keys
 		$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
+
 		//generate the new sku
-		return $options_in_common;
 		$child_sku_postfix = static::generateChildSKUPostfix($options_in_common, $item_options);
 
 		// return the child sku if the postfix is not found
