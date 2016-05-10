@@ -4,6 +4,10 @@ get('test/batch', function () {
 	return \Monogram\Helper::getChildSku(\App\Item::find(244));
 });
 
+get('update_items', function () {
+	return \Monogram\Helper::getChildSku(\App\Item::find(2008));
+});
+
 // auth middleware enabled controller
 Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	Route::group([ 'middleware' => 'user_has_access' ], function () {

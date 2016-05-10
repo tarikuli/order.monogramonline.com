@@ -62,17 +62,16 @@
 				</div>
 			</div>
 		</div>
-		
-			<h3 class = "page-header">
-				Parameters ({{ $options->total() }} items found / {{$options->currentPage()}} of {{$options->lastPage()}} pages)
-				
+
+		<h3 class = "page-header">
+			Parameters ({{ $options->total() }} items found / {{$options->currentPage()}} of {{$options->lastPage()}} pages)
+
 			<a style = "margin-bottom:20px" class = "btn btn-success btn-sm pull-right"
 			   href = "{{ url(sprintf("/logistics/add_child_sku?store_id=%s&return_to=%s", request('store_id'),$returnTo)) }}">Add new child sku</a>
-				
-			</h3>
-					
-			   
-			   
+
+		</h3>
+
+
 		<div class = "row">
 			<div class = "col-md-12">
 				@if($parameters && (count($parameters->lists('parameter_value')) > 0))
@@ -86,6 +85,7 @@
 								<th>{{$parameter->parameter_value}}</th>
 								@if($parameter->parameter_value == 'id')
 									<th>Parent SKU</th>
+									<th>Image</th>
 								@endif
 							@endforeach
 							<th>Edit</th>
@@ -117,9 +117,15 @@
 											{{ $decoded[$parameter->parameter_value] }}
 										@endif
 									</td>
-									
 									@if($parameter->parameter_value == 'id')
-									<td> {{ $option->parent_sku }}</td>
+										<td> {{ $option->parent_sku }}</td>
+										<td>
+											@if($option->product && $option->product->product_thumb)
+												<img src="{{ $option->product->product_thumb }}" width="50" height="50" />
+											@else
+												N/A
+											@endif
+										</td>
 									@endif
 								@endforeach
 								<td>

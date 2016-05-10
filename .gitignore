@@ -9,3 +9,4 @@ Homestead.json
 .buildpath
 sll
 .project
+*.sql

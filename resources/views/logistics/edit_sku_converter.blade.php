@@ -45,6 +45,12 @@
 			{!! Form::hidden("store_id", $options->store_id) !!}
 			{!! Form::hidden("unique_row_value", $options->unique_row_value) !!}
 			{!! Form::hidden("return_to", $returnTo) !!}
+			<div class = "form-group">
+				{!! Form::label('parent_sku', "Parent SKU", ['id' => 'parent_sku', 'class' => 'col-md-2 control-label']) !!}
+				<div class = "col-sm-10">
+					{!! Form::text('parent_sku', $options->parent_sku, ['class'=> 'form-control', 'id' => 'parent_sku']) !!}
+				</div>
+			</div>
 			@setvar($decoded_options = json_decode($options->parameter_option, true))
 			@foreach($parameters as $parameter)
 				<div class = "form-group">

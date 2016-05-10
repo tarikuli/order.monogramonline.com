@@ -337,7 +337,8 @@ class LogisticsController extends Controller
 
 		/*$options = Option::whereIn('parameter_id', $relation_array)#->orderBy(DB::raw(sprintf('FIELD(parameter_id, %s)', implode(", ", $relation_array))))
 						 ->paginate(50 * count($parameters));*/
-		$options = Option::where('store_id', $store_id)
+		$options = Option::with('product')
+						 ->where('store_id', $store_id)
 						 ->searchInParameterOption($store_id, $request->get('search_for'), $request->get('search_in'))
 						 ->paginate(100);
 
@@ -351,7 +352,7 @@ class LogisticsController extends Controller
 								  ->orderBy('batch_route_name')
 								  ->lists('batch_route_name', 'id')
 								  ->prepend('Select a route', 0);
-
+		
 		return view('logistics.sku_converter_store_details', compact('batch_routes', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo'));
 
 	}
@@ -520,9 +521,20 @@ class LogisticsController extends Controller
 		}
 		#return $request->all();
 		#return $dataToStore;
+		$parent_sku = trim($request->get('parent_sku'), '');
+		if ( empty( $parent_sku ) ) {
+			return redirect()
+				->back()
+				->withInput()
+				->withErrors([
+					'error' => 'Parent SKU is required',
+				]);
+		}
+
 		Option::where('store_id', $store_id)
 			  ->where('unique_row_value', $unique_row_value)
 			  ->update([
+				  'parent_sku'       => $parent_sku,
 				  'parameter_option' => json_encode($dataToStore),
 			  ]);
 
@@ -574,6 +586,7 @@ class LogisticsController extends Controller
 		$otherwise = url('/logistics/sku_show?store_id=%s', $parameter_option->store_id);
 		$return_to = $request->get('return_to', '');
 		$return_to = empty( $return_to ) ? $otherwise : urldecode($return_to);
+
 		return redirect()
 			->to($return_to)
 			->with('success', $message);

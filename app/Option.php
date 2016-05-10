@@ -35,4 +35,10 @@ class Option extends Model
 		#dd($searchable_data);
 		return $query->where(DB::raw('BINARY `parameter_option`'), "LIKE", $searchable_data);
 	}
+
+
+	public function product ()
+	{
+		return $this->belongsTo("App\\Product", "parent_sku", 'product_model');
+	}
 }

@@ -763,14 +763,20 @@ APPEND;
 		// get the common in the keys
 		$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
 		//generate the new sku
-		$child_sku_postfix = implode("-", array_map(function ($node) use ($item_options) {
+		return $options_in_common;
+		$child_sku_postfix = static::generateChildSKUPostfix($options_in_common, $item_options);
+
+		// return the child sku if the postfix is not found
+		return empty( $child_sku_postfix ) ? $child_sku : sprintf("%s-%s", $item->item_code, $child_sku_postfix);
+	}
+
+	private static function generateChildSKUPostfix ($options, $item_options)
+	{
+		return implode("-", array_map(function ($node) use ($item_options) {
 			// replace the spaces with empty string
 			// make the string lower
 			// and the values from the item options
 			return str_replace(" ", "", strtolower($item_options[$node]));
-		}, $options_in_common));
-
-		// return the child sku if the postfix is not found
-		return empty( $child_sku_postfix ) ? $child_sku : sprintf("%s-%s", $item->item_code, $child_sku_postfix);
+		}, $options));
 	}
 }
