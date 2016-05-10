@@ -76,14 +76,14 @@ class ItemController extends Controller
 							 ->get();
 		$unassigned = count($unassignedItems) > 0 ? $unassignedItems[0]->aggregate : 0;*/
 
-		$batch_routes = Helper::createAbleBatches();
-		$unassigned = 0;
-		foreach ( $batch_routes as $batch_route ) {
-			if ( $batch_route->itemGroups ) {
-				$unassigned += $batch_route->itemGroups->count();
-			}
-		}
-
+// 		$batch_routes = Helper::createAbleBatches();
+// 		$unassigned = 0;
+// 		foreach ( $batch_routes as $batch_route ) {
+// 			if ( $batch_route->itemGroups ) {
+// 				$unassigned += $batch_route->itemGroups->count();
+// 			}
+// 		}
+$unassigned =0;
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
