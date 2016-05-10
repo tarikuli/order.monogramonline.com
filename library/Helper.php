@@ -766,6 +766,7 @@ APPEND;
 
 		return [
 			'child_sku'         => $child_sku,
+			'matches'           => $options_in_common,
 			'parameter_options' => $parameter_options->lists('parameter_option')
 													 ->transform(function ($row) {
 														 return json_decode($row);
