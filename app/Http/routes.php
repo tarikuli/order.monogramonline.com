@@ -6,6 +6,7 @@ get('test/batch', function () {
 
 get('update_items', function (\Illuminate\Http\Request $request) {
 	$id = $request->get('id', 2008);
+
 	return \Monogram\Helper::getChildSku(\App\Item::find($id));
 });
 
@@ -163,5 +164,5 @@ Route::group([ 'prefix' => 'auth' ], function () {
 });
 
 Event::listen('illuminate.query', function ($q) {
-	Log::info($q);
+	#Log::info($q);
 });
