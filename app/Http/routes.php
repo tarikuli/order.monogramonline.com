@@ -4,11 +4,7 @@ get('test/batch', function () {
 	return \Monogram\Helper::getChildSku(\App\Item::find(244));
 });
 
-get('update_items', function (\Illuminate\Http\Request $request) {
-	$id = $request->get('id', 2008);
-
-	return \Monogram\Helper::getChildSku(\App\Item::find($id));
-});
+get('update_items', 'HomeController@test');
 
 // auth middleware enabled controller
 Route::group([ 'middleware' => [ 'auth' ] ], function () {

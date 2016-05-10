@@ -763,21 +763,20 @@ APPEND;
 		$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
 
 		//generate the new sku
-		$child_sku = static::generateChildSKU($options_in_common, $parameter_options, $item_options, $store_id);
+		$child_sku = static::generateChildSKU($options_in_common, $parameter_options, $item, $store_id);
 
 		return $child_sku;
 	}
 
-	private static function generateChildSKU ($matches, $parameter_options, $item_options, $store_id)
+	private static function generateChildSKU ($matches, $parameter_options, $item, $store_id)
 	{
-		Log::info('Somehow got called');
-		$selected_option = null;
 		// parameter options is an array of rows
+		$item_options = json_decode($item->item_option, true);
 		foreach ( $parameter_options as $option ) {
-			// selected option is for
+			/*// selected option is for
 			// if a option is matched with item options with matched parameters
 			// to track that option
-			$selected_option = $option;
+			$selected_option = $option;*/
 			// item options has replaced space with underscore
 			// parameter options has spaces intact
 			$parameter_option_json_decoded = json_decode($option->parameter_option, true);
@@ -801,7 +800,7 @@ APPEND;
 			// if all the matches are found
 			// will not
 			if ( !$match_broken ) {
-				return $selected_option->child_sku;
+				return $option->child_sku;
 				//break;
 			}
 		}
@@ -814,13 +813,13 @@ APPEND;
 			// and the values from the item options
 			return str_replace(" ", "", strtolower($item_options[$node]));
 		}, $matches));
-		$child_sku = empty( $child_sku_postfix ) ? $selected_option->parent_sku : sprintf("%s-%s", $selected_option->parent_sku, $child_sku_postfix);
+		$child_sku = empty( $child_sku_postfix ) ? $item->item_code : sprintf("%s-%s", $item->item_code, $child_sku_postfix);
 		// no child sku was found
 		// insert into database
 		$option = new Option();
 		$option->store_id = $store_id;
 		$option->unique_row_value = static::generateUniqueRowId();
-		$option->parent_sku = $selected_option->parent_sku;
+		$option->parent_sku = $item->item_code;
 		$option->child_sku = $child_sku;
 		$option->allow_mixing = 1;
 		$option->batch_route_id = static::getDefaultRouteId();
