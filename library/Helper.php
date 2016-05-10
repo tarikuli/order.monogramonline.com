@@ -739,12 +739,7 @@ APPEND;
 
 	public static function getChildSku ($item)
 	{
-		$child_sku = $item->item_code;
-		// if item has parameter option available with the store id
 		// related to parameter options table
-		/*if ( $item->parameter_options ) {
-
-		}*/
 		// get the item options from order
 		$item_options = json_decode($item->item_option, true);
 		// get the keys from that order options
@@ -760,23 +755,66 @@ APPEND;
 			return Helper::textToHTMLFormName($element);
 		}, $parameters);
 
+		$parameter_options = Option::where('parent_sku', $item->item_code)
+								   ->get();
+
 		// get the common in the keys
 		$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
 
 		//generate the new sku
-		$child_sku_postfix = static::generateChildSKUPostfix($options_in_common, $item_options);
+		$child_sku = static::generateChildSKU($options_in_common, $parameter_options, $item_options);
+
+		return [
+			'child_sku'         => $child_sku,
+			'parameter_options' => $parameter_options->lists('parameter_option')
+													 ->transform(function ($row) {
+														 return json_decode($row);
+													 }),
+			'item_options'      => $item_options,
+		];
 
 		// return the child sku if the postfix is not found
-		return empty( $child_sku_postfix ) ? $child_sku : sprintf("%s-%s", $item->item_code, $child_sku_postfix);
+
 	}
 
-	private static function generateChildSKUPostfix ($options, $item_options)
+	private static function generateChildSKU ($matches, $parameter_options, $item_options)
 	{
-		return implode("-", array_map(function ($node) use ($item_options) {
+		$selected_option = null;
+		// parameter options is an array of rows
+		foreach ( $parameter_options as $option ) {
+			// selected option is for
+			// if a option is matched with item options with matched parameters
+			// to track that option
+			$selected_option = $option;
+			// item options has replaced space with underscore
+			// parameter options has spaces intact
+			$parameter_option_json_decoded = json_decode($option->parameter_option, true);
+			$match_broken = false;
+			foreach ( $matches as $match ) {
+				// matches are underscored
+				// i,e: form name
+				// convert to text for parameter options
+				if ( $parameter_option_json_decoded[Helper::htmlFormNameToText($match)] != $item_options[$match] ) {
+					$match_broken = true;
+					break;
+				}
+			}
+		}
+		if ( !$match_broken ) {
+			$selected_option->child_sku;
+		}
+		// child sku suggestion
+		// no option was found matching
+		// suggest a new child sku
+		$child_sku_postfix = implode("-", array_map(function ($node) use ($item_options) {
 			// replace the spaces with empty string
 			// make the string lower
 			// and the values from the item options
 			return str_replace(" ", "", strtolower($item_options[$node]));
-		}, $options));
+		}, $matches));
+		$child_sku = empty( $child_sku_postfix ) ? $selected_option->parent_sku : sprintf("%s-%s", $selected_option->parent_sku, $child_sku_postfix);
+		// no child sku was found
+		// insert into database
+		return $child_sku;
 	}
 }
