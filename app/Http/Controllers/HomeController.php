@@ -22,7 +22,7 @@ class HomeController extends Controller
 		return view('home.index', compact('stations'));
 	}
 
-	public function test (Request $request)
+	public function bulk_item_update (Request $request)
 	{
 		set_time_limit(0);
 		foreach ( range(0, 1000) as $count ) {
@@ -42,5 +42,12 @@ class HomeController extends Controller
 			}
 		}
 
+	}
+
+	public function update_single_item (Request $request)
+	{
+		$id = $request->get('id', 1360);
+
+		return Helper::getChildSku(Item::find($id));
 	}
 }

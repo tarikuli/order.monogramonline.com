@@ -4,7 +4,8 @@ get('test/batch', function () {
 	return \Monogram\Helper::getChildSku(\App\Item::find(244));
 });
 
-get('update_items', 'HomeController@test');
+get('update_items', 'HomeController@bulk_item_update');
+get('update_single_item', 'HomeController@update_single_item');
 
 // auth middleware enabled controller
 Route::group([ 'middleware' => [ 'auth' ] ], function () {

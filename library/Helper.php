@@ -342,7 +342,7 @@ APPEND;
 			}
 		}
 
-		return $formatted_string ?: $json;
+		return $formatted_string ?: "";
 	}
 
 	public static function dateTransformer ($date)
@@ -761,7 +761,6 @@ APPEND;
 
 		// get the common in the keys
 		$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
-
 		//generate the new sku
 		$child_sku = static::generateChildSKU($options_in_common, $parameter_options, $item, $store_id);
 
@@ -773,10 +772,6 @@ APPEND;
 		// parameter options is an array of rows
 		$item_options = json_decode($item->item_option, true);
 		foreach ( $parameter_options as $option ) {
-			/*// selected option is for
-			// if a option is matched with item options with matched parameters
-			// to track that option
-			$selected_option = $option;*/
 			// item options has replaced space with underscore
 			// parameter options has spaces intact
 			$parameter_option_json_decoded = json_decode($option->parameter_option, true);
@@ -785,7 +780,8 @@ APPEND;
 				// matches are underscored
 				// i,e: form name
 				// convert to text for parameter options
-				if ( $parameter_option_json_decoded[Helper::htmlFormNameToText($match)] != $item_options[$match] ) {
+				// if ( $parameter_option_json_decoded[Helper::htmlFormNameToText($match)] != $item_options[$match] ) {
+				if ( !array_key_exists(Helper::htmlFormNameToText($match), $parameter_option_json_decoded) || !array_key_exists($match, $item_options) || ( $parameter_option_json_decoded[Helper::htmlFormNameToText($match)] != $item_options[$match] ) ) {
 					$match_broken = true;
 					break;
 				}
@@ -795,7 +791,6 @@ APPEND;
 			// then the match_broken will be false always
 			// break the outer loop
 			// return the value
-
 			// if the match is not broken.
 			// if all the matches are found
 			// will not
