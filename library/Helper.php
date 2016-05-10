@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use DNS1D;
+use Illuminate\Support\Facades\Log;
 
 class Helper
 {
@@ -769,6 +770,7 @@ APPEND;
 
 	private static function generateChildSKU ($matches, $parameter_options, $item_options, $store_id)
 	{
+		Log::info('Somehow got called');
 		$selected_option = null;
 		// parameter options is an array of rows
 		foreach ( $parameter_options as $option ) {
