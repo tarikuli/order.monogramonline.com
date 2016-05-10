@@ -743,6 +743,11 @@ APPEND;
 		// related to parameter options table
 		// get the item options from order
 		$item_options = json_decode($item->item_option, true);
+		// Check is item_options an array
+		if ( !is_array($item_options) ) {
+			return $item->item_code;
+		}
+
 		// get the keys from that order options
 		$item_option_keys = array_keys($item_options);
 
