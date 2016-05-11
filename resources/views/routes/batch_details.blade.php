@@ -46,25 +46,11 @@
 					<p>Batch: # <span>{{$batch_number}}</span></p>
 					<a href = "{{url('exports/batch/'.$batch_number)}}">Export batch</a>
 					<p>Batch creation date: <span>{{substr($items[0]->batch_creation_date, 0, 10)}}</span></p>
-					{{--<div class = "col-xs-12"> </div>
-					<div class = "col-xs-12">
-						<div class = "btn-group" role = "group" aria-label = "...">
-						</div>
-						{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
-						{!! Form::hidden('action', null) !!}
-						{!! Form::close() !!}
-					</div>--}}
 					<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>
 					<p>Template:
 						<a href = "{{url(sprintf("/templates/%d", $route->template->id))}}">{!! $route->template->template_name !!}</a>
 					</p>
 					<p>Route: {{$route['batch_code']}} / {{$route['batch_route_name']}} => {!! $stations !!}</p>
-					{{--<p>Department: {{ $department_name }}</p>--}}
-					{{--<p>Current Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, ['disabled' => 'disabled']) !!}</p>--}}
-					{{-- {!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
-					<p>Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, []) !!}</p>
-					{!! Form::submit('Change station', ['id' => 'change-status',]) !!}
-					{!! Form::close() !!} --}}
 				</div>
 				<div class = "col-xs-4">
 					{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $batch_number)) !!}
@@ -83,7 +69,6 @@
 								Item barcode
 							</th>
 							<th>Current station</th>
-							{{--<th>Order</th>--}}
 							<th>Image</th>
 							<th>Order date</th>
 							<th>Qty.</th>
@@ -111,19 +96,13 @@
 										-
 									@endif
 								</td>
-								{{--<td>
-									<a href = "{{url('/orders/details/'.$item->order->order_id)}}">{{$item->order->short_order}}</a>
-								</td>--}}
-								{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>--}}
-								{{--<td><img src = "{{$item->item_thumb}}" /></td>--}}
 								<td><a href = "{{ $item->product->product_url }}" target = "_blank"><img
 												src = "{{$item->item_thumb}}" /></a>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
-								<td>{{$item->item_code}}</td>
+								<td>{{$item->child_sku}}</td>
 								<td class = "description">{{$item->item_description}}</td>
 								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '3', 'cols' => '20',]) !!}</td>
-								{{--<td>{{\Monogram\Helper::jsonTransformer($item->item_option)}}</td>--}}
 							</tr>
 						@endforeach
 						</tbody>

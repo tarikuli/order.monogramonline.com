@@ -794,7 +794,8 @@ class ItemController extends Controller
 			}
 		}*/
 		#return $items->groupBy('item_code');
-		foreach ( $items->groupBy('item_code') as $sku => $sku_groups ) {
+		// Jewel Update to child_sku
+		foreach ( $items->groupBy('child_sku') as $sku => $sku_groups ) {
 			$route = $sku_groups->first()->route;
 			$batch_stations = $route->stations->lists('custom_station_name', 'id')
 											  ->prepend('Select station to change', '0');
