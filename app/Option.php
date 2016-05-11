@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Monogram\Helper;
 
 class Option extends Model
 {
@@ -40,5 +41,15 @@ class Option extends Model
 	public function product ()
 	{
 		return $this->belongsTo("App\\Product", "parent_sku", 'product_model');
+	}
+
+	public function scopeSearchUnassigned ($query, $unassigned)
+	{
+		if ( intval($unassigned) < 1 ) {
+			return;
+		}
+
+		return $query->where('batch_route_id', Helper::getDefaultRouteId())
+					 ->orWhere('batch_route_id', 206);
 	}
 }

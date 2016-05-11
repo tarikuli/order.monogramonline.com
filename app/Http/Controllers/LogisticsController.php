@@ -339,6 +339,7 @@ class LogisticsController extends Controller
 						 ->paginate(50 * count($parameters));*/
 		$options = Option::with('product')
 						 ->where('store_id', $store_id)
+						 ->searchUnassigned($request->get('unassigned'))
 						 ->searchInParameterOption($store_id, $request->get('search_for'), $request->get('search_in'))
 						 ->paginate(100);
 
@@ -395,8 +396,11 @@ class LogisticsController extends Controller
 		#$options = $options->toArray();
 		#return $parameters;
 		$returnTo = $request->get('return_to');
+		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->orderBy('batch_route_name')
+								  ->lists('batch_route_name', 'id');
 
-		return view('logistics.edit_sku_converter', compact('options', 'parameters', 'returnTo'));
+		return view('logistics.edit_sku_converter', compact('options', 'parameters', 'returnTo', 'batch_routes'));
 	}
 
 	public function get_add_child_sku (Request $request)
@@ -531,9 +535,13 @@ class LogisticsController extends Controller
 				]);
 		}
 
+		// todo: if child sku is changed, change on items.child_sku too
+
 		Option::where('store_id', $store_id)
 			  ->where('unique_row_value', $unique_row_value)
 			  ->update([
+				  'allow_mixing'     => $request->get('allow_mixing', 1),
+				  'batch_route_id'   => $request->get('batch_route_id', Helper::getDefaultRouteId()),
 				  'parent_sku'       => $parent_sku,
 				  'parameter_option' => json_encode($dataToStore),
 			  ]);

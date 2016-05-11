@@ -46,6 +46,18 @@
 			{!! Form::hidden("unique_row_value", $options->unique_row_value) !!}
 			{!! Form::hidden("return_to", $returnTo) !!}
 			<div class = "form-group">
+				{!! Form::label('allow_mixing', "Batch route", ['class' => 'col-md-2 control-label']) !!}
+				<div class = "col-sm-10">
+					{!! Form::select('allow_mixing', \App\Product::$mixingStatues, $options->allow_mixing, ['class'=> 'form-control', 'id' => 'allow_mixing']) !!}
+				</div>
+			</div>
+			<div class = "form-group">
+				{!! Form::label('batch_route_id', "Batch route", ['class' => 'col-md-2 control-label']) !!}
+				<div class = "col-sm-10">
+					{!! Form::select('batch_route_id', $batch_routes, $options->batch_route_id, ['class'=> 'form-control', 'id' => 'batch_route_id']) !!}
+				</div>
+			</div>
+			<div class = "form-group">
 				{!! Form::label('parent_sku', "Parent SKU", ['id' => 'parent_sku', 'class' => 'col-md-2 control-label']) !!}
 				<div class = "col-sm-10">
 					{!! Form::text('parent_sku', $options->parent_sku, ['class'=> 'form-control', 'id' => 'parent_sku']) !!}
