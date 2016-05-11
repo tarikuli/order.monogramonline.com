@@ -49,7 +49,6 @@ class Option extends Model
 			return;
 		}
 
-		return $query->where('batch_route_id', Helper::getDefaultRouteId())
-					 ->orWhere('batch_route_id', 206);
+		return $query->where('batch_route_id', Helper::getDefaultRouteId());
 	}
 }
