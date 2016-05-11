@@ -11,3 +11,4 @@ Homestead.json
 *.sql
 /order.monogramonline.com-access.log
 /order.monogramonline.com-error.log
+bin

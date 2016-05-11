@@ -1,9 +1,18 @@
 <?php
-
 get('test/batch', function () {
 	return \Monogram\Helper::getChildSku(\App\Item::find(244));
 });
+get('phantom', function (\Illuminate\Http\Request $request) {
+	$id = $request->get('id', 'pemoanwisicr');
+	$url = sprintf("http://monogramonline.monogramonline.com/crawl.php?id=%s", $id);
+	$phantom = new \Monogram\Phantom($url);
+	$response = $phantom->request()
+						->getResponse();
 
+	$reader = new \Monogram\DOMReader($response);
+	return json_decode($reader->readCrawledData());
+
+});
 get('update_items', 'HomeController@bulk_item_update');
 get('update_single_item', 'HomeController@update_single_item');
 
