@@ -113,7 +113,9 @@
 								</td>
 								@foreach($parameters as $parameter)
 									<td>
-										@if(in_array($parameter->parameter_value, array_keys($decoded)))
+										@if(strtolower($parameter->parameter_value) == "sku")
+											{{ $option->child_sku }}
+										@elseif(in_array($parameter->parameter_value, array_keys($decoded)))
 											{{ $decoded[$parameter->parameter_value] }}
 										@endif
 									</td>
@@ -121,7 +123,8 @@
 										<td> {{ $option->parent_sku }}</td>
 										<td>
 											@if($option->product && $option->product->product_thumb)
-												<img src="{{ $option->product->product_thumb }}" width="50" height="50" />
+												<img src = "{{ $option->product->product_thumb }}" width = "50"
+												     height = "50" />
 											@else
 												N/A
 											@endif
