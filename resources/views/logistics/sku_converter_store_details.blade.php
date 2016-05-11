@@ -114,7 +114,7 @@
 								@foreach($parameters as $parameter)
 									<td>
 										@if(strtolower($parameter->parameter_value) == "sku")
-											{{ $option->child_sku }}
+
 										@elseif(in_array($parameter->parameter_value, array_keys($decoded)))
 											{{ $decoded[$parameter->parameter_value] }}
 										@endif
@@ -128,6 +128,9 @@
 											@else
 												N/A
 											@endif
+										</td>
+										<td>
+											{{ $option->child_sku }}
 										</td>
 									@endif
 								@endforeach
