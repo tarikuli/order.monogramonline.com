@@ -1,8 +1,9 @@
-<!doctype html>
+@setvar($shipped = intval($request->get('shipped', 0)))
+		<!doctype html>
 <html lang = "en">
 <head>
 	<meta charset = "UTF-8">
-	<title>Ships list</title>
+	<title>Ships list - @if($shipped == 0) Not Shipped @elseif($shipped == 1 ) Shipped @else Not Shipped @endif</title>
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -74,6 +75,12 @@
 		<h3 class = "page-header">
 			Shipping list @if(count($ships) > 0 ) ({{ $ships->total() }} items found / {{$ships->currentPage()}} of {{$ships->lastPage()}} pages) @endif
 			<a href = "/items/waiting_for_another_item" style = "font-size: 12px;">Go to waiting for another items</a>
+			<a href = "{{ url(sprintf("/shipping?shipped=0")) }}"
+			   class = "btn btn-primary btn-sm @if($shipped != 1) disabled @endif"
+			   style = "font-size: 12px;">{{ $tracking_number_not_assigned }} items yet not shipped</a>
+			<a href = "{{ url(sprintf("/shipping?shipped=1")) }}"
+			   class = "btn btn-success btn-sm @if($shipped == 1) disabled @endif"
+			   style = "font-size: 12px;">{{ $tracking_number_assigned }} items are shipped</a>
 		</h3>
 
 		@if(count($ships) > 0)

@@ -28,6 +28,18 @@ class Ship extends Model
 		return $this->belongsTo('App\Item', 'item_id', 'id');
 	}
 
+	public function scopeSearchTrackingNumberAssigned ($query, $is_assigned = 0)
+	{
+		if ( intval($is_assigned) == 0 ) {
+			return $query->whereNull('tracking_number');
+		} elseif ( intval($is_assigned) == 1 ) {
+			return $query->whereNotNull('tracking_number');
+		}
+		// if anything except 0, 1
+		// return tracking number null values
+		return $query->whereNull('tracking_number');
+	}
+
 	public function scopeSearchCriteria ($query, $search_for, $search_in)
 	{
 		$search_for = trim($search_for);

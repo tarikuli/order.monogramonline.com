@@ -95,7 +95,6 @@ class Option extends Model
 		return $query->where('graphic_sku', 'LIKE', sprintf("%%%s%%", $text));
 	}
 
-
 	public function product ()
 	{
 		return $this->belongsTo("App\\Product", "parent_sku", 'product_model');
