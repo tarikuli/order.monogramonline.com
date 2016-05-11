@@ -828,7 +828,7 @@ APPEND;
 		$option = new Option();
 		$option->store_id = $store_id;
 		$option->unique_row_value = static::generateUniqueRowId();
-		$option->id_catalog = $item->id_catalog;
+		$option->id_catalog = $item->item_id;
 		$option->parent_sku = $item->item_code;
 		$option->child_sku = $child_sku;
 		$option->graphic_sku = 'NeedGraphicFile';
