@@ -825,6 +825,7 @@ APPEND;
 		$option->batch_route_id = static::getDefaultRouteId();
 		$option_array = [
 			'graphic_sku' => 'NeedGraphicFile',
+			'id'          => $item->id_catalog,
 		];
 		// add the found parameters
 		foreach ( $matches as $match ) {
