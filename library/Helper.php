@@ -26,6 +26,14 @@ class Helper
 	public static $column_names = [ ];
 	public static $columns = [ ];
 	public static $error = '';
+	public static $SKU_CONVERSION_EXTRA_COLUMNS = [
+		"ID Catalog",
+		'Parent SKU',
+		'Child SKU',
+		"Graphic SKU",
+		'Allow mixing',
+		'Batch route',
+	];
 
 	private static $carrier = [
 		"USPS"     => 'USPS',
@@ -410,9 +418,10 @@ APPEND;
 	{
 		$parameters = Parameter::where('store_id', $store_id)
 							   ->where('is_deleted', 0)
+							   ->orderBy('id')
 							   ->get();
-		self::$column_names = $parameters->lists('parameter_value')
-										 ->toArray();
+		self::$column_names = array_merge(static::$SKU_CONVERSION_EXTRA_COLUMNS, $parameters->lists('parameter_value')
+																							->toArray());
 		self::$columns = $parameters->lists('id', 'parameter_value')
 									->toArray();
 		#$parameters->lists('parameter_value')->toArray()

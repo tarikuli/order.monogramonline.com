@@ -58,9 +58,27 @@
 				</div>
 			</div>
 			<div class = "form-group">
-				{!! Form::label('parent_sku', "Parent SKU", ['id' => 'parent_sku', 'class' => 'col-md-2 control-label']) !!}
+				{!! Form::label('id_catalog', "ID", ['class' => 'col-md-2 control-label']) !!}
+				<div class = "col-sm-10">
+					{!! Form::text('id_catalog', $options->id_catalog, ['class'=> 'form-control', 'id' => 'id_catalog']) !!}
+				</div>
+			</div>
+			<div class = "form-group">
+				{!! Form::label('parent_sku', "Parent SKU", ['class' => 'col-md-2 control-label']) !!}
 				<div class = "col-sm-10">
 					{!! Form::text('parent_sku', $options->parent_sku, ['class'=> 'form-control', 'id' => 'parent_sku']) !!}
+				</div>
+			</div>
+			<div class = "form-group">
+				{!! Form::label('child_sku', "Child SKU", ['class' => 'col-md-2 control-label']) !!}
+				<div class = "col-sm-10">
+					{!! Form::text('child_sku', $options->child_sku, ['class'=> 'form-control', 'id' => 'child_sku']) !!}
+				</div>
+			</div>
+			<div class = "form-group">
+				{!! Form::label('graphic_sku', "Graphic SKU", ['class' => 'col-md-2 control-label']) !!}
+				<div class = "col-sm-10">
+					{!! Form::text('graphic_sku', $options->graphic_sku, ['class'=> 'form-control', 'id' => 'graphic_sku']) !!}
 				</div>
 			</div>
 			@setvar($decoded_options = json_decode($options->parameter_option, true))

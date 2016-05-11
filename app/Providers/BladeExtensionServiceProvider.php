@@ -19,6 +19,11 @@ class BladeExtensionServiceProvider extends ServiceProvider
         {
             return preg_replace('/\@setvar\((.+)\)/', '<?php ${1}; ?>', $view);
         });
+
+		Blade::extend(function($value)
+		{
+			return preg_replace('/(\s*)@(break|continue)(\s*)/', '$1<?php $2; ?>$3', $value);
+		});
     }
 
 

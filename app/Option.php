@@ -43,6 +43,11 @@ class Option extends Model
 		return $this->belongsTo("App\\Product", "parent_sku", 'product_model');
 	}
 
+	public function route ()
+	{
+		return $this->belongsTo('App\BatchRoute', 'batch_route_id', 'id');
+	}
+
 	public function scopeSearchUnassigned ($query, $unassigned)
 	{
 		if ( intval($unassigned) < 1 ) {

@@ -41,7 +41,6 @@
 			@include('includes.error_div')
 			@include('includes.success_div')
 		</div>
-
 		<div class = "col-md-12">
 			<div class = "panel panel-default">
 				<div class = "panel-heading">Search</div>
@@ -62,7 +61,6 @@
 				</div>
 			</div>
 		</div>
-
 		<h3 class = "page-header">
 			Parameters ({{ $options->total() }} items found / {{$options->currentPage()}} of {{$options->lastPage()}} pages)
 
@@ -70,23 +68,21 @@
 			   href = "{{ url(sprintf("/logistics/add_child_sku?store_id=%s&return_to=%s", request('store_id'),$returnTo)) }}">Add new child sku</a>
 
 		</h3>
-
-
 		<div class = "row">
 			<div class = "col-md-12">
 				@if($parameters && (count($parameters->lists('parameter_value')) > 0))
-
 					<table class = "table table-bordered">
 						<tr>
 							<th>Delete</th>
 							<th>Allow Mixing</th>
 							<th>Route</th>
+							<th>ID</th>
+							<th>Parent SKU</th>
+							<th>Child SKU</th>
+							<th>Graphic SKU</th>
+							<th>Image</th>
 							@foreach($parameters as $parameter)
 								<th>{{$parameter->parameter_value}}</th>
-								@if($parameter->parameter_value == 'id')
-									<th>Parent SKU</th>
-									<th>Image</th>
-								@endif
 							@endforeach
 							<th>Edit</th>
 						</tr>
@@ -111,28 +107,24 @@
 									{!! Form::select('batch_route_id', $batch_routes, $option->batch_route_id, ['class' => 'form-control changeable', 'style' => 'width: 150px']) !!}
 									{!! Form::close() !!}
 								</td>
+								<td> {{ $option->id_catalog }}</td>
+								<td> {{ $option->parent_sku }}</td>
+								<td> {{ $option->child_sku }}</td>
+								<td> {{ $option->graphic_sku }}</td>
+								<td>
+									@if($option->product && $option->product->product_thumb)
+										<img src = "{{ $option->product->product_thumb }}" width = "50"
+										     height = "50" />
+									@else
+										N/A
+									@endif
+								</td>
 								@foreach($parameters as $parameter)
 									<td>
-										@if(strtolower($parameter->parameter_value) == "sku")
-
-										@elseif(in_array($parameter->parameter_value, array_keys($decoded)))
+										@if(in_array($parameter->parameter_value, array_keys($decoded)))
 											{{ $decoded[$parameter->parameter_value] }}
 										@endif
 									</td>
-									@if($parameter->parameter_value == 'id')
-										<td> {{ $option->parent_sku }}</td>
-										<td>
-											@if($option->product && $option->product->product_thumb)
-												<img src = "{{ $option->product->product_thumb }}" width = "50"
-												     height = "50" />
-											@else
-												N/A
-											@endif
-										</td>
-										<td>
-											{{ $option->child_sku }}
-										</td>
-									@endif
 								@endforeach
 								<td>
 									<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s&return_to=%s", $option->store_id, $option->unique_row_value, $returnTo))}}">Edit</a>

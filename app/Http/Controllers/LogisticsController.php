@@ -157,6 +157,7 @@ class LogisticsController extends Controller
 		$store_id = $request->get('store_id');
 		if ( $request->get('action') == 'export' ) {
 			$parameters = Parameter::where('store_id', $store_id)
+								   ->orderBy('id')
 								   ->get();
 			if ( $parameters->count() == 0 ) {
 				return redirect()
@@ -168,11 +169,14 @@ class LogisticsController extends Controller
 			}
 			$columns = $parameters->lists('parameter_value')
 								  ->toArray();
-			$options = Option::where('store_id', $store_id)
+			$options = Option::with('route')
+							 ->where('store_id', $store_id)
 							 ->get();
 			$file_path = sprintf("%s/assets/exports/skus/", public_path());
 			$file_name = sprintf("skus_exports-%s-%s.csv", date("y-m-d", strtotime('now')), str_random(5));
 			$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
+			$extra_columns = Helper::$SKU_CONVERSION_EXTRA_COLUMNS;
+			$columns = array_merge($extra_columns, $columns);
 
 			$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'a+'), 'w');
 			$csv->insertOne($columns);
@@ -185,7 +189,24 @@ class LogisticsController extends Controller
 				/*foreach ( json_decode($option->parameter_option, true) as $column_value ) {
 					$row[] = $column_value->parameter_option;
 				}*/
-				$row = json_decode($option->parameter_option, true);
+				$row = [ ];
+				$row[] = $option->id_catalog;
+				$row[] = $option->parent_sku;
+				$row[] = $option->child_sku;
+				$row[] = $option->graphic_sku;
+				$row[] = $option->allow_mixing ? "Yes" : "No";
+				$row[] = $option->route ? $option->route->batch_code : "";
+
+				$json_array = json_decode($option->parameter_option, true);
+				$json_array_except = array_filter($json_array, function ($key) {
+					if ( $key == "SKU" ) {
+						return false;
+					}
+
+					return true;
+				}, ARRAY_FILTER_USE_KEY);
+
+				$row = array_merge($row, $json_array_except);
 				$csv->insertOne($row);
 			}
 
@@ -230,7 +251,7 @@ class LogisticsController extends Controller
 			return redirect()
 				->back()
 				->withErrors(new MessageBag([
-					/*'error' => sprintf('Column names / values do not match with the parameters with <b>%s</b> store.', Store::where('store_id', $store_id)
+					/*'error' => sprintf('Column names / values do not match with the parameters with < b>%s </b > store . ', Store::where('store_id', $store_id)
 																															->first()->store_name),*/
 					'error' => Helper::$error,
 				]));
@@ -256,12 +277,12 @@ class LogisticsController extends Controller
 			$message = 'Bulk upload is complete.';
 		} elseif ( $request->get('action') == 'upload-new' ) {
 			$this->save_parameters($reader, $store_id);
-			$message = 'Upload new is complete';
+			$message = 'Upload new is complete.';
 		} else {
 			return redirect()
 				->back()
 				->withErrors(new MessageBag([
-					'error' => sprintf('Sorry, The operation cannot be processed'),
+					'error' => sprintf('Sorry, The operation cannot be processed.'),
 				]));
 		}
 
@@ -275,25 +296,29 @@ class LogisticsController extends Controller
 	{
 		$rows = $reader->setOffset(1)
 					   ->fetchAssoc(Helper::$column_names);
+		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->lists('id', 'batch_code');
 		set_time_limit(0);
 		foreach ( $rows as $row ) {
 			$unique_row_value = Helper::generateUniqueRowId();
 			$option = new Option();
 			$option->store_id = $store_id;
 			$option->unique_row_value = $unique_row_value;
-			$parameter_options = [ ];
-			$parent_sku = '';
-			$child_sku = '';
-			foreach ( Helper::$column_names as $column_name ) {
-				$parameter_options[$column_name] = $row[$column_name];
-				if ( $column_name == 'id' ) {
-					$parent_sku = $row[$column_name];
-				} elseif ( $column_name == 'code' ) {
-					$child_sku = $row[$column_name];
+			foreach ( Helper::$SKU_CONVERSION_EXTRA_COLUMNS as $column ) {
+				if ( strtolower($column) == "batch route" ) {
+					$option->batch_route_id = $batch_routes->get($row[$column]) ?: Helper::getDefaultRouteId();
+				} elseif ( strtolower($column) == "allow mixing" ) {
+					$option->allow_mixing = strtolower($row[$column]) == "yes" ? 1 : 0;
+				} else {
+					$to_table_field = str_replace(" ", "_", strtolower($column));
+					$option->$to_table_field = $row[$column];
 				}
 			}
-			$option->parent_sku = $parent_sku;
-			$option->child_sku = $child_sku;
+			$parameter_options = [ ];
+			$jsonable_columns = array_diff(Helper::$column_names, Helper::$SKU_CONVERSION_EXTRA_COLUMNS);
+			foreach ( $jsonable_columns as $column_name ) {
+				$parameter_options[$column_name] = $row[$column_name];
+			}
 			$option->parameter_option = json_encode($parameter_options);
 			$option->save();
 		}
@@ -385,7 +410,7 @@ class LogisticsController extends Controller
 			return redirect()
 				->back()
 				->withErrors([
-					'error' => 'Your input is wrong',
+					'error' => 'Your input is wrong.',
 				]);
 		}
 		#$decoded_options = json_decode($options->parameter_option, true);
@@ -439,7 +464,7 @@ class LogisticsController extends Controller
 			return redirect()
 				->back()
 				->withErrors([
-					'error' => 'Not a valid store selected',
+					'error' => 'Not a valid store selected.',
 				]);
 		}
 
@@ -461,7 +486,7 @@ class LogisticsController extends Controller
 		// check if the code is already existing on database or not
 		$option = null;
 		if ( $is_code_field_found ) {
-			$match_against = sprintf('%%"code":"%s"%%', $code);
+			$match_against = sprintf(' %%"code":"%s" %%', $code);
 
 			$option = Option::where('store_id', $store_id)
 							->where('parameter_option', "LIKE", $match_against)
@@ -526,6 +551,9 @@ class LogisticsController extends Controller
 		#return $request->all();
 		#return $dataToStore;
 		$parent_sku = trim($request->get('parent_sku'), '');
+		$graphic_sku = trim($request->get('graphic_sku'), '');
+		$child_sku = trim($request->get('child_sku'), '');
+		$id_catalog = trim($request->get('id_catalog'), '');
 		if ( empty( $parent_sku ) ) {
 			return redirect()
 				->back()
@@ -540,9 +568,12 @@ class LogisticsController extends Controller
 		Option::where('store_id', $store_id)
 			  ->where('unique_row_value', $unique_row_value)
 			  ->update([
-				  'allow_mixing'     => $request->get('allow_mixing', 1),
-				  'batch_route_id'   => $request->get('batch_route_id', Helper::getDefaultRouteId()),
+				  'id_catalog'       => $id_catalog,
 				  'parent_sku'       => $parent_sku,
+				  'child_sku'        => $child_sku,
+				  'graphic_sku'      => $graphic_sku,
+				  'allow_mixing'     => intval($request->get('allow_mixing', 1)),
+				  'batch_route_id'   => intval($request->get('batch_route_id', Helper::getDefaultRouteId())),
 				  'parameter_option' => json_encode($dataToStore),
 			  ]);
 
