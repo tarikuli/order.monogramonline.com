@@ -19,22 +19,80 @@ class Option extends Model
 		}
 
 		// check if the parameter value as search really exits
-		$parameter = Parameter::where('store_id', $store_id)
+		/*$parameter = Parameter::where('store_id', $store_id)
 							  ->where(DB::raw('BINARY `parameter_value`'), $search_in)
-							  ->first();
+							  ->first();*/
 		// parameter doesn't exist with that value,
 		// return null
-		if ( !$parameter ) {
+		/*if ( !$parameter ) {
 			return;
+		}*/
+		$columns = [
+			'id_catalog',
+			'parent_sku',
+			'child_sku',
+			'graphic_sku',
+		];
+		if ( in_array($search_in, $columns) ) {
+			if ( $search_in == 'id_catalog' ) {
+				return $this->scopeSearchInIdCatalog($query, $search_for);
+			} elseif ( $search_in == 'parent_sku' ) {
+				return $this->scopeSearchInParentSku($query, $search_for);
+			} elseif ( $search_in == 'child_sku' ) {
+				return $this->scopeSearchInChildSku($query, $search_for);
+			} elseif ( $search_in == 'graphic_sku' ) {
+				return $this->scopeSearchInGraphicSku($query, $search_for);
+			}
 		}
-
 		$search_for = str_replace([ "%" ], "", $search_for);
 		// create a json like format that will be searchable
 		// i,e; "%\"code\":\"MN%%"
-		$searchable_data = sprintf('%%\\"%s\\":\\"%%%s%%%%', $search_in, $search_for);
+		$searchable_data = sprintf('%%"%s":"%%%s%%%%', $search_in, $search_for);
+		// need to fix the function.
+		// searching gold in metal type shows extra values
 
 		#dd($searchable_data);
 		return $query->where(DB::raw('BINARY `parameter_option`'), "LIKE", $searchable_data);
+	}
+
+	public function scopeSearchInIdCatalog ($query, $text)
+	{
+		$text = trim($text);
+		if ( empty( $text ) ) {
+			return;
+		}
+
+		return $query->where('id_catalog', 'LIKE', sprintf("%%%s%%", $text));
+	}
+
+	public function scopeSearchInParentSku ($query, $text)
+	{
+		$text = trim($text);
+		if ( empty( $text ) ) {
+			return;
+		}
+
+		return $query->where('parent_sku', 'LIKE', sprintf("%%%s%%", $text));
+	}
+
+	public function scopeSearchInChildSku ($query, $text)
+	{
+		$text = trim($text);
+		if ( empty( $text ) ) {
+			return;
+		}
+
+		return $query->where('child_sku', 'LIKE', sprintf("%%%s%%", $text));
+	}
+
+	public function scopeSearchInGraphicSku ($query, $text)
+	{
+		$text = trim($text);
+		if ( empty( $text ) ) {
+			return;
+		}
+
+		return $query->where('graphic_sku', 'LIKE', sprintf("%%%s%%", $text));
 	}
 
 

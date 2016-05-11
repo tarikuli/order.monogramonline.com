@@ -353,13 +353,15 @@ class LogisticsController extends Controller
 		$parameters = Parameter::where('store_id', $store_id)
 							   ->get();
 
+		$searchable = new Collection($parameters->lists('parameter_value', 'parameter_value'));
+		$searchable = (new Collection(array_combine(['id_catalog', 'parent_sku', 'child_sku', 'graphic_sku'], ['ID Catalog', 'Parent SKU', 'Child SKU', 'Graphic SKU'])))->merge($searchable);
+		$searchable->prepend('Select a field', "");
 		// get the values of the above columns
 		// by parameter id relation
 		// and paginate as of the length of the parameter
 		// here in paginate, the multiple is the number of parameter column
 		/*$relation_array = $parameters->lists('id')
 									 ->toArray();*/
-
 		/*$options = Option::whereIn('parameter_id', $relation_array)#->orderBy(DB::raw(sprintf('FIELD(parameter_id, %s)', implode(", ", $relation_array))))
 						 ->paginate(50 * count($parameters));*/
 		$options = Option::with('product')
@@ -379,7 +381,7 @@ class LogisticsController extends Controller
 								  ->lists('batch_route_name', 'id')
 								  ->prepend('Select a route', 0);
 
-		return view('logistics.sku_converter_store_details', compact('batch_routes', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo'));
+		return view('logistics.sku_converter_store_details', compact('batch_routes', 'searchable', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo'));
 
 	}
 
@@ -434,18 +436,23 @@ class LogisticsController extends Controller
 		$parameters = Parameter::where('store_id', $store_id)
 							   ->get();
 		$returnTo = $request->get('return_to');
+		$batch_routes = BatchRoute::where('is_deleted', 0)
+								  ->orderBy('batch_route_name')
+								  ->lists('batch_route_name', 'id');
 
-		return view('logistics.add_child_sku', compact('parameters', 'returnTo', 'store_id'));
+		return view('logistics.add_child_sku', compact('parameters', 'returnTo', 'store_id', 'batch_routes'));
 	}
 
 	public function post_add_child_sku (Request $request)
 	{
 		$rules = [
-			'store_id' => 'required',
+			'store_id'  => 'required',
+			'child_sku' => 'required',
 		];
 
 		$inputs = [
-			'store_id' => $request->get('store_id'),
+			'store_id'  => $request->get('store_id'),
+			'child_sku' => $request->get('child_sku'),
 		];
 
 		$validator = Validator::make($inputs, $rules);
@@ -485,21 +492,32 @@ class LogisticsController extends Controller
 		}
 		// check if the code is already existing on database or not
 		$option = null;
+
+		$parent_sku = trim($request->get('parent_sku'), '');
+		$graphic_sku = trim($request->get('graphic_sku'), '');
+		$child_sku = trim($request->get('child_sku'), '');
+		$id_catalog = trim($request->get('id_catalog'), '');
+
 		if ( $is_code_field_found ) {
-			$match_against = sprintf(' %%"code":"%s" %%', $code);
-
 			$option = Option::where('store_id', $store_id)
-							->where('parameter_option', "LIKE", $match_against)
+							->where('child_sku', $child_sku)
 							->first();
-
 		}
 
 		if ( !$option ) {
 			$option = new Option();
 			$option->store_id = $store_id;
 			$option->unique_row_value = $unique_row_value;
+			$option->child_sku = $child_sku;
 		}
+
+		$option->parent_sku = $parent_sku;
+		$option->graphic_sku = $graphic_sku;
+		$option->id_catalog = $id_catalog;
+		$option->allow_mixing = intval($request->get('allow_mixing', 1));
+		$option->batch_route_id = intval($request->get('batch_route_id', Helper::getDefaultRouteId()));
 		$option->parameter_option = json_encode($dataToStore);
+
 		$option->save();
 
 		$return_to = $request->get('return_to', '');
@@ -554,12 +572,12 @@ class LogisticsController extends Controller
 		$graphic_sku = trim($request->get('graphic_sku'), '');
 		$child_sku = trim($request->get('child_sku'), '');
 		$id_catalog = trim($request->get('id_catalog'), '');
-		if ( empty( $parent_sku ) ) {
+		if ( empty( $child_sku ) ) {
 			return redirect()
 				->back()
 				->withInput()
 				->withErrors([
-					'error' => 'Parent SKU is required',
+					'error' => 'Child SKU is required',
 				]);
 		}
 

@@ -828,14 +828,13 @@ APPEND;
 		$option = new Option();
 		$option->store_id = $store_id;
 		$option->unique_row_value = static::generateUniqueRowId();
+		$option->id_catalog = $item->id_catalog;
 		$option->parent_sku = $item->item_code;
 		$option->child_sku = $child_sku;
+		$option->graphic_sku = 'NeedGraphicFile';
 		$option->allow_mixing = 1;
 		$option->batch_route_id = static::getDefaultRouteId();
-		$option_array = [
-			'graphic_sku' => 'NeedGraphicFile',
-			'id'          => $item->id_catalog,
-		];
+		$option_array = [ ];
 		// add the found parameters
 		foreach ( $matches as $match ) {
 			$option_array[static::htmlFormNameToText($match)] = $item_options[$match];

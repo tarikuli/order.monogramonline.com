@@ -38,11 +38,47 @@
 			<li class = "active">Add new child sku</li>
 		</ol>
 		@include('includes.error_div')
-		<h3 class = "page-header">Edit</h3>
+		<h3 class = "page-header">Add new child sku</h3>
 		@setvar($i = 0)
 		{!! Form::open(['url' => url('/logistics/add_child_sku'), 'method' => 'post', 'class' => 'form-horizontal']) !!}
 		{!! Form::hidden("store_id", $store_id) !!}
 		{!! Form::hidden("return_to", $returnTo) !!}
+		<div class = "form-group">
+			{!! Form::label('allow_mixing', "Batch route", ['class' => 'col-md-2 control-label']) !!}
+			<div class = "col-sm-10">
+				{!! Form::select('allow_mixing', \App\Product::$mixingStatues, 1, ['class'=> 'form-control', 'id' => 'allow_mixing']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!! Form::label('batch_route_id', "Batch route", ['class' => 'col-md-2 control-label']) !!}
+			<div class = "col-sm-10">
+				{!! Form::select('batch_route_id', $batch_routes, null, ['class'=> 'form-control', 'id' => 'batch_route_id']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!! Form::label('id_catalog', "ID", ['class' => 'col-md-2 control-label']) !!}
+			<div class = "col-sm-10">
+				{!! Form::text('id_catalog', null, ['class'=> 'form-control', 'id' => 'id_catalog']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!! Form::label('parent_sku', "Parent SKU", ['class' => 'col-md-2 control-label']) !!}
+			<div class = "col-sm-10">
+				{!! Form::text('parent_sku', null, ['class'=> 'form-control', 'id' => 'parent_sku']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!! Form::label('child_sku', "Child SKU", ['class' => 'col-md-2 control-label']) !!}
+			<div class = "col-sm-10">
+				{!! Form::text('child_sku', null, ['class'=> 'form-control', 'id' => 'child_sku']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			{!! Form::label('graphic_sku', "Graphic SKU", ['class' => 'col-md-2 control-label']) !!}
+			<div class = "col-sm-10">
+				{!! Form::text('graphic_sku', null, ['class'=> 'form-control', 'id' => 'graphic_sku']) !!}
+			</div>
+		</div>
 		@foreach($parameters as $parameter)
 			<div class = "form-group">
 				@setvar($parameter_value = $parameter->parameter_value)

@@ -53,7 +53,7 @@
 					</div>
 					<div class = "form-group">
 						{!! Form::label('search_in', "Search in:", ['class' => 'control-label']) !!}
-						{!! Form::select('search_in', $parameters->lists('parameter_value', 'parameter_value')->prepend('Select a field', ""), $request->get('search_in'), ['id' => 'search_in', 'class' => 'form-control']) !!}
+						{!! Form::select('search_in', $searchable, $request->get('search_in'), ['id' => 'search_in', 'class' => 'form-control']) !!}
 					</div>
 
 					<button type = "submit" class = "btn btn-success">Search</button>
