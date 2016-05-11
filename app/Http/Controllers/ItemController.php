@@ -78,6 +78,8 @@ class ItemController extends Controller
 
 		$batch_routes = Helper::createAbleBatches();
 		$unassigned = 0;
+		// Reset executing time
+		set_time_limit(0);
 		foreach ( $batch_routes as $batch_route ) {
 			if ( $batch_route->itemGroups ) {
 				$unassigned += $batch_route->itemGroups->count();

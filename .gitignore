@@ -9,3 +9,5 @@ Homestead.json
 .buildpath
 .project
 *.sql
+/order.monogramonline.com-access.log
+/order.monogramonline.com-error.log
