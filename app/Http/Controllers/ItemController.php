@@ -51,8 +51,7 @@ class ItemController extends Controller
 
 		$unassignedProducts = Option::where(function ($query) {
 			return $query->whereNull('batch_route_id')
-						 ->orWhere('batch_route_id', Helper::getDefaultRouteId())
-						 ->orWhere('batch_route_id', 206);
+						 ->orWhere('batch_route_id', Helper::getDefaultRouteId());
 		})
 									->get();
 		$unassignedProductCount = $unassignedProducts->count();
