@@ -407,10 +407,11 @@ class StationController extends Controller
 
 				return false;
 			}
-			$stations_in_route_ids = $items->first()->route->stations_list->lists('station_id')
+			$first_item = $items->first();
+			$stations_in_route_ids = $first_item->route->stations_list->lists('station_id')
 																		  ->toArray();
 			if ( !in_array($station->id, $stations_in_route_ids) ) {
-				$errors[] = sprintf("Batch %s doesn't have \"%s (%s) \" station in its route.", $batch, $station->station_description, $station->station_name);
+				$errors[] = sprintf("Batch %s Route: %s doesn't have \"%s (%s) \" station in its route.", $batch, $first_item->route->batch_route_name, $station->station_description, $station->station_name);
 
 				return false;
 			}
