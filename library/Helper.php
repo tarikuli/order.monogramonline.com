@@ -663,6 +663,26 @@ APPEND;
 		return sprintf("uniqueness_in_model:%s,%d,%s", $model, $id, $field);
 	}
 
+	/***
+	 * Function for count Possible Batches.
+	 */
+	public static function countPossibleBatches ()
+	{
+		// items, orders, parameter_options
+		return Item::join('parameter_options', 'items.child_sku', '=', 'parameter_options.child_sku')
+		->join('orders', 'items.order_id', '=', 'orders.order_id')
+		->where('items.batch_number', '=', '0')
+		->whereNull('items.tracking_number')
+		->where('items.is_deleted', '=', '0')
+		->where('orders.is_deleted', '=', '0')
+		->whereNotIn('orders.order_status', [3, 7, 8])
+		->where('parameter_options.batch_route_id', '!=', 115)
+		->whereNotNull('parameter_options.batch_route_id')
+		->count();
+		// 		->first([DB::raw('COUNT(*) AS countPossobleBatches')]);
+		// 		->get([DB::raw('COUNT(*) AS countPossobleBatches')]);
+	}
+	
 	public static function createAbleBatches ($paginate = false)
 	{
 		return BatchRoute::with([
