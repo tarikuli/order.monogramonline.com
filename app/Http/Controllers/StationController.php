@@ -101,6 +101,7 @@ class StationController extends Controller
 		$url = sprintf("%s#%s", redirect()
 			->getUrlGenerator()
 			->previous(), $station->station_name);
+
 		return redirect($url);
 		#return redirect(url('stations'));
 	}
@@ -378,7 +379,7 @@ class StationController extends Controller
 		// divide the given batches
 		$posted_batches = $request->get('batches');
 		// remove newlines and spaces
-		$posted_batches = trim(preg_replace('/\s+/', '', $posted_batches));
+		$posted_batches = trim(preg_replace('/\s+/', ',', $posted_batches));
 
 		$batches = array_map(function ($batch) {
 			$integer_value_of_batch_number = intval($batch);
@@ -388,6 +389,34 @@ class StationController extends Controller
 			// thus returns -1, table will never have any value -1;
 			return $integer_value_of_batch_number ?: -1;
 		}, explode(",", $posted_batches));
+		$errors = [ ];
+		// search the items
+		// if any item from a batch is splitted, then cannot be moved
+		// if the batch route don't have that station, then, cannot be moved.
+		$batches = array_filter($batches, function ($batch) use (&$errors, $station) {
+			if ( $batch == -1 ) {
+				return false;
+			}
+			$items = Item::with('route.stations_list')
+						 ->where('batch_number', $batch)
+						 ->get();
+			$count = $items->groupBy('station_name')
+						   ->count();
+			if ( $count != 1 ) {
+				$errors[] = sprintf("Batch %s either has more than one stations assigned or not a valid batch number", $batch);
+
+				return false;
+			}
+			$stations_in_route_ids = $items->first()->route->stations_list->lists('station_id')
+																		  ->toArray();
+			if ( !in_array($station->id, $stations_in_route_ids) ) {
+				$errors[] = sprintf("Batch %s doesn't have \"%s (%s) \" station in its route.", $batch, $station->station_description, $station->station_name);
+
+				return false;
+			}
+
+			return true;
+		});
 
 		$items = Item::with('order')
 					 ->whereIn('batch_number', $batches)
@@ -396,11 +425,16 @@ class StationController extends Controller
 			return redirect()
 				->back()
 				->withInput()
-				->withErrors([
-					'error' => 'Batches given are not valid',
-				]);
+				->withErrors($errors);
 		}
 		$changed = $this->apply_station_change($items, $posted_station);
+
+		// redirect with errors if any error found
+		if ( count($errors) ) {
+			return redirect()
+				->back()
+				->withErrors($errors);
+		}
 
 		return redirect()
 			->back()

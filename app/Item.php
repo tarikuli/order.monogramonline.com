@@ -27,6 +27,11 @@ class Item extends Model
 		return $this->hasMany('App\Option', 'store_id', 'store_id');
 	}
 
+	public function parameter_option ()
+	{
+		return $this->belongsTo('App\Option', 'child_sku', 'child_sku');
+	}
+
 	public function lowest_order_date ()
 	{
 		return $this->belongsTo('App\Order', 'order_id', 'order_id')
