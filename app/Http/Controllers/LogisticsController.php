@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
 use League\Csv\Reader;
 use League\Csv\Writer;
+use Monogram\DOMReader;
 use Monogram\Helper;
+use Monogram\Phantom;
 
 class LogisticsController extends Controller
 {
@@ -354,7 +356,17 @@ class LogisticsController extends Controller
 							   ->get();
 
 		$searchable = new Collection($parameters->lists('parameter_value', 'parameter_value'));
-		$searchable = (new Collection(array_combine(['id_catalog', 'parent_sku', 'child_sku', 'graphic_sku'], ['ID Catalog', 'Parent SKU', 'Child SKU', 'Graphic SKU'])))->merge($searchable);
+		$searchable = (new Collection(array_combine([
+			'id_catalog',
+			'parent_sku',
+			'child_sku',
+			'graphic_sku',
+		], [
+			'ID Catalog',
+			'Parent SKU',
+			'Child SKU',
+			'Graphic SKU',
+		])))->merge($searchable);
 		$searchable->prepend('Select a field', "");
 		// get the values of the above columns
 		// by parameter id relation
@@ -647,5 +659,43 @@ class LogisticsController extends Controller
 		return redirect()
 			->to($return_to)
 			->with('success', $message);
+	}
+
+	public function crawl (Request $request)
+	{
+		$id_catalog = $request->get('id_catalog');
+
+		return view('logistics.crawl')->with('id_catalog', $id_catalog);
+	}
+
+	public function get_file_contents (Request $request)
+	{
+		return file_get_contents($request->get('url'));
+	}
+
+	public function create_child_sku (Request $request)
+	{
+		$id_catalog = trim($request->get('id_catalog', null));
+		$stores = Store::where('is_deleted', 0)
+					   ->lists('store_name', 'id');
+		$crawled_data = null;
+		if ( $id_catalog ) {
+			// generate the url
+			$url = url(sprintf("/crawl?id_catalog=%s", $id_catalog));
+			// pass to the phantom class to get the data
+			$phantom = new Phantom($url);
+			// generate response
+			$response = $phantom->request()
+								->getResponse();
+			// instantiate the dom reader
+			$reader = new DOMReader($response);
+			//
+			$crawled_data = json_decode($reader->readCrawledData(), true);
+		}
+
+		return view('logistics.create_child_sku')
+			->with('id_catalog', $id_catalog)
+			->with('crawled_data', $crawled_data)
+			->with('stores', $stores);
 	}
 }

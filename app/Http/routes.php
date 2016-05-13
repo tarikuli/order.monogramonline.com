@@ -10,11 +10,16 @@ get('phantom', function (\Illuminate\Http\Request $request) {
 						->getResponse();
 
 	$reader = new \Monogram\DOMReader($response);
+
 	return json_decode($reader->readCrawledData());
 
 });
 get('update_items', 'HomeController@bulk_item_update');
 get('update_single_item', 'HomeController@update_single_item');
+
+/*To crawl the data from monogram page*/
+get('crawl', 'LogisticsController@crawl');
+get('get_file_contents', 'LogisticsController@get_file_contents');
 
 // auth middleware enabled controller
 Route::group([ 'middleware' => [ 'auth' ] ], function () {
@@ -109,6 +114,9 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('logistics/sku_import', 'LogisticsController@get_sku_import');
 		post('logistics/sku_import', 'LogisticsController@post_sku_import');
 		get('logistics/sku_show', 'LogisticsController@get_sku_show');
+
+		get('logistics/create_child_sku', 'LogisticsController@create_child_sku');
+
 
 		get('stations/bulk', 'StationController@getBulkChange');
 		post('stations/bulk', 'StationController@postBulkChange');

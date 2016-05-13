@@ -38,6 +38,7 @@ class DOMReader
 
 	public function readCrawledData ()
 	{
-		return $this->reader->find("body", 0)->innerText();
+		return $this->reader->find("body", 0)
+							->innerText();
 	}
 }

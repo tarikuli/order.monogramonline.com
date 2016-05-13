@@ -850,4 +850,21 @@ APPEND;
 	{
 		return sprintf("%s_%s", strtotime("now"), str_random(5));
 	}
+
+	public static function specialCharsRemover ($text)
+	{
+		$specialChars = [
+			':',
+			'&nbsp;',
+		];
+
+		return str_replace($specialChars, "", trim($text));
+	}
+
+	public static function crawledOptionValueSplitter ($options)
+	{
+		return array_filter($options, function ($value) {
+			return strtolower(trim($value['text'])) !== "please select";
+		});
+	}
 }
