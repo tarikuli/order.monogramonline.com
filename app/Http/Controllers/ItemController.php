@@ -75,7 +75,7 @@ class ItemController extends Controller
 							 ->get();
 		$unassigned = count($unassignedItems) > 0 ? $unassignedItems[0]->aggregate : 0;*/
 
-		$batch_routes = Helper::createAbleBatches();
+		/*$batch_routes = Helper::createAbleBatches();
 		$unassigned = 0;
 		// Reset executing time
 		set_time_limit(0);
@@ -83,10 +83,14 @@ class ItemController extends Controller
 			if ( $batch_route->itemGroups ) {
 				$unassigned += $batch_route->itemGroups->count();
 			}
-		}
+		}*/
+		
+		$unassigned = Helper::countPossibleBatches();
+		
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
+			'5p_order'      => '5P-Order',
 			'store_id'            => 'Store',
 			'state'               => 'State',
 			'description'         => 'Description',

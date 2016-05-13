@@ -28,7 +28,7 @@
 </head>
 <body>
 	@include('includes.header_menu')
-	<div class = "container">
+	<div class = "container" style="margin-left: 50px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li class = "active">Batch rotes</li>
@@ -46,6 +46,7 @@
 						                                                                                 Deselect all
 					</label>
 				</div>
+				<a style = "margin-bottom:20px; margin-left: 10px;" class = "btn btn-success btn-sm pull-left" href = "{{url('/items')}}">Back to Item Page</a> 
 				<div class = "form-group pull-right">
 					{!! Form::submit('Create batch', ['class' => 'btn btn-success']) !!}
 				</div>
@@ -103,7 +104,7 @@
 													</td>
 													<td>{{substr($item->order_date, 0, 10)}}</td>
 													<td>
-														<a href = "{{ url(sprintf("logistics/sku_show?store_id=yhst-128796189915726&search_for=%s&search_in=SKU", $item->child_sku)) }}"
+														<a href = "{{ url(sprintf("logistics/sku_show?store_id=yhst-128796189915726&search_for=%s&search_in=child_sku", $item->child_sku)) }}"
 														   target = "_blank">{{$item->child_sku}}</a>
 												    </td>
 													<td>{{$item->item_quantity}}</td>
