@@ -28,7 +28,7 @@
 </head>
 <body>
 	@include('includes.header_menu')
-	<div class = "container">
+	<div class = "container" style="margin-left: 50px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li class = "active">Batch rotes</li>
@@ -46,6 +46,7 @@
 						                                                                                 Deselect all
 					</label>
 				</div>
+				<a style = "margin-bottom:20px; margin-left: 10px;" class = "btn btn-success btn-sm pull-left" href = "{{url('/items')}}">Back to Item Page</a> 
 				<div class = "form-group pull-right">
 					{!! Form::submit('Create batch', ['class' => 'btn btn-success']) !!}
 				</div>

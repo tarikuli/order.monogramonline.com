@@ -117,8 +117,7 @@
 															   target = "_blank">{{ $option->id_catalog }}</a>
 								</td>
 								<td class='maxtdwidth'> 
-								{{ $option->parent_sku }} 
-								<a href = "{{url(sprintf("products?search_for=%s&search_in=product_model&product_sales_category=all&product_master_category=&category=0", $option->parent_sku)) }}"
+									<a href = "{{url(sprintf("products?search_for=%s&search_in=product_model&product_sales_category=all&product_master_category=&category=0", $option->parent_sku)) }}"
 														   target = "_blank">{{ $option->parent_sku }} </a>
 								</td>
 								<td class='maxtdwidth'> {{ $option->child_sku }} </td>

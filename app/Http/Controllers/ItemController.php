@@ -90,6 +90,7 @@ class ItemController extends Controller
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
+			'5p_order'      => '5P-Order',
 			'store_id'            => 'Store',
 			'state'               => 'State',
 			'description'         => 'Description',

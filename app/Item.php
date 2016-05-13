@@ -108,8 +108,20 @@ class Item extends Model
 			return;
 		}
 		$values = $this->exploder($search_for);
+		
+					
 		if ( $search_in == 'all' ) {
 			return;
+
+		} elseif ( $search_in == '5p_order' ) {
+			$order_ids = Order::where('id', 'REGEXP', implode("|", $values))
+			->lists('order_id')
+			->toArray();
+			if(empty($order_ids)){
+				return $query->where('order_id', "not_found");
+			}
+			return $query->where('order_id', $order_ids);
+			
 		} elseif ( $search_in == 'order' ) {
 
 			return $query->where('order_id', 'REGEXP', implode("|", $values));
