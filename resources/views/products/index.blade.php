@@ -157,14 +157,14 @@
 							@else
 								-
 							@endif
-							<br />
+							{{--<br />
 							@if($product->batch_route && $product->batch_route->template)
 								<p>Temp:
 									<a href = "{{ url(sprintf("/templates/%s", $product->batch_route->template->id)) }}" target="_blank">{{$product->batch_route->template->template_name}}</a>
 								</p>
 							@else
 								<p>Temp:N/A</p>
-							@endif
+							@endif--}}
 						</td>
 						<td>{{ $product->product_name }}</td>
 						<td><img src = "{{ $product->product_thumb }}" width = "50" height = "50" /></td>

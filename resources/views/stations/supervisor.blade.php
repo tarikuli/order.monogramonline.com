@@ -75,8 +75,9 @@
 					<th>From station</th>
 					<th>Rejection message</th>
 					<th>Batch creation date</th>
+					<th>Place message</th>
 					<th>Station</th>
-					<th>Item status</th>
+					{{--<th>Item status</th>--}}
 					<th>Order status</th>
 				</tr>
 				@foreach($items as $item)
@@ -107,12 +108,12 @@
 							@endif
 						</td>
 						<td>{{$item->batch_creation_date ? substr($item->batch_creation_date, 0, 10) : "N/A"}}</td>
-						<td>{!! Form::text('supervisor_message', null, ['class' => 'supervisor_message', 'placeholder' => 'Place a message']) !!}</td>
+						<td>{!! Form::text('supervisor_message', null, ['class' => 'supervisor_message form-control', 'style' => 'min-width: 200px;', 'placeholder' => 'Place a message']) !!}</td>
 						<td>
-							{!! Form::select('next_station', $item->route ? $item->route->stations_list->lists('station_description', 'station_name')->prepend('Select a next station', '') : [], $item->station_name, ['class' => 'next_station']) !!}
+							{!! Form::select('next_station', $item->route ? $item->route->stations_list->lists('station_description', 'station_name')->prepend('Select a next station', '') : [], $item->station_name, ['class' => 'next_station', 'style' => 'min-width: 255px;']) !!}
 						</td>
 						{{-- Items status = order_item_status --}}
-						<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['class' => 'item_order_status_2'])  !!}</td>
+						{{--<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['class' => 'item_order_status_2'])  !!}</td>--}}
 						{{-- order_status = status from order_table --}}
 						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['class' => 'order_status'])  !!}</td>
 					</tr>

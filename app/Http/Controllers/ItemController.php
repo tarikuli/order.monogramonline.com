@@ -84,13 +84,13 @@ class ItemController extends Controller
 				$unassigned += $batch_route->itemGroups->count();
 			}
 		}*/
-		
+
 		$unassigned = Helper::countPossibleBatches();
-		
+
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
-			'5p_order'      => '5P-Order',
+			'5p_order'            => '5P-Order',
 			'store_id'            => 'Store',
 			'state'               => 'State',
 			'description'         => 'Description',
@@ -676,6 +676,18 @@ class ItemController extends Controller
 
 	private function getGraphicSKU ($item)
 	{
+		$child_sku = $item->child_sku;
+		$option = Option::where('child_sku', $child_sku)
+						->first();
+		$graphic_sku = '';
+		if ( !$option ) {
+			return $child_sku;
+		}
+
+		return $option->graphic_sku;
+
+
+		//previous code below
 		$graphic_sku = $item->item_code;
 		// if item has parameter option available with the store id
 		// related to parameter options table

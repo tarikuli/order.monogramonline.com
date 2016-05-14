@@ -28,16 +28,17 @@
 			-moz-box-sizing: border-box;
 			box-sizing: border-box;
 		}
-		.maxtdwidth{
+
+		.maxtdwidth {
 			max-width: 160px;
 			white-space: inherit;
-    		word-wrap: normal;
+			word-wrap: normal;
 		}
 	</style>
 </head>
 <body>
 	@include('includes.header_menu')
-	<div class = "container" style="margin-left: 50px;">
+	<div class = "container" style = "margin-left: 50px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li class = "active">SKU Converter details</li>
@@ -112,16 +113,27 @@
 									{!! Form::select('batch_route_id', $batch_routes, $option->batch_route_id, ['class' => 'form-control changeable', 'style' => 'width: 150px']) !!}
 									{!! Form::close() !!}
 								</td>
-								<td class='maxtdwidth'> 
+								<td class = 'maxtdwidth'>
 									<a href = "{{ url(sprintf("http://www.monogramonline.com/%s.html", $option->id_catalog)) }}"
-															   target = "_blank">{{ $option->id_catalog }}</a>
+									   target = "_blank">{{ $option->id_catalog }}</a>
 								</td>
-								<td class='maxtdwidth'> 
+								<td class = 'maxtdwidth'>
 									<a href = "{{url(sprintf("products?search_for=%s&search_in=product_model&product_sales_category=all&product_master_category=&category=0", $option->parent_sku)) }}"
-														   target = "_blank">{{ $option->parent_sku }} </a>
+									   target = "_blank">{{ $option->parent_sku }} </a>
 								</td>
-								<td class='maxtdwidth'> {{ $option->child_sku }} </td>
-								<td class='maxtdwidth'> {{ $option->graphic_sku }} </td>
+								<td class = 'maxtdwidth'>
+									{{ $option->child_sku }}
+									<br />
+									@if($option->route && $option->route->template)
+										<p>Temp:
+											<a href = "{{ url(sprintf("/templates/%s", $option->route->template->id)) }}"
+											   target = "_blank">{{$option->route->template->template_name}}</a>
+										</p>
+									@else
+										<p>Temp:N/A</p>
+									@endif
+								</td>
+								<td class = 'maxtdwidth'> {{ $option->graphic_sku }} </td>
 								<td>
 									@if($option->product && $option->product->product_thumb)
 										<img src = "{{ $option->product->product_thumb }}" width = "50"
