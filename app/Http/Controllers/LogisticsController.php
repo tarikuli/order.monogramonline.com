@@ -297,34 +297,44 @@ class LogisticsController extends Controller
 
 	private function save_parameters ($reader, $store_id)
 	{
-		$rows = $reader->setOffset(1)
-					   ->fetchAssoc(Helper::$column_names);
-		$batch_routes = BatchRoute::where('is_deleted', 0)
-								  ->lists('id', 'batch_code');
-		set_time_limit(0);
-		foreach ( $rows as $row ) {
-			$unique_row_value = Helper::generateUniqueRowId();
-			$option = new Option();
-			$option->store_id = $store_id;
-			$option->unique_row_value = $unique_row_value;
-			foreach ( Helper::$SKU_CONVERSION_EXTRA_COLUMNS as $column ) {
-				if ( strtolower($column) == "batch route" ) {
-					$option->batch_route_id = $batch_routes->get($row[$column]) ?: Helper::getDefaultRouteId();
-				} elseif ( strtolower($column) == "allow mixing" ) {
-					$option->allow_mixing = strtolower($row[$column]) == "yes" ? 1 : 0;
-				} else {
-					$to_table_field = str_replace(" ", "_", strtolower($column));
-					$option->$to_table_field = $row[$column];
+		try {
+			
+			$rows = $reader->setOffset(1)
+						   ->fetchAssoc(Helper::$column_names);
+			$batch_routes = BatchRoute::where('is_deleted', 0)
+									  ->lists('id', 'batch_code');
+			set_time_limit(0);
+			foreach ( $rows as $row ) {
+				$unique_row_value = Helper::generateUniqueRowId();
+				$option = new Option();
+				$option->store_id = $store_id;
+				$option->unique_row_value = $unique_row_value;
+				foreach ( Helper::$SKU_CONVERSION_EXTRA_COLUMNS as $column ) {
+					if ( strtolower($column) == "batch route" ) {
+						$option->batch_route_id = $batch_routes->get($row[$column]) ?: Helper::getDefaultRouteId();
+					} elseif ( strtolower($column) == "allow mixing" ) {
+						$option->allow_mixing = strtolower($row[$column]) == "yes" ? 1 : 0;
+					} else {
+						$to_table_field = str_replace(" ", "_", strtolower($column));
+						$option->$to_table_field = $row[$column];
+					}
 				}
+				$parameter_options = [ ];
+				$jsonable_columns = array_diff(Helper::$column_names, Helper::$SKU_CONVERSION_EXTRA_COLUMNS);
+				foreach ( $jsonable_columns as $column_name ) {
+					$parameter_options[$column_name] = $row[$column_name];
+				}
+				$option->parameter_option = json_encode($parameter_options);
+				$option->save();
 			}
-			$parameter_options = [ ];
-			$jsonable_columns = array_diff(Helper::$column_names, Helper::$SKU_CONVERSION_EXTRA_COLUMNS);
-			foreach ( $jsonable_columns as $column_name ) {
-				$parameter_options[$column_name] = $row[$column_name];
-			}
-			$option->parameter_option = json_encode($parameter_options);
-			$option->save();
+		} catch(\Exception $e) {
+			return redirect()
+			->back()
+			->withErrors(new MessageBag([
+					'error' => sprintf($e),
+			]));
 		}
+		
 	}
 
 	private function get_unique_id ()
