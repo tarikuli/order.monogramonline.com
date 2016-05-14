@@ -437,7 +437,7 @@ APPEND;
 	{
 		// double underscore is for protection
 		// in case a single underscore found on string won't be replaced
-		return str_replace(" ", "_", $text);
+		return str_replace(" ", "_", trim($text));
 	}
 
 	public static function htmlFormNameToText ($text)
@@ -670,19 +670,23 @@ APPEND;
 	{
 		// items, orders, parameter_options
 		return Item::join('parameter_options', 'items.child_sku', '=', 'parameter_options.child_sku')
-		->join('orders', 'items.order_id', '=', 'orders.order_id')
-		->where('items.batch_number', '=', '0')
-		->whereNull('items.tracking_number')
-		->where('items.is_deleted', '=', '0')
-		->where('orders.is_deleted', '=', '0')
-		->whereNotIn('orders.order_status', [3, 7, 8])
-		->where('parameter_options.batch_route_id', '!=', 115)
-		->whereNotNull('parameter_options.batch_route_id')
-		->count();
+				   ->join('orders', 'items.order_id', '=', 'orders.order_id')
+				   ->where('items.batch_number', '=', '0')
+				   ->whereNull('items.tracking_number')
+				   ->where('items.is_deleted', '=', '0')
+				   ->where('orders.is_deleted', '=', '0')
+				   ->whereNotIn('orders.order_status', [
+					   3,
+					   7,
+					   8,
+				   ])
+				   ->where('parameter_options.batch_route_id', '!=', 115)
+				   ->whereNotNull('parameter_options.batch_route_id')
+				   ->count();
 		// 		->first([DB::raw('COUNT(*) AS countPossobleBatches')]);
 		// 		->get([DB::raw('COUNT(*) AS countPossobleBatches')]);
 	}
-	
+
 	public static function createAbleBatches ($paginate = false)
 	{
 		return BatchRoute::with([
@@ -886,5 +890,32 @@ APPEND;
 		return array_filter($options, function ($value) {
 			return strtolower(trim($value['text'])) !== "please select";
 		});
+	}
+
+	public static function generateChildSKUCombination (array $data, array &$all = array(), array $group = array(), $value = null, $i = 0)
+	{
+		$keys = array_keys($data);
+		if ( isset( $value ) === true ) {
+			#$value = str_replace(" ", "", strtolower($value));
+			array_push($group, $value);
+		}
+
+		if ( $i >= count($data) ) {
+			$array = [
+				'nodes'      => $group,
+				'suggestion' => implode("-", array_map(function ($value) {
+					return $value = str_replace(" ", "", strtolower($value));
+				}, $group)),
+			];
+			array_push($all, $array);
+		} else {
+			$currentKey = $keys[$i];
+			$currentElement = $data[$currentKey];
+			foreach ( $currentElement as $val ) {
+				static::generateChildSKUCombination($data, $all, $group, $val, $i + 1);
+			}
+		}
+
+		return $all;
 	}
 }

@@ -3,6 +3,7 @@
 use App\BatchRoute;
 use App\Option;
 use App\Parameter;
+use App\Product;
 use App\Store;
 use Illuminate\Http\Request;
 
@@ -697,5 +698,138 @@ class LogisticsController extends Controller
 			->with('id_catalog', $id_catalog)
 			->with('crawled_data', $crawled_data)
 			->with('stores', $stores);
+	}
+
+	public function post_create_child_sku (Request $request)
+	{
+
+		$id_catalog = $request->get('id_catalog');
+		$product = Product::where('id_catalog', $id_catalog)
+						  ->first();
+		if ( !$product ) {
+			return redirect()
+				->back()
+				->with([
+					'error' => 'No product found in database with this id catalog.',
+				]);
+		}
+		$available_groups = $request->get('groups', [ ]);
+		$checked_group_values = [ ];
+		$selected_groups = [ ];
+		foreach ( $available_groups as $group ) {
+			$selected = $request->get($group, [ ]);
+			if ( $selected ) {
+				$checked_group_values[] = $selected;
+				$selected_groups[] = $group;
+			}
+		}
+		if ( count($checked_group_values) == 0 ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'No group is selected to create a preview.',
+				]);
+		}
+		$suggestions = Helper::generateChildSKUCombination($checked_group_values);
+
+		return view('logistics.preview_child_sku')
+			->with('suggestions', $suggestions)
+			->with('id_catalog', $id_catalog)
+			->with('product', $product)
+			->with('selected_groups', $selected_groups)
+			->with('store', $request->get('store'))
+			->with('checked_group_values', $checked_group_values);
+	}
+
+	public function post_preview (Request $request)
+	{
+		// selected-options[] = if the checkbox is selected, then the child sku will be created
+		// and the value will be in this field
+
+		// selected-group[] = the selected groups to create the child sku
+
+		// selected-child-sku[] = the selected child skus from the suggestions, with or without edit
+
+		$selected_groups = $request->get('selected-group');
+		$selected_options = $request->get('selected-options');
+		$selected_child_sku_suggestions = $request->get('selected-child-sku');
+		if ( count($selected_child_sku_suggestions) == 0 ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'No child SKU is selected to be added',
+				]);
+		}
+
+		$parent_sku = $request->get('parent_sku');
+		$id_catalog = $request->get('id_catalog');
+		$store_id = $request->get('store');
+		$store = Store::where('is_deleted', 0)
+					  ->find($store_id);
+		if ( !$store ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'Not a valid store is chosen.',
+				]);
+		}
+
+		if ( empty( $parent_sku ) ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'No product is available with that id catalog.',
+				]);
+		}
+		// insert the column values that are not in the parameters table
+		// insert into that table.
+
+		$available_groups = Parameter::where('store_id', $store->store_id)
+									 ->lists('parameter_value')
+									 ->toArray();
+		$not_available = array_diff($selected_groups, $available_groups);
+
+		foreach ( $not_available as $inserable ) {
+			$parameter = new Parameter();
+			$parameter->store_id = $store->store_id;
+			$parameter->parameter_value = $inserable;
+			$parameter->save();
+		}
+		
+		$batch_route_id = Helper::getDefaultRouteId();
+		$rows = [ ];
+		$index = 0;
+		foreach ( $selected_options as $option ) {
+			$options_array = json_decode($option);
+			$combined_array = array_combine($selected_groups, $options_array);
+			$child_sku = $selected_child_sku_suggestions[$index];
+
+			$rows[] = [
+				'store_id'         => $store->store_id,
+				'unique_row_value' => Helper::generateUniqueRowId(),
+				'id_catalog'       => $id_catalog,
+				'graphic_sku'      => 'NeedGraphicFile',
+				'parent_sku'       => $parent_sku,
+				'allow_mixing'     => 1,
+				'batch_route_id'   => $batch_route_id,
+				'child_sku'        => $child_sku,
+				'parameter_option' => json_encode($combined_array),
+			];
+			++$index;
+		}
+
+		foreach ( $rows as $columns ) {
+			$option = Option::where('child_sku', $columns['child_sku'])
+							->first();
+			if ( !$option ) {
+				$option = new Option();
+			}
+			foreach ( $columns as $column_key => $column_value ) {
+				$option->$column_key = $column_value;
+			}
+			$option->save();
+		}
+
+		return redirect()->to(url(sprintf("/logistics/sku_show?store_id=%s", $store->store_id)));
 	}
 }

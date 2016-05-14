@@ -2,7 +2,7 @@
 <html lang = "en">
 <head>
 	<meta charset = "UTF-8">
-	<title>Create child sku</title>
+	<title>Create child SKU</title>
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -38,7 +38,7 @@
 			<li class = "active">Create child sku</li>
 		</ol>
 		@include('includes.error_div')
-		<h3 class = "page-header">Create child sku</h3>
+		<h3 class = "page-header">Create child SKU</h3>
 		@setvar($i = 0)
 
 		<div class = "col-md-12" style = "margin-bottom: 20px;">
@@ -73,14 +73,17 @@
 								<td></td>
 							@elseif($node['type'] == 'select')
 								@setvar($label = \Monogram\Helper::specialCharsRemover($node['label']))
-								{!! Form::hidden('groups[]', $label) !!}
+								@setvar($form_field = \Monogram\Helper::textToHTMLFormName($label))
+								{!! Form::hidden('id_catalog', $id_catalog) !!}
+								{!! Form::hidden('groups[]', $form_field) !!}
+								{!! Form::hidden('store', request('store')) !!}
 								<td>{{ $label }}</td>
 								<td>
 									<ul>
 										@foreach(\Monogram\Helper::crawledOptionValueSplitter($node['options']) as $option)
 											<div class = "checkbox">
 												<label>
-													{!! Form::checkbox(sprintf("%s[]", $label), 1, false) !!} {{ $option['text'] }}
+													{!! Form::checkbox(sprintf("%s[]", $form_field), $option['text'], false) !!} {{ $option['text'] }}
 												</label>
 											</div>
 										@endforeach

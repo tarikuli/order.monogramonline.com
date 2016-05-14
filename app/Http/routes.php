@@ -14,6 +14,7 @@ get('phantom', function (\Illuminate\Http\Request $request) {
 	return json_decode($reader->readCrawledData());
 
 });
+get('combination', 'HomeController@combination');
 get('update_items', 'HomeController@bulk_item_update');
 get('update_single_item', 'HomeController@update_single_item');
 
@@ -116,7 +117,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('logistics/sku_show', 'LogisticsController@get_sku_show');
 
 		get('logistics/create_child_sku', 'LogisticsController@create_child_sku');
-
+		post('logistics/create_child_sku', 'LogisticsController@post_create_child_sku');
+		post('logistics/post_preview', 'LogisticsController@post_preview');
 
 		get('stations/bulk', 'StationController@getBulkChange');
 		post('stations/bulk', 'StationController@postBulkChange');

@@ -14,6 +14,8 @@ use Monogram\Helper;
 
 class HomeController extends Controller
 {
+	private $outcome = [ ];
+
 	public function index ()
 	{
 		$stations = Station::where('is_deleted', 0)
@@ -49,5 +51,75 @@ class HomeController extends Controller
 		$id = $request->get('id', 1360);
 
 		return Helper::getChildSku(Item::find($id));
+	}
+
+	public function combination ()
+	{
+		$a = [
+			'a',
+			'b',
+		];
+		$b = [
+			'c',
+			'd',
+		];
+		$c = [
+			'e',
+			'f',
+			'g',
+		];
+		$arrays = [
+			$a,
+			$b,
+			$c,
+		];
+
+		$combinations = $this->generate_combinations($arrays);
+
+		return array_map(function ($current) {
+			return implode("-", $current);
+		}, $combinations);
+		#return $this->outcome;
+	}
+
+	private function combine ($arrays, $prefix = '')
+	{
+		$glue = '';
+		if ( strlen($prefix) ) {
+			$glue = "-";
+		}
+		if ( count($arrays) == 0 ) {
+			return $prefix;
+		}
+		$final = array_reduce($arrays[0], function ($result, $current) use ($prefix, $glue, $arrays) {
+			$result = $this->combine(array_slice($arrays, 1), sprintf("%s%s%s", $prefix, $glue, $current));
+			var_dump($current, $result);
+			$this->outcome[] = $result;
+
+			return $result;
+		}, '');
+		var_dump("--FINAL--");
+
+		return $final;
+	}
+
+	private function generate_combinations (array $data, array &$all = array(), array $group = array(), $value = null, $i = 0)
+	{
+		$keys = array_keys($data);
+		if ( isset( $value ) === true ) {
+			array_push($group, $value);
+		}
+
+		if ( $i >= count($data) ) {
+			array_push($all, $group);
+		} else {
+			$currentKey = $keys[$i];
+			$currentElement = $data[$currentKey];
+			foreach ( $currentElement as $val ) {
+				$this->generate_combinations($data, $all, $group, $val, $i + 1);
+			}
+		}
+
+		return $all;
 	}
 }
