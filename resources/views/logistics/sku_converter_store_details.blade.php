@@ -112,6 +112,14 @@
 									{!! Form::hidden('return_to', $returnTo) !!}
 									{!! Form::select('batch_route_id', $batch_routes, $option->batch_route_id, ['class' => 'form-control changeable', 'style' => 'width: 150px']) !!}
 									{!! Form::close() !!}
+									<br />
+									@if($option->route && $option->route->template)
+										Temp:
+											<a href = "{{ url(sprintf("/templates/%s", $option->route->template->id)) }}"
+											   target = "_blank">{{$option->route->template->template_name}}</a>
+									@else
+										<p>Temp:N/A</p>
+									@endif
 								</td>
 								<td class = 'maxtdwidth'>
 									<a href = "{{ url(sprintf("http://www.monogramonline.com/%s.html", $option->id_catalog)) }}"
@@ -123,15 +131,6 @@
 								</td>
 								<td class = 'maxtdwidth'>
 									{{ $option->child_sku }}
-									<br />
-									@if($option->route && $option->route->template)
-										<p>Temp:
-											<a href = "{{ url(sprintf("/templates/%s", $option->route->template->id)) }}"
-											   target = "_blank">{{$option->route->template->template_name}}</a>
-										</p>
-									@else
-										<p>Temp:N/A</p>
-									@endif
 								</td>
 								<td class = 'maxtdwidth'> {{ $option->graphic_sku }} </td>
 								<td>
