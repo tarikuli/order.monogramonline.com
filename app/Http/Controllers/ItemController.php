@@ -785,7 +785,7 @@ class ItemController extends Controller
 		$items = Item::with('lowest_order_date', 'route.stations')
 					 ->searchActiveByStation($request->get('station'))
 					 ->where('batch_number', '!=', '0')
-					 ->get();
+					 ->paginate(2000);
 
 		$stations = Station::where('is_deleted', 0)
 						   ->latest()
@@ -832,6 +832,7 @@ class ItemController extends Controller
 			->with('rows', $rows)
 			->withRequest($request)
 			->with('stations', $stations)
+			->with('pagination', $items->render())
 			->with('total_count', $total_count);
 	}
 

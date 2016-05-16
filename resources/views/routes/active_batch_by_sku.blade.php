@@ -84,7 +84,7 @@
 							<td>
 								{!! Form::open(['url' => url(sprintf("change_station_by_sku/%s", $row['sku']))]) !!}
 								<div class = "form-group">
-									{!! Form::number('item_to_shift', $row['item_count'], ['class' => 'form-control', 'style' => 'max-width: 20px;']) !!}
+									{!! Form::number('item_to_shift', $row['item_count'], ['class' => 'form-control', /*'style' => 'max-width: 20px;'*/]) !!}
 									{!! Form::select('batch_stations', $row['batch_stations'], null, ['id'=>'batch_stations', 'class' => 'form-control', 'style' => 'max-width: 170px;']) !!}
 								</div>
 								{{--<div class = "form-group">
@@ -111,6 +111,9 @@
 					</tr>--}}
 					{{--{!! Form::close() !!}--}}
 				</table>
+				<div class="col-md-12 text-center">
+					{!! $pagination !!}
+				</div>
 			@else
 				<div class = "alert alert-warning">No data is available.</div>
 			@endif
