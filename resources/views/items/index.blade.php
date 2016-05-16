@@ -121,7 +121,7 @@
 						       class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a><br>Y: {{$item->order->short_order}}
 						</td>
 						<td><img src = "{{$item->item_thumb}}" /></td>
-						<td>{{ substr($item->order->order_date, 0, 10)}}<br>{{ substr($item->order->order_date, 10, 18) }}</td>
+						<td>{{ substr($item->order->order_date, 0, 10)}} <br> {{ substr($item->order->order_date, 10, 18) }} </td>
 						<td>{!! \App\Status::where('is_deleted', 0)->lists('status_name','id')->get($item->order->order_status)  !!}</td>
 						<td>{{$item->shipInfo ? ($item->shipInfo->tracking_number ?: "Not shipped") : "N/A"}}</td>
 						<td>{{ $item->shipInfo ? $item->shipInfo->postmark_date : "N/A" }}

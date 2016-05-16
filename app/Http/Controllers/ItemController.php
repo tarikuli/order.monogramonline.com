@@ -58,7 +58,7 @@ class ItemController extends Controller
 		$unassignedProductCount = $unassignedProducts->count();
 
 		$unassigned = Helper::countPossibleBatches();
-
+// 		$unassigned = 0 ; $unassignedProductCount = 0;
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
