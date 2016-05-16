@@ -298,7 +298,7 @@ class LogisticsController extends Controller
 	private function save_parameters ($reader, $store_id)
 	{
 		try {
-			
+
 			$rows = $reader->setOffset(1)
 						   ->fetchAssoc(Helper::$column_names);
 			$batch_routes = BatchRoute::where('is_deleted', 0)
@@ -327,14 +327,14 @@ class LogisticsController extends Controller
 				$option->parameter_option = json_encode($parameter_options);
 				$option->save();
 			}
-		} catch(\Exception $e) {
+		} catch ( \Exception $e ) {
 			return redirect()
-			->back()
-			->withErrors(new MessageBag([
+				->back()
+				->withErrors(new MessageBag([
 					'error' => sprintf($e),
-			]));
+				]));
 		}
-		
+
 	}
 
 	private function get_unique_id ()
@@ -741,7 +741,7 @@ class LogisticsController extends Controller
 				]);
 		}
 		$suggestions = Helper::generateChildSKUCombination($checked_group_values);
-		/*nothing but a comment*/
+
 		return view('logistics.preview_child_sku')
 			->with('suggestions', $suggestions)
 			->with('id_catalog', $id_catalog)
@@ -840,6 +840,6 @@ class LogisticsController extends Controller
 			$option->save();
 		}
 
-		return redirect()->to(url(sprintf("/logistics/sku_show?store_id=%s", $store->store_id)));
+		return redirect()->to(url(sprintf("/logistics/sku_show?store_id=%s&search_for=%s&search_in=parent_sku", $store->store_id, $parent_sku)));
 	}
 }
