@@ -47,43 +47,15 @@ class ItemController extends Controller
 					 ->latest()
 					 ->paginate(50);
 
+		// For debug
 		#return $items;
 
 		$unassignedProducts = Option::where(function ($query) {
 			return $query->whereNull('batch_route_id')
 						 ->orWhere('batch_route_id', Helper::getDefaultRouteId());
-		})
-									->get();
+		})->get();
+		
 		$unassignedProductCount = $unassignedProducts->count();
-
-		/*$unassignedItems = DB::table('items')
-							 ->leftJoin('products', 'items.item_code', '=', 'products.product_model')
-							 ->select(DB::raw('count(*) as count'))
-							 ->get();*/
-		//todo:: we'll use in future
-		//$unassignedItems = DB::select(DB::raw(sprintf("SELECT COUNT(*) as aggregate FROM items LEFT JOIN products ON items.item_code = products.product_model WHERE items.batch_number = 0 AND items.is_deleted = '0' AND products.batch_route_id != %d", Helper::getDefaultRouteId())));
-
-		/*$unassignedItems = DB::table('items')
-							 ->select(DB::raw('count(*) as aggregate'))
-							 ->join('products', 'items.item_code', '=', 'products.product_model')
-							 ->where('items.batch_number', '=', 0)
-							 ->where('items.is_deleted', '=', 0)
-							 ->where(function ($q) {
-								 return $q->where('products.batch_route_id', '!=', Helper::getDefaultRouteId())
-										  ->orWhereNull('products.batch_route_id');
-							 })
-							 ->get();
-		$unassigned = count($unassignedItems) > 0 ? $unassignedItems[0]->aggregate : 0;*/
-
-		/*$batch_routes = Helper::createAbleBatches();
-		$unassigned = 0;
-		// Reset executing time
-		set_time_limit(0);
-		foreach ( $batch_routes as $batch_route ) {
-			if ( $batch_route->itemGroups ) {
-				$unassigned += $batch_route->itemGroups->count();
-			}
-		}*/
 
 		$unassigned = Helper::countPossibleBatches();
 
