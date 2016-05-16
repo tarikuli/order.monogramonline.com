@@ -101,12 +101,10 @@
 				<tr>
 					<th>Order#</th>
 					<th>Image</th>
-					<th>Order date<br>Time</th>
+					<th>Order date</th>
 					<th>Order status</th>
 					<th>Trk#</th>
 					<th>Shipping date</th>
-					<th>Customer</th> 
-					<th>State</th>
 					<th>Description</th>
 					<th>SKU</th>
 					<th>Option</th>
@@ -125,20 +123,10 @@
 						<td>{!! \App\Status::where('is_deleted', 0)->lists('status_name','id')->get($item->order->order_status)  !!}</td>
 						<td>{{$item->shipInfo ? ($item->shipInfo->tracking_number ?: "Not shipped") : "N/A"}}</td>
 						<td>{{ $item->shipInfo ? $item->shipInfo->postmark_date : "N/A" }}
-
-						<td>{{ substr($item->order->order_date, 0, 10)}}<br>{{ substr($item->order->order_date, 10, 18) }} </td>
-						<td>{!! \App\Status::where('is_deleted', 0)->lists('status_name','id')->get($item->order->order_status)  !!}</td>
-						<td>{{$item->shipInfo ? ($item->shipInfo->tracking_number ?: "Not shipped") : "N/A"}}</td>
-						<td>{{ $item->shipInfo ? $item->shipInfo->postmark_date : "N/A" }}
-						<td><a href = "{{ url("customers/".$item->order->customer->id) }}" title = "This is customer id"
-						       class = "btn btn-link">{{ !empty($item->order->customer->ship_full_name) ? $item->order->customer->ship_full_name : $item->order->customer->bill_full_name }}</a>
-						</td>
-						<td>{{$item->order->customer->ship_state}}</td>
 						<td class = "description">{{$item->item_description}}</td>
 						<td>{{$item->child_sku}}</td>
 						<td>{!! Form::textarea('opt', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '3', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
 						<td>{{$item->item_quantity}}</td>
-						{{-- Add Batch Link --}}
 						<td>
 							@if($item->batch_number)
 								<a href = "{{ url(sprintf('/batches/%d/%s', $item->batch_number, $item->station_name)) }}"
