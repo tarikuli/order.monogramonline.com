@@ -741,7 +741,7 @@ class LogisticsController extends Controller
 				]);
 		}
 		$suggestions = Helper::generateChildSKUCombination($checked_group_values);
-
+		/*nothing but a comment*/
 		return view('logistics.preview_child_sku')
 			->with('suggestions', $suggestions)
 			->with('id_catalog', $id_catalog)
