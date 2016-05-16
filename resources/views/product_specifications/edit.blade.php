@@ -43,10 +43,10 @@
 					<a href = "#tab-instruction" aria-controls = "instruction" role = "tab"
 					   data-toggle = "tab">Product instruction</a>
 				</li>
-				<li role = "presentation">
+				{{--<li role = "presentation">
 					<a href = "#tab-note" aria-controls = "note" role = "tab"
 					   data-toggle = "tab">Special Note</a>
-				</li>
+				</li>--}}
 				<li role = "presentation">
 					<a href = "#tab-financial" aria-controls = "financial" role = "tab"
 					   data-toggle = "tab">Financial info</a>
@@ -59,7 +59,7 @@
 					@if(json_decode($spec->images))
 						<div class = "col-md-12">
 							@foreach(json_decode($spec->images) as $image)
-								<img src = "{{$image}}" width = "200" height = "200">
+								<img src = "{{$image}}" width = "400" height = "400">
 							@endforeach
 						</div>
 					@endif
@@ -67,6 +67,12 @@
 						{!! Form::label('status', 'Status', ['class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
 							{!! Form::select('status', \App\SpecificationSheet::$statuses, $spec->status, ['id' => 'status', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('web_image_status', 'Web image status', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::select('web_image_status', \App\SpecificationSheet::$webImageStatus, $spec->web_image_status, ['id' => 'web_image_status', 'class' => "form-control",]) !!}
 						</div>
 					</div>
 					<div class = "form-group col-md-12">
@@ -348,7 +354,7 @@
 							@if(json_decode($spec->product_details_file))
 								<div class = "col-md-12" style = "margin-left: 15px;">
 									@foreach(json_decode($spec->product_details_file) as $image)
-										<img src = "{{$image}}" width = "200" height = "200">
+										<img src = "{{$image}}" width = "400" height = "400">
 									@endforeach
 									<div class = "form-group col-md-12">
 										<div class = "checkbox">
@@ -361,6 +367,14 @@
 									</div>
 								</div>
 							@endif
+						</div>
+					</div>
+					<div class = "col-md-12">
+						<div class="form-group">
+							{!! Form::label('product_note', 'Product note', ['class' => 'col-md-2 control-label']) !!}
+							<div class = "col-md-10">
+								{!! Form::textarea('product_note', $spec->product_note, ['id' => 'product_note', 'rows' => 4, 'class' => "form-control",]) !!}
+							</div>
 						</div>
 					</div>
 					<div class = "col-md-12">
@@ -509,14 +523,11 @@
 						</div>
 					</div>
 				</div>
-				<div role = "tabpanel" class = "tab-pane fade" id = "tab-note">
+				{{--<div role = "tabpanel" class = "tab-pane fade" id = "tab-note">
 					<div class = "form-group col-md-12">
-						{!! Form::label('product_note', 'Product note', ['class' => 'col-md-2 control-label']) !!}
-						<div class = "col-md-4">
-							{!! Form::textarea('product_note', $spec->product_note, ['id' => 'product_note', 'rows' => 4, 'class' => "form-control",]) !!}
-						</div>
+						--}}{{-- This one is moved to product instruction tab--}}{{--
 					</div>
-				</div>
+				</div>--}}
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-financial">
 					<table class = "table">
 						<tr>

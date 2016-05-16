@@ -181,8 +181,20 @@ class Helper
 	];
 
 	public static $specSheetSampleDataArray = [
-		'Yes' => 'Yes',
-		'No'  => 'No',
+		'Yes'         => 'Yes',
+		'No'          => 'No',
+		'Redo Sample' => 'Redo Sample',
+		'Complete'    => 'Complete',
+	];
+
+	public static $webImageStatus = [
+		'Select web image status',
+		'Temporary',
+		'Create Web Image',
+		'Update Web Image',
+		'Web Image Approval',
+		'Publish Web image',
+		'Complete - Final Image Uploaded',
 	];
 
 	public static $shippingStations = [
@@ -809,16 +821,16 @@ APPEND;
 	{
 		// parameter options is an array of rows
 		$item_options = json_decode($item->item_option, true);
-		
+
 		// 20160515 remove (+ character from child_sku
-		$explode_values = [];
-		foreach ($item_options as $item_key => $item_value){
+		$explode_values = [ ];
+		foreach ( $item_options as $item_key => $item_value ) {
 			$explode_values = explode("(", $item_value);
-			if(count($explode_values) > 0){
+			if ( count($explode_values) > 0 ) {
 				$item_options[$item_key] = $explode_values[0];
 			}
 		}
-		
+
 		foreach ( $parameter_options as $option ) {
 			// item options has replaced space with underscore
 			// parameter options has spaces intact

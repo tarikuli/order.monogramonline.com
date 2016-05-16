@@ -20,6 +20,7 @@ class ProductSpecificationController extends Controller
 										->searchCriteria($request->get('search_for_2'), $request->get('search_in_2'))
 										->searchStatus($request->get('status'))
 										->searchInProductionCategory($request->get('production_category'))
+										->searchInWebImageStatus($request->get('web_image_status'))
 										->where('is_deleted', 0)
 										->paginate(50);
 		$production_categories = ProductionCategory::where('is_deleted', 0)
@@ -162,8 +163,7 @@ class ProductSpecificationController extends Controller
 												   ->first();
 					if ( !$specSheet ) {
 						return redirect()
-							->back()
-							#->withInput()
+							->back()#->withInput()
 							->withErrors([
 								'error' => 'Not a valid product sku is chosen to copy',
 							]);
@@ -212,6 +212,7 @@ class ProductSpecificationController extends Controller
 			$specSheet->status = intval($request->get('status'));
 		}
 		$specSheet->product_name = $product_name;
+		$specSheet->web_image_status = intval(trim($request->get('web_image_status')));
 		$specSheet->product_description = trim($request->get('product_description'));
 		$specSheet->product_weight = floatval($request->get('product_weight'));
 		$specSheet->product_length = floatval($request->get('product_length'));

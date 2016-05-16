@@ -3,7 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-// test 
+
+// test
 class SpecificationSheet extends Model
 {
 	protected $table = 'product_specification_sheet';
@@ -17,6 +18,17 @@ class SpecificationSheet extends Model
 		5 => 'Ready to publish',
 		6 => 'Published/Live',
 		7 => 'Add Product Info',
+		8 => 'SKU Production Approval',
+	];
+
+	public static $webImageStatus = [
+		'Select web image status',
+		'Temporary',
+		'Create Web Image',
+		'Update Web Image',
+		'Web Image Approval',
+		'Publish Web image',
+		'Complete - Final Image Uploaded',
 	];
 
 	public static $searchable_fields = [
@@ -55,6 +67,15 @@ class SpecificationSheet extends Model
 		}
 
 		return $query->where('status', $status);
+	}
+
+	public static function scopeSearchInWebImageStatus ($query, $web_image_status)
+	{
+		if ( $web_image_status == 0 ) {
+			return;
+		}
+
+		return $query->where('web_image_status', intval($web_image_status));
 	}
 
 	public function scopeSearchInProductionCategory ($query, $production_category_id)

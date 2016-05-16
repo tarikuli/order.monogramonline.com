@@ -57,6 +57,18 @@
 			<div class = "tab-content" style = "margin-top: 20px;">
 				<div role = "tabpanel" class = "tab-pane fade in active" id = "tab-general">
 					<div class = "form-group col-md-12">
+						{!! Form::label('status', 'Status', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::select('status', \App\SpecificationSheet::$statuses, null, ['id' => 'status', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('web_image_status', 'Web image status', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::select('web_image_status', \App\SpecificationSheet::$webImageStatus, null, ['id' => 'web_image_status', 'class' => "form-control",]) !!}
+						</div>
+					</div>
+					<div class = "form-group col-md-12">
 						{!! Form::label('product_images', 'Product images', ['class' => 'col-md-2 control-label']) !!}
 						<div class = "col-md-4">
 							{!! Form::file('product_images[]', ['id' => 'product_images', 'multiple' => true, 'accept' => 'image/*',  'class' => "form-control",]) !!}

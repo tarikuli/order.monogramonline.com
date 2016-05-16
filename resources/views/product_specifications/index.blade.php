@@ -83,14 +83,24 @@
 							<label for = "status">Search in status</label>
 							{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'production_category', 'class' => 'form-control']) !!}
 						</div>
-						<div class = "form-group col-xs-2">
-							<label for = "" class = ""></label>
-							{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}
+						<div class = "form-group col-md-3">
+							<label for = "status">Search in web image status</label>
+							{!! Form::select('web_image_status', \App\SpecificationSheet::$webImageStatus, $request->get('web_image_status'), ['id'=>'production_category', 'class' => 'form-control']) !!}
 						</div>
-						<div class = "form-group col-xs-2">
+						<div class = "form-group col-xs-3">
+							<div class="col-md-6">
+								<label for = "" class = ""></label>
+								{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}
+							</div>
+							<div class="col-md-6">
+								<label for = "" class = ""></label>
+								{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+							</div>
+						</div>
+						{{--<div class = "form-group col-xs-2">
 							<label for = "" class = ""></label>
 							{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
-						</div>
+						</div>--}}
 						{!! Form::close() !!}
 					</div>
 				</div>
@@ -115,6 +125,7 @@
 					<th>Production category</th>
 					<th>SKU</th>
 					{{--<th>Image</th>--}}
+					<th>Web image status</th>
 					<th>Action</th>
 				</tr>
 				</thead>
@@ -138,6 +149,7 @@
 								                                              style = "width: 50px; height: 50px;" /></a>
 							@endforeach
 						</td>--}}
+						<td>{{ $specSheet->web_image_status ? \App\SpecificationSheet::$webImageStatus[$specSheet->web_image_status] : "N/A" }}</td>
 						<td>
 							<a href = "{{ url(sprintf("/products_specifications/%d", $specSheet->id)) }}"
 							   data-toggle = "tooltip"
