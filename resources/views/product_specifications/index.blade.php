@@ -75,26 +75,34 @@
 								{!! Form::select('search_in_2', \App\SpecificationSheet::$searchable_fields, $request->get('search_in_2'), ['id'=>'search_in', 'class' => 'form-control']) !!}
 							</div>
 						</div>
-						<div class = "form-group  col-xs-3">
-							<label for = "production_category">Search in production category</label>
-							{!! Form::select('production_category', $production_categories, $request->get('production_category') ?: 'all', ['id'=>'production_category', 'class' => 'form-control']) !!}
-						</div>
-						<div class = "form-group  col-xs-3">
-							<label for = "status">Search in status</label>
-							{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'production_category', 'class' => 'form-control']) !!}
-						</div>
-						<div class = "form-group col-md-3">
-							<label for = "status">Search in web image status</label>
-							{!! Form::select('web_image_status', \App\SpecificationSheet::$webImageStatus, $request->get('web_image_status'), ['id'=>'production_category', 'class' => 'form-control']) !!}
-						</div>
-						<div class = "form-group col-xs-3">
-							<div class="col-md-6">
-								<label for = "" class = ""></label>
-								{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}
+						<div class = "col-md-12">
+							<div class = "form-group col-xs-3">
+								<label for = "production_category">Search in production category</label>
+								{!! Form::select('production_category', $production_categories, $request->get('production_category') ?: 'all', ['id'=>'production_category', 'class' => 'form-control']) !!}
 							</div>
-							<div class="col-md-6">
-								<label for = "" class = ""></label>
-								{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+							<div class = "form-group col-xs-3">
+								<label for = "status">Search in status</label>
+								{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'production_category', 'class' => 'form-control']) !!}
+							</div>
+							<div class = "form-group col-md-3">
+								<label for = "status">Search in web image status</label>
+								{!! Form::select('web_image_status', \App\SpecificationSheet::$webImageStatus, $request->get('web_image_status'), ['id'=>'web_image_status', 'class' => 'form-control']) !!}
+							</div>
+							<div class = "form-group col-md-3">
+								<label for = "status">Search in Make sample</label>
+								{!! Form::select('make_sample', $make_sample_data, $request->get('make_sample', 'all'), ['id'=>'make_sample', 'class' => 'form-control']) !!}
+							</div>
+						</div>
+						<div class = "col-md-12">
+							<div class = "form-group col-xs-3 pull-right">
+								<div class = "col-md-6">
+									<label for = "" class = ""></label>
+									{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}
+								</div>
+								<div class = "col-md-6">
+									<label for = "" class = ""></label>
+									{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+								</div>
 							</div>
 						</div>
 						{{--<div class = "form-group col-xs-2">

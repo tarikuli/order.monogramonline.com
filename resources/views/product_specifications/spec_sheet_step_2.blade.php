@@ -95,6 +95,12 @@
 							{!! Form::textarea('product_description', null, ['id' => 'product_description', 'rows' => 4, 'class' => "form-control",]) !!}
 						</div>
 					</div>
+					<div class = "form-group col-md-12">
+						{!! Form::label('product_general_note', 'General note', ['class' => 'col-md-2 control-label']) !!}
+						<div class = "col-md-4">
+							{!! Form::textarea('product_general_note', null, ['id' => 'product_general_note', 'rows' => 4, 'class' => "form-control",]) !!}
+						</div>
+					</div>
 				</div>
 				<div role = "tabpanel" class = "tab-pane fade" id = "tab-specification">
 					<div class = "form-group col-md-12">

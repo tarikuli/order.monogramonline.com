@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Monogram\Helper;
 
 class ProductSpecificationController extends Controller
 {
@@ -19,6 +20,7 @@ class ProductSpecificationController extends Controller
 										->searchCriteria($request->get('search_for_1'), $request->get('search_in_1'))
 										->searchCriteria($request->get('search_for_2'), $request->get('search_in_2'))
 										->searchStatus($request->get('status'))
+										->searchMakeSample($request->get('make_sample'))
 										->searchInProductionCategory($request->get('production_category'))
 										->searchInWebImageStatus($request->get('web_image_status'))
 										->where('is_deleted', 0)
@@ -28,12 +30,14 @@ class ProductSpecificationController extends Controller
 												   ->lists('description_with_code', 'id')
 												   ->prepend('Select a production category', '0');
 		$statuses = array_merge([ 'all' => "Select a status" ], SpecificationSheet::$statuses);
+		$make_sample_data = array_merge([ 'all' => 'Select a make sample' ], Helper::$specSheetSampleDataArray);
 		#return $statuses;
 		#return $specSheets;
 		return view('product_specifications.index')
 			->with('specSheets', $specSheets)
 			->with('count', 1)
 			->with('production_categories', $production_categories)
+			->with('make_sample_data', $make_sample_data)
 			->with('statuses', $statuses)
 			->with('request', $request);
 	}
@@ -233,6 +237,7 @@ class ProductSpecificationController extends Controller
 		$specSheet->font = trim($request->get('font'));
 		$specSheet->variation_name = trim($request->get('variation_name'));
 		$specSheet->make_sample = trim($request->get('make_sample'));
+		$specSheet->product_general_note = trim($request->get('product_general_note'));
 
 		/* spec table data */
 		$table_data = [ ];

@@ -124,4 +124,15 @@ class SpecificationSheet extends Model
 
 		return $query->where('product_note', 'LIKE', sprintf("%%%s%%", $note));
 	}
+
+	public function scopeSearchMakeSample ($query, $make_sample = 'all')
+	{
+		if ( !$make_sample ) {
+			return;
+		}
+
+		$make_sample = trim($make_sample);
+
+		return $query->where('make_sample', $make_sample);
+	}
 }

@@ -54,7 +54,7 @@ class ItemController extends Controller
 			return $query->whereNull('batch_route_id')
 						 ->orWhere('batch_route_id', Helper::getDefaultRouteId());
 		})->get();
-		
+
 		$unassignedProductCount = $unassignedProducts->count();
 
 		$unassigned = Helper::countPossibleBatches();
@@ -81,7 +81,7 @@ class ItemController extends Controller
 		$count = 1;
 		$serial = 1;
 		$batch_routes = Helper::createAbleBatches(true);
-
+		return $batch_routes;
 		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));
 	}
 
