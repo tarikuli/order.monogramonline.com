@@ -869,14 +869,24 @@ APPEND;
 			return str_replace(" ", "", strtolower($item_options[$node]));
 		}, $matches));
 		$child_sku = empty( $child_sku_postfix ) ? $item->item_code : sprintf("%s-%s", $item->item_code, $child_sku_postfix);
+		// should have to match the previous check.
+		// again check if the child sku is present or not
+
+		$option = Option::where('child_sku', $child_sku)
+						->first();
+		if ( !$option ) {
+			$option = new Option();
+			$option->child_sku = $child_sku;
+		} else {
+			return $option->child_sku;
+		}
 		// no child sku was found
 		// insert into database
-		$option = new Option();
+
 		$option->store_id = $store_id;
 		$option->unique_row_value = static::generateUniqueRowId();
 		$option->id_catalog = $item->item_id;
 		$option->parent_sku = $item->item_code;
-		$option->child_sku = $child_sku;
 		$option->graphic_sku = 'NeedGraphicFile';
 		$option->allow_mixing = 1;
 		$option->batch_route_id = static::getDefaultRouteId();
