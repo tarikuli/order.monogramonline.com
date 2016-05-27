@@ -60,19 +60,6 @@
 			</div>
 		@endif
 		<div class = "row">
-			<div class = "col-md-12">
-				<table class = "table table-bordered" id = "selected-items">
-					<caption>Selected items</caption>
-					<tr>
-						<td>Image</td>
-						<td>Id catalog</td>
-						<td>Quantity</td>
-						<td>Action</td>
-					</tr>
-				</table>
-			</div>
-		</div>
-		<div class = "row">
 			<div class = "col-md-10">
 				{!! Form::open(['method' => 'post', 'url' => url('orders/manual'), 'id' => 'manual-order-placement', 'class' => 'form-horizontal']) !!}
 				<div class = "form-group">
@@ -82,7 +69,7 @@
 					</div>
 				</div>
 				<div class = "row">
-					<div class="col-md-offset-2 col-md-10">
+					<div class = "col-md-offset-2 col-md-10">
 						<table>
 							<tr>
 								<td style = "font-weight: bold;color: #686869;padding-top:15px">Ship To:</td>
@@ -195,42 +182,61 @@
 						</table>
 					</div>
 				</div>
+				<div class = "row">
+					<div class = "col-md-12">
+						<table class = "table table-bordered" id = "selected-items">
+							<caption>Selected items</caption>
+							<tr>
+								<td>Image</td>
+								<td>Id catalog</td>
+								<td>Quantity</td>
+								<td>Action</td>
+							</tr>
+						</table>
+					</div>
+				</div>
 				<div class = "form-group">
-					<label for = "item_sku" class = "col-md-2 control-label">Item SKU</label>
+					<label for = "item_sku" class = "col-md-2 control-label">SKU / Name / Id catalog</label>
 					<div class = "col-md-4">
-						{!! Form::text('search_item_sku', null, ['id'=>'item_sku', 'class' => 'form-control', 'placeholder' => 'Enter item sku']) !!}
+						<div class = "input-group">
+							{!! Form::text('search_item_sku', null, ['id'=>'item_sku', 'class' => 'form-control', 'placeholder' => 'Search SKU / Name / Id catalog']) !!}
+							<span class = "input-group-btn">
+								<button class = "btn btn-default" type = "button" id = "puller">Pull</button>
+							</span>
+						</div>
 					</div>
 				</div>
-				<div class = "form-group">
-					<div class = "col-md-offset-2 col-md-4">
-						{!! Form::submit('Add order', ['id' => 'add-order', 'class' => 'btn btn-primary btn-sm']) !!}
-					</div>
-				</div>
-				<div class = "row" id = "items-holder">
-				</div>
-				{!! Form::close() !!}
 			</div>
-		</div>
-		<div class = "row" style = "margin-bottom: 30px;">
-			<div class = "col-md-12">
-				<a class = "btn btn-xs btn-primary pull-right" href = "#" disabled = "true"
-				   id = "remove-preview">Remove preview</a>
-				<table class = "table table-bordered" style = "display: none;">
-					<caption id = 'search-caption'></caption>
-					<thead>
-					<tr>
-						<th>Image</th>
-						<th>Product name</th>
-						<th>SKU</th>
-						<th>Id catalog</th>
-					</tr>
-					</thead>
-					<tbody id = "preview">
+			<div class = "row" style = "margin-bottom: 30px;">
+				<div class = "col-md-12">
+					<a class = "btn btn-xs btn-primary pull-right" href = "#" disabled = "true"
+					   id = "remove-preview">Remove preview</a>
+					<table class = "table table-bordered" style = "display: none;">
+						<caption id = 'search-caption'></caption>
+						<thead>
+						<tr>
+							<th>Image</th>
+							<th>Product name</th>
+							<th>SKU</th>
+							<th>Id catalog</th>
+						</tr>
+						</thead>
+						<tbody id = "preview">
 
-					</tbody>
-				</table>
+						</tbody>
+					</table>
+				</div>
 			</div>
+			<div class = "form-group">
+				<div class = "col-md-offset-1 col-md-4">
+					{!! Form::submit('Add order', ['id' => 'add-order', 'class' => 'btn btn-primary btn-sm']) !!}
+				</div>
+			</div>
+			<div class = "row" id = "items-holder">
+			</div>
+			{!! Form::close() !!}
 		</div>
+	</div>
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
@@ -238,10 +244,14 @@
 	<script type = "text/javascript">
 		var searched = '';
 		var timeout = null;
-		$("#item_sku").on('paste keyup', function (event)
+		$("#puller").on('click', function ()
+		{
+			requestSearchOnServer($("#item_sku"));
+		});
+		function requestSearchOnServer (node)
 		{
 			// trim the input field value
-			var sku = $(this).val().trim();
+			var sku = $(node).val().trim();
 			// if the sku searching for is empty
 			// don't proceed
 			if ( sku == "" ) {
@@ -269,6 +279,17 @@
 				var method = "GET";
 				ajax(url, method, data, setAjaxResult, searchProductError);
 			}, 200);
+		}
+		$("#item_sku").on('keydown keyup', function (event)
+		{
+			if ( event.keyCode == 13 ) {
+				event.preventDefault();
+				$("#puller").click();
+			}
+		});
+		$("#item_sku").on('paste keyup', function (event)
+		{
+			//requestSearchOnServer($(this));
 		});
 
 		function ajax (url, method, data, successHandler, errorHandler)
