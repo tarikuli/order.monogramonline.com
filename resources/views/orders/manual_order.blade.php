@@ -59,9 +59,9 @@
 				</div>
 			</div>
 		@endif
+		{!! Form::open(['method' => 'post', 'url' => url('orders/manual'), 'id' => 'manual-order-placement', 'class' => 'form-horizontal']) !!}
 		<div class = "row">
 			<div class = "col-md-10">
-				{!! Form::open(['method' => 'post', 'url' => url('orders/manual'), 'id' => 'manual-order-placement', 'class' => 'form-horizontal']) !!}
 				<div class = "form-group">
 					<label for = "store" class = "col-md-2 control-label">Market/Store</label>
 					<div class = "col-md-4">
@@ -227,15 +227,57 @@
 					</table>
 				</div>
 			</div>
+			<div class = "row">
+				<div class = "col-md-12">
+					<table style = "margin-left:775px">
+						<tr>
+							<td align = "right" style = "padding-right:40px ">Subtotal:</td>
+							<td align = "right">{!! Form::text('subtotal', null) !!}</td>
+						</tr>
+						<tr>
+							<td align = "right" style = "padding-right:40px ">Coupon-discount</b>:</td>
+							<td align = "right">{!! Form::text('coupon_id', null) !!} - {!! Form::text('coupon_value', null) !!}</td>
+						</tr>
+						<tr>
+							<td align = "right" style = "padding-right:40px ">Gift Wrap:</td>
+							<td align = "right">{!! Form::text('gift_wrap_cost', null) !!}</td>
+						</tr>
+						<tr>
+							<td align = "right" style = "padding-right:40px ">Shipping:</td>
+							<td align = "right">{!! Form::text('shipping_charge', null) !!}</td>
+						</tr>
+						<tr>
+							<td align = "right" style = "padding-right:40px ">Insurance:</td>
+							<td align = "right">{!! Form::text('insurance', null) !!}</td>
+						</tr>
+						<tr>
+							<td align = "right" style = "padding-right:45px ">Adjustments:</td>
+							<td align = "right">{!! Form::text('adjustments', null) !!}</td>
+						</tr>
+						<tr>
+							<td align = "right" style = "padding-right:45px ">Tax:</td>
+							<td align = "right">{!! Form::text('tax_charge', null) !!}</td>
+						</tr>
+						<tr>
+							<td align = "right" style = "padding-right:45px ">Total:</td>
+							<td align = "right">{!! Form::text('total', null) !!}</td>
+						</tr>
+						<tr>
+
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class = "row" id = "items-holder">
+			</div>
 			<div class = "form-group">
 				<div class = "col-md-offset-1 col-md-4">
 					{!! Form::submit('Add order', ['id' => 'add-order', 'class' => 'btn btn-primary btn-sm']) !!}
 				</div>
 			</div>
-			<div class = "row" id = "items-holder">
-			</div>
-			{!! Form::close() !!}
 		</div>
+		{!! Form::close() !!}
+	</div>
 	</div>
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -260,9 +302,9 @@
 			// if the previous query and the current is same,
 			// like, control + a is pressed
 			// don't proceed
-			if ( searched == sku ) {
+			/*if ( searched == sku ) {
 				return;
-			}
+			}*/
 			// else set the value to global searched variable
 			// and proceed
 			searched = sku;

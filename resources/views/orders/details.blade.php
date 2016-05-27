@@ -347,7 +347,7 @@
 				<td align = "right">${{sprintf("%02.2f",$sub_total)}}</td>
 			</tr>
 			<tr>
-				<td align = "right" style = "padding-right:40px ">Coupon <b>(ggibi7t4kun2f)</b>:</td>
+				<td align = "right" style = "padding-right:40px ">Coupon <b>({{ $order->coupon_id }})</b>:</td>
 				<td align = "right">${!!sprintf("%02.2f",$order->coupon_value)!!}</td>
 			</tr>
 			<tr>
@@ -360,7 +360,7 @@
 			</tr>
 			<tr>
 				<td align = "right" style = "padding-right:40px ">Insurance:</td>
-				<td align = "right">$ {!! Form::text('insurance', sprintf("0.00"), ['id' => 'insurance','style'=>'width:60px']) !!}</td>
+				<td align = "right">$ {!! Form::text('insurance', sprintf("%0.2f", $order->insurance), ['id' => 'insurance','style'=>'width:60px']) !!}</td>
 			</tr>
 			<tr>
 				<td align = "right" style = "padding-right:45px ">Adjustments:</td>

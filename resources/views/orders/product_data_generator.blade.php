@@ -25,7 +25,7 @@
 							@elseif($node['type'] == 'select')
 								<td>{{ $label }}</td>
 								<td>
-									{!! Form::select("item_descriptions[$id_catalog][$label]", \Monogram\Helper::getOnlyValuesByKey($node['options'], "value"), null, ['class' => 'form-control']) !!}
+									{!! Form::select("item_options[$id_catalog][$label]", \Monogram\Helper::getOnlyValuesByKey($node['options'], "value"), null, ['class' => 'form-control']) !!}
 								</td>
 							@endif
 						</tr>

@@ -202,6 +202,9 @@ class OrderController extends Controller
 		$order->order_status = Status::where('status_code', $request->get('order_status'))
 									 ->first()->id;
 		$order->order_comments = $request->get('order_comments');
+		$order->gift_wrap_cost = floatval($request->get('gift_wrap_cost', 0));
+		$order->insurance = floatval($request->get('insurance', 0));
+		$order->adjustments = floatval($request->get('adjustments', 0));
 		$order->save();
 
 		$index = 0;
@@ -655,9 +658,18 @@ class OrderController extends Controller
 		$order->order_id = sprintf("%s-%s", $request->get('store'), $short_order);
 		$order->short_order = $short_order;
 		$order->item_count = count($request->get('item_id_catalog'));
-		$order->total = 0;
 		$order->order_date = date('Y-m-d h:i:s', strtotime("now"));
 		$order->store_id = $request->get('store');
+
+		$order->sub_total = floatval($request->get('subtotal', 0));
+		$order->coupon_id = $request->get('coupon_id', '');
+		$order->coupon_value = floatval($request->get('coupon_value', 0));
+		$order->shipping_charge = floatval($request->get('shipping_charge', 0));
+		$order->gift_wrap_cost = floatval($request->get('gift_wrap_cost', 0));
+		$order->insurance = floatval($request->get('insurance', 0));
+		$order->adjustments = floatval($request->get('adjustments', 0));
+		$order->tax_charge = floatval($request->get('tax_charge', 0));
+		$order->total = floatval($request->get('total', 0));
 		$order->save();
 
 		$customer = new Customer();
@@ -690,7 +702,7 @@ class OrderController extends Controller
 		$customer->bill_mailing_list = $request->get('bill_mailing_list');
 		$customer->save();
 
-		$item_skus = $request->get('item_sku');
+		$item_skus = $request->get('item_skus');
 		$item_options = $request->get('item_options');
 		$item_quantities = $request->get('item_quantity');
 		foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
