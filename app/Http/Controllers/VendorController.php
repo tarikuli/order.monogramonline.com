@@ -116,7 +116,7 @@ class VendorController extends Controller
 			$vendor->email = trim($request->get('email'));
 		}
 		if ( $request->has('account_password') ) {
-			$vendor->country = trim($request->get('country'));
+			$vendor->password = $request->get('account_password');
 		}
 
 		$vendor->save();
