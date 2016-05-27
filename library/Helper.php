@@ -924,6 +924,15 @@ APPEND;
 		});
 	}
 
+	public static function getOnlyValuesByKey ($data, $key)
+	{
+		$values = array_map(function ($node) use ($key) {
+			return $node[$key];
+		}, $data);
+
+		return array_combine($values, $values);
+	}
+
 	public static function generateChildSKUCombination (array $data, array &$all = array(), array $group = array(), $value = null, $i = 0)
 	{
 		$keys = array_keys($data);
@@ -949,5 +958,22 @@ APPEND;
 		}
 
 		return $all;
+	}
+
+	public static function getProductInformation ($id_catalog)
+	{
+		// generate the url
+		$url = url(sprintf("/crawl?id_catalog=%s", $id_catalog));
+		// pass to the phantom class to get the data
+		$phantom = new Phantom($url);
+		// generate response
+		$response = $phantom->request()
+							->getResponse();
+		// instantiate the dom reader
+		$reader = new DOMReader($response);
+		//
+		$crawled_data = json_decode($reader->readCrawledData(), true);
+
+		return $crawled_data;
 	}
 }

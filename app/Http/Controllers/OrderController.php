@@ -639,6 +639,135 @@ class OrderController extends Controller
 		return true;
 	}
 
+	public function getManual (Request $request)
+	{
+		$stores = Store::where('is_deleted', 0)
+					   ->lists('store_name', 'store_id');
+
+		return view('orders.manual_order')->with('stores', $stores);
+	}
+
+	public function postManual (Request $request)
+	{
+		return $request->all();
+		$short_order = str_random(6);
+		$order = new Order();
+		$order->order_id = sprintf("%s-%s", $request->get('store'), $short_order);
+		$order->short_order = $short_order;
+		$order->item_count = count($request->get('item_id_catalog'));
+		$order->total = 0;
+		$order->order_date = date('Y-m-d h:i:s', strtotime("now"));
+		$order->store_id = $request->get('store');
+		$order->save();
+
+		$customer = new Customer();
+		$customer->ship_full_name = $request->get('ship_full_name');
+		$customer->ship_first_name = $request->get('ship_first_name');
+		$customer->ship_last_name = $request->get('ship_last_name');
+		$customer->ship_company_name = $request->get('ship_company_name');
+		$customer->ship_address_1 = $request->get('ship_address_1');
+		$customer->ship_address_2 = $request->get('ship_address_2');
+		$customer->ship_city = $request->get('ship_city');
+		$customer->ship_state = $request->get('ship_state');
+		$customer->ship_zip = $request->get('ship_zip');
+		$customer->ship_country = $request->get('ship_country');
+		$customer->ship_phone = $request->get('ship_phone');
+		$customer->ship_email = $request->get('ship_email');
+		$customer->shipping = $request->get('shipping');
+		$customer->bill_full_name = $request->get('bill_full_name');
+		$customer->bill_first_name = $request->get('bill_first_name');
+		$customer->bill_last_name = $request->get('bill_last_name');
+		$customer->bill_company_name = $request->get('bill_company_name');
+		$customer->bill_address_1 = $request->get('bill_address_1');
+		$customer->bill_address_2 = $request->get('bill_address_2');
+		$customer->bill_city = $request->get('bill_city');
+		$customer->bill_state = $request->get('bill_state');
+		$customer->bill_zip = $request->get('bill_zip');
+		$customer->bill_country = $request->get('bill_country');
+		$customer->bill_phone = $request->get('bill_phone');
+		$customer->bill_email = $request->get('bill_email');
+		$customer->bill_mailing_list = $request->get('bill_mailing_list');
+		$customer->save();
+
+		foreach ( $request->get('id_catalog') as $item_id_catalog ) {
+			$item = new Item();
+			$item->order_id = $order->order_id;
+			$item->store_id = $request->get('store');
+			$item->item_code = $request->get('a_b_c_d');
+			$item->a_b_c_d = $request->get('a_b_c_d');
+			$item->a_b_c_d = $request->get('a_b_c_d');
+			$item->a_b_c_d = $request->get('a_b_c_d');
+			$item->a_b_c_d = $request->get('a_b_c_d');
+		}
+
+	}
+
+	public function ajax (Request $request)
+	{
+		if ( !$request->ajax() ) {
+			return response()->json([ ], 405);
+		}
+
+		$sku = trim($request->get('sku', ""));
+		$data = [ ];
+		$data['search'] = $request->get('sku');
+		$statusCode = 400;
+		if ( !empty( $sku ) ) {
+			$searchAble = sprintf("%%%s%%", $sku);
+			$product = Product::where('product_model', "LIKE", $searchAble)
+							  ->orWhere('id_catalog', 'LIKE', $searchAble)
+							  ->orWhere('product_name', 'LIKE', $searchAble)
+							  ->where('is_deleted', 0)
+							  ->get([
+								  'product_thumb',
+								  'product_url',
+								  'product_model',
+								  'product_name',
+								  'id_catalog',
+							  ]);
+			if ( $product->count() ) {
+				$data['products'] = $product;
+				$statusCode = 200;
+			}
+		}
+
+		return response()->json($data, $statusCode);
+	}
+
+	public function product_info (Request $request)
+	{
+		$id_catalog = $request->get('id_catalog');
+		$sku = $request->get('sku');
+		if ( empty( $id_catalog ) ) {
+			return response()->json([ ], 400);
+		}
+		$crawled_data = Helper::getProductInformation($id_catalog);
+		$data = [ ];
+		$data['id_catalog'] = $id_catalog;
+		$data['sku'] = $sku;
+		$data['result'] = [ ];
+		$statusCode = 200;
+		if ( !is_array($crawled_data) ) {
+			$statusCode = 400;
+			$data['result'] = false;
+		} else {
+			$unique_modal_class = sprintf("%s-%s", $id_catalog, str_random());
+			$data['unique_modal_class'] = $unique_modal_class;
+			$product = Product::where('id_catalog', $id_catalog)
+							  ->first();
+			$item_image = $product->product_thumb;
+			$data['result'] = view('orders.product_data_generator')
+				->with('crawled_data', $crawled_data)
+				->with('id_catalog', $id_catalog)
+				->with('item_image', $item_image)
+				->with('sku', $sku)
+				->with('unique_modal_class', $unique_modal_class)
+				->render();
+		}
+
+		return response()->json($data, $statusCode);
+	}
+
 	public function hook (Request $request)
 	{
 		$order_id = $request->get('ID');

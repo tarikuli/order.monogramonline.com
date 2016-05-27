@@ -1,6 +1,6 @@
 <?php
 get('test/batch', function () {
-	return \Monogram\Helper::getChildSku(\App\Item::find(244));
+	return date('Y-m-d h:i:s', strtotime("now"));
 });
 get('phantom', function (\Illuminate\Http\Request $request) {
 	$id = $request->get('id', 'pemoanwisicr');
@@ -70,6 +70,10 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('orders/details/{order_id}', 'OrderController@details');
 		get('orders/add', 'OrderController@getAddOrder');
 		post('orders/add', 'OrderController@postAddOrder');
+		get('orders/manual', 'OrderController@getManual');
+		post('orders/manual', 'OrderController@postManual');
+		get('orders/ajax', 'OrderController@ajax');
+		get('orders/product_info', 'OrderController@product_info');
 		get('orders/list', 'OrderController@getList');
 		get('orders/search', 'OrderController@search');
 

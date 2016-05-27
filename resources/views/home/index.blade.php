@@ -65,7 +65,7 @@
 					<li><a href = "/stations/supervisor">Supervisor</a></li>
 					<li><a href = "/rules">Shipping Rules</a></li>
 					<li><a href = "/shipping">Shipping list</a></li>
-					<li><a href = "/items/waiting_for_another_item"><em><strong>Waiting for another items</strong></em></a></li>
+					<li><a href = "/items/waiting_for_another_item">Waiting for another items</a></li>
 					<li><a href = "/summary">Stations summary</a></li>
 					<li><a href = "/export_station">Export station log</a></li>
 					<li><a href = "/rejection_reasons">Rejection reasons</a></li>
@@ -77,6 +77,7 @@
 				</ul>
 				<hr />
 				<ul>
+					<li><a href = "/orders/manual"><em><strong>Add new order manually</strong></em></a></li>
 					<li><a href = "/orders/add">Add new order</a></li>
 					{{--<li><a href = "/products/create">Create Product</a></li>
 					<li><a href = "/stations/status">Station status</a></li>
