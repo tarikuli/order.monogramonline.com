@@ -236,7 +236,7 @@
 				{!! Form::close() !!}
 			</div>
 		</div>
-		<div class = "row" style="margin-bottom: 30px;">
+		<div class = "row" style = "margin-bottom: 30px;">
 			<div class = "col-md-12">
 				<a class = "btn btn-xs btn-primary pull-right" href = "#" disabled = "true"
 				   id = "remove-preview">Remove preview</a>
@@ -262,7 +262,7 @@
 	<script type = "text/javascript" src = "/assets/js/nprogress.js"></script>
 	<script type = "text/javascript">
 		var searched = '';
-
+		var timeout = null;
 		$("#item_sku").on('paste keyup', function (event)
 		{
 			// trim the input field value
@@ -281,13 +281,19 @@
 			// else set the value to global searched variable
 			// and proceed
 			searched = sku;
-			removePreview();
-			var url = "/orders/ajax";
-			var data = {
-				"sku": sku
-			};
-			var method = "GET";
-			ajax(url, method, data, setAjaxResult, hideTable);
+			if ( timeout ) {
+				clearTimeout(timeout);
+			}
+			timeout = setTimeout(function ()
+			{
+				removePreview();
+				var url = "/orders/ajax";
+				var data = {
+					"sku": sku
+				};
+				var method = "GET";
+				ajax(url, method, data, setAjaxResult, searchProductError);
+			}, 200);
 		});
 
 		function ajax (url, method, data, successHandler, errorHandler)
@@ -304,6 +310,12 @@
 					errorHandler(xhr);
 				}
 			})
+		}
+
+		function searchProductError (xhr)
+		{
+			hideTable();
+			alert('Nothing found.');
 		}
 
 		function hideTable ()
