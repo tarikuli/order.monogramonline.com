@@ -661,6 +661,7 @@ class OrderController extends Controller
 		$order->save();
 
 		$customer = new Customer();
+		$customer->order_id = $order->order_id;
 		$customer->ship_full_name = $request->get('ship_full_name');
 		$customer->ship_first_name = $request->get('ship_first_name');
 		$customer->ship_last_name = $request->get('ship_last_name');
@@ -700,7 +701,7 @@ class OrderController extends Controller
 			$item->item_id = $item_id_catalog;
 			$options = [ ];
 			foreach ( $item_options[$item_id_catalog] as $item_option_key => $item_option_value ) {
-				$key = str_replace(" ", "_", preg_replace("/\s+/", "", $item_option_key));
+				$key = str_replace(" ", "_", preg_replace("/\s+/", " ", $item_option_key));
 				$options[$key] = $item_option_value;
 			}
 			$item->item_option = json_encode($options);

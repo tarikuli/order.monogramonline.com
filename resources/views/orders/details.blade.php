@@ -25,7 +25,8 @@
 		}
 
 		table#items-table td img {
-			min-width: 100px;
+			max-width: 100px;
+			max-height: 100px;
 			float: left;
 		}
 	</style>
@@ -269,7 +270,7 @@
 					{!! Form::hidden("item_id[$ind]", $item->id) !!}
 					<td><img src = "{{$item->item_thumb}}" /></td>
 					<td>
-						<a href = "{{ url($item->product->product_url) }}"
+						<a href = "{{ url($item->product ? $item->product->product_url : "#") }}"
 						   target = "_blank">{{$item->item_description}}</a>
 					</td>
 					<td>
