@@ -649,7 +649,7 @@ class OrderController extends Controller
 
 	public function postManual (Request $request)
 	{
-		return $request->all();
+		#return $request->all();
 		$short_order = str_random(6);
 		$order = new Order();
 		$order->order_id = sprintf("%s-%s", $request->get('store'), $short_order);
@@ -689,17 +689,40 @@ class OrderController extends Controller
 		$customer->bill_mailing_list = $request->get('bill_mailing_list');
 		$customer->save();
 
-		foreach ( $request->get('id_catalog') as $item_id_catalog ) {
+		$item_skus = $request->get('item_sku');
+		$item_options = $request->get('item_options');
+		$item_quantities = $request->get('item_quantity');
+		foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
 			$item = new Item();
 			$item->order_id = $order->order_id;
 			$item->store_id = $request->get('store');
-			$item->item_code = $request->get('a_b_c_d');
-			$item->a_b_c_d = $request->get('a_b_c_d');
-			$item->a_b_c_d = $request->get('a_b_c_d');
-			$item->a_b_c_d = $request->get('a_b_c_d');
-			$item->a_b_c_d = $request->get('a_b_c_d');
+			$item->item_code = $item_skus[$item_id_catalog];
+			$item->item_id = $item_id_catalog;
+			$options = [ ];
+			foreach ( $item_options[$item_id_catalog] as $item_option_key => $item_option_value ) {
+				$key = str_replace(" ", "_", preg_replace("/\s+/", "", $item_option_key));
+				$options[$key] = $item_option_value;
+			}
+			$item->item_option = json_encode($options);
+			$item->item_quantity = $item_quantities[$item_id_catalog];
+			$product = Product::where('id_catalog', $item_id_catalog)
+							  ->first();
+
+			if ( $product ) {
+				$item->item_thumb = $product->product_thumb;
+				$item->item_url = $product->product_url;
+			}
+
+			$item->data_parse_type = "manual";
+
+			$child_sku = Helper::getChildSku($item);
+			$item->child_sku = $child_sku;
+			$item->save();
 		}
 
+		return redirect()
+			->back()
+			->with('success', "Order is successfully saved");
 	}
 
 	public function ajax (Request $request)

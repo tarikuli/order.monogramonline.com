@@ -8,8 +8,9 @@
 			</div>
 			<div class = "modal-body">
 				<table class = "table table-bordered">
-					{!! Form::hidden('unique_modal_class[$id_catalog]', $unique_modal_class, ['class' => 'hidden_unique_modal_class']) !!}
-					{!! Form::hidden("item_id_catalog[$id_catalog]", $id_catalog, ['class' => 'item_id_catalog']) !!}
+					{!! Form::hidden("unique_modal_class[$id_catalog]", $unique_modal_class, ['class' => 'hidden_unique_modal_class']) !!}
+					{!! Form::hidden("item_id_catalog[]", $id_catalog, ['class' => 'item_id_catalog']) !!}
+					{!! Form::hidden("item_skus[$id_catalog]", $sku, ['class' => 'item_sku']) !!}
 					{!! Form::hidden("image[$id_catalog]", $item_image, ['class' => 'item_image']) !!}
 					<tr>
 						<td>Quantity</td>
@@ -20,11 +21,11 @@
 							@setvar($label = \Monogram\Helper::specialCharsRemover($node['label']))
 							@if($node['type'] == 'text')
 								<td>{{ $label }}</td>
-								<td>{!! Form::text("item_descriptions[$id_catalog][]", null, ['class' => 'form-control']) !!}</td>
+								<td>{!! Form::text("item_options[$id_catalog][$label]", null, ['class' => 'form-control']) !!}</td>
 							@elseif($node['type'] == 'select')
 								<td>{{ $label }}</td>
 								<td>
-									{!! Form::select("item_descriptions[$id_catalog][]", \Monogram\Helper::getOnlyValuesByKey($node['options'], "value"), null, ['class' => 'form-control']) !!}
+									{!! Form::select("item_descriptions[$id_catalog][$label]", \Monogram\Helper::getOnlyValuesByKey($node['options'], "value"), null, ['class' => 'form-control']) !!}
 								</td>
 							@endif
 						</tr>

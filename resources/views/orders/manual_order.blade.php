@@ -55,25 +55,179 @@
 				{!! Form::open(['method' => 'post', 'url' => url('orders/manual'), 'id' => 'manual-order-placement', 'class' => 'form-horizontal']) !!}
 				<div class = "form-group">
 					<label for = "store" class = "col-md-2 control-label">Market/Store</label>
-					<div class = "col-md-3">
+					<div class = "col-md-4">
 						{!! Form::select('store', $stores, null, ['id'=>'store', 'class' => 'form-control']) !!}
 					</div>
 				</div>
+
 				<p>Ship To:</p>
 				<div class = "form-group">
-					<label for = "store" class = "col-md-2 control-label">Company name</label>
-					<div class = "col-md-3">
-						{!! Form::text('customer_ship_top', null, ['id'=>'customer_ship_top', 'class' => 'form-control']) !!}
+					<label for = "ship_full_name" class = "col-md-2 control-label">Full name</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_full_name', null, ['id'=>'ship_full_name', 'class' => 'form-control']) !!}
 					</div>
 				</div>
+				<div class = "form-group">
+					<label for = "ship_first_name" class = "col-md-2 control-label">First name</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_first_name', null, ['id'=>'ship_first_name', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "ship_last_name" class = "col-md-2 control-label">Last name</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_last_name', null, ['id'=>'ship_last_name', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "ship_company_name" class = "col-md-2 control-label">Company name</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_company_name', null, ['id'=>'ship_company_name', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "ship_address_1" class = "col-md-2 control-label">Ship address 1</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_address_1', null, ['id'=>'ship_address_1', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "ship_address_2" class = "col-md-2 control-label">Ship address 2</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_address_2', null, ['id'=>'ship_address_2', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "ship_city" class = "col-md-2 control-label">Ship city</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_city', null, ['id'=>'ship_city', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "ship_state" class = "col-md-2 control-label">Ship state</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_state', null, ['id'=>'ship_state', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "ship_zip" class = "col-md-2 control-label">Ship zip</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_zip', null, ['id'=>'ship_zip', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "ship_country" class = "col-md-2 control-label">Ship country</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_country', null, ['id'=>'ship_country', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "ship_phone" class = "col-md-2 control-label">Ship phone</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_phone', null, ['id'=>'ship_phone', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "ship_email" class = "col-md-2 control-label">Ship email</label>
+					<div class = "col-md-4">
+						{!! Form::text('ship_email', null, ['id'=>'ship_email', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "shipping" class = "col-md-2 control-label">Shipping</label>
+					<div class = "col-md-4">
+						{!! Form::text('shipping', null, ['id'=>'shipping', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<p>Bill to:</p>
+				<div class = "form-group">
+					<label for = "bill_full_name" class = "col-md-2 control-label">Bill full name</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_full_name', null, ['id'=>'bill_full_name', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_first_name" class = "col-md-2 control-label">Bill first name</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_first_name', null, ['id'=>'bill_first_name', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_last_name" class = "col-md-2 control-label">Bill last name</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_last_name', null, ['id'=>'bill_last_name', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_company_name" class = "col-md-2 control-label">Bill company name</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_company_name', null, ['id'=>'bill_company_name', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_address_1" class = "col-md-2 control-label">Bill address 1</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_address_1', null, ['id'=>'bill_address_1', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_address_2" class = "col-md-2 control-label">Bill address 2</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_address_2', null, ['id'=>'bill_address_2', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_city" class = "col-md-2 control-label">Bill city</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_city', null, ['id'=>'bill_city', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_state" class = "col-md-2 control-label">Bill state</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_state', null, ['id'=>'bill_state', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_zip" class = "col-md-2 control-label">Bill zip</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_zip', null, ['id'=>'bill_zip', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_country" class = "col-md-2 control-label">Bill country</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_country', null, ['id'=>'bill_country', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_phone" class = "col-md-2 control-label">Bill phone</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_phone', null, ['id'=>'bill_phone', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_email" class = "col-md-2 control-label">Bill email</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_email', null, ['id'=>'bill_email', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+				<div class = "form-group">
+					<label for = "bill_mailing_list" class = "col-md-2 control-label">Bill mailing list</label>
+					<div class = "col-md-4">
+						{!! Form::text('bill_mailing_list', null, ['id'=>'bill_mailing_list', 'class' => 'form-control']) !!}
+					</div>
+				</div>
+
+
 				<div class = "form-group">
 					<label for = "item_sku" class = "col-md-2 control-label">Item SKU</label>
-					<div class = "col-md-3">
-						{!! Form::text('item_sku', null, ['id'=>'item_sku', 'class' => 'form-control', 'placeholder' => 'Enter item sku']) !!}
+					<div class = "col-md-4">
+						{!! Form::text('search_item_sku', null, ['id'=>'item_sku', 'class' => 'form-control', 'placeholder' => 'Enter item sku']) !!}
 					</div>
 				</div>
 				<div class = "form-group">
-					<div class = "col-md-offset-2 col-md-3">
+					<div class = "col-md-offset-2 col-md-4">
 						{!! Form::submit('Add order', ['id' => 'add-order', 'class' => 'btn btn-primary btn-sm']) !!}
 					</div>
 				</div>
@@ -82,7 +236,7 @@
 				{!! Form::close() !!}
 			</div>
 		</div>
-		<div class = "row">
+		<div class = "row" style="margin-bottom: 30px;">
 			<div class = "col-md-12">
 				<a class = "btn btn-xs btn-primary pull-right" href = "#" disabled = "true"
 				   id = "remove-preview">Remove preview</a>
