@@ -271,7 +271,7 @@
 			<div class = "row" id = "items-holder">
 			</div>
 			<div class = "form-group">
-				<div class = "col-md-12 text-right">
+				<div class = "col-md-12 text-right" style="margin-top: 5px;">
 					{!! Form::submit('Add order', ['id' => 'add-order', 'class' => 'btn btn-primary btn-sm']) !!}
 				</div>
 			</div>
