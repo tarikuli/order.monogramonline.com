@@ -201,7 +201,7 @@
 						<div class = "input-group">
 							{!! Form::text('search_item_sku', null, ['id'=>'item_sku', 'class' => 'form-control', 'placeholder' => 'Search SKU / Name / Id catalog']) !!}
 							<span class = "input-group-btn">
-								<button class = "btn btn-default" type = "button" id = "puller">Pull</button>
+								<button class = "btn btn-info" type = "button" id = "puller">Pull</button>
 							</span>
 						</div>
 					</div>
