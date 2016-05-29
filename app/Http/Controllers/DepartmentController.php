@@ -76,7 +76,7 @@ class DepartmentController extends Controller
 		$department->is_deleted = 1;
 		$department->save();
 
-		return redirect(url('department'));
+		return redirect(url('departments'));
 	}
 }
 
