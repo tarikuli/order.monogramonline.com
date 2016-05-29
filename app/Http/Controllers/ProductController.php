@@ -952,8 +952,8 @@ class ProductController extends Controller
 					if ( $column == "product_note" ) {
 						#dd($row[$column]);
 					}
-					$columnValue = $row[$column];
-					$product->$column = trim($columnValue) ?: '';
+					$columnValue = trim($row[$column]);
+					$product->$column = empty( $columnValue ) ? $product->getDefaultColumnName($column) : $columnValue;
 				}
 				/*$product->store_id = $row['store_id'];
 				$product->product_name = $row['product_name'];

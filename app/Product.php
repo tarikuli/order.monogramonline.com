@@ -53,6 +53,13 @@ class Product extends Model
 		return array_diff($columns, $remove_columns);
 	}
 
+	public function getDefaultColumnName ($columnName)
+	{
+		$query = 'SELECT COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "' . $this->getTable() . '" AND COLUMN_NAME = "' . $columnName . '"';
+
+		// will return "two"
+		return array_pluck(DB::select($query), 'COLUMN_DEFAULT')[0];
+	}
 
 	public static function getTableColumns ()
 	{
