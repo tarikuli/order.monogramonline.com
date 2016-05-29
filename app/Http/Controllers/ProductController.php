@@ -952,7 +952,8 @@ class ProductController extends Controller
 					if ( $column == "product_note" ) {
 						#dd($row[$column]);
 					}
-					$product->$column = trim($row[$column]);
+					$columnValue = $row[$column];
+					$product->$column = trim($columnValue) ?: '';
 				}
 				/*$product->store_id = $row['store_id'];
 				$product->product_name = $row['product_name'];
@@ -970,6 +971,7 @@ class ProductController extends Controller
 					$product->batch_route_id = $batch_route->id;
 				}*/
 			}
+			dd($product->getAttributes());
 			$product->save();
 			foreach ( $extra_columns as $column ) {
 				if ( $column == 'product_occasions' ) {
