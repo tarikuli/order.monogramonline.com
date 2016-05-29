@@ -886,7 +886,7 @@ class ProductController extends Controller
 					if ( $master_category_from_table ) {
 						$product->product_master_category = $master_category_from_table->id;
 					} else {
-						$product->product_master_category = null;
+						$product->product_master_category = $product->getDefaultColumnName($column);
 					}
 				}/* elseif ( $column == 'product_occasions' ) {
 					$product_occasions_from_file = trim($row['product_occasions']);
@@ -936,7 +936,7 @@ class ProductController extends Controller
 					if ( $production_category_from_table ) {
 						$product->product_production_category = $production_category_from_table->id;
 					} else {
-						$product->product_production_category = null;
+						$product->product_production_category = $product->getDefaultColumnName($column);
 					}
 				} elseif ( $column == 'product_sales_category' ) {
 					$sales_category_from_file = trim($row['product_sales_category']);
@@ -946,14 +946,16 @@ class ProductController extends Controller
 					if ( $sales_category_from_table ) {
 						$product->product_sales_category = $sales_category_from_table->id;
 					} else {
-						$product->product_sales_category = null;
+						$product->product_sales_category = $product->getDefaultColumnName($column);
 					}
 				} else {
 					if ( $column == "product_note" ) {
 						#dd($row[$column]);
 					}
 					$columnValue = trim($row[$column]);
-					$product->$column = empty( $columnValue ) ? $product->getDefaultColumnName($column) : $columnValue;
+					if ( !empty( $columnValue ) ) {
+						$product->$column = $columnValue;
+					}
 				}
 				/*$product->store_id = $row['store_id'];
 				$product->product_name = $row['product_name'];
@@ -971,6 +973,7 @@ class ProductController extends Controller
 					$product->batch_route_id = $batch_route->id;
 				}*/
 			}
+			#dd($product->getAttributes());
 			$product->save();
 			foreach ( $extra_columns as $column ) {
 				if ( $column == 'product_occasions' ) {

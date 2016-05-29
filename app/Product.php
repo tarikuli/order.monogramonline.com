@@ -55,10 +55,19 @@ class Product extends Model
 
 	public function getDefaultColumnName ($columnName)
 	{
+		// solution comes from here
+		// https://laracasts.com/discuss/channels/eloquent/get-default-value?page=1
 		$query = 'SELECT COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "' . $this->getTable() . '" AND COLUMN_NAME = "' . $columnName . '"';
-
 		// will return "two"
-		return array_pluck(DB::select($query), 'COLUMN_DEFAULT')[0];
+		$result = DB::select($query);
+		$default = null;
+		if ( count($result) > 1 ) {
+			$default = array_pluck($result, 'COLUMN_DEFAULT')[1];
+		} else {
+			$default = array_pluck($result, 'COLUMN_DEFAULT')[0];
+		}
+
+		return $default;
 	}
 
 	public static function getTableColumns ()
