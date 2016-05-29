@@ -971,7 +971,6 @@ class ProductController extends Controller
 					$product->batch_route_id = $batch_route->id;
 				}*/
 			}
-			dd($product->getAttributes());
 			$product->save();
 			foreach ( $extra_columns as $column ) {
 				if ( $column == 'product_occasions' ) {
