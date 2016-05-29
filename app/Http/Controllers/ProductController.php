@@ -846,16 +846,37 @@ class ProductController extends Controller
 		set_time_limit(0);
 		foreach ( $rows as $row ) {
 			$id_catalog = trim($row['id_catalog']);
-			$model = trim($row['id_catalog']);
+			$model = trim($row['product_model']);
 			if ( empty( $id_catalog ) || empty( $model ) ) {
 				continue;
 			}
-			$product = Product::where('id_catalog', $row['id_catalog'])
-							  ->first();
-			if ( !$product ) {
+			$products = Product::where('id_catalog', $row['id_catalog'])
+							   ->orWhere('product_model', $model)
+							   ->get();
+
+			if ( $products->count() == 0 ) {
 				$product = new Product();
 				$product->id_catalog = $row['id_catalog'];
 				$product->product_model = $row['product_model'];
+			} elseif ( $products->count() == 1 ) {
+				$product = $products->first();
+				if ( $product->id_catalog == $id_catalog ) {
+					$product->product_model = $model;
+				} else {
+					$product->id_catalog = $id_catalog;
+				}
+
+			} else {
+				foreach ( $products as $available ) {
+					$product = $available;
+					if ( $available->id_catalog == $id_catalog ) {
+						$product->product_model = $model;
+						break;
+					} elseif ( $available->product_model = $model ) {
+						$product->id_catalog == $id_catalog;
+						break;
+					}
+				}
 			}
 			foreach ( $table_columns as $column ) {
 				if ( $column == 'id_catalog' ) {
