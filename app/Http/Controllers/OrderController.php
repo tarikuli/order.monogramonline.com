@@ -654,8 +654,49 @@ class OrderController extends Controller
 	{
 		#return $request->all();
 		$short_order = str_random(6);
+		$order_id = sprintf("%s-%s", $request->get('store'), $short_order);
+
+		$item_skus = $request->get('item_skus');
+		$item_options = $request->get('item_options');
+		$item_quantities = $request->get('item_quantity');
+		$item_prices = $request->get('item_price', [ ]);
+		$grand_sub_total = 0.0;
+		foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
+			// for any reason, the id catalog is not available on item options
+			// the user input as the options they want
+			if ( !array_key_exists($item_id_catalog, $item_options) ) {
+				continue;
+			}
+			$item = new Item();
+			$item->order_id = $order->order_id;
+			$item->store_id = $request->get('store');
+			$item->item_code = $item_skus[$item_id_catalog];
+			$item->item_id = $item_id_catalog;
+			$options = [ ];
+			foreach ( $item_options[$item_id_catalog] as $item_option_key => $item_option_value ) {
+				$key = str_replace(" ", "_", preg_replace("/\s+/", " ", $item_option_key));
+				$options[$key] = $item_option_value;
+			}
+			$item->item_option = json_encode($options);
+			$item->item_quantity = $item_quantities[$item_id_catalog];
+			$item->item_unit_price = array_key_exists($item_id_catalog, $item_prices) ? floatval($item_prices[$item_id_catalog]) : 0;
+			$grand_sub_total += ( (int) $item->item_quantity * (float) $item->item_unit_price );
+			$product = Product::where('id_catalog', $item_id_catalog)
+							  ->first();
+
+			if ( $product ) {
+				$item->item_thumb = $product->product_thumb;
+				$item->item_url = $product->product_url;
+			}
+
+			$item->data_parse_type = "manual";
+
+			$child_sku = Helper::getChildSku($item);
+			$item->child_sku = $child_sku;
+			$item->save();
+		}
 		$order = new Order();
-		$order->order_id = sprintf("%s-%s", $request->get('store'), $short_order);
+		$order->order_id = $order_id;
 		$order->short_order = $short_order;
 		$order->item_count = count($request->get('item_id_catalog'));
 		$order->order_date = date('Y-m-d h:i:s', strtotime("now"));
@@ -669,7 +710,7 @@ class OrderController extends Controller
 		$order->insurance = floatval($request->get('insurance', 0));
 		$order->adjustments = floatval($request->get('adjustments', 0));
 		$order->tax_charge = floatval($request->get('tax_charge', 0));
-		#$order->total = floatval($request->get('total', 0));
+		$order->total = ( $grand_sub_total - $order->coupon_value + $order->gift_wrap_cost + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
 		$order->save();
 
 		$customer = new Customer();
@@ -701,44 +742,6 @@ class OrderController extends Controller
 		$customer->bill_email = $request->get('bill_email');
 		$customer->bill_mailing_list = $request->get('bill_mailing_list');
 		$customer->save();
-
-		$item_skus = $request->get('item_skus');
-		$item_options = $request->get('item_options');
-		$item_quantities = $request->get('item_quantity');
-		$item_prices = $request->get('item_price', [ ]);
-		$grand_sub_total = 0.0;
-		foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
-			$item = new Item();
-			$item->order_id = $order->order_id;
-			$item->store_id = $request->get('store');
-			$item->item_code = $item_skus[$item_id_catalog];
-			$item->item_id = $item_id_catalog;
-			$options = [ ];
-			foreach ( $item_options[$item_id_catalog] as $item_option_key => $item_option_value ) {
-				$key = str_replace(" ", "_", preg_replace("/\s+/", " ", $item_option_key));
-				$options[$key] = $item_option_value;
-			}
-			$item->item_option = json_encode($options);
-			$item->item_quantity = $item_quantities[$item_id_catalog];
-			$item->item_unit_price = array_key_exists($item_id_catalog, $item_prices) ? floatval($item_prices[$item_id_catalog]) : 0;
-			$grand_sub_total += ( (int) $item->item_quantity * (float) $item->item_unit_price );
-			$product = Product::where('id_catalog', $item_id_catalog)
-							  ->first();
-
-			if ( $product ) {
-				$item->item_thumb = $product->product_thumb;
-				$item->item_url = $product->product_url;
-			}
-
-			$item->data_parse_type = "manual";
-
-			$child_sku = Helper::getChildSku($item);
-			$item->child_sku = $child_sku;
-			$item->save();
-		}
-
-		$order->total = ( $grand_sub_total - $order->coupon_value + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
-		$order->save();
 
 		return redirect()
 			->back()
