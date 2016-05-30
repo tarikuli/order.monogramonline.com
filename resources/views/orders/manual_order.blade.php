@@ -232,6 +232,10 @@
 				<div class = "col-md-12">
 					<table style = "margin-left:775px">
 						<tr>
+							<td></td>
+							<td>Only insert numbers below except coupon id</td>
+						</tr>
+						<tr>
 							<td align = "right" style = "padding-right:40px ">Subtotal:</td>
 							<td align = "right">{!! Form::number('subtotal', 0.0, ['id' => 'subtotal', 'readonly' => 'readonly', 'step' => 'any']) !!}</td>
 						</tr>
