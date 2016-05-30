@@ -683,8 +683,8 @@ APPEND;
 		// items, orders, parameter_options
 		return Item::join('parameter_options', 'items.child_sku', '=', 'parameter_options.child_sku')
 				   ->join('orders', 'items.order_id', '=', 'orders.order_id')
-				   ->join('batch_routes', 'items.batch_route_id', '=', 'batch_routes.id')
 				   ->where('items.batch_number', '=', '0')
+				   ->join('batch_routes', 'parameter_options.batch_route_id', '=', 'batch_routes.id')
 				   ->whereNull('items.tracking_number')
 				   ->where('items.is_deleted', '=', '0')
 				   ->where('orders.is_deleted', '=', '0')
@@ -695,6 +695,7 @@ APPEND;
 				   ])
 				   ->where('parameter_options.batch_route_id', '!=', 115)
 				   ->whereNotNull('parameter_options.batch_route_id')
+				   ->where('batch_routes.batch_max_units', '>', 0)
 				   ->count();
 		// 		->first([DB::raw('COUNT(*) AS countPossobleBatches')]);
 		// 		->get([DB::raw('COUNT(*) AS countPossobleBatches')]);
