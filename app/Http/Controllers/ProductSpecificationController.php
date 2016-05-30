@@ -42,6 +42,11 @@ class ProductSpecificationController extends Controller
 			->with('request', $request);
 	}
 
+	public function create ()
+	{
+		return url("products_specifications/step/1");
+	}
+
 	public function show ($id)
 	{
 		// redirect to edit page
