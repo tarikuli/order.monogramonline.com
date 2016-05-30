@@ -669,7 +669,7 @@ class OrderController extends Controller
 		$order->insurance = floatval($request->get('insurance', 0));
 		$order->adjustments = floatval($request->get('adjustments', 0));
 		$order->tax_charge = floatval($request->get('tax_charge', 0));
-		$order->total = floatval($request->get('total', 0));
+		#$order->total = floatval($request->get('total', 0));
 		$order->save();
 
 		$customer = new Customer();
@@ -706,6 +706,7 @@ class OrderController extends Controller
 		$item_options = $request->get('item_options');
 		$item_quantities = $request->get('item_quantity');
 		$item_prices = $request->get('item_price', [ ]);
+		$grand_sub_total = 0.0;
 		foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
 			$item = new Item();
 			$item->order_id = $order->order_id;
@@ -720,6 +721,7 @@ class OrderController extends Controller
 			$item->item_option = json_encode($options);
 			$item->item_quantity = $item_quantities[$item_id_catalog];
 			$item->item_unit_price = array_key_exists($item_id_catalog, $item_prices) ? floatval($item_prices[$item_id_catalog]) : 0;
+			$grand_sub_total += ( (int) $item->item_quantity * (float) $item->item_unit_price );
 			$product = Product::where('id_catalog', $item_id_catalog)
 							  ->first();
 
@@ -734,6 +736,9 @@ class OrderController extends Controller
 			$item->child_sku = $child_sku;
 			$item->save();
 		}
+
+		$order->total = ( $grand_sub_total + $order->coupon_value + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
+		$order->save();
 
 		return redirect()
 			->back()
