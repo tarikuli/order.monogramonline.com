@@ -652,7 +652,7 @@ class OrderController extends Controller
 
 	public function postManual (Requests\ManualOrderCreateRequest $request)
 	{
-		return $request->all();
+		#return $request->all();
 		$short_order = str_random(6);
 		$order = new Order();
 		$order->order_id = sprintf("%s-%s", $request->get('store'), $short_order);
