@@ -571,7 +571,7 @@
 
 		function setSubtotalValue (value)
 		{
-			getSubtotalNode().val(value.toFixed(2));
+			getSubtotalNode().val(value.toFixed(2)).change();
 		}
 		function getSubtotalNode ()
 		{

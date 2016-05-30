@@ -688,6 +688,7 @@ class OrderController extends Controller
 							  ->first();
 
 			if ( $product ) {
+				$item->item_description = $product->product_name;
 				$item->item_thumb = $product->product_thumb;
 				$item->item_url = $product->product_url;
 			}
