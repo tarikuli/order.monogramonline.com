@@ -661,12 +661,15 @@ class OrderController extends Controller
 		$item_quantities = $request->get('item_quantity');
 		$item_prices = $request->get('item_price', [ ]);
 		$grand_sub_total = 0.0;
+		$error = true;
 		foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
 			// for any reason, the id catalog is not available on item options
 			// the user input as the options they want
 			if ( !array_key_exists($item_id_catalog, $item_options) ) {
 				continue;
 			}
+			// at least one item found without error
+			$error = false;
 			$item = new Item();
 			$item->order_id = $order->order_id;
 			$item->store_id = $request->get('store');
@@ -695,57 +698,67 @@ class OrderController extends Controller
 			$item->child_sku = $child_sku;
 			$item->save();
 		}
-		$order = new Order();
-		$order->order_id = $order_id;
-		$order->short_order = $short_order;
-		$order->item_count = count($request->get('item_id_catalog'));
-		$order->order_date = date('Y-m-d h:i:s', strtotime("now"));
-		$order->store_id = $request->get('store');
+		if ( !$error ) {
+			$order = new Order();
+			$order->order_id = $order_id;
+			$order->short_order = $short_order;
+			$order->item_count = count($request->get('item_id_catalog'));
+			$order->order_date = date('Y-m-d h:i:s', strtotime("now"));
+			$order->store_id = $request->get('store');
 
-		$order->sub_total = floatval($request->get('subtotal', 0));
-		$order->coupon_id = $request->get('coupon_id', '');
-		$order->coupon_value = floatval($request->get('coupon_value', 0));
-		$order->shipping_charge = floatval($request->get('shipping_charge', 0));
-		$order->gift_wrap_cost = floatval($request->get('gift_wrap_cost', 0));
-		$order->insurance = floatval($request->get('insurance', 0));
-		$order->adjustments = floatval($request->get('adjustments', 0));
-		$order->tax_charge = floatval($request->get('tax_charge', 0));
-		$order->total = ( $grand_sub_total - $order->coupon_value + $order->gift_wrap_cost + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
-		$order->save();
+			$order->sub_total = floatval($request->get('subtotal', 0));
+			$order->coupon_id = $request->get('coupon_id', '');
+			$order->coupon_value = floatval($request->get('coupon_value', 0));
+			$order->shipping_charge = floatval($request->get('shipping_charge', 0));
+			$order->gift_wrap_cost = floatval($request->get('gift_wrap_cost', 0));
+			$order->insurance = floatval($request->get('insurance', 0));
+			$order->adjustments = floatval($request->get('adjustments', 0));
+			$order->tax_charge = floatval($request->get('tax_charge', 0));
+			$order->total = ( $grand_sub_total - $order->coupon_value + $order->gift_wrap_cost + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
+			$order->save();
 
-		$customer = new Customer();
-		$customer->order_id = $order->order_id;
-		$customer->ship_full_name = $request->get('ship_full_name');
-		$customer->ship_first_name = $request->get('ship_first_name');
-		$customer->ship_last_name = $request->get('ship_last_name');
-		$customer->ship_company_name = $request->get('ship_company_name');
-		$customer->ship_address_1 = $request->get('ship_address_1');
-		$customer->ship_address_2 = $request->get('ship_address_2');
-		$customer->ship_city = $request->get('ship_city');
-		$customer->ship_state = $request->get('ship_state');
-		$customer->ship_zip = $request->get('ship_zip');
-		$customer->ship_country = $request->get('ship_country');
-		$customer->ship_phone = $request->get('ship_phone');
-		$customer->ship_email = $request->get('ship_email');
-		$customer->shipping = $request->get('shipping');
-		$customer->bill_full_name = $request->get('bill_full_name');
-		$customer->bill_first_name = $request->get('bill_first_name');
-		$customer->bill_last_name = $request->get('bill_last_name');
-		$customer->bill_company_name = $request->get('bill_company_name');
-		$customer->bill_address_1 = $request->get('bill_address_1');
-		$customer->bill_address_2 = $request->get('bill_address_2');
-		$customer->bill_city = $request->get('bill_city');
-		$customer->bill_state = $request->get('bill_state');
-		$customer->bill_zip = $request->get('bill_zip');
-		$customer->bill_country = $request->get('bill_country');
-		$customer->bill_phone = $request->get('bill_phone');
-		$customer->bill_email = $request->get('bill_email');
-		$customer->bill_mailing_list = $request->get('bill_mailing_list');
-		$customer->save();
+			$customer = new Customer();
+			$customer->order_id = $order->order_id;
+			$customer->ship_full_name = $request->get('ship_full_name');
+			$customer->ship_first_name = $request->get('ship_first_name');
+			$customer->ship_last_name = $request->get('ship_last_name');
+			$customer->ship_company_name = $request->get('ship_company_name');
+			$customer->ship_address_1 = $request->get('ship_address_1');
+			$customer->ship_address_2 = $request->get('ship_address_2');
+			$customer->ship_city = $request->get('ship_city');
+			$customer->ship_state = $request->get('ship_state');
+			$customer->ship_zip = $request->get('ship_zip');
+			$customer->ship_country = $request->get('ship_country');
+			$customer->ship_phone = $request->get('ship_phone');
+			$customer->ship_email = $request->get('ship_email');
+			$customer->shipping = $request->get('shipping');
+			$customer->bill_full_name = $request->get('bill_full_name');
+			$customer->bill_first_name = $request->get('bill_first_name');
+			$customer->bill_last_name = $request->get('bill_last_name');
+			$customer->bill_company_name = $request->get('bill_company_name');
+			$customer->bill_address_1 = $request->get('bill_address_1');
+			$customer->bill_address_2 = $request->get('bill_address_2');
+			$customer->bill_city = $request->get('bill_city');
+			$customer->bill_state = $request->get('bill_state');
+			$customer->bill_zip = $request->get('bill_zip');
+			$customer->bill_country = $request->get('bill_country');
+			$customer->bill_phone = $request->get('bill_phone');
+			$customer->bill_email = $request->get('bill_email');
+			$customer->bill_mailing_list = $request->get('bill_mailing_list');
+			$customer->save();
 
-		return redirect()
-			->back()
-			->with('success', "Order is successfully saved");
+			return redirect()
+				->back()
+				->with('success', "Order is successfully saved");
+		} else {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'Something went wrong inserting order!',
+				]);
+		}
+
+
 	}
 
 	public function ajax (Request $request)
