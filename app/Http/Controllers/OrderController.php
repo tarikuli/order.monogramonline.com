@@ -671,7 +671,7 @@ class OrderController extends Controller
 			// at least one item found without error
 			$error = false;
 			$item = new Item();
-			$item->order_id = $order->order_id;
+			$item->order_id = $order_id;
 			$item->store_id = $request->get('store');
 			$item->item_code = $item_skus[$item_id_catalog];
 			$item->item_id = $item_id_catalog;
