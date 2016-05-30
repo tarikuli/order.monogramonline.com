@@ -12,9 +12,14 @@
 					{!! Form::hidden("item_id_catalog[]", $id_catalog, ['class' => 'item_id_catalog']) !!}
 					{!! Form::hidden("item_skus[$id_catalog]", $sku, ['class' => 'item_sku']) !!}
 					{!! Form::hidden("image[$id_catalog]", $item_image, ['class' => 'item_image']) !!}
+					{!! Form::hidden("item_price[$id_catalog]", $crawled_data['price'], ['class' => 'item_price']) !!}
 					<tr>
 						<td>Quantity</td>
 						<td>{!! Form::number("item_quantity[$id_catalog]", 0, ['class' => 'form-control']) !!}</td>
+					</tr>
+					<tr>
+						<td>Price</td>
+						<td>{{ $crawled_data['price'] }}</td>
 					</tr>
 					@foreach($crawled_data[$id_catalog] as $node)
 						<tr>

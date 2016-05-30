@@ -705,6 +705,7 @@ class OrderController extends Controller
 		$item_skus = $request->get('item_skus');
 		$item_options = $request->get('item_options');
 		$item_quantities = $request->get('item_quantity');
+		$item_prices = $request->get('item_price', [ ]);
 		foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
 			$item = new Item();
 			$item->order_id = $order->order_id;
@@ -718,6 +719,7 @@ class OrderController extends Controller
 			}
 			$item->item_option = json_encode($options);
 			$item->item_quantity = $item_quantities[$item_id_catalog];
+			$item->item_unit_price = array_key_exists($item_id_catalog, $item_prices) ? floatval($item_prices[$item_id_catalog]) : 0;
 			$product = Product::where('id_catalog', $item_id_catalog)
 							  ->first();
 

@@ -189,6 +189,7 @@
 							<tr>
 								<td>Image</td>
 								<td>Id catalog</td>
+								<td>Price</td>
 								<td>Quantity</td>
 								<td>Action</td>
 							</tr>
@@ -232,7 +233,7 @@
 					<table style = "margin-left:775px">
 						<tr>
 							<td align = "right" style = "padding-right:40px ">Subtotal:</td>
-							<td align = "right">{!! Form::text('subtotal', null) !!}</td>
+							<td align = "right">{!! Form::number('subtotal', 0.0, ['id' => 'subtotal', 'readonly' => 'readonly', 'step' => 'any']) !!}</td>
 						</tr>
 						<tr>
 							<td align = "right" style = "padding-right:40px ">Coupon-discount</b>:</td>
@@ -271,7 +272,7 @@
 			<div class = "row" id = "items-holder">
 			</div>
 			<div class = "form-group">
-				<div class = "col-md-12 text-right" style="margin-top: 5px;">
+				<div class = "col-md-12 text-right" style = "margin-top: 5px;">
 					{!! Form::submit('Add order', ['id' => 'add-order', 'class' => 'btn btn-primary btn-sm']) !!}
 				</div>
 			</div>
@@ -303,8 +304,8 @@
 			// like, control + a is pressed
 			// don't proceed
 			/*if ( searched == sku ) {
-				return;
-			}*/
+			 return;
+			 }*/
 			// else set the value to global searched variable
 			// and proceed
 			searched = sku;
@@ -454,7 +455,7 @@
 
 		function showProductInformationFetchFailed (xhr)
 		{
-			alert("Something went wrong!");
+			alert("Product not found or Something went wrong!");
 		}
 
 		function fetchProductInformationOnSelect (data)
@@ -494,15 +495,35 @@
 			if ( quantity == 0 ) {
 				alert('Quantity cannot be zero');
 			} else {
+				// get the subtotal price from the input text
+				var sub_total_price = getSubtotalValue();
 				var modal_class = body.find('.hidden_unique_modal_class').val();
 				var item_image = body.find(".item_image").val();
 				var item_id_catalog = body.find(".item_id_catalog").val();
-				var tr = "<tr data-modal-class='" + modal_class + "'>" + "<td> <img src='" + item_image + "' width='50' height='50' /> </td>" + "<td>" + item_id_catalog + "</td>" + "<td>" + quantity + "</td>" + "<td>" + "<a href='#' class='delete-row'>Delete</a>" + "</td>";
+				var item_price = parseFloat(body.find(".item_price").val());
+				sub_total_price += quantity * item_price;
+				setSubtotalValue(sub_total_price);
+				var tr = "<tr data-modal-class='" + modal_class + "'>" + "<td> <img src='" + item_image + "' width='50' height='50' /> </td>" + "<td>" + item_id_catalog + "</td>" + "<td class='price_on_table'>" + item_price + "</td>" + "<td class='quantity_on_table'>" + quantity + "</td>" + "<td>" + "<a href='#' class='delete-row'>Delete</a>" + "</td>";
 				getSelectedItemsTableNode().append(tr);
 				body.closest('.modal').modal('hide');
 				hideTable();
 			}
 		});
+
+		function getSubtotalNode ()
+		{
+			return $("#subtotal");
+		}
+
+		function getSubtotalValue ()
+		{
+			return parseFloat(getSubtotalNode().val());
+		}
+
+		function setSubtotalValue (value)
+		{
+			getSubtotalNode().val(value.toFixed(2));
+		}
 
 		$(document).on('click', '.delete-row', function (event)
 		{
@@ -511,6 +532,11 @@
 			var modal_class = tr.attr('data-modal-class');
 			var answer = askPermission("Are you sure want to delete?");
 			if ( answer ) {
+				var price = parseFloat(tr.find(".price_on_table").text());
+				var quantity = parseInt(tr.find(".quantity_on_table").text());
+				var sub_total = getSubtotalValue();
+				sub_total -= (price * quantity);
+				setSubtotalValue(sub_total);
 				$("." + modal_class).find('.modal-body').remove();
 				tr.remove();
 			}
