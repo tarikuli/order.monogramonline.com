@@ -697,8 +697,8 @@ APPEND;
 				   ->whereNotNull('parameter_options.batch_route_id')
 				   ->where('batch_routes.batch_max_units', '>', 0)
 				   ->count();
-		// 		->first([DB::raw('COUNT(*) AS countPossobleBatches')]);
-		// 		->get([DB::raw('COUNT(*) AS countPossobleBatches')]);
+		// 		->first([DB::raw('COUNT(*) AS countPossibleBatches')]);
+		// 		->get([DB::raw('COUNT(*) AS countPossibleBatches')]);
 	}
 
 	public static function createAbleBatches ($paginate = false)

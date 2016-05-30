@@ -97,13 +97,27 @@
 					}
 				});
 				var js = {};
+				var price = getPrice(response);
 				js[id] = json;
+				js["price"] = price;
 				dt.push(js);
 				document.write(JSON.stringify(js));
 			});
 
 			//}
 		});
+
+		function getPrice (response)
+		{
+			var regex = /[+-]?\d+(\.\d+)?/g;
+			var nodeValue = $(response).find("#cycitemprice").text();
+			return nodeValue.match(regex).reduce(calculator);
+		}
+
+		function calculator (total, price)
+		{
+			return total + price;
+		}
 	</script>
 </body>
 </html>
