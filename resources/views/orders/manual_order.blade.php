@@ -237,31 +237,31 @@
 						</tr>
 						<tr>
 							<td align = "right" style = "padding-right:40px ">Coupon-discount</b>:</td>
-							<td align = "right">{!! Form::text('coupon_id', null) !!} - {!! Form::text('coupon_value', null) !!}</td>
+							<td align = "right">{!! Form::text('coupon_id', null, ['placeholder' => 'Coupon id']) !!} - {!! Form::number('coupon_value', 0.0, ['id' => 'coupon_value', 'step' => 'any']) !!}</td>
 						</tr>
 						<tr>
 							<td align = "right" style = "padding-right:40px ">Gift Wrap:</td>
-							<td align = "right">{!! Form::text('gift_wrap_cost', null) !!}</td>
+							<td align = "right">{!! Form::number('gift_wrap_cost', 0.0, ['id' => 'gift_wrap_cost', 'step' => 'any']) !!}</td>
 						</tr>
 						<tr>
 							<td align = "right" style = "padding-right:40px ">Shipping:</td>
-							<td align = "right">{!! Form::text('shipping_charge', null) !!}</td>
+							<td align = "right">{!! Form::number('shipping_charge', 0.0, ['id' => 'shipping_charge', 'step' => 'any']) !!}</td>
 						</tr>
 						<tr>
 							<td align = "right" style = "padding-right:40px ">Insurance:</td>
-							<td align = "right">{!! Form::text('insurance', null) !!}</td>
+							<td align = "right">{!! Form::number('insurance', 0.0, ['id' => 'insurance', 'step' => 'any']) !!}</td>
 						</tr>
 						<tr>
 							<td align = "right" style = "padding-right:45px ">Adjustments:</td>
-							<td align = "right">{!! Form::text('adjustments', null) !!}</td>
+							<td align = "right">{!! Form::number('adjustments', 0.0, ['id' => 'adjustments', 'step' => 'any']) !!}</td>
 						</tr>
 						<tr>
 							<td align = "right" style = "padding-right:45px ">Tax:</td>
-							<td align = "right">{!! Form::text('tax_charge', null) !!}</td>
+							<td align = "right">{!! Form::number('tax_charge', 0.0, ['id' => 'tax_charge', 'step' => 'any']) !!}</td>
 						</tr>
 						<tr>
 							<td align = "right" style = "padding-right:45px ">Total:</td>
-							<td align = "right">{!! Form::text('total', null) !!}</td>
+							<td align = "right">{!! Form::number('total', 0.0, ['id' => 'total', 'readonly' => 'readonly', 'step' => 'any']) !!}</td>
 						</tr>
 						<tr>
 
@@ -291,6 +291,7 @@
 		{
 			requestSearchOnServer($("#item_sku"));
 		});
+
 		function requestSearchOnServer (node)
 		{
 			// trim the input field value
@@ -323,6 +324,7 @@
 				ajax(url, method, data, setAjaxResult, searchProductError);
 			}, 200);
 		}
+
 		$("#item_sku").on('keydown keyup', function (event)
 		{
 			if ( event.keyCode == 13 ) {
@@ -330,6 +332,7 @@
 				$("#puller").click();
 			}
 		});
+
 		$("#item_sku").on('paste keyup', function (event)
 		{
 			//requestSearchOnServer($(this));
@@ -471,23 +474,28 @@
 				});
 			}
 		}
+
 		$(document).on('click', '.cancel', function ()
 		{
 			removeModalBody($(this));
 		});
+
 		function removeModalBody (node)
 		{
 			$(node).closest('div.modal-content').find('div.modal-body').remove();
 		}
+
 		$("#remove-preview").on('click', function (event)
 		{
 			event.preventDefault();
 			hideTable();
 		});
+
 		function getSelectedItemsTableNode ()
 		{
 			return $("#selected-items");
 		}
+
 		$(document).on('click', 'button.add-item', function ()
 		{
 			var body = $(this).closest('div.modal-content').find('div.modal-body');
@@ -496,7 +504,7 @@
 				alert('Quantity cannot be zero');
 			} else {
 				// get the subtotal price from the input text
-				var sub_total_price = getSubtotalValue();
+				var sub_total_price = getSubtotalNodeValue();
 				var modal_class = body.find('.hidden_unique_modal_class').val();
 				var item_image = body.find(".item_image").val();
 				var item_id_catalog = body.find(".item_id_catalog").val();
@@ -510,21 +518,6 @@
 			}
 		});
 
-		function getSubtotalNode ()
-		{
-			return $("#subtotal");
-		}
-
-		function getSubtotalValue ()
-		{
-			return parseFloat(getSubtotalNode().val());
-		}
-
-		function setSubtotalValue (value)
-		{
-			getSubtotalNode().val(value.toFixed(2));
-		}
-
 		$(document).on('click', '.delete-row', function (event)
 		{
 			event.preventDefault();
@@ -534,13 +527,126 @@
 			if ( answer ) {
 				var price = parseFloat(tr.find(".price_on_table").text());
 				var quantity = parseInt(tr.find(".quantity_on_table").text());
-				var sub_total = getSubtotalValue();
+				var sub_total = getSubtotalNodeValue();
 				sub_total -= (price * quantity);
 				setSubtotalValue(sub_total);
 				$("." + modal_class).find('.modal-body').remove();
 				tr.remove();
 			}
-		})
+		});
+
+		getSubtotalNode().on('change keyup', function ()
+		{
+			calculateTotal();
+		});
+		getCouponValueNode().on('change keyup', function ()
+		{
+			calculateTotal();
+		});
+		getGiftWrapCostNode().on('change keyup', function ()
+		{
+			calculateTotal();
+		});
+		getShippingChargeNode().on('change keyup', function ()
+		{
+			calculateTotal();
+		});
+		getInsuranceNode().on('change keyup', function ()
+		{
+			calculateTotal();
+		});
+		getAdjustmentNode().on('change keyup', function ()
+		{
+			calculateTotal();
+		});
+		getTaxChargeNode().on('change keyup', function ()
+		{
+			calculateTotal();
+		});
+
+
+		function setSubtotalValue (value)
+		{
+			getSubtotalNode().val(value.toFixed(2));
+		}
+		function getSubtotalNode ()
+		{
+			return $("#subtotal");
+		}
+		function getSubtotalNodeValue ()
+		{
+			return parseFloat(getSubtotalNode().val());
+		}
+
+		function getCouponValueNode ()
+		{
+			return $("#coupon_value");
+		}
+		function getCouponValueNodeValue ()
+		{
+			return parseFloat(getCouponValueNode().val());
+		}
+
+		function getGiftWrapCostNode ()
+		{
+			return $("#gift_wrap_cost");
+		}
+		function getGiftWrapCostNodeValue ()
+		{
+			return parseFloat(getGiftWrapCostNode().val());
+		}
+
+		function getShippingChargeNode ()
+		{
+			return $("#shipping_charge");
+		}
+		function getShippingChargeNodeValue ()
+		{
+			return parseFloat(getShippingChargeNode().val());
+		}
+
+		function getInsuranceNode ()
+		{
+			return $("#insurance");
+		}
+		function getInsuranceNodeValue ()
+		{
+			return parseFloat(getInsuranceNode().val());
+		}
+
+		function getAdjustmentNode ()
+		{
+			return $("#adjustments");
+		}
+		function getAdjustmentNodeValue ()
+		{
+			return parseFloat(getAdjustmentNode().val());
+		}
+
+		function getTaxChargeNode ()
+		{
+			return $("#tax_charge");
+		}
+		function getTaxChargeNodeValue ()
+		{
+			return parseFloat(getTaxChargeNode().val());
+		}
+
+		function getTotalValueNode ()
+		{
+			return $("#total");
+		}
+		function setTotalValue (val)
+		{
+			getTotalValueNode().val(val.toFixed(2));
+		}
+
+		function calculateTotal ()
+		{
+			var total = getSubtotalNodeValue() - getCouponValueNodeValue() + getGiftWrapCostNodeValue() + getShippingChargeNodeValue() + getInsuranceNodeValue() + getAdjustmentNodeValue() + getTaxChargeNodeValue();
+			setTotalValue(total);
+
+		}
 	</script>
 </body>
 </html>

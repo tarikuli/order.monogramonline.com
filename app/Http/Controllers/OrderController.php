@@ -737,7 +737,7 @@ class OrderController extends Controller
 			$item->save();
 		}
 
-		$order->total = ( $grand_sub_total + $order->coupon_value + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
+		$order->total = ( $grand_sub_total - $order->coupon_value + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
 		$order->save();
 
 		return redirect()
