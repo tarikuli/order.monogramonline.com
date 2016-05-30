@@ -44,7 +44,7 @@ class ProductSpecificationController extends Controller
 
 	public function create ()
 	{
-		return url("products_specifications/step/1");
+		return redirect(url("products_specifications/step/1"));
 	}
 
 	public function show ($id)
