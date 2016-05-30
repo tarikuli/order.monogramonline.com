@@ -683,6 +683,7 @@ APPEND;
 		// items, orders, parameter_options
 		return Item::join('parameter_options', 'items.child_sku', '=', 'parameter_options.child_sku')
 				   ->join('orders', 'items.order_id', '=', 'orders.order_id')
+				   ->join('batch_routes', 'items.batch_route_id', '=', 'batch_routes.id')
 				   ->where('items.batch_number', '=', '0')
 				   ->whereNull('items.tracking_number')
 				   ->where('items.is_deleted', '=', '0')
@@ -706,9 +707,10 @@ APPEND;
 			'itemGroups' => function ($q) use ($paginate) {
 				$joining = $q->join('items', 'items.child_sku', '=', 'parameter_options.child_sku')
 							 ->join('orders', 'orders.order_id', '=', 'items.order_id')
-							 ->where('orders.is_deleted', 0)
 							 ->where('items.batch_number', '0')
+							 ->whereNull('items.tracking_number')
 							 ->where('items.is_deleted', 0)
+							 ->where('orders.is_deleted', 0)
 							 ->whereNotIn('orders.order_status', [ // don't create batch, if the following order statuses are there
 																   3,
 																   // On hold
