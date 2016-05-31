@@ -76,6 +76,9 @@
 		</div>
 		<div class = "col-xs-12">
 			@if(count($rows))
+				<h4 class = "page-header">
+					Batches ({{ $items->total() }} items found / {{$items->currentPage()}} of {{$items->lastPage()}} pages)
+				</h4>
 				<table class = "table">
 					<tr>
 						<th>
