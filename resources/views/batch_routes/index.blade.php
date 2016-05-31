@@ -27,7 +27,7 @@
 		<div class = "col-xs-12" style = "margin: 10px 0;">
 
 			<label style = "margin-left:330px">Manage WorkFlow Routes</label>
-			<p>Note: Must use a Shipping Station ('J-SHP', 'R-SHP', 'S-SHP', 'H-SHP') in each Route</p>
+			<p>Note: Must use a Shipping Station ('J-SHP', 'R-SHP', 'S-SHP', 'H-SHP', 'PK-SHP', 'ST-SHP') in each Route</p>
 			</table>
 
 		</div>
