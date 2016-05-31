@@ -10,6 +10,8 @@
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/css/bootstrap-select.min.css">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link type = "text/css" rel = "stylesheet"
+	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
 	<style>
 		table {
 			table-layout: fixed;
@@ -32,10 +34,6 @@
 		@include('includes.success_div')
 		<div class = "col-xs-12">
 			{!! Form::open(['method' => 'get']) !!}
-			<div class = "form-group col-xs-2">
-				<label for = "batch">Batch#</label>
-				{!! Form::text('batch', $request->get('batch'), ['id'=>'batch', 'class' => 'form-control', 'placeholder' => 'Search in batch']) !!}
-			</div>
 			<div class = "form-group col-xs-3">
 				<label for = "route">Route</label>
 				{!! Form::select('route', $routes, $request->get('route'), ['id'=>'route', 'class' => 'form-control']) !!}
@@ -44,13 +42,35 @@
 				<label for = "route">Station</label>
 				{!! Form::select('station', $stations, session('station', 'all'), ['id'=>'station', 'class' => 'form-control']) !!}
 			</div>
+			<div class = "form-group col-xs-3">
+				<label for = "start_date">Start date</label>
+				<div class = 'input-group date' id = 'start_date_picker'>
+					{!! Form::text('start_date', $request->get('start_date'), ['id'=>'start_date', 'class' => 'form-control', 'placeholder' => 'Enter start date']) !!}
+					<span class = "input-group-addon">
+                        <span class = "glyphicon glyphicon-calendar"></span>
+                    </span>
+				</div>
+			</div>
+			<div class = "form-group col-xs-3">
+				<label for = "end_date">End date</label>
+				<div class = 'input-group date' id = 'end_date_picker'>
+					{!! Form::text('end_date', $request->get('end_date'), ['id'=>'end_date', 'class' => 'form-control', 'placeholder' => 'Enter end date']) !!}
+					<span class = "input-group-addon">
+                        <span class = "glyphicon glyphicon-calendar"></span>
+                    </span>
+				</div>
+			</div>
+			<div class = "form-group col-xs-3">
+				<label for = "batch">Batch#</label>
+				{!! Form::text('batch', $request->get('batch'), ['id'=>'batch', 'class' => 'form-control', 'placeholder' => 'Search in batch']) !!}
+			</div>
 			<div class = "form-group col-xs-2">
 				<label for = "status">Status</label>
 				{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'status', 'class' => 'form-control']) !!}
 			</div>
 			<div class = "form-group col-xs-2">
 				<label for = "" class = ""></label>
-				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 5px;', 'class' => 'btn btn-primary form-control']) !!}
 			</div>
 			{!! Form::close() !!}
 		</div>
@@ -125,11 +145,25 @@
 			@endif
 		</div>
 		<div class = "col-xs-12 text-center">
-			{!! $items->render() !!}
+			{!! $items->appends(request()->all())->render() !!}
 		</div>
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+	<script type = "text/javascript"
+	        src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+	<script type = "text/javascript">
+		var options = {
+			format: "YYYY-MM-DD", maxDate: new Date()
+		};
+		$(function ()
+		{
+			$('#start_date_picker').datetimepicker(options);
+			$('#end_date_picker').datetimepicker(options);
+			$('#tracking_date_picker').datetimepicker(options);
+		});
+	</script>
 	<script type = "text/javascript">
 		$(function ()
 		{
@@ -146,7 +180,8 @@
 			setFormUrlAndSubmit(url);
 		});
 
-		$("button#release_batch").on('click', function(event){
+		$("button#release_batch").on('click', function (event)
+		{
 			event.preventDefault();
 			var url = "{{ url('/items/release_batch') }}";
 			setFormUrlAndSubmit(url);

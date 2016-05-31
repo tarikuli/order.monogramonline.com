@@ -266,6 +266,19 @@ class Item extends Model
 
 		return $query->whereIn('order_id', $orders);
 	}
+
+	public function scopeSearchBatchCreationDateBetween ($query, $start_date, $end_date)
+	{
+		if ( !$start_date ) {
+			return;
+		}
+		$starting = sprintf("%s 00:00:00", $start_date);
+		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
+
+		return $query->where('batch_creation_date', '>=', $starting)
+					 ->where('batch_creation_date', '<=', $ending);
+
+	}
 	/*public function scopeSearchByOrderId ($query, $search_for, $search_in)
 	{
 		if ( !$search_for ) {

@@ -53,12 +53,13 @@ class ItemController extends Controller
 		$unassignedProducts = Option::where(function ($query) {
 			return $query->whereNull('batch_route_id')
 						 ->orWhere('batch_route_id', Helper::getDefaultRouteId());
-		})->get();
+		})
+									->get();
 
 		$unassignedProductCount = $unassignedProducts->count();
 
 		$unassigned = Helper::countPossibleBatches();
-// 		$unassigned = 0 ; $unassignedProductCount = 0;
+		// 		$unassigned = 0 ; $unassignedProductCount = 0;
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
@@ -175,6 +176,7 @@ class ItemController extends Controller
 					 ->searchRoute($request->get('route'))
 					 ->searchStation(session('station', 'all'))
 					 ->searchStatus($request->get('status'))
+					 ->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
 					 ->groupBy('batch_number')#->latest('batch_creation_date')
 					 ->latest('batch_number')
 					 ->paginate(50);
