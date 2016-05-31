@@ -245,11 +245,10 @@ class ItemController extends Controller
 															 ->toArray();
 				$filtered_tracking_number = array_filter($tracking_numbers_array);
 				if ( count($tracking_numbers_array) == count($filtered_tracking_number) ) {
-					/*Item::where('batch_number', $item->batch_number)
+					Item::where('batch_number', $item->batch_number)
 						->update([
 							'item_order_status' => "complete",
-						]);*/
-					dd($item);
+						]);
 					$batch_status = Helper::getBatchStatus("complete");
 				}
 
