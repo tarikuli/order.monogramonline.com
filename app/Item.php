@@ -93,15 +93,6 @@ class Item extends Model
 	}
 
 	/* Scope Search methods */
-	public function scopeFilterPrintBatchByStation ($query, $station_name)
-	{
-		if ( empty( $station_name ) ) {
-			return;
-		}
-
-		return $query->where('station_name', $station_name);
-	}
-
 	public function scopeSearchActiveByStation ($query, $station_name)
 	{
 		if ( !$station_name ) {
