@@ -48,24 +48,28 @@
 						<th align = "center" style = "width:100mm;">Options</th>
 						<th align = "center" style = "width:8mm;">Shi -pped?</th>
 					</tr>
+					@setvar($count = 0)
 					@foreach($item->groupedItems as $row)
-						<tr valign = "top">
+						@if(!$station_name || $row->station_name == $station_name)
+							@setvar(++$count)
+							<tr valign = "top">
 
-							<td align = "left">{{$row->order->short_order}}</td>
-							<td align = "left">{{substr($row->order->order_date, 0, 10)}}</td>
-							<td align = "center">{{$row->item_quantity}}</td>
-							<td align = "left">{{$row->item_code}}</td>
-							<td align = "left" rowspan = "2">{{$row->item_description}}</td>
-							<td align = "left"
-							    rowspan = "2">{!! \Monogram\Helper::jsonTransformer($row->item_option, "<br/>") !!}</td>
-							<td align = "left"
-							    rowspan = "2">{{ $row->shipInfo ? ($row->shipInfo->tracking_number ? "Yes" : "No" ): "No" }}</td>
-						</tr>
-						<tr>
-							<td colspan = "4" align = "left" valign = "top">
-								{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $row->order->short_order, $row->id)) !!}
-							</td>
-						</tr>
+								<td align = "left">{{$row->order->short_order}}</td>
+								<td align = "left">{{substr($row->order->order_date, 0, 10)}}</td>
+								<td align = "center">{{$row->item_quantity}}</td>
+								<td align = "left">{{$row->item_code}}</td>
+								<td align = "left" rowspan = "2">{{$row->item_description}}</td>
+								<td align = "left"
+								    rowspan = "2">{!! \Monogram\Helper::jsonTransformer($row->item_option, "<br/>") !!}</td>
+								<td align = "left"
+								    rowspan = "2">{{ $row->shipInfo ? ($row->shipInfo->tracking_number ? "Yes" : "No" ): "No" }}</td>
+							</tr>
+							<tr>
+								<td colspan = "4" align = "left" valign = "top">
+									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $row->order->short_order, $row->id)) !!}
+								</td>
+							</tr>
+						@endif
 					@endforeach
 					<tr valign = "top">
 						<td colspan = "10">
@@ -74,7 +78,8 @@
 					</tr>
 					<tr valign = "top">
 						<td colspan = "2" align = "right"><strong>Total</strong></td>
-						<td><strong>{{\Monogram\Helper::getItemCount($item->groupedItems)}}</strong></td>
+						{{--<td><strong>{{\Monogram\Helper::getItemCount($item->groupedItems)}}</strong></td>--}}
+						<td><strong>{{ $count }}</strong></td>
 					</tr>
 				</table>
 			</td>

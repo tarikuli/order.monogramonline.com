@@ -6,6 +6,7 @@
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+	.
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/css/bootstrap-select.min.css">
 	<link type = "text/css" rel = "stylesheet"
@@ -94,7 +95,7 @@
 						<img src = "{{$items->first()->item_thumb}}" />
 						<br />
 					@endif--}}
-					<a href = "{{url('prints/batches?batch_number[]='.$batch_number)}}"
+					<a href = "{{url(sprintf("prints/batches?batch_number[]=%s&station=%s", $batch_number, $current_batch_station->station_name))}}"
 					   target = "_blank">Print batch</a>
 				</div>
 				<div class = "col-xs-12">

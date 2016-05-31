@@ -56,13 +56,14 @@ class PrintController extends Controller
 	public function batches (Request $request)
 	{
 		/*https://www.4psitelink.com/setup/batch_print.php?ad[]=22602*/
-		$batches = $request->exists('batch_number') ? array_filter($request->get('batch_number')) : null;
+		$batches = $request->exists('batch_number') && is_array($request->get('batch_number')) ? array_filter($request->get('batch_number')) : null;
 		if ( !$batches || !is_array($batches) ) {
 			#return view('errors.404');
 			return redirect()
 				->back()
 				->withErrors([ 'error' => 'No batch is selected to print' ]);
 		}
+		$station_name = $request->get('station', '');
 
 		$modules = [ ];
 
@@ -77,7 +78,7 @@ class PrintController extends Controller
 			}
 		}*/
 		foreach ( $batches as $batch_number ) {
-			$module = $this->batch_printing_module($batch_number);
+			$module = $this->batch_printing_module($batch_number, $station_name);
 			$modules[] = $module->render();
 		}
 
@@ -110,14 +111,15 @@ class PrintController extends Controller
 		return view('prints.batch_printer')->with('modules', $modules);
 	}
 
-	private function batch_printing_module ($batch_number)
+	private function batch_printing_module ($batch_number, $station_name)
 	{
 		$item = Item::with('shipInfo', 'order.customer', 'lowest_order_date', 'route.stations_list', 'groupedItems', 'order', 'station_details', 'product')
 					->where('batch_number', '=', $batch_number)
 					->groupBy('batch_number')
 					->latest('batch_creation_date')
 					->first();
-		if ( !count($item) ) {
+		/*if ( !count($item) ) {*/
+		if ( !$item ) {
 			return view('errors.404');
 		}
 
@@ -203,7 +205,7 @@ class PrintController extends Controller
 		#return compact('items', 'bar_code', 'batch_number', 'statuses', 'route', 'stations', 'count', 'department_name');
 		$count = 1;
 
-		return view('prints.printing_module', compact('item', 'batch_status', 'next_station_name', 'current_station_name', 'batch_number', 'statuses', 'route', 'stations', 'count', 'department_name'));
+		return view('prints.printing_module', compact('station_name', 'item', 'batch_status', 'next_station_name', 'current_station_name', 'batch_number', 'statuses', 'route', 'stations', 'count', 'department_name'));
 	}
 
 	private function getOrderFromId ($order_ids) // get an id or an array of order id
