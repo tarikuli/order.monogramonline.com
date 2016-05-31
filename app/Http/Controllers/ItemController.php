@@ -166,10 +166,14 @@ class ItemController extends Controller
 
 	public function getGroupedBatch (Request $request)
 	{
-		if ( $request->has('station') && $request->get('station') != 'all' ) {
+		if ( $request->has('station') ) {
 			Session::put('station', $request->get('station'));
+		}
+
+		if ( $request->has('station') && $request->get('station') != 'all' ) {
+			Session::put('searching_in_station', $request->get('station'));
 		} else {
-			session()->flush('station');
+			Session::forget('searching_in_station');
 		}
 
 		$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
@@ -179,7 +183,7 @@ class ItemController extends Controller
 					 ->searchStation(session('station', 'all'))
 					 ->searchStatus($request->get('status'))
 					 ->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
-					 ->groupBy('batch_number')#->latest('batch_creation_date')
+					 ->groupBy('batch_number')
 					 ->latest('batch_number')
 					 ->paginate(50);
 
@@ -237,9 +241,22 @@ class ItemController extends Controller
 			# Faster than array_unique
 			if ( in_array("active", $batch_statuses) ) {
 				$batch_status = Helper::getBatchStatus("active");
+				$tracking_numbers_array = $item->groupedItems->lists('tracking_number')
+															 ->toArray();
+				$filtered_tracking_number = array_filter($tracking_numbers_array);
+				if ( count($tracking_numbers_array) == count($filtered_tracking_number) ) {
+					/*Item::where('batch_number', $item->batch_number)
+						->update([
+							'item_order_status' => "complete",
+						]);*/
+					dd($item);
+					$batch_status = Helper::getBatchStatus("complete");
+				}
+
 			} elseif ( in_array("not started", $batch_statuses) ) {
 				$batch_status = Helper::getBatchStatus("not started");
 			} else {
+				// this will never reach here
 				$batch_status = Helper::getBatchStatus("complete");
 			}
 
@@ -284,8 +301,8 @@ class ItemController extends Controller
 			// Sum Total number of Item in batch
 			$current_station_item_count = array_sum($items_on_station);
 			$searched_station_name = null;
-			if ( session('station') ) {
-				$x = Station::find(session('station'));
+			if ( session('searching_in_station') ) {
+				$x = Station::find(session('searching_in_station'));
 				if ( $x ) {
 					$searched_station_name = $x->station_name;
 				}

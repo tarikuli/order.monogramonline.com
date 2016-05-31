@@ -239,7 +239,7 @@ class StationController extends Controller
 							->prepend('Select a route', 'all');
 
 		$stations = Station::where('is_deleted', 0)
-						   ->latest()
+						   ->orderBy('station_name', 'asc')
 						   ->lists('station_description', 'id')
 						   ->prepend('Select a station', 'all');
 
@@ -409,7 +409,7 @@ class StationController extends Controller
 			}
 			$first_item = $items->first();
 			$stations_in_route_ids = $first_item->route->stations_list->lists('station_id')
-																		  ->toArray();
+																	  ->toArray();
 			if ( !in_array($station->id, $stations_in_route_ids) ) {
 				$errors[] = sprintf("Batch %s Route: %s doesn't have \"%s (%s) \" station in its route.", $batch, $first_item->route->batch_route_name, $station->station_description, $station->station_name);
 

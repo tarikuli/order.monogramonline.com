@@ -18,7 +18,9 @@
 				<h5 class = "page-header">Users Management</h5>
 				<ul>
 					<li><a href = "/users">Users</a></li>
-					<li><a href = "/users/create">Create user</a></li>
+					@if(auth()->user()->roles->first()->id == 1)
+						<li><a href = "/users/create">Create user</a></li>
+					@endif
 					<li><a href = "/customers">Customers</a></li>
 					<li><a href = "/customers/create">Create Customer</a></li>
 					<li><a href = "/vendors">Vendors</a></li>

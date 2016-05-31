@@ -1,6 +1,6 @@
 <?php
 get('test/batch', function () {
-	return date('Y-m-d h:i:s', strtotime("now"));
+	return auth()->user()->roles->first()->id;
 });
 get('phantom', function (\Illuminate\Http\Request $request) {
 	$id = $request->get('id', 'pemoanwisicr');

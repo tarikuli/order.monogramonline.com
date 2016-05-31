@@ -115,7 +115,8 @@
 						{{-- Items status = order_item_status --}}
 						{{--<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['class' => 'item_order_status_2'])  !!}</td>--}}
 						{{-- order_status = status from order_table --}}
-						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['class' => 'order_status'])  !!}</td>
+						<td>{{ \App\Status::where('is_deleted', 0)->lists('status_name','id')[$item->order->order_status] }}</td>
+						{{--<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['class' => 'order_status'])  !!}</td>--}}
 					</tr>
 					<tr>
 						<td colspan = "14" class = "text-center">
