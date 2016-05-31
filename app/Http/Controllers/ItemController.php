@@ -187,14 +187,14 @@ class ItemController extends Controller
 							->lists('batch_route_name', 'id')
 							->prepend('Select a route', 'all');
 
-		$stations = Station::where('is_deleted', 0)
-						   ->latest()
+		/*$stations = Station::where('is_deleted', 0)
+						   ->orderBy('station_description', 'asc')
 						   ->lists('station_description', 'id')
-						   ->prepend('Select a station', 'all');
+						   ->prepend('Select a station', 'all');*/
 
 		// Get Station List
 		$stations = Station::where('is_deleted', 0)
-						   ->latest()
+						   ->orderBy('station_description', 'asc')
 						   ->lists('station_description', 'id')
 						   ->prepend('Select a station', 'all');
 		//  Get Station Name by Station Request parameter.
