@@ -166,8 +166,10 @@ class ItemController extends Controller
 
 	public function getGroupedBatch (Request $request)
 	{
-		if ( $request->has('station') ) {
+		if ( $request->has('station') && $request->get('station') != 'all' ) {
 			Session::put('station', $request->get('station'));
+		} else {
+			session()->flush('station');
 		}
 
 		$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
@@ -281,8 +283,18 @@ class ItemController extends Controller
 			}
 			// Sum Total number of Item in batch
 			$current_station_item_count = array_sum($items_on_station);
-
+			$searched_station_name = null;
+			if ( session('station') ) {
+				$x = Station::find(session('station'));
+				if ( $x ) {
+					$searched_station_name = $x->station_name;
+				}
+			}
 			foreach ( $items_on_station as $station_name => $total_items ) {
+
+				if ( $searched_station_name && $station_name != $searched_station_name ) {
+					continue;
+				}
 				$row['batch_number'] = $item->batch_number;
 				$row['batch_creation_date'] = substr($item->batch_creation_date, 0, 10);
 				$row['route_code'] = $item->route->batch_code;
