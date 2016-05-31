@@ -197,6 +197,7 @@ class Helper
 		'Complete - Final Image Uploaded',
 	];
 
+	/* Shipping Stations */
 	public static $shippingStations = [
 		'J-SHP',
 		'R-SHP',
