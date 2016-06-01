@@ -388,7 +388,7 @@ class LogisticsController extends Controller
 		/*$options = Option::whereIn('parameter_id', $relation_array)#->orderBy(DB::raw(sprintf('FIELD(parameter_id, %s)', implode(", ", $relation_array))))
 						 ->paginate(50 * count($parameters));*/
 		$options = Option::with('product', 'route.template')
-						 ->where('store_id', $store_id)
+// 						 ->where('store_id', $store_id) // Comment for view all store
 						 ->searchUnassigned($request->get('unassigned'))
 						 ->searchInParameterOption($store_id, $request->get('search_for'), $request->get('search_in'))
 						 ->paginate(100);
