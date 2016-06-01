@@ -122,7 +122,7 @@
 									@endif
 								</td>
 								<td class = 'maxtdwidth'>
-									<a href = "{{ url(sprintf("http://www.monogramonline.com/%s.html", $option->id_catalog)) }}"
+									<a href = "{{$option->product->product_url}}"
 									   target = "_blank">{{ $option->id_catalog }}</a>
 								</td>
 								<td class = 'maxtdwidth'>
