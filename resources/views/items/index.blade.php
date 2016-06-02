@@ -118,12 +118,17 @@
 				</tr>
 				@foreach($items as $item)
 					<tr data-id = "{{$item->id}}">
-						<td><a href = "{{ url("orders/details/".$item->order_id) }}" target = "_blank"
-						       class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a><br>Y: {{$item->order->short_order}}
+						<td>
+
+						<a href = "{{ url("orders/details/".$item->order_id) }}" target = "_blank"
+						       class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a>
+								<br>
+								{{\Monogram\Helper::orderNameFormatter($item->order)}}
+
 						</td>
 						{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
 						<td><img src = "{{$item->item_thumb}}" width="70" height="70" /></td>
-						<td>{{substr($item->order->order_date, 0, 10)}}</td>
+						<td>{{substr($item->order->order_date, 0, 10)}}<br>{{substr($item->order->order_date, 11, 18)}}</td>
 						{{--<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['id' => 'order_status_id','disabled' => 'disabled'])  !!}</td>--}}
 						<td>{!! \App\Status::where('is_deleted', 0)->lists('status_name','id')->get($item->order->order_status)  !!}</td>
 						{{--<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['id' => 'item_order_status_2_id','disabled' => 'disabled'])  !!}</td>--}}
