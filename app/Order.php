@@ -80,8 +80,12 @@ class Order extends Model
 		}
 		$replaced = str_replace(" ", "", $search_for);
 		$values = explode(",", trim($replaced, ","));
-		if ( $search_in == 'order' ) {
-			return $query->where('order_id', 'REGEXP', implode("|", $values));
+		if ( $search_in == 'store_order' ) {
+			return $query->where('short_order', 'REGEXP', implode("|", $values));
+		}
+
+		if ( $search_in == 'five_p_order' ) {
+			return $query->where('id', 'REGEXP', implode("|", $values));
 		}
 
 		return;

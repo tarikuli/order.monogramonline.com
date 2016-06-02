@@ -308,12 +308,8 @@ class OrderController extends Controller
 							->first();
 
 		$search_in = [
-			'order'         => 'Order',
-			'five_p'        => '5P#',
-			'ebay-item'     => 'Ebay-item',
-			'ebay-user'     => 'Ebay-user',
-			'ebay-sale-rec' => 'Ebay-sale-rec',
-			'shipper-po'    => 'Shipper-PO',
+			'store_order'         => 'Store Order#',
+			'five_p_order'        => '5P#',
 		];
 
 		return view('orders.lists', compact('orders', 'stores', 'statuses', 'shipping_methods', 'search_in', 'request'))->with('money', $total_money->money);
@@ -350,12 +346,8 @@ class OrderController extends Controller
 		$shipping_methods->prepend('All', 'all');
 
 		$search_in = [
-			'order'         => 'Order',
-			'five_p'        => '5P#',
-			'ebay-item'     => 'Ebay-item',
-			'ebay-user'     => 'Ebay-user',
-			'ebay-sale-rec' => 'Ebay-sale-rec',
-			'shipper-po'    => 'Shipper-PO',
+			'short_order' => 'Order',
+			'id'        => '5P#',
 		];
 
 		return view('orders.lists', compact('orders', 'stores', 'statuses', 'shipping_methods', 'search_in', 'request'));
