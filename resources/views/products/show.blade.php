@@ -119,16 +119,6 @@
 								<td>{{$product->product_royalty_paid}}</td>
 							</tr>
 							<tr>
-								<td>Route</td>
-								<td>
-									@if($product->batch_route)
-										{{sprintf("%s(%s)", $product->batch_route->batch_route_name, $product->batch_route->batch_code)}}
-									@else
-										-
-									@endif
-								</td>
-							</tr>
-							<tr>
 								<td>Height</td>
 								<td>{{$product->height}}</td>
 							</tr>

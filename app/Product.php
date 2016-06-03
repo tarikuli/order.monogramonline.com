@@ -80,10 +80,10 @@ class Product extends Model
 		return $this->hasMany('App\Image', 'product_id', 'id');
 	}
 
-	public function batch_route ()
-	{
-		return $this->hasOne('App\BatchRoute', 'id', 'batch_route_id');
-	}
+// 	public function batch_route ()
+// 	{
+// 		return $this->hasOne('App\BatchRoute', 'id', 'batch_route_id');
+// 	}
 
 	public function master_category ()
 	{
@@ -443,19 +443,19 @@ class Product extends Model
 		return $query->where('product_name', 'LIKE', sprintf("%%%s%%", $product_name));
 	}
 
-	public function scopeSearchRoute ($query, $route_ids)
-	{
+// 	public function scopeSearchRoute ($query, $route_ids)
+// 	{
 
-		if ( !$route_ids || !is_array($route_ids) ) {
-			return;
-		}
-		$stripped_values = $this->trimmer($route_ids, 0);
-		if ( count($stripped_values) == 0 ) {
-			return;
-		}
+// 		if ( !$route_ids || !is_array($route_ids) ) {
+// 			return;
+// 		}
+// 		$stripped_values = $this->trimmer($route_ids, 0);
+// 		if ( count($stripped_values) == 0 ) {
+// 			return;
+// 		}
 
-		return $query->whereIn('batch_route_id', $stripped_values);
-	}
+// 		return $query->whereIn('batch_route_id', $stripped_values);
+// 	}
 
 	public function scopeSearchMasterCategory ($query, $product_master_category_id)
 	{

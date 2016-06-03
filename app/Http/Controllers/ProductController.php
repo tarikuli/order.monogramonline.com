@@ -37,13 +37,13 @@ class ProductController extends Controller
 
 	public function index (Request $request)
 	{
-		$products = Product::with('batch_route.template', 'master_category')
+		$products = Product::with('master_category')
 						   ->where('is_deleted', 0)/*->searchIdCatalog($request->get('id_catalog'))
 						   ->searchProductModel($request->get('product_model'))
 						   ->searchProductName($request->get('product_name'))*/
 						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
 						   ->searchProductSalesCategory($request->get('product_sales_category'))
-						   ->searchRoute($request->get('route'))
+// 						   ->searchRoute($request->get('route'))
 						   ->searchProductionCategory($request->get('product_production_category'))
 						   ->searchProductOccasion($request->get('product_occasion'))
 						   ->searchProductCollection($request->get('product_collection'))
@@ -52,14 +52,14 @@ class ProductController extends Controller
 						   ->latest()
 						   ->paginate(50);
 
-		$batch_routes = BatchRoute::where('is_deleted', 0)
-								  ->orderBy('batch_route_name')
-								  ->lists('batch_route_name', 'id');
+// 		$batch_routes = BatchRoute::where('is_deleted', 0)
+// 								  ->orderBy('batch_route_name')
+// 								  ->lists('batch_route_name', 'id');
 
-		$searchInRoutes = Collection::make($batch_routes);
-		$searchInRoutes->prepend('All', '0');
+// 		$searchInRoutes = Collection::make($batch_routes);
+// 		$searchInRoutes->prepend('All', '0');
 
-		$batch_routes->prepend('Not selected', 0);
+// 		$batch_routes->prepend('Not selected', 0);
 
 		/*$product_master_category = MasterCategory::where('is_deleted', 0)
 												 ->lists('master_category_description', 'id')
@@ -90,7 +90,7 @@ class ProductController extends Controller
 		$count = 1;
 
 		#return $products;
-		return view('products.index', compact('products', 'product_occasions', 'product_collections', 'count', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
+		return view('products.index', compact('products', 'product_occasions', 'product_collections', 'count', 'request',  'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
 			->with('categories', $master_categories)
 			->with('id', 0)
 			->with('sales_categories', $sales_categories);
@@ -101,10 +101,10 @@ class ProductController extends Controller
 		$stores = Store::where('is_deleted', 0)
 					   ->lists('store_name', 'store_id');
 
-		$batch_routes = BatchRoute::where('is_deleted', 0)
-								  ->orderBy('batch_route_name')
-								  ->lists('batch_route_name', 'id')
-								  ->prepend('Select a Route', '');
+// 		$batch_routes = BatchRoute::where('is_deleted', 0)
+// 								  ->orderBy('batch_route_name')
+// 								  ->lists('batch_route_name', 'id')
+// 								  ->prepend('Select a Route', '');
 		$is_taxable = [
 			'1' => 'Yes',
 			'0' => 'No',
@@ -144,7 +144,7 @@ class ProductController extends Controller
 			'0' => 'Select a financial category',
 		];
 
-		return view('products.create', compact('title', 'stores', 'product_occasions', 'product_collections', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
+		return view('products.create', compact('title', 'stores', 'product_occasions', 'product_collections', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
 			->with('categories', $master_categories)
 			->with('id', 0)
 			->with('sales_categories', $sales_categories)
@@ -253,28 +253,28 @@ class ProductController extends Controller
 		if ( $request->exists('product_video') ) {
 			$product->product_video = $request->get('product_video');
 		}
-		if ( $request->exists('batch_route_id') ) {
-			// update request via form for overall change
-			if ( is_numeric($request->get('batch_route_id')) ) {
-				$requested_batch_route_id = $request->get('batch_route_id');
-				$batch_route = BatchRoute::where('is_deleted', 0)
-										 ->find($requested_batch_route_id);
-			} else {
-				// update request from lists
-				// only for batch route
-				$requested_batch_route_text = $request->get('batch_route_id');
-				$batch_route = BatchRoute::where('batch_code', $requested_batch_route_text)
-										 ->first();
-			}
+// 		if ( $request->exists('batch_route_id') ) {
+// 			// update request via form for overall change
+// 			if ( is_numeric($request->get('batch_route_id')) ) {
+// 				$requested_batch_route_id = $request->get('batch_route_id');
+// 				$batch_route = BatchRoute::where('is_deleted', 0)
+// 										 ->find($requested_batch_route_id);
+// 			} else {
+// 				// update request from lists
+// 				// only for batch route
+// 				$requested_batch_route_text = $request->get('batch_route_id');
+// 				$batch_route = BatchRoute::where('batch_code', $requested_batch_route_text)
+// 										 ->first();
+// 			}
 
-			if ( $batch_route ) {
-				$product->batch_route_id = $batch_route->id;
-			} else {
-				$product->batch_route_id = Helper::getDefaultRouteId();
-				$is_error = true;
-				$error_messages[] = [ 'batch_code' => 'Batch code is not correct' ];
-			}
-		}
+// 			if ( $batch_route ) {
+// 				$product->batch_route_id = $batch_route->id;
+// 			} else {
+// 				$product->batch_route_id = Helper::getDefaultRouteId();
+// 				$is_error = true;
+// 				$error_messages[] = [ 'batch_code' => 'Batch code is not correct' ];
+// 			}
+// 		}
 		if ( $request->exists('is_taxable') ) {
 			$product->is_taxable = $request->get('is_taxable') ? 1 : 0;
 		}
@@ -341,7 +341,7 @@ class ProductController extends Controller
 	public function show ($id)
 	{
 		// if searching for inactive or deleted product
-		$product = Product::with('store', 'images', 'batch_route', 'master_category', 'production_category', 'collections', 'vendor', 'sales_category')
+		$product = Product::with('store', 'images', 'master_category', 'production_category', 'collections', 'vendor', 'sales_category')
 						  ->where('is_deleted', 0)
 						  ->find($id);
 		if ( !$product ) {
@@ -354,7 +354,7 @@ class ProductController extends Controller
 
 	public function edit ($id)
 	{
-		$product = Product::with('batch_route', 'specifications', 'images')
+		$product = Product::with('specifications', 'images')
 						  ->where('is_deleted', 0)
 						  ->find($id);
 		$category_hierarchy = new Collection();
@@ -373,10 +373,10 @@ class ProductController extends Controller
 		$stores = Store::where('is_deleted', 0)
 					   ->lists('store_name', 'store_id');
 
-		$batch_routes = BatchRoute::where('is_deleted', 0)
-								  ->orderBy('batch_route_name')
-								  ->lists('batch_route_name', 'id')
-								  ->prepend('Select a Route', '');
+// 		$batch_routes = BatchRoute::where('is_deleted', 0)
+// 								  ->orderBy('batch_route_name')
+// 								  ->lists('batch_route_name', 'id')
+// 								  ->prepend('Select a Route', '');
 		$is_taxable = [
 			'1' => 'Yes',
 			'0' => 'No',
@@ -416,7 +416,7 @@ class ProductController extends Controller
 			'0' => 'Select a financial category',
 		];
 
-		return view('products.edit', compact('product', 'title', 'stores', 'product_occasions', 'product_collections', 'batch_routes', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
+		return view('products.edit', compact('product', 'title', 'stores', 'product_occasions', 'product_collections', 'is_taxable', 'master_categories', 'categories', 'sub_categories', 'production_categories'))
 			->with('categories', $master_categories)
 			->with('textual_hierarchy', $textual_hierarchy)
 			->with('id', 0)
@@ -561,28 +561,28 @@ class ProductController extends Controller
 		if ( $request->exists('product_thumb') ) {
 			$product->product_thumb = $request->get('product_thumb');
 		}
-		if ( $request->exists('batch_route_id') ) {
-			// update request via form for overall change
-			if ( is_numeric($request->get('batch_route_id')) ) {
-				$requested_batch_route_id = $request->get('batch_route_id');
-				$batch_route = BatchRoute::where('is_deleted', 0)
-										 ->find($requested_batch_route_id);
-			} else {
-				// update request from lists
-				// only for batch route
-				$requested_batch_route_text = $request->get('batch_route_id');
-				$batch_route = BatchRoute::where('batch_code', $requested_batch_route_text)
-										 ->first();
-			}
+// 		if ( $request->exists('batch_route_id') ) {
+// 			// update request via form for overall change
+// 			if ( is_numeric($request->get('batch_route_id')) ) {
+// 				$requested_batch_route_id = $request->get('batch_route_id');
+// 				$batch_route = BatchRoute::where('is_deleted', 0)
+// 										 ->find($requested_batch_route_id);
+// 			} else {
+// 				// update request from lists
+// 				// only for batch route
+// 				$requested_batch_route_text = $request->get('batch_route_id');
+// 				$batch_route = BatchRoute::where('batch_code', $requested_batch_route_text)
+// 										 ->first();
+// 			}
 
-			if ( $batch_route ) {
-				$product->batch_route_id = $batch_route->id;
-			} else {
-				$product->batch_route_id = Helper::getDefaultRouteId();
-				$is_error = true;
-				$error_messages[] = [ 'batch_code' => 'Batch code is not correct' ];
-			}
-		}
+// 			if ( $batch_route ) {
+// 				$product->batch_route_id = $batch_route->id;
+// 			} else {
+// 				$product->batch_route_id = Helper::getDefaultRouteId();
+// 				$is_error = true;
+// 				$error_messages[] = [ 'batch_code' => 'Batch code is not correct' ];
+// 			}
+// 		}
 		if ( $request->exists('is_taxable') ) {
 			$product->is_taxable = $request->get('is_taxable') ? 1 : 0;
 		}
@@ -701,76 +701,76 @@ class ProductController extends Controller
 		return redirect(url('products'));
 	}
 
-	public function unassigned (Request $request)
-	{
-		$products = Product::with('batch_route', 'master_category')
-						   ->where(function ($query) {
-							   return $query->whereNull('batch_route_id')
-											->orWhere('batch_route_id', Helper::getDefaultRouteId());
-						   })
-						   ->where('is_deleted', 0)
-						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
-						   ->searchProductSalesCategory($request->get('product_sales_category'))
-						   ->searchRoute($request->get('route'))
-						   ->searchProductionCategory($request->get('product_production_category'))
-						   ->searchProductOccasion($request->get('product_occasion'))
-						   ->searchProductCollection($request->get('product_collection'))
-						   ->searchMasterCategory($request->get('product_master_category'))/*->searchCategory($request->get('product_category'))
-						   ->searchSubCategory($request->get('product_sub_category'))*/
-						   ->latest()
-						   ->paginate(50);
+// 	public function unassigned (Request $request)
+// 	{
+// 		$products = Product::with('master_category')
+// 						   ->where(function ($query) {
+// 							   return $query->whereNull('batch_route_id')
+// 											->orWhere('batch_route_id', Helper::getDefaultRouteId());
+// 						   })
+// 						   ->where('is_deleted', 0)
+// 						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
+// 						   ->searchProductSalesCategory($request->get('product_sales_category'))
+// 						   ->searchRoute($request->get('route'))
+// 						   ->searchProductionCategory($request->get('product_production_category'))
+// 						   ->searchProductOccasion($request->get('product_occasion'))
+// 						   ->searchProductCollection($request->get('product_collection'))
+// 						   ->searchMasterCategory($request->get('product_master_category'))/*->searchCategory($request->get('product_category'))
+// 						   ->searchSubCategory($request->get('product_sub_category'))*/
+// 						   ->latest()
+// 						   ->paginate(50);
 
-		/*$products = Product::with('batch_route', 'master_category')
-						   ->where('is_deleted', 0)
-						   ->whereNull('batch_route_id')
-						   ->orWhere('batch_route_id', Helper::getDefaultRouteId())
-						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
-						   ->searchProductSalesCategory($request->get('product_sales_category'))
-						   ->searchProductOccasion($request->get('product_occasion'))
-						   ->searchProductCollection($request->get('product_collection'))
-						   ->latest()
-						   ->paginate(50);*/
-		$batch_routes = BatchRoute::where('is_deleted', 0)
-								  ->orderBy('batch_route_name')
-								  ->lists('batch_route_name', 'id');
+// 		/*$products = Product::with('batch_route', 'master_category')
+// 						   ->where('is_deleted', 0)
+// 						   ->whereNull('batch_route_id')
+// 						   ->orWhere('batch_route_id', Helper::getDefaultRouteId())
+// 						   ->searchInOption($request->get('search_in'), $request->get("search_for"))
+// 						   ->searchProductSalesCategory($request->get('product_sales_category'))
+// 						   ->searchProductOccasion($request->get('product_occasion'))
+// 						   ->searchProductCollection($request->get('product_collection'))
+// 						   ->latest()
+// 						   ->paginate(50);*/
+// // 		$batch_routes = BatchRoute::where('is_deleted', 0)
+// // 								  ->orderBy('batch_route_name')
+// // 								  ->lists('batch_route_name', 'id');
 
-		$searchInRoutes = Collection::make($batch_routes);
-		$searchInRoutes->prepend('All', '0');
+// // 		$searchInRoutes = Collection::make($batch_routes);
+// // 		$searchInRoutes->prepend('All', '0');
 
-		$batch_routes->prepend('Not selected', 'null');
+// // 		$batch_routes->prepend('Not selected', 'null');
 
-		$master_categories = (new MasterCategoryController())->getChildCategories();
+// 		$master_categories = (new MasterCategoryController())->getChildCategories();
 
-		$product_category = Category::where('is_deleted', 0)
-									->lists('category_description', 'id')
-									->prepend('All', 0);
+// 		$product_category = Category::where('is_deleted', 0)
+// 									->lists('category_description', 'id')
+// 									->prepend('All', 0);
 
-		$product_sub_category = SubCategory::where('is_deleted', 0)
-										   ->lists('sub_category_description', 'id')
-										   ->prepend('All', 0);
+// 		$product_sub_category = SubCategory::where('is_deleted', 0)
+// 										   ->lists('sub_category_description', 'id')
+// 										   ->prepend('All', 0);
 
-		$production_categories = ProductionCategory::where('is_deleted', 0)
-												   ->lists('production_category_description', 'id')
-												   ->prepend('All', 0);
+// 		$production_categories = ProductionCategory::where('is_deleted', 0)
+// 												   ->lists('production_category_description', 'id')
+// 												   ->prepend('All', 0);
 
 
-		$product_occasions = Occasion::where('is_deleted', 0)
-									 ->lists('occasion_description', 'id')
-									 ->prepend('All', '0');
-		$product_collections = CollectionModel::where('is_deleted', 0)
-											  ->lists('collection_description', 'id')
-											  ->prepend('All', '0');
-		$count = 1;
+// 		$product_occasions = Occasion::where('is_deleted', 0)
+// 									 ->lists('occasion_description', 'id')
+// 									 ->prepend('All', '0');
+// 		$product_collections = CollectionModel::where('is_deleted', 0)
+// 											  ->lists('collection_description', 'id')
+// 											  ->prepend('All', '0');
+// 		$count = 1;
 
-		$sales_categories = SalesCategory::where('is_deleted', 0)
-										 ->lists('sales_category_description', 'sales_category_code')
-										 ->prepend('Select sales category', 'all');
+// 		$sales_categories = SalesCategory::where('is_deleted', 0)
+// 										 ->lists('sales_category_description', 'sales_category_code')
+// 										 ->prepend('Select sales category', 'all');
 
-		return view('products.index', compact('products', 'count', 'product_occasions', 'product_collections', 'batch_routes', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
-			->with('categories', $master_categories)
-			->with('id', 0)
-			->with('sales_categories', $sales_categories);
-	}
+// 		return view('products.index', compact('products', 'count', 'product_occasions', 'product_collections', 'request', 'searchInRoutes', 'product_master_category', 'product_category', 'product_sub_category', 'production_categories'))
+// 			->with('categories', $master_categories)
+// 			->with('id', 0)
+// 			->with('sales_categories', $sales_categories);
+// 	}
 
 	public function change_mixing_status (Request $request)
 	{
@@ -885,17 +885,19 @@ class ProductController extends Controller
 					continue;
 				} elseif ( $column == 'is_taxable' ) {
 					$product->is_taxable = strtolower($row['is_taxable']) == 'yes' ? 1 : 0;
-				} elseif ( $column == 'batch_route_id' ) {
-					/*$batch_route = BatchRoute::where('batch_code', 'LIKE', sprintf("%%%s%%", trim($row['batch_route_id'])))
-											 ->first();*/
-					$batch_route = BatchRoute::where('batch_code', 'LIKE', sprintf("%s", trim($row['batch_route_id'])))
-											 ->first();
-					if ( $batch_route ) {
-						$product->batch_route_id = $batch_route->id;
-					} else {
-						$product->batch_route_id = Helper::getDefaultRouteId();
-					}
-				} elseif ( $column == 'is_deleted' ) {
+				}
+// 				elseif ( $column == 'batch_route_id' ) {
+// 					/*$batch_route = BatchRoute::where('batch_code', 'LIKE', sprintf("%%%s%%", trim($row['batch_route_id'])))
+// 											 ->first();*/
+// 					$batch_route = BatchRoute::where('batch_code', 'LIKE', sprintf("%s", trim($row['batch_route_id'])))
+// 											 ->first();
+// 					if ( $batch_route ) {
+// 						$product->batch_route_id = $batch_route->id;
+// 					} else {
+// 						$product->batch_route_id = Helper::getDefaultRouteId();
+// 					}
+// 				}
+				elseif ( $column == 'is_deleted' ) {
 					$product->is_deleted = $row['is_deleted'] ? 1 : 0;
 				} elseif ( $column == 'product_drop_shipper' ) {
 					$product->product_drop_shipper = $row['product_drop_shipper'] ? 1 : 0;
@@ -1032,7 +1034,7 @@ class ProductController extends Controller
 		];
 		$columns = array_merge($table_columns, $extra_columns);
 		#$products = Product::with('batch_route', 'master_category', 'category', 'sub_category', 'production_category', 'product_occasion_details', 'product_collection_details')->get($columns);
-		$products = Product::with('batch_route', 'master_category', 'production_category', 'sales_category', 'images')
+		$products = Product::with('master_category', 'production_category', 'sales_category', 'images')
 						   ->where('is_deleted', 0)
 						   ->get();
 		#->get(array_merge([ 'id' ], $table_columns));
@@ -1047,16 +1049,18 @@ class ProductController extends Controller
 		foreach ( $products as $product ) {
 			$row = [ ];
 			foreach ( $columns as $column ) {
-				if ( $column == 'batch_route_id' ) {
-					if ( $product->batch_route_id ) {
-						#$route_name = $product->batch_route->batch_code;
-						$row[] = $product->batch_route->batch_code;
-						#$row[] = BatchRoute::find($product->batch_route_id)->batch_code;
-					} else {
-						$row[] = '';
-					}
-					continue;
-				} elseif ( $column == 'is_taxable' ) {
+// 				if ( $column == 'batch_route_id' ) {
+// 					if ( $product->batch_route_id ) {
+// 						echo "<pre>"; echo $product->batch_route_id; echo "</pre>";
+// 						#$route_name = $product->batch_route->batch_code;
+// 						$row[] = $product->batch_route->batch_code;
+// 						#$row[] = BatchRoute::find($product->batch_route_id)->batch_code;
+// 					} else {
+// 						$row[] = '';
+// 					}
+// 					continue;
+// 				} else
+					if ( $column == 'is_taxable' ) {
 					$row[] = ( $product->is_taxable == 1 ) ? 'Yes' : 'No';
 				} elseif ( $column == 'product_master_category' ) {
 					$row[] = $product->master_category ? $product->master_category->master_category_code : '';
