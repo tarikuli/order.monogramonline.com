@@ -90,8 +90,8 @@
 		@if(count($items) > 0)
 			<h3 class = "page-header">
 				Items ({{ $items->total() }} items found / {{$items->currentPage()}} of {{$items->lastPage()}} pages)
-				<span style = "font-size: 14px; padding-left: 10px;"
-				      class = "text-info text-center">{{$unassigned}} items batch ready to create.</span>
+				{{-- <span style = "font-size: 14px; padding-left: 10px;"
+				      class = "text-info text-center">{{$unassigned}} items batch ready to create.</span> --}}
 				<a href = "{{url('/logistics/sku_show?store_id=yhst-128796189915726&unassigned=1')}}"
 				   style = "font-size: 14px; padding-left: 10px;">{{$unassignedProductCount}} products Routes not assigned yet.</a>
 				<a class = "btn btn-success btn-sm" style = "float: right;"
