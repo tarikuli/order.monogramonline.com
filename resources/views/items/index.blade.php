@@ -81,10 +81,17 @@
                     </span>
 				</div>
 			</div>
+
+			<div class = "form-group col-xs-2">
+				<label for = "status">Order Status</label>
+					{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'status', 'class' => 'form-control']) !!}
+			</div>
+
 			<div class = "form-group col-xs-2">
 				<label for = "" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
 			</div>
+
 			{!! Form::close() !!}
 		</div>
 		@if(count($items) > 0)

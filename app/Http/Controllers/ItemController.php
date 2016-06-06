@@ -44,6 +44,7 @@ class ItemController extends Controller
 					 ->search($request->get('search_for_second'), $request->get('search_in_second'))
 					 ->searchDate($request->get('start_date'), $request->get('end_date'))
 					 ->searchTrackingDate($request->get('tracking_date'))
+					 ->searchStatus($request->get('status'))
 					 ->latest()
 					 ->paginate(50);
 
@@ -73,8 +74,9 @@ class ItemController extends Controller
 			'tracking_number'     => 'Tracking number',
 		];
 
+		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
 		#return $items;
-		return view('items.index', compact('items', 'search_in', 'request', 'unassigned', 'unassignedProductCount'));
+		return view('items.index', compact('items', 'search_in', 'request', 'unassigned', 'unassignedProductCount', 'statuses'));
 	}
 
 	public function getBatch ()
@@ -411,7 +413,7 @@ class ItemController extends Controller
 		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'rejection_reasons', 'statuses', 'route', 'stations', 'count', 'department_name', 'current_batch_station'));
 	}
 
-	// By Jewel 
+	// By Jewel
 	public function changeBatchStation (Request $request, $batch_number)
 	{
 
