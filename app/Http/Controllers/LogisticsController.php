@@ -570,18 +570,20 @@ class LogisticsController extends Controller
 				->back()
 				->withErrors($validator);
 		}
+
 		$store_id = $request->get('store_id');
 		$unique_row_value = $request->get('unique_row_value');
 
 		$parameters = Parameter::where('store_id', $store_id)
 							   ->get();
-		if ( $parameters->count() == 0 ) {
-			return redirect()
-				->back()
-				->withErrors([
-					'error' => 'Not a valid store selected',
-				]);
-		}
+
+// 		if ( $parameters->count() == 0 ) {
+// 			return redirect()
+// 				->back()
+// 				->withErrors([
+// 					'error' => 'Not a valid store selected***'.$store_id,
+// 				]);
+// 		}
 
 		$dataToStore = [ ];
 		foreach ( $parameters as $parameter ) {
