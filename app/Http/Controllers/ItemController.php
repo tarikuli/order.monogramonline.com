@@ -56,7 +56,10 @@ class ItemController extends Controller
 						 ->orWhere('batch_route_id', Helper::getDefaultRouteId());
 		})
 									->get();
-
+		$unassignedOrderCount = Item::whereIn('child_sku', $unassignedProducts->lists('child_sku')
+																			  ->toArray())
+									->where('is_deleted', 0)
+									->count();
 		$unassignedProductCount = $unassignedProducts->count();
 
 		$unassigned = Helper::countPossibleBatches();
@@ -75,8 +78,9 @@ class ItemController extends Controller
 		];
 
 		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
+
 		#return $items;
-		return view('items.index', compact('items', 'search_in', 'request', 'unassigned', 'unassignedProductCount', 'statuses'));
+		return view('items.index', compact('items', 'search_in', 'request', 'unassigned', 'unassignedProductCount', 'unassignedOrderCount', 'statuses'));
 	}
 
 	public function getBatch ()
