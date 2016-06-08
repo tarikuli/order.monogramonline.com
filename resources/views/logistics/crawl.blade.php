@@ -13,8 +13,9 @@
 			//for (var l = 0; l < ids.length; l++) {
 			var dt = [];
 
+			// Check
 			if (typeof variable === 'undefined' || store_name === null) {
-			    var url = "http://www.shoponlinedeals.com/" + id + ".html";
+			    var url = "http://www.monogramonline.com.com/" + id + ".html";
 			}else{
 				var url = "http://www."+store_name+"/" + id + ".html";
 			}
