@@ -351,9 +351,20 @@ class LogisticsController extends Controller
 	{
 		$store_id = $request->get('store_id');
 
+		if($request->get('unassigned')){
+			$unassigned = $request->get('unassigned');
+		}else{
+			$unassigned = 0;
+		}
+
 		$store = Store::where('store_id', $store_id)
 					  ->where('is_deleted', 0)
 					  ->first();
+
+		$stores = Store::where('is_deleted', 0)
+				->latest()
+				->get();
+
 		if ( !$store ) {
 			return redirect()
 				->back()
@@ -388,7 +399,7 @@ class LogisticsController extends Controller
 		/*$options = Option::whereIn('parameter_id', $relation_array)#->orderBy(DB::raw(sprintf('FIELD(parameter_id, %s)', implode(", ", $relation_array))))
 						 ->paginate(50 * count($parameters));*/
 		$options = Option::with('product', 'route.template')
-// 						 ->where('store_id', $store_id) // Comment for view all store
+						 ->where('store_id', $store_id) // Comment for view all store
 						 ->searchUnassigned($request->get('unassigned'))
 						 ->searchInParameterOption($store_id, $request->get('search_for'), $request->get('search_in'))
 						 ->paginate(100);
@@ -404,7 +415,7 @@ class LogisticsController extends Controller
 								  ->lists('batch_route_name', 'id')
 								  ->prepend('Select a route', 0);
 
-		return view('logistics.sku_converter_store_details', compact('batch_routes', 'searchable', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo'));
+		return view('logistics.sku_converter_store_details', compact('batch_routes', 'searchable', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo','stores', 'unassigned'));
 
 	}
 
@@ -577,13 +588,13 @@ class LogisticsController extends Controller
 		$parameters = Parameter::where('store_id', $store_id)
 							   ->get();
 
-// 		if ( $parameters->count() == 0 ) {
-// 			return redirect()
-// 				->back()
-// 				->withErrors([
-// 					'error' => 'Not a valid store selected***'.$store_id,
-// 				]);
-// 		}
+		if ( $parameters->count() == 0 ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'error' => 'Not a valid store selected',
+				]);
+		}
 
 		$dataToStore = [ ];
 		foreach ( $parameters as $parameter ) {
@@ -714,6 +725,7 @@ class LogisticsController extends Controller
 
 	public function post_create_child_sku (Request $request)
 	{
+
 		$id_catalog = $request->get('id_catalog');
 		$product = Product::where('id_catalog', $id_catalog)
 						  ->first();

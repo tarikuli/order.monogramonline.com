@@ -47,12 +47,23 @@
 			@include('includes.error_div')
 			@include('includes.success_div')
 		</div>
+				<a style = "margin-bottom:20px; margin-left: 10px;" class = "btn btn-success btn-sm pull-left"
+				   href = "{{url('/logistics/sku_import')}}">Back to Options Page</a>
 		<div class = "col-md-12">
 			<div class = "panel panel-default">
 				<div class = "panel-heading">Search</div>
 				<div class = "panel-body">
 					{!! Form::open(['method' => 'get', 'url' => $request->url(), 'class' => 'form-inline']) !!}
-					{!! Form::hidden('store_id', $store_id) !!}
+
+					{{-- !! Form::hidden('store_id', $store_id) !! --}}
+
+					{!! Form::hidden('unassigned', $unassigned) !!}
+
+					<div class = "form-group">
+						{!! Form::label('store_id', "Store id", ['class'=> 'control-label']) !!}
+						{!! Form::select('store_id', $stores->lists('store_name', 'store_id')->prepend('Select a store', 'all'), 'all', ['id'=>'store_id', 'class' => 'form-control']) !!}
+					</div>
+
 					<div class = "form-group">
 						{!! Form::label('search_for', "Search for:", ['class' => 'control-label']) !!}
 						{!! Form::text('search_for', $request->get('search_for'), ['id' => 'search_for', 'class' => 'form-control', 'placeholder' => "Search in selected field"]) !!}
@@ -63,6 +74,7 @@
 					</div>
 
 					<button type = "submit" class = "btn btn-success">Search</button>
+
 					{!! Form::close() !!}
 				</div>
 			</div>
