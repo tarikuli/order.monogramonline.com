@@ -43,7 +43,7 @@
 
 		<div class = "col-md-12" style = "margin-bottom: 20px;">
 			{!! Form::open(['url' => url('/logistics/create_child_sku'), 'method' => 'get', 'class' => 'form-inline']) !!}
-			<div class = "form-group hidden">
+			<div class = "form-group">
 				{!! Form::label('store', "Store", []) !!}
 				{!! Form::select('store', $stores, request('store'), ['class'=> 'form-control', 'id' => 'store']) !!}
 			</div>

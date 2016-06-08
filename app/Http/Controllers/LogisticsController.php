@@ -687,6 +687,7 @@ class LogisticsController extends Controller
 
 	public function crawl (Request $request)
 	{
+		dd($request);
 		$id_catalog = $request->get('id_catalog');
 
 		return view('logistics.crawl')->with('id_catalog', $id_catalog);
@@ -706,6 +707,7 @@ class LogisticsController extends Controller
 		if ( $id_catalog ) {
 			// generate the url
 			$url = url(sprintf("/crawl?id_catalog=%s", $id_catalog));
+
 			// pass to the phantom class to get the data
 			$phantom = new Phantom($url);
 			// generate response
