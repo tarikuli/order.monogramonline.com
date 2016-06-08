@@ -64,6 +64,7 @@
 						{{--<th>Action</th>--}}
 						<th>Route</th>
 						{{--<th>Items to shift</th>--}}
+						<th># To</th>
 						<th>Assign station</th>
 					</tr>
 					{{--{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}--}}
@@ -82,10 +83,13 @@
 								</div>
 							</td>--}}
 							<td>
+
+							</td>
+							<td>
 								{!! Form::open(['url' => url(sprintf("change_station_by_sku/%s", $row['sku']))]) !!}
 								<div class = "form-group">
-									{!! Form::number('item_to_shift', $row['item_count'], ['class' => 'form-control', /*'style' => 'max-width: 20px;'*/]) !!}
-									{!! Form::select('batch_stations', $row['batch_stations'], null, ['id'=>'batch_stations', 'class' => 'form-control', 'style' => 'max-width: 170px;']) !!}
+									{!! Form::number('item_to_shift', $row['item_count'], ['class' => 'form-control', 'style' => 'max-width: 70px;']) !!}
+									{!! Form::select('batch_stations', $row['batch_stations'], null, ['id'=>'batch_stations', 'class' => 'form-control', 'style' => 'min-width: 170px;']) !!}
 								</div>
 								{{--<div class = "form-group">
 									{!! Form::select('batch_stations', $row['batch_stations'], null, ['id'=>'batch_stations', 'class' => 'form-control']) !!}

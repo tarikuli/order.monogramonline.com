@@ -789,6 +789,7 @@ class ItemController extends Controller
 		$items = Item::with('lowest_order_date', 'route.stations')
 					 ->searchActiveByStation($request->get('station'))
 					 ->where('batch_number', '!=', '0')
+					 ->whereNull('tracking_number')
 					 ->paginate(2000);
 
 		$stations = Station::where('is_deleted', 0)
