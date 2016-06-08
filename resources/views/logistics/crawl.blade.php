@@ -8,11 +8,17 @@
 		{
 			jQuery.ajaxSetup({async: false});
 			var id = '{{ $id_catalog }}';
-
+			var store_name = '{{ $store_name }}';
 
 			//for (var l = 0; l < ids.length; l++) {
 			var dt = [];
-			var url = "http://www.monogramonline.com/" + id + ".html";
+
+			if (typeof variable === 'undefined' || store_name === null) {
+			    var url = "http://www.shoponlinedeals.com/" + id + ".html";
+			}else{
+				var url = "http://www."+store_name+"/" + id + ".html";
+			}
+
 			$.get("{{ url(sprintf("/get_file_contents")) }}", {url: url}, function (response)
 			{
 				var data = $(response).find('div.itemOptionWrap');

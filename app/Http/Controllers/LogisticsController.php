@@ -687,10 +687,11 @@ class LogisticsController extends Controller
 
 	public function crawl (Request $request)
 	{
-		dd($request);
 		$id_catalog = $request->get('id_catalog');
+		$store_name = $request->get('store_name');
 
-		return view('logistics.crawl')->with('id_catalog', $id_catalog);
+		return view('logistics.crawl')->with('id_catalog', $id_catalog)
+									  ->with('store_name', $store_name);
 	}
 
 	public function get_file_contents (Request $request)
@@ -701,12 +702,19 @@ class LogisticsController extends Controller
 	public function create_child_sku (Request $request)
 	{
 		$id_catalog = trim($request->get('id_catalog', null));
+		$store_id = trim($request->get('store', null));
+
 		$stores = Store::where('is_deleted', 0)
 					   ->lists('store_name', 'id');
+
+		$store_name = $stores->toArray();
+		$store_name = strtolower($store_name[$store_id]);
+
 		$crawled_data = null;
 		if ( $id_catalog ) {
 			// generate the url
-			$url = url(sprintf("/crawl?id_catalog=%s", $id_catalog));
+			$url = url(sprintf("/crawl?id_catalog=%s&store_name=%s", $id_catalog, $store_name));
+			//$url = url(sprintf("/crawl?id_catalog=%s", $id_catalog));
 
 			// pass to the phantom class to get the data
 			$phantom = new Phantom($url);

@@ -788,6 +788,7 @@ class OrderController extends Controller
 
 	public function product_info (Request $request)
 	{
+		dd($request);
 		$id_catalog = $request->get('id_catalog');
 		$sku = $request->get('sku');
 		if ( empty( $id_catalog ) ) {
