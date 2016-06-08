@@ -714,7 +714,6 @@ class LogisticsController extends Controller
 
 	public function post_create_child_sku (Request $request)
 	{
-
 		$id_catalog = $request->get('id_catalog');
 		$product = Product::where('id_catalog', $id_catalog)
 						  ->first();

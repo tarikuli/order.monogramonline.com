@@ -84,7 +84,7 @@
 
 			<div class = "form-group col-xs-2">
 				<label for = "status">Order Status</label>
-					{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'status', 'class' => 'form-control']) !!}
+				{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'status', 'class' => 'form-control']) !!}
 			</div>
 
 			<div class = "form-group col-xs-2">
@@ -100,7 +100,7 @@
 				{{-- <span style = "font-size: 14px; padding-left: 10px;"
 				      class = "text-info text-center">{{$unassigned}} items batch ready to create.</span> --}}
 				<a href = "{{url('/logistics/sku_show?store_id=yhst-128796189915726&unassigned=1')}}"
-				   style = "font-size: 14px; padding-left: 10px;">{{$unassignedProductCount}} products Routes not assigned yet - {{ $unassignedOrderCount }} orders can be created.</a>
+				   style = "font-size: 14px; padding-left: 10px;">{{$unassignedProductCount}} products Routes not assigned yet - {{ $unassignedOrderCount }} orders can be assigned to batches.</a>
 				<a class = "btn btn-success btn-sm" style = "float: right;"
 				   href = "{{url('/items/batch')}}">Create batch preview</a>
 			</h3>
@@ -127,15 +127,16 @@
 					<tr data-id = "{{$item->id}}">
 						<td>
 
-						<a href = "{{ url("orders/details/".$item->order_id) }}" target = "_blank"
-						       class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a>
-								<br>
-								{{\Monogram\Helper::orderNameFormatter($item->order)}}
+							<a href = "{{ url("orders/details/".$item->order_id) }}" target = "_blank"
+							   class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a>
+							<br>
+							{{\Monogram\Helper::orderNameFormatter($item->order)}}
 
 						</td>
 						{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
-						<td><img src = "{{$item->item_thumb}}" width="70" height="70" /></td>
-						<td>{{substr($item->order->order_date, 0, 10)}}<br>{{substr($item->order->order_date, 11, 18)}}</td>
+						<td><img src = "{{$item->item_thumb}}" width = "70" height = "70" /></td>
+						<td>{{substr($item->order->order_date, 0, 10)}}<br>{{substr($item->order->order_date, 11, 18)}}
+						</td>
 						{{--<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['id' => 'order_status_id','disabled' => 'disabled'])  !!}</td>--}}
 						<td>{!! \App\Status::where('is_deleted', 0)->lists('status_name','id')->get($item->order->order_status)  !!}</td>
 						{{--<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['id' => 'item_order_status_2_id','disabled' => 'disabled'])  !!}</td>--}}
