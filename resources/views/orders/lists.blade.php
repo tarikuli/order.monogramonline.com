@@ -21,7 +21,6 @@
 		@include('includes.error_div')
 		@include('includes.success_div')
 		<div class = "col-xs-12">
-			{{--{!! Form::open(['method' => 'get', 'url' => url('orders/search'), 'id' => 'search-order']) !!}--}}
 			{!! Form::open(['method' => 'get', 'url' => url('orders/list'), 'id' => 'search-order']) !!}
 			<div class = "form-group col-xs-2">
 				<label for = "store">Market/Store</label>
@@ -92,17 +91,16 @@
 					<tr data-id = "{{$order->id}}">
 						<td>
 							<a href = "{{ url("orders/details/".$order->order_id) }}"
-							   class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($order)}}</a>
+							    target = "_blank">{{\Monogram\Helper::orderIdFormatter($order)}}</a>
 						</td>
 						<td>
 							<a href = "{{ url("orders/details/".$order->order_id) }}"
-							   class = "btn btn-link">
-								{{\Monogram\Helper::orderNameFormatter($order)}}
+							   target = "_blank">{{\Monogram\Helper::orderNameFormatter($order)}}
 							</a>
 						</td>
 						<td><a href = "{{ url("customers/" . ($order->customer ? $order->customer->id : "#")) }}"
 						       title = "This is customer id"
-						       class = "btn btn-link">{{$order->customer ? $order->customer->id : "Error"}}</a></td>
+						       target = "_blank">{{$order->customer ? $order->customer->id : "Error"}}</a></td>
 						<td>{!! \Monogram\Helper::getHtmlBarcode($order->short_order) !!}</td>
 						<td>{{$order->customer ? $order->customer->ship_full_name : "#"}}</td>
 						<td>{{$order->customer ? $order->customer->ship_state: "#"}}, {{$order->customer ? $order->customer->ship_country : "#"}}</td>

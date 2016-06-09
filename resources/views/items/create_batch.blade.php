@@ -81,17 +81,14 @@
 												<tr data-id = "{{$batch_route->id}}">
 													<td>{{ $count }}</td>
 													<td></td>
-													<td></td>
-													<td>
+													<td colspan="2" >
 														<div class = "checkbox">
 															<label>
-																{!! Form::checkbox('select-deselect', 1, false, ['class' => 'group-select']) !!} {{$batch_route->batch_code}}
+																{!! Form::checkbox('select-deselect', 1, false, ['class' => 'group-select']) !!} {{$batch_route->batch_code}} = {{ $batch_route->batch_route_name }}
 															</label>
 														</div>
 													</td>
-													<td>Next station >>> {{$batch_route->stations_list[0]->station_name}}</td>
-													<td></td>
-													<td></td>
+													<td colspan="3" >> Next station >>> {{$batch_route->stations_list[0]->station_name}} ( {{$batch_route->stations_list[0]->station_description}} )</td>
 													<td></td>
 												</tr>
 												@setvar($row_serial = 1)
@@ -140,17 +137,14 @@
 												<tr data-id = "{{$batch_route->id}}">
 													<td>{{ $count }}</td>
 													<td></td>
-													<td></td>
-													<td>
+													<td colspan="2" >
 														<div class = "checkbox">
 															<label>
-																{!! Form::checkbox('select-deselect', 1, false, ['class' => 'group-select']) !!} {{$batch_route->batch_code}}
+																{!! Form::checkbox('select-deselect', 1, false, ['class' => 'group-select']) !!} {{$batch_route->batch_code}} = {{ $batch_route->batch_route_name }}
 															</label>
 														</div>
 													</td>
-													<td>Next station >>> {{$batch_route->stations_list[0]->station_name}}</td>
-													<td></td>
-													<td></td>
+													<td colspan="3" >Next station >>> {{$batch_route->stations_list[0]->station_name}} ( {{$batch_route->stations_list[0]->station_description}} )</td>
 													<td></td>
 												</tr>
 												@setvar($row_serial = 1)
@@ -163,6 +157,11 @@
 														<td>
 															<a href = "{{url("orders/details/$item->order_id")}}"
 															   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item, "order_table_id")}}</a>
+																<br>
+								   							<a href = "{{ url("orders/details/".$item->order_id) }}"
+															   target = "_blank">{{\Monogram\Helper::itemOrderNameFormatter($item)}}
+															</a>
+
 														</td>
 														<td>{{substr($item->order_date, 0, 10)}}</td>
 														<td>

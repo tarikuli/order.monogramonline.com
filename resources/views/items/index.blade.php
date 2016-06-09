@@ -127,8 +127,8 @@
 					<tr data-id = "{{$item->id}}">
 						<td>
 
-							<a href = "{{ url("orders/details/".$item->order_id) }}" target = "_blank"
-							   class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a>
+							<a href = "{{ url("orders/details/".$item->order_id) }}"
+							target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a>
 							<br>
 							{{\Monogram\Helper::orderNameFormatter($item->order)}}
 

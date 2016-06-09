@@ -275,6 +275,16 @@ APPEND;
 		}
 	}
 
+	public static function itemOrderNameFormatter ($order)
+	{
+		$short_order = explode("-", $order->order_id);
+		if ( strpos($order->order_id, "yhst-128796189915726") !== false ) {
+			return "M-" . $short_order[2];
+		} else {
+			return "S-" .  $short_order[2];
+		}
+	}
+
 	public static function getAllOrdersFromOrderId ($order_id)
 	{
 		// get all the items of an order,
