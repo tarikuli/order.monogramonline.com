@@ -52,8 +52,8 @@
 								<tr valign = "top">
 									<td align = "left"><strong>{{$order->short_order}}</strong></td>
 									<td align = "right">
-										{{--<img src = "{{\Monogram\Helper::getImageBarcodeSource($order->short_order)}}">--}}
-										{!! \Monogram\Helper::getHtmlBarcode($order->short_order) !!}
+										{{\Monogram\Helper::orderNameFormatter($order)."-0"}}
+										{!! \Monogram\Helper::getHtmlBarcode(\Monogram\Helper::orderNameFormatter($order)."-0") !!}
 									</td>
 								</tr>
 							</table>
