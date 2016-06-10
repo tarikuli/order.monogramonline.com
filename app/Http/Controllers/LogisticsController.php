@@ -414,7 +414,7 @@ class LogisticsController extends Controller
 								  ->orderBy('batch_route_name')
 								  ->lists('batch_route_name', 'id')
 								  ->prepend('Select a route', 0);
-
+		#return $parameters;
 		return view('logistics.sku_converter_store_details', compact('batch_routes', 'searchable', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo','stores', 'unassigned'));
 
 	}

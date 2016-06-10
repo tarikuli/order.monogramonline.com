@@ -61,7 +61,7 @@
 
 					<div class = "form-group">
 						{!! Form::label('store_id', "Store id", ['class'=> 'control-label']) !!}
-						{!! Form::select('store_id', $stores->lists('store_name', 'store_id')->prepend('Select a store', 'all'), 'all', ['id'=>'store_id', 'class' => 'form-control']) !!}
+						{!! Form::select('store_id', $stores->lists('store_name', 'store_id')->prepend('Select a store', 'all'), request('store_id', 'all'), ['id'=>'store_id', 'class' => 'form-control']) !!}
 					</div>
 
 					<div class = "form-group">
@@ -81,10 +81,8 @@
 		</div>
 		<h3 class = "page-header">
 			Parameters ({{ $options->total() }} items found / {{$options->currentPage()}} of {{$options->lastPage()}} pages)
-
 			<a style = "margin-bottom:20px" class = "btn btn-success btn-sm pull-right"
 			   href = "{{ url(sprintf("/logistics/add_child_sku?store_id=%s&return_to=%s", request('store_id'),$returnTo)) }}">Add new child sku</a>
-
 		</h3>
 		<div class = "row">
 			<div class = "col-md-12">
