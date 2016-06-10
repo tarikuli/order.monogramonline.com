@@ -58,6 +58,7 @@ class ShippingController extends Controller
 	public function removeTrackingNumber (Request $request)
 	{
 		$tracking_numbers = $request->get('tracking_numbers', [ ]);
+		dd($tracking_numbers);
 		if ( count($tracking_numbers) ) {
 			Item::whereIn('tracking_number', $tracking_numbers)
 				->update([
