@@ -139,7 +139,14 @@
 						<td><img src = "{{ $ship->item->item_thumb }}" /></td>
 						<td>{{ $ship->item->item_description }}</td>
 						<td>{{ $ship->item->item_quantity }}</td>
-						<td>{{ $ship->item->tracking_number ?: "N/A" }}</td>
+						<td>
+							@if($ship->item->tracking_number)
+								{{ $ship->item->tracking_number }}
+								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%d", $ship->item->tracking_number )) }}">Move to shipping</a>
+							@else
+								N/A
+							@endif
+						</td>
 						<td>{{$ship->length}}</td>
 						<td>{{$ship->height}}</td>
 						<td>{{$ship->width}}</td>

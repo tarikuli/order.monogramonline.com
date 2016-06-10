@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Item;
 use App\Ship;
 use Illuminate\Http\Request;
 
@@ -52,5 +53,24 @@ class ShippingController extends Controller
 			->with('tracking_number_assigned', $tracking_number_assigned)
 			->with('tracking_number_not_assigned', $tracking_number_not_assigned)
 			->with('search_in', static::$search_in);
+	}
+
+	public function removeTrackingNumber (Request $request)
+	{
+		$tracking_numbers = $request->get('tracking_numbers', [ ]);
+		if ( count($tracking_numbers) ) {
+			Item::whereIn('tracking_number', $tracking_numbers)
+				->update([
+					'tracking_number' => null,
+				]);
+			Ship::whereIn('tracking_number', $tracking_numbers)
+				->update([
+					'tracking_number' => null,
+				]);
+		}
+
+		return redirect()
+			->back()
+			->with('success', "Items successfully moved to shipping list");
 	}
 }

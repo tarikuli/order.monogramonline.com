@@ -153,6 +153,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 			'except' => [ 'create' ],
 		]);
 
+		get('remove_shipping', 'ShippingController@removeTrackingNumber');
 		resource('shipping', 'ShippingController');
 
 		get('rules/parameter', 'RuleController@parameter_option');
