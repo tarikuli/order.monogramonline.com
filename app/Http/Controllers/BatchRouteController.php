@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\BatchRoute;
+use App\Item;
 use App\Station;
 use App\Template;
 use Illuminate\Http\Request;
@@ -95,6 +96,18 @@ class BatchRouteController extends Controller
 	public function destroy ($id)
 	{
 		$batch_route = BatchRoute::find($id);
+		if ( !$batch_route ) {
+			abort(404);
+		}
+		$items = Item::where('batch_route_id', $id)
+					 ->count();
+		if ( $items ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'items_assigned' => sprintf("Cannot delete. items are assigned to route %s .", $batch_route->batch_code),
+				]);
+		}
 		$batch_route->is_deleted = 1;
 		$batch_route->save();
 
