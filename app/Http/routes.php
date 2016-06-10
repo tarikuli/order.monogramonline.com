@@ -1,6 +1,7 @@
 <?php
 get('test/batch', function () {
-	return auth()->user()->roles->first()->id;
+	return \Monogram\Helper::getEmptyStationCount();
+	//return auth()->user()->roles->first()->id;
 });
 get('phantom', function (\Illuminate\Http\Request $request) {
 	$id = $request->get('id', 'pemoanwisicr');

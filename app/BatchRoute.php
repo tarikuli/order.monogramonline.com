@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Monogram\Helper;
 
 class BatchRoute extends Model
 {
@@ -30,6 +31,19 @@ class BatchRoute extends Model
 	public function template ()
 	{
 		return $this->belongsTo('App\Template', 'export_template', 'id');
+	}
+
+	public function scopeSearchEmptyStations ($query, $search)
+	{
+		$search = intval($search);
+		if ( !$search ) {
+			return;
+		}
+		$emptyStationRoutes = Helper::getEmptyStation();
+		$batches_list = $emptyStationRoutes->lists('id')
+										   ->toArray();
+
+		return $query->whereIn('id', $batches_list);
 	}
 
 	/*public function itemGroups ()
@@ -63,6 +77,15 @@ class BatchRoute extends Model
 	{
 		return $this->belongsToMany('App\Station', 'batch_route_station', 'batch_route_id', 'station_id')
 					->withTimestamps();
+	}
+
+	public function stations_count ()
+	{
+		// count the number of stations
+		// counting the route id
+		return $this->belongsToMany(Station::class)
+					->selectRaw('COUNT(batch_route_id) as aggregate')
+					->groupBy('batch_route_id');
 	}
 
 	public function products ()

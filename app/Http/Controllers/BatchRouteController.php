@@ -11,13 +11,14 @@ use App\Http\Controllers\Controller;
 
 class BatchRouteController extends Controller
 {
-	public function index ()
+	public function index (Request $request)
 	{
 		$count = 1;
 		$stations = Station::where('is_deleted', 0)
 						   ->lists('station_description', 'id');
 		$batch_routes = BatchRoute::with('stations_list')
 								  ->where('is_deleted', 0)
+								  ->searchEmptyStations($request->get('unassigned', 0))
 								  ->orderBy('batch_code')
 								  ->paginate(200);
 		$templates = Template::where('is_deleted', 0)
@@ -87,6 +88,7 @@ class BatchRouteController extends Controller
 		$url = sprintf("%s#%s", redirect()
 			->getUrlGenerator()
 			->previous(), $batch_route->batch_code);
+
 		return redirect($url);
 	}
 

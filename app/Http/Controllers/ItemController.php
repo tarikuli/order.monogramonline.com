@@ -63,6 +63,7 @@ class ItemController extends Controller
 		$unassignedProductCount = $unassignedProducts->count();
 
 		$unassigned = Helper::countPossibleBatches();
+		$emptyStationsCount = count(Helper::getEmptyStation());
 		// 		$unassigned = 0 ; $unassignedProductCount = 0;
 		$search_in = [
 			'all'                 => 'All',
@@ -80,7 +81,7 @@ class ItemController extends Controller
 		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
 
 		#return $items;
-		return view('items.index', compact('items', 'search_in', 'request', 'unassigned', 'unassignedProductCount', 'unassignedOrderCount', 'statuses'));
+		return view('items.index', compact('items', 'emptyStationsCount', 'search_in', 'request', 'unassigned', 'unassignedProductCount', 'unassignedOrderCount', 'statuses'));
 	}
 
 	public function getBatch ()
