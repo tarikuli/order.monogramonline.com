@@ -142,7 +142,7 @@
 						<td>
 							@if($ship->item->tracking_number)
 								{{ $ship->item->tracking_number }}
-								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%d", $ship->item->tracking_number )) }}">Move to shipping</a>
+								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s", $ship->item->tracking_number )) }}">Move to shipping</a>
 							@else
 								N/A
 							@endif

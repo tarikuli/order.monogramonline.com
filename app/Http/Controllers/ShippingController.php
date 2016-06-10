@@ -59,13 +59,14 @@ class ShippingController extends Controller
 	{
 		$tracking_numbers = $request->get('tracking_numbers', [ ]);
 		if ( count($tracking_numbers) ) {
-			$d = Item::whereIn('tracking_number', $tracking_numbers)
-					 ->get();
-			//->update(['tracking_number' => null,]);
-			$e = Ship::whereIn('tracking_number', $tracking_numbers)
-					 ->get();
-			//->update(['tracking_number' => null,]);
-			dd($d, $e);
+			Item::whereIn('tracking_number', $tracking_numbers)
+				->update([
+					'tracking_number' => null,
+				]);
+			Ship::whereIn('tracking_number', $tracking_numbers)
+				->update([
+					'tracking_number' => null,
+				]);
 		}
 
 		return redirect()
