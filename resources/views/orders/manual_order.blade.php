@@ -396,7 +396,7 @@
 			showSearchCaption(data);
 			$.each(data.products, function (key, value)
 			{
-				var node = "<tr data-id-catalog='" + value.id_catalog + "' data-sku = '" + value.product_model + "'>" + "<td><img width='50' height='50' src='" + value.product_thumb + "'</td>" + "<td>" + value.product_name + "</td>" + "<td>" + value.product_model + "</td>" + "<td>" + value.id_catalog + "</td>" + "</tr>";
+				var node = "<tr data-store-name='" + (value.store && value.store.store_name.toLowerCase()) + "' data-id-catalog='" + value.id_catalog + "' data-sku = '" + value.product_model + "'>" + "<td><img width='50' height='50' src='" + value.product_thumb + "'</td>" + "<td>" + value.product_name + "</td>" + "<td>" + value.product_model + "</td>" + "<td>" + value.id_catalog + "</td>" + "</tr>";
 				getPreviewAbleNode().append(node);
 			});
 		}
@@ -434,10 +434,11 @@
 				return;
 			}
 			var id_catalog = $(this).attr('data-id-catalog');
+			var store_name = $(this).attr('data-store-name');
 			var sku = $(this).attr('data-sku');
 			var url = "/orders/product_info";
 			var data = {
-				"id_catalog": id_catalog, "sku": sku
+				"id_catalog": id_catalog, "sku": sku, "store_name": store_name
 			};
 			var method = "GET";
 

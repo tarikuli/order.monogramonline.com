@@ -14,7 +14,7 @@
 			var dt = [];
 
 			// Check
-			if (typeof store_name === 'undefined' || store_name === null) {
+			if (!store_name) {
 			    var url = "http://www.monogramonline.com.com/" + id + ".html";
 			}else{
 				var url = "http://www."+store_name+"/" + id + ".html";

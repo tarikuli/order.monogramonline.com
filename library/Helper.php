@@ -281,7 +281,7 @@ APPEND;
 		if ( strpos($order->order_id, "yhst-128796189915726") !== false ) {
 			return "M-" . $short_order[2];
 		} else {
-			return "S-" .  $short_order[2];
+			return "S-" . $short_order[2];
 		}
 	}
 
@@ -976,10 +976,11 @@ APPEND;
 		return $all;
 	}
 
-	public static function getProductInformation ($id_catalog)
+	public static function getProductInformation ($id_catalog, $store_name)
 	{
 		// generate the url
-		$url = url(sprintf("/crawl?id_catalog=%s", $id_catalog));
+		#$url = url(sprintf("/crawl?id_catalog=%s", $id_catalog));
+		$url = url(sprintf("/crawl?id_catalog=%s&store_name=%s", $id_catalog, $store_name));
 		// pass to the phantom class to get the data
 		$phantom = new Phantom($url);
 		// generate response

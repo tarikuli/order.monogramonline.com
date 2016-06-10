@@ -308,8 +308,8 @@ class OrderController extends Controller
 							->first();
 
 		$search_in = [
-			'store_order'         => 'Store Order#',
-			'five_p_order'        => '5P#',
+			'store_order'  => 'Store Order#',
+			'five_p_order' => '5P#',
 		];
 
 		return view('orders.lists', compact('orders', 'stores', 'statuses', 'shipping_methods', 'search_in', 'request'))->with('money', $total_money->money);
@@ -347,7 +347,7 @@ class OrderController extends Controller
 
 		$search_in = [
 			'short_order' => 'Order',
-			'id'        => '5P#',
+			'id'          => '5P#',
 		];
 
 		return view('orders.lists', compact('orders', 'stores', 'statuses', 'shipping_methods', 'search_in', 'request'));
@@ -766,7 +766,8 @@ class OrderController extends Controller
 		$statusCode = 400;
 		if ( !empty( $sku ) ) {
 			$searchAble = sprintf("%%%s%%", $sku);
-			$product = Product::where('product_model', "LIKE", $searchAble)
+			$product = Product::with('store')
+							  ->where('product_model', "LIKE", $searchAble)
 							  ->orWhere('id_catalog', 'LIKE', $searchAble)
 							  ->orWhere('product_name', 'LIKE', $searchAble)
 							  ->where('is_deleted', 0)
@@ -775,6 +776,7 @@ class OrderController extends Controller
 								  'product_url',
 								  'product_model',
 								  'product_name',
+								  'store_id',
 								  'id_catalog',
 							  ]);
 			if ( $product->count() ) {
@@ -790,10 +792,11 @@ class OrderController extends Controller
 	{
 		$id_catalog = $request->get('id_catalog');
 		$sku = $request->get('sku');
-		if ( empty( $id_catalog ) ) {
+		$store_name = $request->get('store_name');
+		if ( empty( $id_catalog ) || empty( $store_name ) ) {
 			return response()->json([ ], 400);
 		}
-		$crawled_data = Helper::getProductInformation($id_catalog);
+		$crawled_data = Helper::getProductInformation($id_catalog, $store_name);
 		$data = [ ];
 		$data['id_catalog'] = $id_catalog;
 		$data['sku'] = $sku;

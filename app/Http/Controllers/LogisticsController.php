@@ -351,9 +351,9 @@ class LogisticsController extends Controller
 	{
 		$store_id = $request->get('store_id');
 
-		if($request->get('unassigned')){
+		if ( $request->get('unassigned') ) {
 			$unassigned = $request->get('unassigned');
-		}else{
+		} else {
 			$unassigned = 0;
 		}
 
@@ -362,8 +362,8 @@ class LogisticsController extends Controller
 					  ->first();
 
 		$stores = Store::where('is_deleted', 0)
-				->latest()
-				->get();
+					   ->latest()
+					   ->get();
 
 		if ( !$store ) {
 			return redirect()
@@ -399,7 +399,7 @@ class LogisticsController extends Controller
 		/*$options = Option::whereIn('parameter_id', $relation_array)#->orderBy(DB::raw(sprintf('FIELD(parameter_id, %s)', implode(", ", $relation_array))))
 						 ->paginate(50 * count($parameters));*/
 		$options = Option::with('product', 'route.template')
-						 ->where('store_id', $store_id) // Comment for view all store
+						 ->where('store_id', $store_id)// Comment for view all store
 						 ->searchUnassigned($request->get('unassigned'))
 						 ->searchInParameterOption($store_id, $request->get('search_for'), $request->get('search_in'))
 						 ->paginate(100);
@@ -414,8 +414,9 @@ class LogisticsController extends Controller
 								  ->orderBy('batch_route_name')
 								  ->lists('batch_route_name', 'id')
 								  ->prepend('Select a route', 0);
+
 		#return $parameters;
-		return view('logistics.sku_converter_store_details', compact('batch_routes', 'searchable', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo','stores', 'unassigned'));
+		return view('logistics.sku_converter_store_details', compact('batch_routes', 'searchable', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo', 'stores', 'unassigned'));
 
 	}
 
@@ -690,8 +691,9 @@ class LogisticsController extends Controller
 		$id_catalog = $request->get('id_catalog');
 		$store_name = $request->get('store_name');
 
-		return view('logistics.crawl')->with('id_catalog', $id_catalog)
-									  ->with('store_name', $store_name);
+		return view('logistics.crawl')
+			->with('id_catalog', $id_catalog)
+			->with('store_name', $store_name);
 	}
 
 	public function get_file_contents (Request $request)
@@ -707,11 +709,10 @@ class LogisticsController extends Controller
 		$stores = Store::where('is_deleted', 0)
 					   ->lists('store_name', 'id');
 
-		$store_name = $stores->toArray();
-		$store_name = strtolower($store_name[$store_id]);
-
 		$crawled_data = null;
 		if ( $id_catalog ) {
+			$store_name = $stores->toArray();
+			$store_name = strtolower($store_name[$store_id]);
 			// generate the url
 			$url = url(sprintf("/crawl?id_catalog=%s&store_name=%s", $id_catalog, $store_name));
 			//$url = url(sprintf("/crawl?id_catalog=%s", $id_catalog));
