@@ -238,51 +238,38 @@ class StationController extends Controller {
 			$station_name = $item->station_name;
 
 			// Get number of orders in a Station
-			$lines_count = Item::where ( 'station_name', $station_name )
-			->whereNull('tracking_number')
-			->groupBy ( 'order_id' )
-			->get();
-// ->toSql();
-// echo "<pre>"; echo print_r($lines_count->count()); echo " -- ".$station_name."</pre>";
+			$lines_count = Item::where ( 'station_name', $station_name )->whereNull ( 'tracking_number' )->groupBy ( 'order_id' )->get ();
+			// ->toSql();
+			// echo "<pre>"; echo print_r($lines_count->count()); echo " -- ".$station_name."</pre>";
 
-			// Get number of Items in a Station
-			$items_count = Item::where ( 'station_name', $station_name )
-			->whereNull('tracking_number')
-			->groupBy ( 'station_name' )->first ( [
-					DB::raw ( 'SUM(item_quantity) as items_count' )
-			] )->items_count;
+			if ($lines_count->count () > 0) {
+				// Get number of Items in a Station
+				$items_count = Item::where ( 'station_name', $station_name )->whereNull ( 'tracking_number' )->groupBy ( 'station_name' )->first ( [
+						DB::raw ( 'SUM(item_quantity) as items_count' )
+				] )->items_count;
 
-			// Get Earliest batch creation date
-			$earliest_batch_creation_date = Item::where ( 'station_name', $station_name )
-					->whereNull('tracking_number')
-					->orderBy ( 'batch_creation_date', 'asc' )
-					->first ()
-					->batch_creation_date;
+				// Get Earliest batch creation date
+				$earliest_batch_creation_date = Item::where ( 'station_name', $station_name )->whereNull ( 'tracking_number' )->orderBy ( 'batch_creation_date', 'asc' )->first ()->batch_creation_date;
 
-			$order_ids = Item::where ( 'station_name', $station_name )
-					->whereNull('tracking_number')
-					->get ();
+				$order_ids = Item::where ( 'station_name', $station_name )->whereNull ( 'tracking_number' )->get ();
 
-			$earliest_order_date = Order::whereIn ( 'order_id', $order_ids->lists ( 'order_id' )->toArray () )
-					->orderBy ( 'order_date', 'asc' )
-					->first ()
-					->order_date;
+				$earliest_order_date = Order::whereIn ( 'order_id', $order_ids->lists ( 'order_id' )->toArray () )->orderBy ( 'order_date', 'asc' )->first ()->order_date;
 
-			$station = Station::where ( 'station_name', $station_name )
-					->first ();
+				$station = Station::where ( 'station_name', $station_name )->first ();
 
-			$summary ['station_id'] = $station->id;
-			$summary ['station_description'] = $station->station_description;
-			$summary ['station_name'] = $station_name;
-			$summary ['lines_count'] = $lines_count->count();
-			$summary ['items_count'] = $items_count;
-			$summary ['earliest_batch_creation_date'] = substr ( $earliest_batch_creation_date, 0, 10 );
-			$summary ['earliest_order_date'] = substr ( $earliest_order_date, 0, 10 );
-			$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s", $station_name ) );
+				$summary ['station_id'] = $station->id;
+				$summary ['station_description'] = $station->station_description;
+				$summary ['station_name'] = $station_name;
+				$summary ['lines_count'] = $lines_count->count ();
+				$summary ['items_count'] = $items_count;
+				$summary ['earliest_batch_creation_date'] = substr ( $earliest_batch_creation_date, 0, 10 );
+				$summary ['earliest_order_date'] = substr ( $earliest_order_date, 0, 10 );
+				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s", $station_name ) );
 
-			$summaries [] = $summary;
-			$total_lines += $lines_count->count();
-			$total_items += $items_count;
+				$summaries [] = $summary;
+				$total_lines += $lines_count->count ();
+				$total_items += $items_count;
+			}
 		}
 
 		return view ( 'stations.summary', compact ( 'summaries', 'total_lines', 'total_items' ) );
@@ -397,12 +384,12 @@ class StationController extends Controller {
 			$dates = $this->range_date ( $first_day_of_the_month, $end_day_of_the_month );
 			$header = array_merge ( [
 					'station'
-			]
-			// uncomment user if user is required
-			// 'user',
-			, $dates, [
-					'total'
-			] );
+			],
+					// uncomment user if user is required
+					// 'user',
+					$dates, [
+							'total'
+					] );
 			$output [] = $header;
 
 			foreach ( $station_logs as $log ) {
@@ -459,12 +446,12 @@ class StationController extends Controller {
 		$dates = $this->range_date ( $first_day_of_the_month, $end_day_of_the_month );
 		$header = array_merge ( [
 				'station'
-		]
-		// uncomment user if user is required
-		// 'user',
-		, $dates, [
-				'total'
-		] );
+		],
+				// uncomment user if user is required
+				// 'user',
+				$dates, [
+						'total'
+				] );
 
 		/*
 		 * File write operation
