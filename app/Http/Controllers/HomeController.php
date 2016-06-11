@@ -8,8 +8,10 @@ use App\Station;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
+use Monogram\AppMailer;
 use Monogram\Helper;
 
 class HomeController extends Controller
@@ -22,6 +24,13 @@ class HomeController extends Controller
 						   ->get();
 
 		return view('home.index', compact('stations'));
+	}
+
+	public function test (AppMailer $appMailer)
+	{
+		$user = User::find(1);
+
+		return $appMailer->sendEmail($user);
 	}
 
 	public function bulk_item_update (Request $request)

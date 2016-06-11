@@ -1,8 +1,5 @@
 <?php
-get('test/batch', function () {
-	return \Monogram\Helper::getEmptyStationCount();
-	//return auth()->user()->roles->first()->id;
-});
+get('test', 'HomeController@test');
 get('phantom', function (\Illuminate\Http\Request $request) {
 	$id = $request->get('id', 'pemoanwisicr');
 	$url = sprintf("http://monogramonline.monogramonline.com/crawl.php?id=%s", $id);

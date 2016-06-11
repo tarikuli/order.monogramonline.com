@@ -103,7 +103,7 @@ class OrderController extends Controller
 
 		/*$order = new Order();
 		$order->order_id = $request->get('order_id');
-		$order->email = $request->get('email');
+		$order->emails = $request->get('emails');
 		$order->customer_id = $request->get('customer_id');
 		$order->placed_by = $request->get('placed_by');
 		$order->store_id = $request->get('store_id');
