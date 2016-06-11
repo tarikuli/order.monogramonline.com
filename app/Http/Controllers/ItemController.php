@@ -18,6 +18,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\MessageBag;
 use Illuminate\Support\Collection;
 use DNS1D;
 use Illuminate\Support\Facades\Session;
@@ -64,7 +65,11 @@ class ItemController extends Controller
 
 		$unassigned = Helper::countPossibleBatches();
 		$emptyStationsCount = count(Helper::getEmptyStation());
-		// 		$unassigned = 0 ; $unassignedProductCount = 0;
+		if($emptyStationsCount == 0){
+			$emptyStationsCount = "";
+		}else{
+			$emptyStationsCount = $emptyStationsCount." route have no stations assigned.";
+		}
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
@@ -88,6 +93,15 @@ class ItemController extends Controller
 	{
 		$count = 1;
 		$serial = 1;
+
+		$emptyStationsCount = count(Helper::getEmptyStation());
+		if ( $emptyStationsCount > 0 ) {
+			return redirect(url('/batch_routes'))
+			->withErrors(new MessageBag([
+					 'error' => 'In Routes some Route Station empty<br>Please assign correct Station in route.',
+			]));
+		}
+
 		$batch_routes = Helper::createAbleBatches(true);
 
 		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));

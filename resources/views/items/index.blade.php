@@ -101,8 +101,8 @@
 				      class = "text-info text-center">{{$unassigned}} items batch ready to create.</span> --}}
 				<a href = "{{url('/logistics/sku_show?store_id=yhst-128796189915726&unassigned=1')}}"
 				   style = "font-size: 14px; padding-left: 10px;">{{$unassignedProductCount}} products Routes not assigned yet - {{ $unassignedOrderCount }} orders can be assigned to batches.</a>
-				<a href = "{{url('batch_routes?unassigned=1')}}"
-				   style = "font-size: 14px; padding-left: 10px;">{{$emptyStationsCount}} route have no stations assigned.</a>
+				<br><a href = "{{url('batch_routes?unassigned=1')}}"
+				   style = "font-size: 14px; padding-left: 10px;">{{$emptyStationsCount}}</a>
 				<a class = "btn btn-success btn-sm" style = "float: right;"
 				   href = "{{url('/items/batch')}}">Create batch preview</a>
 			</h3>
