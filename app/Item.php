@@ -267,6 +267,15 @@ class Item extends Model
 		return $query->whereIn('order_id', $orders);
 	}
 
+	public function scopeSearchByStation ($query, $station_name)
+	{
+		if ( empty( $station_name ) ) {
+			return;
+		}
+
+		return $query->where('station_name', $station_name);
+	}
+
 	public function scopeSearchBatchCreationDateBetween ($query, $start_date, $end_date)
 	{
 		if ( !$start_date ) {

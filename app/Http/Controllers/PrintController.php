@@ -94,8 +94,10 @@ class PrintController extends Controller
 				->back()
 				->withErrors([ 'error' => 'No batch is selected to print' ]);
 		}
+		$station_name = $request->get('station', '');
 
 		$order_ids = Item::whereIn('batch_number', $batches)
+						 ->searchByStation($station_name)
 						 ->lists('order_id')
 						 ->toArray();
 

@@ -97,6 +97,9 @@
 					@endif--}}
 					<a href = "{{url(sprintf("prints/batches?batch_number[]=%s&station=%s", $batch_number, $current_batch_station->station_name))}}"
 					   target = "_blank">Print batch</a>
+					/
+					<a href = "{{url(sprintf('prints/batch_packing?batch_number[]=%s&station=%s',$batch_number, $current_batch_station->station_name))}}"
+					   target = "_blank">Print packing slip</a>
 				</div>
 				<div class = "col-xs-12">
 					<table class = "table table-bordered" id = "batch-items-table">

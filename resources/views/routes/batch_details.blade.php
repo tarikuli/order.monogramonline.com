@@ -57,6 +57,9 @@
 					<br />
 					<a href = "{{url('prints/batches?batch_number[]='.$batch_number)}}"
 					   target = "_blank">Print batch</a>
+					/
+					<a href = "{{url('prints/batch_packing?batch_number[]='.$batch_number)}}"
+					   target = "_blank">Print packing slip</a>
 				</div>
 				<div class = "col-xs-12">
 					<table class = "table table-bordered" id = "batch-items-table">
