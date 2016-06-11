@@ -580,7 +580,7 @@ class ItemController extends Controller
 		$items = Item::where('batch_number', $batch_id)
 					 ->get();
 
-		// If items not found belong to this Batch numbe then return to error page.
+		// If items not found belong to this Batch number then return to error page.
 		if ( !$items ) {
 			return view('errors.404');
 		}
@@ -659,6 +659,8 @@ class ItemController extends Controller
 					$result = substr($item->order->order_date, 0, 10);
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "itemqty" ) {//if the string is item quantity = Item Qty
 					$result = intval($item->item_quantity);
+				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "itemdescription" ) {//if the string is item quantity = Item Qty
+					$result = $item->item_description;
 				} else {
 					$keys = explode(",", $column->value);
 					$found = false;
