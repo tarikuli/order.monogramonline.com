@@ -81,10 +81,20 @@ class Order extends Model
 		$replaced = str_replace(" ", "", $search_for);
 		$values = explode(",", trim($replaced, ","));
 		if ( $search_in == 'store_order' ) {
+			$values = array_map(function ($value) {
+				return str_ireplace([
+					'M-',
+					'S-',
+				], "", $value);
+			}, $values);
 			return $query->where('short_order', 'REGEXP', implode("|", $values));
 		}
 
 		if ( $search_in == 'five_p_order' ) {
+			$values = array_map(function ($value) {
+				return intval($value);
+			}, $values);
+
 			return $query->where('id', 'REGEXP', implode("|", $values));
 		}
 
