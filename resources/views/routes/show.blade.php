@@ -131,18 +131,21 @@
 								<td>{{$count++}}</td>
 								<td>
 									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
-									   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a> <br/>
-									   {{\Monogram\Helper::orderNameFormatter($item->order)}}
+									   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a> <br />
+									{{\Monogram\Helper::orderNameFormatter($item->order)}}
 									<br />
 									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
-									<br/>Item ID: {{$item->id}}
+									<br />Item ID: {{$item->id}}
 								</td>
 								<td><a href = "{{ $item->product->product_url }}" target = "_blank"><img
 												src = "{{$item->item_thumb}}" /></a>
 								</td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
-								<td>{{$item->child_sku}}</td>
+								<td>
+									<a href = "{{ url(sprintf("logistics/sku_show?store_id=%s&search_for=%s&search_in=child_sku", $item->store_id, $item->child_sku)) }}"
+									   target = "_blank">{{$item->child_sku}}</a>
+								</td>
 								<td class = "description">{{$item->item_description}}</td>
 								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
 								<td>

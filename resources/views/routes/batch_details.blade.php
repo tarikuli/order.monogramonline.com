@@ -54,7 +54,7 @@
 				</div>
 				<div class = "col-xs-4">
 					{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $batch_number)) !!}
-					<br/>
+					<br />
 					<a href = "{{url('prints/batches?batch_number[]='.$batch_number)}}"
 					   target = "_blank">Print batch</a>
 				</div>
@@ -84,7 +84,7 @@
 								<td>
 									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
 									   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a> - {{$item->id}}
-									<br/>
+									<br />
 									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
 								</td>
 								<td>
@@ -100,7 +100,10 @@
 												src = "{{$item->item_thumb}}" /></a>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
-								<td>{{$item->child_sku}}</td>
+								<td>
+									<a href = "{{ url(sprintf("logistics/sku_show?store_id=%s&search_for=%s&search_in=child_sku", $item->store_id, $item->child_sku)) }}"
+									   target = "_blank">{{$item->child_sku}}</a>
+								</td>
 								<td class = "description">{{$item->item_description}}</td>
 								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '3', 'cols' => '20',]) !!}</td>
 							</tr>
