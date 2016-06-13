@@ -86,10 +86,10 @@
 		@if(count($ships) > 0)
 			<table class = "table table-bordered">
 				<tr>
-					<th>Order number</th>
+					<th>Shipping<br/>Order<br/>number</th>
 					<th>Mail class</th>
 					<th>Batch</th>
-					<th>Item id</th>
+					<th>Item#</th>
 					<th>SKU</th>
 					<th>Image</th>
 					<th>Name</th>

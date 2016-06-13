@@ -115,12 +115,26 @@ class StationController extends Controller {
 
 		return view ( 'stations.my_station', compact ( 'items', 'station_description' ) );
 	}
+
+	/**
+	 * From Batch page change station by done or reject
+	 * @param Request $request
+	 * @return Ambigous <\Illuminate\View\View>
+	 */
 	public function change(Request $request) {
+
+// "_token" => "mXfbcS6KiNmKpzhG9DoB6alyyGxMJC8lCGNTriW5"
+// "item_id" => "53506"
+// "action" => "done"
+
 		$action = $request->get ( 'action' );
 		$item_id = $request->get ( 'item_id' );
 
 		// $item = Item::find($item_id);
-		$item = Item::with ( 'order' )->where ( 'id', $item_id )->first ();
+		$item = Item::with ( 'order' )
+				->where ( 'id', $item_id )
+				->first ();
+
 		if (! $item) {
 			return view ( 'errors.404' );
 		}
@@ -153,6 +167,58 @@ class StationController extends Controller {
 				$station_log->save ();
 			}
 			$item->save ();
+		} elseif ($action == 'move_to_shipping') {
+
+			// Get All station in Route
+			$route = BatchRoute::with('stations')
+			->find($batch_route_id);
+
+// echo "<pre>";
+// print_r($route->stations->toArray());
+// echo "</pre>";
+
+			// Put stations in an Array
+			$stations =  array_map(function ($elem) {
+				return $elem['station_name'];
+			}, $route->stations->toArray());
+
+
+			foreach(Helper::$shippingStations as $key=>$val){
+				if(in_array($val,$stations)){
+					$current_route_shp_station[] = $val;
+				}
+			}
+
+
+			if (count($current_route_shp_station)>0) {
+				Helper::populateShippingData ( $item );
+			} else {
+				return redirect(url('batches/'.$item->batch_number.'/'.$item->station_name))
+				->withErrors(new MessageBag([
+						'error' => 'In Route dont have correct Shipping station.',
+				]));
+			}
+
+			$item->station_name = $current_route_shp_station[0];
+
+			Item::where ( 'batch_number', $item->batch_number )->update ( [
+					'item_order_status' => 'active'
+			] );
+
+			if ($current_route_shp_station[0] == '') {
+				$item->item_order_status_2 = 3;
+				$item->item_order_status = "complete";
+			} else {
+				$station_log = new StationLog ();
+				$station_log->item_id = $item->id;
+				$station_log->batch_number = $item->batch_number;
+				$station_log->station_id = Station::where ( 'station_name', $current_route_shp_station[0] )->first ()->id;
+				$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
+				$station_log->user_id = Auth::user ()->id;
+				$station_log->save ();
+			}
+			$item->save ();
+
 		} elseif ($action == 'reject') {
 			$rules = [
 					'rejection_reason' => 'required|exists:rejection_reasons,id',
@@ -170,16 +236,23 @@ class StationController extends Controller {
 			$item->save ();
 		}
 
-		$batch_item_count = Item::where ( 'batch_route_id', $batch_route_id )->where ( 'station_name', $current_station_name )->where ( 'is_deleted', 0 )->count ();
+		$batch_item_count = Item::where ( 'batch_route_id', $batch_route_id )
+								->where ( 'station_name', $current_station_name )
+								->where ( 'is_deleted', 0 )
+								->count ();
+
 		if ($request->has ( 'return_to' ) && $request->get ( 'return_to' ) == "back") {
 			return redirect ()->back ();
 		}
+
 		if ($batch_item_count) {
 			return redirect ()->back ();
 		} else {
 			return redirect ( url ( 'items/grouped' ) );
 		}
 	}
+
+
 	public function supervisor(Request $request) {
 		$routes = BatchRoute::where ( 'is_deleted', 0 )->orderBy ( 'batch_route_name' )->latest ()->lists ( 'batch_route_name', 'id' )->prepend ( 'Select a route', 'all' );
 

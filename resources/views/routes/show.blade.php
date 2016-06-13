@@ -106,7 +106,9 @@
 						<tbody>
 						@foreach($items as $item)
 							<tr data-id = "{{$item->id}}">
-								<td><a href = "#" class = "btn btn-danger reject">Reject</a></td>
+								<td>
+									<a href = "#" class = "btn btn-danger reject">Reject</a>
+								</td>
 								<td>{{$count++}}</td>
 								<td>
 									Order# <a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
@@ -115,6 +117,12 @@
 									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!}
 									<br />
 									Item# {{$item->id}}
+									<br />
+
+									@if(!in_array ( $current_batch_station->station_name, \Monogram\Helper::$shippingStations ))
+										<a href = "#" class = "move_to_shipping">Move 2 Shipping</a>
+									@endif
+
 								</td>
 								<td><a href = "{{ $item->product->product_url }}" target = "_blank"><img
 												src = "{{$item->item_thumb}}" /></a>
@@ -230,6 +238,22 @@
 					}
 				});
 			});
+		});
+
+
+		$("a.move_to_shipping").on('click', function (event)
+		{
+			event.preventDefault();
+			var value = $(this).closest('tr').attr('data-id');
+			$("<input type='hidden' value='' />")
+					.attr("name", "item_id")
+					.attr("value", value)
+					.appendTo($("form#station-action"));
+			$("<input type='hidden' value='' />")
+					.attr("name", "action")
+					.attr("value", 'move_to_shipping')
+					.appendTo($("form#station-action"));
+			$("form#station-action").submit();
 		});
 
 		$("a.reject").on('click', function (event)
