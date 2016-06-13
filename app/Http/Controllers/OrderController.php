@@ -647,7 +647,7 @@ class OrderController extends Controller
 		#return $request->all();
 		$manual_order_count = Order::where('short_order', "LIKE", sprintf("%%-WH%%"))
 								   ->count();
-		$short_order = sprintf("-WH%d", ( 10000 + $manual_order_count ));
+		$short_order = sprintf("WH%d", ( 10000 + $manual_order_count ));
 		$order_id = sprintf("%s-%s", $request->get('store'), $short_order);
 
 		$item_skus = $request->get('item_skus');
