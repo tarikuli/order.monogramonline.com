@@ -840,6 +840,14 @@ class ItemController extends Controller
 
 	public function get_active_batch_by_sku (Request $request)
 	{
+
+		if (in_array ( $request->get('station'), Helper::$shippingStations )) {
+			return redirect(url('/summary'))
+			->withErrors(new MessageBag([
+					'error' => 'Can not move from shipping Station.',
+			]));
+		}
+
 		$items = Item::with('lowest_order_date', 'route.stations')
 					 ->searchActiveByStation($request->get('station'))
 					 ->where('batch_number', '!=', '0')
