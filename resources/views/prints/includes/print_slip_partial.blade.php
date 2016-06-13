@@ -45,15 +45,19 @@
 					<tr valign = "top">
 						<td><strong>Date:</strong></td>
 						<td>{{date("m/d/y", strtotime("now"))}}</td>
-						<td></td>
+						<td>
+							@if($order->items[0]->batch_number)
+								{!! \Monogram\Helper::getHtmlBarcode($order->items[0]->batch_number) !!}<BR>Barch# {{ $order->items[0]->batch_number }}
+							@endif
+						</td>
 						<td><strong>Order #</strong></td>
 						<td>
 							<table width = "100%" cellpadding = "0" cellspacing = "0" border = "0">
 								<tr valign = "top">
 									<td align = "left"><strong>{{$order->short_order}}</strong></td>
 									<td align = "right">
-										{{\Monogram\Helper::orderNameFormatter($order)."-0"}}
 										{!! \Monogram\Helper::getHtmlBarcode(\Monogram\Helper::orderNameFormatter($order)."-0") !!}
+										<br>Shipping# {{\Monogram\Helper::orderNameFormatter($order)."-0"}}
 									</td>
 								</tr>
 							</table>
@@ -143,6 +147,13 @@
 										</td>
 										<td align = "left"></td>
 									</tr>
+
+									<tr>
+										<td colspan = "8" align = "left" valign = "top">
+											{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!} Item# {{ $item->id}}
+										</td>
+									</tr>
+
 								@endforeach
 								<tr valign = "top">
 									<td colspan = "9">

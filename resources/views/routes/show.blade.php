@@ -49,22 +49,6 @@
 					<p>Batch: # <span>{{$batch_number}}</span></p>
 					<a href = "{{url('exports/batch/'.$batch_number)}}">Export batch</a>
 					<p>Batch creation date: <span>{{substr($items[0]->batch_creation_date, 0, 10)}}</span></p>
-					{{--<div class = "col-xs-12">
-						--}}{{--<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>--}}{{--
-						--}}{{--{!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
-						<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, []) !!}</p>
-						{!! Form::submit('Change status', ['id' => 'change-status',]) !!}
-						{!! Form::close() !!}--}}{{--
-					</div>--}}
-					{{--<div class = "col-xs-12">
-						<div class = "btn-group" role = "group" aria-label = "...">
-							--}}{{--<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>--}}{{--
-							--}}{{--<button type = "button" class = "btn btn-success" id = "done-all">Done all</button>--}}{{--
-						</div>
-						{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
-						{!! Form::hidden('action', null) !!}
-						{!! Form::close() !!}
-					</div>--}}
 
 					{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
 					{!! Form::hidden('action', null) !!}
@@ -74,7 +58,9 @@
 					<p>Template:
 						<a href = "{{url(sprintf("/templates/%d", $route->template->id))}}">{!! $route->template->template_name !!}</a>
 					</p>
-					<p>Route: {{$route['batch_code']}} / {{$route['batch_route_name']}} => {!! $stations !!}</p>
+
+					<p>Route: <a href = "{{ url(sprintf("/batch_routes#%s", $route['batch_code'] )) }}"
+											   target = "_blank">{{$route['batch_code']}}</a> / {{$route['batch_route_name']}} => {!! $stations !!}</p>
 					<p>Department: {{ $department_name }}</p>
 
 					{!! Form::open(['url' =>  url(sprintf("/items/%d", $batch_number)), 'method' => 'put', 'id' => 'chabgeBatchStation']) !!}
@@ -83,18 +69,10 @@
 
 					<p>Current Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, array('id' => 'station')) !!}</p>
 
-					{{-- {!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
-					<p>Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, []) !!}</p>
-					{!! Form::submit('Change station', ['id' => 'change-status',]) !!}
-					{!! Form::close() !!} --}}
 				</div>
 				<div class = "col-xs-4">
 					{!! \Monogram\Helper::getHtmlBarcode($batch_number) !!}
 					<br />
-					{{--@if($items->first())
-						<img src = "{{$items->first()->item_thumb}}" />
-						<br />
-					@endif--}}
 					<a href = "{{url(sprintf("prints/batches?batch_number[]=%s&station=%s", $batch_number, $current_batch_station->station_name))}}"
 					   target = "_blank">Print batch</a>
 					/
@@ -114,8 +92,6 @@
 								<br />
 								Item barcode
 							</th>
-							{{--<th>Order</th>
-							<th>Order barcode</th>--}}
 							<th>Image</th>
 							<th>Date</th>
 							<th>Qty.</th>
@@ -133,12 +109,12 @@
 								<td><a href = "#" class = "btn btn-danger reject">Reject</a></td>
 								<td>{{$count++}}</td>
 								<td>
-									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
-									   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a> <br />
-									{{\Monogram\Helper::orderNameFormatter($item->order)}}
+									Order# <a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
+									   target = "_blank">{{\Monogram\Helper::orderNameFormatter($item->order)}}</a>
 									<br />
-									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
-									<br />Item ID: {{$item->id}}
+									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!}
+									<br />
+									Item# {{$item->id}}
 								</td>
 								<td><a href = "{{ $item->product->product_url }}" target = "_blank"><img
 												src = "{{$item->item_thumb}}" /></a>
@@ -238,7 +214,8 @@
 
 				var token = $(form).find('input[name="_token"]').val();
 				var current_station_name = $(form).find('input[name="current_station_name"]').val();
-
+// alert(formUrl);
+// return false;
 				$.ajax({
 					method: 'PUT', url: formUrl, data: {
 						_token: token, station_name: value, current_station_name: current_station_name,
@@ -248,11 +225,13 @@
 						location.href = route;
 					}, error: function (xhr, textStatus, errorThrown)
 					{
-						alert('Could not update product route');
+						alert(errorThrown);
+						//alert('Could not update product route');
 					}
 				});
 			});
 		});
+
 		$("a.reject").on('click', function (event)
 		{
 			event.preventDefault();
@@ -268,20 +247,8 @@
 					.appendTo($("form#station-action"));
 
 			$("#rejection-modal").modal('show');
-			/*var answer = confirm('Are you sure to reject?');
-			 if ( answer ) {
-			 var value = $(this).closest('tr').attr('data-id');
-			 $("<input type='hidden' value='' />")
-			 .attr("name", "item_id")
-			 .attr("value", value)
-			 .appendTo($("form#station-action"));
-			 $("<input type='hidden' value='' />")
-			 .attr("name", "action")
-			 .attr("value", 'reject')
-			 .appendTo($("form#station-action"));
-			 $("form#station-action").submit();
-			 }*/
 		});
+
 		$("button#reject-all").on('click', function (event)
 		{
 			event.preventDefault();
@@ -289,12 +256,6 @@
 			var value = 'reject'
 			$("input[name='action']").val(value);
 			$("#rejection-modal").modal('show');
-			/*var answer = confirm('Are you sure to reject this batch?');
-			 if ( answer ) {
-			 var value = 'reject'
-			 $("input[name='action']").val(value);
-			 $("form#action_changer").submit();
-			 }*/
 		});
 
 		$("#do-reject").on('click', function ()

@@ -166,6 +166,7 @@ class StationController extends Controller {
 			$item->station_name = Helper::getSupervisorStationName ();
 			$item->rejection_reason = $request->get ( 'rejection_reason' );
 			$item->rejection_message = trim ( $request->get ( 'rejection_message' ) );
+			$item->reached_shipping_station = 0;
 			$item->save ();
 		}
 
@@ -190,9 +191,21 @@ class StationController extends Controller {
 
 		$items = null;
 		if (count ( $request->all () )) {
-			$items = Item::with ( 'route.stations_list', 'order' )->searchBatch ( $request->get ( 'batch' ) )->searchRoute ( $request->get ( 'route' ) )->searchStatus ( $request->get ( 'status' ) )->searchStation ( $request->get ( 'station' ) )->searchOptionText ( $request->get ( 'option_text' ) )->searchOrderIds ( $request->get ( 'order_id' ) )->where ( 'is_deleted', 0 )->paginate ( 50 );
+			$items = Item::with ( 'route.stations_list', 'order' )
+					->searchBatch ( $request->get ( 'batch' ) )
+					->searchRoute ( $request->get ( 'route' ) )
+					->searchStatus ( $request->get ( 'status' ) )
+					->searchStation ( $request->get ( 'station' ) )
+					->searchOptionText ( $request->get ( 'option_text' ) )
+					->searchOrderIds ( $request->get ( 'order_id' ) )
+					->where ( 'is_deleted', 0 )
+					->paginate ( 50 );
 		} else {
-			$items = Item::with ( 'route.stations_list', 'order' )->where ( 'is_deleted', 0 )->whereNotNull ( 'batch_number' )->where ( 'station_name', Helper::getSupervisorStationName () )->paginate ( 50 );
+			$items = Item::with ( 'route.stations_list', 'order' )
+					->where ( 'is_deleted', 0 )
+					->whereNotNull ( 'batch_number' )
+					->where ( 'station_name', Helper::getSupervisorStationName () )
+					->paginate ( 50 );
 		}
 
 		return view ( 'stations.supervisor', compact ( 'items', 'request', 'routes', 'stations', 'statuses', 'item_statuses' ) );
@@ -238,22 +251,34 @@ class StationController extends Controller {
 			$station_name = $item->station_name;
 
 			// Get number of orders in a Station
-			$lines_count = Item::where ( 'station_name', $station_name )->whereNull ( 'tracking_number' )->groupBy ( 'order_id' )->get ();
+			$lines_count = Item::where ( 'station_name', $station_name )
+								->whereNull ( 'tracking_number' )
+								->groupBy ( 'order_id' )->get ();
 			// ->toSql();
 			// echo "<pre>"; echo print_r($lines_count->count()); echo " -- ".$station_name."</pre>";
 
 			if ($lines_count->count () > 0) {
 				// Get number of Items in a Station
-				$items_count = Item::where ( 'station_name', $station_name )->whereNull ( 'tracking_number' )->groupBy ( 'station_name' )->first ( [
+				$items_count = Item::where ( 'station_name', $station_name )
+								->whereNull ( 'tracking_number' )
+								->groupBy ( 'station_name' )->first ( [
 						DB::raw ( 'SUM(item_quantity) as items_count' )
 				] )->items_count;
 
 				// Get Earliest batch creation date
-				$earliest_batch_creation_date = Item::where ( 'station_name', $station_name )->whereNull ( 'tracking_number' )->orderBy ( 'batch_creation_date', 'asc' )->first ()->batch_creation_date;
+				$earliest_batch_creation_date = Item::where ( 'station_name', $station_name )
+												->whereNull ( 'tracking_number' )
+												->orderBy ( 'batch_creation_date', 'asc' )
+												->first ()->batch_creation_date;
 
-				$order_ids = Item::where ( 'station_name', $station_name )->whereNull ( 'tracking_number' )->get ();
+				$order_ids = Item::where ( 'station_name', $station_name )
+							->whereNull ( 'tracking_number' )
+							->get ();
 
-				$earliest_order_date = Order::whereIn ( 'order_id', $order_ids->lists ( 'order_id' )->toArray () )->orderBy ( 'order_date', 'asc' )->first ()->order_date;
+				$earliest_order_date = Order::whereIn ( 'order_id', $order_ids->lists ( 'order_id' )->toArray () )
+										->orderBy ( 'order_date', 'asc' )
+										->first ()
+										->order_date;
 
 				$station = Station::where ( 'station_name', $station_name )->first ();
 
@@ -276,7 +301,10 @@ class StationController extends Controller {
 	}
 	public function getBulkChange() {
 		// https://www.neontsunami.com/posts/using-lists()-in-laravel-with-custom-attribute-accessors
-		$stations = Station::where ( 'is_deleted', 0 )->get ()->lists ( 'custom_station_name', 'station_name' )->prepend ( 'Select a station', 0 );
+		$stations = Station::where ( 'is_deleted', 0 )
+							->get ()
+							->lists ( 'custom_station_name', 'station_name' )
+							->prepend ( 'Select a station', 0 );
 
 		// return $stations;
 

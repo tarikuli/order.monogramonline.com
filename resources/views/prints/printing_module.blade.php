@@ -66,7 +66,7 @@
 							</tr>
 							<tr>
 								<td colspan = "4" align = "left" valign = "top">
-									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $row->order->short_order, $row->id)) !!}
+									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $row->id)) !!}
 								</td>
 							</tr>
 						@endif

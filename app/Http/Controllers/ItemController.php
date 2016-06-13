@@ -382,13 +382,19 @@ class ItemController extends Controller
 
 	public function getBatchItems ($batch_number, $station_name)
 	{
+
 		if ( $station_name == Helper::getSupervisorStationName() ) {
-			return redirect()->back();
+			return redirect(url('/stations/supervisor'))
+			->withErrors(new MessageBag([
+					'error' => 'Batch# '.$batch_number.' required supervisor action. ',
+			]));
 		}
+
 		$items = Item::with('order')
 					 ->where('batch_number', $batch_number)
 					 ->where('station_name', $station_name)
 					 ->get();
+
 		if ( !count($items) ) {
 			return redirect()->to('items/grouped');
 			#return view('errors.404');
@@ -403,7 +409,7 @@ class ItemController extends Controller
 
 		$dept_station = DB::table('department_station')
 						  ->where('station_id', Station::where('station_name', $station_name)
-													   ->first()->id)
+						  ->first()->id)
 						  ->first();
 
 		$department_id = $dept_station ? $dept_station->department_id : 0;
@@ -442,6 +448,18 @@ class ItemController extends Controller
 
 			// Get To Station Name
 			$toStationName = $request->get('station_name');
+
+
+			// Check next shipping station exist in array then Insert itemes in Shipping table
+			if ( in_array($current_station_name, Helper::$shippingStations) ) {
+
+				return response()->json([
+						'error' => false,
+						'data'  => [
+								'route' => url(sprintf("/batches/%s/%s", $batch_number, $current_station_name)),
+						],
+				], 200);
+			}
 
 			// Get all Batch on in Same Station.
 			$items = Item::where('batch_number', $batch_number)
@@ -499,56 +517,70 @@ class ItemController extends Controller
 		return redirect()->back();
 	}
 
+	/**
+	 * Station change by Batch number and station next station name, Request come from batchs page by Done all
+	 * @param Request $request
+	 * @param string $batch_number
+	 * @param string $station_name
+	 * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\$this|Ambigous <\Illuminate\Routing\Redirector, \Illuminate\Http\RedirectResponse>
+	 */
+
 	public function postBatchItems (Request $request, $batch_number, $station_name)
 	{
 		$action = $request->get('action');
 		switch ( $action ) {
 			case 'done':
+				// Get All Lines by Batch numbe and station name
 				$item = Item::where('batch_number', $batch_number)
 							->where('station_name', $station_name)
 							->first();
 
+				// If nothing to change return to request coming page
 				if ( count($item) == 0 ) {
 					return redirect()->back();
 				}
+
+                // Get next station name for move next station.
 				$next_station_name = Helper::getNextStationName($item->batch_route_id, $item->station_name);
+
+				// Check next shipping station exist in array then Insert itemes in Shipping table
 				if ( in_array($next_station_name, Helper::$shippingStations) ) {
 					$items = Item::where('batch_number', $batch_number)
 								 ->where('station_name', $station_name)
 								 ->get();
+					// Insert Items (Lines)
 					Helper::populateShippingData($items);
 				}
+
+				// previousItems for insert instation log
+				$previousItems = Item::where('batch_number', $batch_number)
+									 ->where('station_name', $station_name)
+									 ->get();
+
+				if ( $next_station_name ) {
+					Helper::saveStationLog($previousItems, $station_name);
+				}
+
+				// Set next station name in station_name for update
 				$updates = [
-					'station_name' => $next_station_name,
+						'station_name' => $next_station_name,
 				];
 
+				// Items satatus
 				if ( $next_station_name == '' ) {
 					$updates['item_order_status_2'] = 3;
 					$updates['item_order_status'] = 'complete';
 				} else {
 					$updates['item_order_status'] = 'active';
 				}
-				$previousItems = Item::where('batch_number', $batch_number)
-									 ->where('station_name', $station_name)
-									 ->get();
+
+				// Update current stations by batch and station name
 				$items = Item::where('batch_number', $batch_number)
 							 ->where('station_name', $station_name)
 							 ->update($updates);
-				if ( $next_station_name ) {
-					/*foreach ( $previousItems as $item ) {
-						$station_log = new StationLog();
-						$station_log->item_id = $item->id;
-						$station_log->batch_number = $item->batch_number;
-						$station_log->station_id = Station::where('station_name', $station_name)
-														  ->first()->id;
-						#$station_log->started_at = date('Y-m-d h:i:s', strtotime("now"));
-						$station_log->started_at = date('Y-m-d', strtotime("now"));
-						$station_log->user_id = Auth::user()->id;
-						$station_log->save();
-					}*/
 
-					Helper::saveStationLog($previousItems, $station_name);
-				}
+
+
 
 				break;
 			case 'reject':
@@ -573,6 +605,7 @@ class ItemController extends Controller
 								 'rejection_reason'  => $request->get('rejection_reason'),
 								 'rejection_message' => trim($request->get('rejection_message')),
 								 'previous_station'  => $station_name,
+						 		 'reached_shipping_station'  => 0,
 							 ]);
 
 				break;
@@ -810,7 +843,7 @@ class ItemController extends Controller
 		$items = Item::with('lowest_order_date', 'route.stations')
 					 ->searchActiveByStation($request->get('station'))
 					 ->where('batch_number', '!=', '0')
-					 ->whereNull('tracking_number')
+					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
 					 ->paginate(2000);
 
 		$stations = Station::where('is_deleted', 0)
@@ -820,22 +853,7 @@ class ItemController extends Controller
 						   ->prepend('Select a station', '');
 		$rows = [ ];
 		$total_count = 0;
-		/*foreach ( $items->groupBy('station_name') as $station_name => $items_on_station ) {
-			$groupBySKU = $items_on_station->groupBy('item_code');
-			foreach ( $groupBySKU as $sku => $sku_groups ) {
-				$count = $sku_groups->count();
-				$total_count += $count;
-				$rows[] = [
-					'station_name'   => $station_name,
-					'sku'            => $sku,
-					'item_name'      => $sku_groups->first() ? $sku_groups->first()->item_description : "-",
-					'min_order_date' => $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
-					'item_count'     => $count,
-					'action'         => url(sprintf('items/active_batch/sku/%s/%s', $sku, $station_name)),
-				];
-			}
-		}*/
-		#return $items->groupBy('item_code');
+
 		// Jewel Update to child_sku
 		foreach ( $items->groupBy('child_sku') as $sku => $sku_groups ) {
 			$route = $sku_groups->first()->route;
@@ -966,11 +984,19 @@ class ItemController extends Controller
 
 	}
 
+	/**
+	 * Function for change active/ not start items by statuon by limit
+	 * @param Request $request
+	 * @param string $sku
+	 * @return \Illuminate\Http\$this|\Illuminate\Http\RedirectResponse
+	 */
+
 	public function changeStationBySKU (Request $request, $sku)
 	{
 		$items_to_shift = intval($request->get('item_to_shift'));
 		#$station_id = $request->get('station');
 		$station_id = $request->get('batch_stations');
+		// Check station exist
 		$station = Station::find($station_id);
 		if ( !$station ) {
 			return redirect()
@@ -979,13 +1005,18 @@ class ItemController extends Controller
 					'Not a valid station selected',
 				]);
 		}
+		// Get one station Name
 		$station_name = $station->station_name;
 
+		// Get Items by condition.
 		$items = Item::where('batch_number', '!=', 0)
+					 ->whereNull('tracking_number')
 					 ->whereNotNull('station_name')
-					 ->Where('station_name', '!=', '')
+					 ->where('station_name', '!=', '')
 					 ->where('item_code', $sku)
 					 ->get();
+
+	// Insert station activity in station log table.
 		foreach ( $items as $item ) {
 			$station_log = new StationLog();
 			$station_log->item_id = $item->id;
@@ -996,16 +1027,19 @@ class ItemController extends Controller
 			$station_log->save();
 		}
 
+		// Update numbe of Station assign from items_to_shift
 		Item::with('lowest_order_date', 'order')
 			->where('batch_number', '!=', 0)
+			->whereNull('tracking_number')
 			->whereNotNull('station_name')
-			->Where('station_name', '!=', '')
+			->where('station_name', '!=', '')
 			->where('item_code', $sku)
 			->limit($items_to_shift)
 			->update([
 				'station_name' => $station_name,
 			]);
 
+		// After update station return to active_batch_group page
 		return redirect()
 			->to(url('/items/active_batch_group'))
 			->with('success', 'Stations changed successfully.');
@@ -1096,6 +1130,7 @@ class ItemController extends Controller
 					$rejected_item->rejection_reason = $request->get('rejection_reason');
 					$rejected_item->rejection_message = trim($request->get('rejection_message'));
 					$rejected_item->previous_station = $rejected_from_station;
+					$rejected_item->reached_shipping_station = 0;
 					$rejected_item->save();
 				}
 

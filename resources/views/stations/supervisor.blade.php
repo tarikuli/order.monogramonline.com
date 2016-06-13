@@ -67,6 +67,7 @@
 					<th>Order#</th>
 					<th>Order date</th>
 					<th>Store id</th>
+					<th>Item#</th>
 					<th>SKU</th>
 					<th>Qty.</th>
 					<th>Release</th>
@@ -86,6 +87,7 @@
 						       class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a></td>
 						<td>{{substr($item->order->order_date, 0, 10)}}</td>
 						<td>{{$item->store->store_name}}</td>
+						<td>{{$item->id}}</td>
 						<td>{{$item->item_code}}</td>
 						<td>{{$item->item_quantity}}</td>
 						<td>{!! $item->batch_number ? sprintf("<a href='%s/%d'>Release</a>", url('items/release'), $item->id) : "N/A" !!}</td>

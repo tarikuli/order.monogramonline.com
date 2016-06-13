@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use DNS1D;
 use Illuminate\Support\Facades\Log;
+use PhpParser\Node\Expr\Array_;
 
 class Helper
 {
@@ -383,12 +384,20 @@ APPEND;
 		return date("F j, Y / g:i a", strtotime($date));
 	}
 
+	/**
+	 * Get next Station Name
+	 * @param string $batch_route_id
+	 * @param string $current_station_name
+	 * @return NULL
+	 */
 	public static function getNextStationName ($batch_route_id, $current_station_name)
 	{
 		$batch_route_id = $batch_route_id;
 		$current_station_name = $current_station_name;
+
 		$current_station = Station::where('station_name', $current_station_name)
 								  ->first();
+
 		if ( !$current_station ) {
 			return null;
 		}
@@ -494,6 +503,11 @@ APPEND;
 		return Setting::first()->default_shipping_rule;
 	}
 
+	/**
+	 * Insert items (Lines) in shipping station table.
+	 * when items (Lines) reached to Shipping station
+	 * @param Array $items
+	 */
 	public static function populateShippingData ($items)
 	{
 		if ( $items instanceof Item ) {
@@ -541,12 +555,6 @@ APPEND;
 				// push all the items to shipping table with the unique order id
 				static::insertDataIntoShipping($current_item, $unique_order_id);
 			}
-			/*foreach ( $items->groupBy('order_id') as $order_id => $move_able_items ) {
-				$unique_order_id = static::generateShippingUniqueId($item->order);
-				foreach ( $move_able_items as $current_item ) {
-					static::insertDataIntoShipping($current_item, $unique_order_id);
-				}
-			}*/
 		} elseif ( $items->count() ) {
 			// order has more than 0
 			// any of the items has not reached the shipping station
