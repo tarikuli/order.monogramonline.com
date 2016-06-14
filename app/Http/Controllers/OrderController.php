@@ -645,7 +645,7 @@ class OrderController extends Controller
 	public function postManual (Requests\ManualOrderCreateRequest $request)
 	{
 		#return $request->all();
-		$manual_order_count = Order::where('short_order', "LIKE", sprintf("%%-WH%%"))
+		$manual_order_count = Order::where('short_order', "LIKE", sprintf("%%WH%%"))
 								   ->count();
 		$short_order = sprintf("WH%d", ( 10000 + $manual_order_count ));
 		$order_id = sprintf("%s-%s", $request->get('store'), $short_order);

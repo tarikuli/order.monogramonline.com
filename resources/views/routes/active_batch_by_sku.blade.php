@@ -95,6 +95,8 @@
 						<td>{{ $total_count }}</td>
 						<td></td>
 						<td></td>
+						<td></td>
+						<td></td>
 					</tr>
 					{{--<tr>
 						<td colspan = "11">
