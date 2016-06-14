@@ -318,6 +318,8 @@ class StationController extends Controller {
 		$summaries = [ ];
 		$total_lines = 0;
 		$total_items = 0;
+
+		set_time_limit(0);
 		foreach ( $items as $item ) {
 			$summary = [ ];
 
@@ -326,7 +328,8 @@ class StationController extends Controller {
 			// Get number of orders in a Station
 			$lines_count = Item::where ( 'station_name', $station_name )
 								->whereNull ( 'tracking_number' )
-								->groupBy ( 'order_id' )->get ();
+								->groupBy ( 'order_id' )
+								->get ();
 			// ->toSql();
 			// echo "<pre>"; echo print_r($lines_count->count()); echo " -- ".$station_name."</pre>";
 

@@ -293,19 +293,26 @@ APPEND;
 
 		// joining is done, because, one or more items may be added on the shipping table before
 		$items = Item::where('order_id', $order_id)
+// 					 ->where('batch_number', '!=', 0)
+// 					 ->whereNull('tracking_number')
 					 ->orderBy('items.reached_shipping_station', 'DESC')
 					 ->get();
 		// if the first item has the value of 1
 		// then at least one item reached the shipping stations
 		// return the items
 		$first_item = $items->first();
+// echo "<pre>"; print_r($first_item); echo "</pre>";
 		// if ( $first_item->reached_shipping_station == 1 || ( $first_item->reached_shipping_station == 0 && $first_item->item_id == null ) ) {
+
 		if ( $first_item->reached_shipping_station == 1 ) {
 			return $items->filter(function ($row) {
+				Log::info( "Jewel	".$row->id);
 				return !Ship::where('item_id', $row->id)
+// 							->where('reached_shipping_station', '=', 1)
 							->first();
 			});
 		}
+
 		// no item reached the shipping station,
 		// return nothing
 		return [ ];
@@ -522,16 +529,14 @@ APPEND;
 
 	public static function setShippingFlag ($item)
 	{
-		// set reached_shipping_station to 1, as it reaches the shipping station
-		$item->reached_shipping_station = 1;
-		$item->save();
-
+		#Jewel need to fix this function
 		// if all items in a same order does pass shipping stations
 		$order_id = $item->order_id;
+
+
 		$items = Item::with('order')
 					 ->where('order_id', $order_id)
 					 ->get();
-
 		$reached_shipping_station_count = 0;
 		foreach ( $items as $current ) {
 			if ( $current->reached_shipping_station ) {
@@ -546,11 +551,13 @@ APPEND;
 			// filter the item ids those are available in shipping table
 			$items = $items->filter(function ($row) use ($items_exist_in_shipping) {
 				// return false if the shipping table has the item id
+// 				echo "<br>".$row->id;
 				return $items_exist_in_shipping->contains($row->id) ? false : true;
 			});
-			#dd($items);
+
 			// generate new order id
 			$unique_order_id = static::generateShippingUniqueId($items->first()->order);
+
 			foreach ( $items as $current_item ) {
 				// push all the items to shipping table with the unique order id
 				static::insertDataIntoShipping($current_item, $unique_order_id);
@@ -564,7 +571,18 @@ APPEND;
 					 // WAITING FOR ANOTHER PC
 				 ]);
 		}
+
+		// set reached_shipping_station to 1, as it reaches the shipping station
+		$item->reached_shipping_station = 1;
+		$item->save();
 	}
+
+
+// 	private static function checkRow ($items_exist_in_shipping) {
+// 		// return false if the shipping table has the item id
+// 		// 	echo "<br>".$row->id;
+// 		return $items_exist_in_shipping->contains($row->id) ? false : true;
+// 	}
 
 	public static function insertDataIntoShipping ($item, $unique_order_id = null)
 	{

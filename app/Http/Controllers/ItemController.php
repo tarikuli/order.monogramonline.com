@@ -854,6 +854,7 @@ class ItemController extends Controller
 					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
 					 ->paginate(2000);
 
+		$current_station_name = $request->get('station');
 		$stations = Station::where('is_deleted', 0)
 						   ->latest()
 						   ->get()
@@ -865,18 +866,22 @@ class ItemController extends Controller
 		// Jewel Update to child_sku
 		foreach ( $items->groupBy('child_sku') as $sku => $sku_groups ) {
 			$route = $sku_groups->first()->route;
+			$item_thumb = $sku_groups->first()->item_thumb;
 			$batch_stations = $route->stations->lists('custom_station_name', 'id')
 											  ->prepend('Select station to change', '0');
 			$count = $sku_groups->count();
 			$total_count += $count;
 			$rows[] = [
-				'sku'            => $sku,
-				'item_name'      => $sku_groups->first() ? $sku_groups->first()->item_description : "-",
-				'min_order_date' => $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
-				'item_count'     => $count,
-				'action'         => url(sprintf('items/active_batch/sku/%s', $sku)),
-				'route'          => sprintf("%s : %s", $route->batch_code, $route->batch_route_name),
-				'batch_stations' => $batch_stations,
+				'sku'            		 	=> $sku,
+				'current_station_anchor' 	=> str_replace('/', '-', $sku),
+				'redriec_sku' 				=> str_replace('/', '!!!tarikuli!!!', $sku),
+				'item_thumb'	 			=> $item_thumb,
+				'item_name'      			=> $sku_groups->first() ? $sku_groups->first()->item_description : "-",
+				'min_order_date' 			=> $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
+				'item_count'     			=> $count,
+				'action'         			=> url(sprintf('items/active_batch/sku/%s', $sku)),
+				'route'          			=> sprintf("%s:%s", $route->batch_code, $route->batch_route_name),
+				'batch_stations' 			=> $batch_stations,
 			];
 		}
 
@@ -885,6 +890,7 @@ class ItemController extends Controller
 			->withRequest($request)
 			->with('stations', $stations)
 			->with('pagination', $items->render())
+			->with('current_station_name', $current_station_name)
 			->with('total_count', $total_count);
 	}
 
@@ -1001,7 +1007,10 @@ class ItemController extends Controller
 
 	public function changeStationBySKU (Request $request, $sku)
 	{
+		$sku = str_replace('!!!tarikuli!!!', '/', $sku);
+
 		$items_to_shift = intval($request->get('item_to_shift'));
+		$current_station_name = $request->get('current_station_name');
 		#$station_id = $request->get('station');
 		$station_id = $request->get('batch_stations');
 		// Check station exist
@@ -1021,7 +1030,7 @@ class ItemController extends Controller
 					 ->whereNull('tracking_number')
 					 ->whereNotNull('station_name')
 					 ->where('station_name', '!=', '')
-					 ->where('item_code', $sku)
+					 ->where('child_sku', $sku)
 					 ->get();
 
 	// Insert station activity in station log table.
@@ -1039,17 +1048,18 @@ class ItemController extends Controller
 		Item::with('lowest_order_date', 'order')
 			->where('batch_number', '!=', 0)
 			->whereNull('tracking_number')
-			->whereNotNull('station_name')
-			->where('station_name', '!=', '')
-			->where('item_code', $sku)
+// 			->whereNotNull('station_name')
+			->where('station_name', '=', $current_station_name)
+			->where('child_sku', $sku)
 			->limit($items_to_shift)
 			->update([
 				'station_name' => $station_name,
 			]);
 
 		// After update station return to active_batch_group page
+		$sku = str_replace('/', '-', $sku);
 		return redirect()
-			->to(url('/items/active_batch_group'))
+			->to(url('/items/active_batch_group?station='.$current_station_name.'#'.$sku))
 			->with('success', 'Stations changed successfully.');
 	}
 
