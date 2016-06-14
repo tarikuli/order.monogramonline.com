@@ -533,38 +533,52 @@ APPEND;
 		// if all items in a same order does pass shipping stations
 		$order_id = $item->order_id;
 
+		// set reached_shipping_station to 1, as it reaches the shipping station
+		$item->reached_shipping_station = 1;
+		$item->save();
+
 
 		$items = Item::with('order')
 					 ->where('order_id', $order_id)
 					 ->get();
+		$uniqueId = $items;
+
 		$reached_shipping_station_count = 0;
 		foreach ( $items as $current ) {
 			if ( $current->reached_shipping_station ) {
+// Log::info("Jewel reached_shipping_station: ".$current->reached_shipping_station);
 				++$reached_shipping_station_count;
 			}
 		}
 
+// Log::info("Jewel order_id: ".$order_id." items->count: ".$items->count()."  reached_shipping_station_count: ".$reached_shipping_station_count);
+
 		if ( $items->count() && ( $items->count() == $reached_shipping_station_count ) ) { // move to shipping table
+// Log::info("Jewel get the item id from the shipping table");
 			// get the item id from the shipping table
 			$items_exist_in_shipping = Ship::where('order_number', $order_id)
 										   ->lists('item_id');
+
 			// filter the item ids those are available in shipping table
 			$items = $items->filter(function ($row) use ($items_exist_in_shipping) {
 				// return false if the shipping table has the item id
 // 				echo "<br>".$row->id;
 				return $items_exist_in_shipping->contains($row->id) ? false : true;
 			});
-
+// Log::info("Jewel generateShippingUniqueId: ".$uniqueId->first()->order);
 			// generate new order id
-			$unique_order_id = static::generateShippingUniqueId($items->first()->order);
+			$unique_order_id = static::generateShippingUniqueId($uniqueId->first()->order);
 
 			foreach ( $items as $current_item ) {
+// Log::info("Jewel Push all the items to shipping table with the unique order id ".$current_item." unique id: ".$unique_order_id);
 				// push all the items to shipping table with the unique order id
 				static::insertDataIntoShipping($current_item, $unique_order_id);
 			}
 		} elseif ( $items->count() ) {
+// Log::info("Jewel waiting for another PCS: ".$order_id);
 			// order has more than 0
 			// any of the items has not reached the shipping station
+
 			Order::where('order_id', $order_id)
 				 ->update([
 					 'order_status' => 9,
@@ -572,9 +586,6 @@ APPEND;
 				 ]);
 		}
 
-		// set reached_shipping_station to 1, as it reaches the shipping station
-		$item->reached_shipping_station = 1;
-		$item->save();
 	}
 
 

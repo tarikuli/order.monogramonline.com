@@ -445,14 +445,14 @@ class ItemController extends Controller
 		if ( $request->has('station_name') && ( $request->ajax() ) ) {
 			// Get From Station Name
 			$current_station_name = $request->get('current_station_name');
-
+// Log::info("Jewel current_station_name ".$current_station_name);
 			// Get To Station Name
 			$toStationName = $request->get('station_name');
-
+// Log::info("Jewel toStationName ".$toStationName);
 
 			// Check next shipping station exist in array then Insert itemes in Shipping table
 			if ( in_array($current_station_name, Helper::$shippingStations) ) {
-
+// Log::info("Jewel Error 1: ".sprintf("/batches/%s/%s", $batch_number, $current_station_name));
 				return response()->json([
 						'error' => false,
 						'data'  => [
@@ -467,11 +467,13 @@ class ItemController extends Controller
 						 ->get();
 
 			foreach ( $items as $item ) {
+
 				$item->station_name = $toStationName;
 				$item->save();
 			}
 
 			if ( in_array($toStationName, Helper::$shippingStations) ) {
+// Log::info("Jewel Writer in shipping ".$toStationName);
 				Helper::populateShippingData($items);
 			}
 			Helper::saveStationLog($items, $toStationName);
@@ -490,7 +492,6 @@ class ItemController extends Controller
 	{
 		$items = Item::where('batch_number', $batch_number)
 					 ->get();
-
 		if ( $request->has('status') ) {
 			$status = $request->get('status');
 			/*if ( !count($items) || !$status || !array_key_exists($status, $this->statuses) ) {

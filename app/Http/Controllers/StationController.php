@@ -419,15 +419,24 @@ class StationController extends Controller {
 			if ($batch == - 1) {
 				return false;
 			}
-			$items = Item::with ( 'route.stations_list' )->where ( 'batch_number', $batch )->get ();
+
+			// Get all Items in a Batch
+			$items = Item::with ( 'route.stations_list' )
+							->where ( 'batch_number', $batch )
+							->get ();
+
 			$count = $items->groupBy ( 'station_name' )->count ();
+
 			if ($count != 1) {
 				$errors [] = sprintf ( "Batch %s either has more than one stations assigned or not a valid batch number", $batch );
 
 				return false;
 			}
+
 			$first_item = $items->first ();
+
 			$stations_in_route_ids = $first_item->route->stations_list->lists ( 'station_id' )->toArray ();
+
 			if (! in_array ( $station->id, $stations_in_route_ids )) {
 				$errors [] = sprintf ( "Batch %s Route: %s doesn't have \"%s (%s) \" station in its route.", $batch, $first_item->route->batch_route_name, $station->station_description, $station->station_name );
 

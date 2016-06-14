@@ -233,8 +233,8 @@
 						location.href = route;
 					}, error: function (xhr, textStatus, errorThrown)
 					{
-						alert(errorThrown);
-						//alert('Could not update product route');
+						//alert(errorThrown);
+						alert('Could not update product route');
 					}
 				});
 			});
