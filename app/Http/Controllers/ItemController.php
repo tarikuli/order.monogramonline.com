@@ -680,7 +680,22 @@ class ItemController extends Controller
 			$row = [ ];
 			#$row[] = explode("-", $item->order_id)[2];
 			$options = $item->item_option;
-			$decoded_options = json_decode($options, true);
+
+			if(empty($options)){
+				echo gettype($options);
+				return redirect(url('items/grouped?route=all&station=all&start_date=&end_date=&batch='.$batch_id.'+&status=all'))
+				->withErrors(new MessageBag([
+						'error' => 'Can not creatr CSV<br>Order# '.$item->order_id.' Batch# '.$batch_id.' option empty.',
+				]));
+			}
+
+			$decoded_options_s = json_decode($options, true);
+			$decoded_options = [];
+			foreach ( $decoded_options_s as $key => $values ) {
+				$decoded_options[trim($key)] = $values;
+			}
+
+
 			foreach ( $template->exportable_options as $column ) {
 				$result = '';
 				if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
@@ -899,6 +914,7 @@ class ItemController extends Controller
 	{
 		// SELECT id, order_id, COUNT( 1 ) AS counts FROM items GROUP BY order_id HAVING counts > 1
 		// get the
+		set_time_limit(0);
 		$rows = Item::with('order')
 					->where('batch_number', '!=', 0)
 					->groupBy('order_id')
@@ -912,7 +928,8 @@ class ItemController extends Controller
 			return Helper::itemsMovedToShippingTable($row->order_id);
 		});
 
-		return view('shipping.waiting_for_another_item')->with('items', $items);
+		return view('shipping.waiting_for_another_item')
+			->with('items', $items);
 	}
 
 	public function partial_shipping (Request $request)

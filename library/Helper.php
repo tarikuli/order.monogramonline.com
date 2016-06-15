@@ -306,7 +306,7 @@ APPEND;
 
 		if ( $first_item->reached_shipping_station == 1 ) {
 			return $items->filter(function ($row) {
-				Log::info( "Jewel	".$row->id);
+// Log::info( "Jewel	".$row->id);
 				return !Ship::where('item_id', $row->id)
 // 							->where('reached_shipping_station', '=', 1)
 							->first();
