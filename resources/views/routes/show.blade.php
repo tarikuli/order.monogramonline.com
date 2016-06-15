@@ -124,7 +124,7 @@
 									@endif
 
 								</td>
-								<td><a href = "{{ $item->product->product_url }}" target = "_blank"><img
+								<td><a href = "{{ $item->item_url }}" target = "_blank"><img
 												src = "{{$item->item_thumb}}" /></a>
 								</td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
