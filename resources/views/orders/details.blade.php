@@ -302,7 +302,7 @@
 					@setvar($ind++)
 				</tr>
 				<tr colspan = "10">
-					<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!}</td>
+					<td>Item# {{ $item->id }}{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!} </td>
 				</tr>
 				@if($item->shipInfo && $item->shipInfo->tracking_number)
 					<tr>

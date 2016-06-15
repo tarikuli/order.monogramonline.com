@@ -27,7 +27,7 @@
 </head>
 <body>
 	@include('includes.header_menu')
-	<div class = "container">
+	<div class = "container" style="min-width: 1550px; margin-left: 10px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li><a href = "{{url('items')}}">Order items list</a></li>
@@ -97,8 +97,6 @@
 		@if(count($items) > 0)
 			<h3 class = "page-header">
 				Items ({{ $items->total() }} items found / {{$items->currentPage()}} of {{$items->lastPage()}} pages)
-				{{-- <span style = "font-size: 14px; padding-left: 10px;"
-				      class = "text-info text-center">{{$unassigned}} items batch ready to create.</span> --}}
 				<a href = "{{url('/logistics/sku_show?store_id=yhst-128796189915726&unassigned=1')}}"
 				   style = "font-size: 14px; padding-left: 10px;">{{$unassignedProductCount}} products Routes not assigned yet - {{ $unassignedOrderCount }} orders can be assigned to batches.</a>
 				<br><a href = "{{url('batch_routes?unassigned=1')}}"
@@ -112,7 +110,6 @@
 					<th>Image</th>
 					<th>Order date</th>
 					<th>Order status</th>
-					{{--<th>Item status</th>--}}
 					<th>Trk#</th>
 					<th>Shipping date</th>
 					<th>Customer</th>
@@ -128,12 +125,12 @@
 				@foreach($items as $item)
 					<tr data-id = "{{$item->id}}">
 						<td>
-
-							<a href = "{{ url("orders/details/".$item->order_id) }}"
+							5p# <a href = "{{ url("orders/details/".$item->order_id) }}"
 							   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a>
 							<br>
 							{{\Monogram\Helper::orderNameFormatter($item->order)}}
-
+							<br/>
+							Item# {{($item->id)}}
 						</td>
 						{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
 						<td><img src = "{{$item->item_thumb}}" width = "70" height = "70" /></td>

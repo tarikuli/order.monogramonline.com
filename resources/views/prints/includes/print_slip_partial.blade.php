@@ -46,9 +46,7 @@
 						<td><strong>Date:</strong></td>
 						<td>{{date("m/d/y", strtotime("now"))}}</td>
 						<td>
-							@if($order->items[0]->batch_number)
-								{!! \Monogram\Helper::getHtmlBarcode($order->items[0]->batch_number) !!}<BR>Barch# {{ $order->items[0]->batch_number }}
-							@endif
+
 						</td>
 						<td><strong>Order #</strong></td>
 						<td>
@@ -151,6 +149,9 @@
 									<tr>
 										<td colspan = "8" align = "left" valign = "top">
 											{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!} Item# {{ $item->id}}
+											@if($item->batch_number)
+												{!! \Monogram\Helper::getHtmlBarcode($order->items[0]->batch_number) !!} Barch# {{ $item->batch_number }}
+											@endif
 										</td>
 									</tr>
 
