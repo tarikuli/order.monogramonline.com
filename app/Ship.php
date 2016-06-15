@@ -56,6 +56,16 @@ class Ship extends Model
 		return;
 	}
 
+
+	public function scopeSearchUniqueOrderId ($query, $unique_order_id)
+	{
+		if ( empty( $unique_order_id ) ) {
+			return;
+		}
+
+		return $query->where('unique_order_id', "LIKE", sprintf("%%%s%%", $unique_order_id));
+	}
+
 	public function scopeSearchAddressOne ($query, $address_1)
 	{
 		if ( empty( $address_1 ) ) {
@@ -171,6 +181,15 @@ class Ship extends Model
 		}
 
 		return $query->where('transaction_id', intval($transaction_id));
+	}
+
+	public function scopeSearchItemId ($query, $item_id)
+	{
+		if ( empty( $item_id ) ) {
+			return;
+		}
+
+		return $query->where('item_id', intval($item_id));
 	}
 
 	public function scopeSearchTrackingNumber ($query, $tracking_number)

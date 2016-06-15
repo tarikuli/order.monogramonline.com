@@ -61,13 +61,15 @@
                     </span>
 				</div>
 			</div>
-			<div class = "form-group col-xs-2">
-				<label for = "" class = ""></label>
-				{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}
-			</div>
+
 			<div class = "form-group col-xs-2">
 				<label for = "" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+			</div>
+
+			<div class = "form-group col-xs-2">
+				<label for = "" class = ""></label>
+				{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}
 			</div>
 			{!! Form::close() !!}
 		</div>
@@ -89,7 +91,7 @@
 					<th>Shipping<br/>Order<br/>number</th>
 					<th>Mail class</th>
 					<th>Batch</th>
-					<th>Item#</th>
+					<th>Item id</th>
 					<th>SKU</th>
 					<th>Image</th>
 					<th>Name</th>

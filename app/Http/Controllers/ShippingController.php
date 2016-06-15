@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 class ShippingController extends Controller
 {
 	public static $search_in = [
+		'unique_order_id' => 'Unique Order Id',
+		'item_id'    	  => 'Item id',
 		'address_one'     => 'Address 1',
 		'address_two'     => 'Address 2',
 		'name'            => 'Name',
