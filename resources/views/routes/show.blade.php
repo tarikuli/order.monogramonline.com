@@ -98,9 +98,9 @@
 							<th>SKU</th>
 							<th>Item name</th>
 							<th>Options</th>
-							<th>
+							<!-- th>
 								<button type = "button" class = "btn btn-success" id = "done-all">Done all</button>
-							</th>
+							</th -->
 						</tr>
 						</thead>
 						<tbody>
@@ -133,15 +133,25 @@
 									<a href = "{{ url(sprintf("logistics/sku_show?store_id=%s&search_for=%s&search_in=child_sku", $item->store_id, $item->child_sku)) }}"
 									   target = "_blank">{{$item->child_sku}}</a>
 								</td>
-								<td class = "description">{{$item->item_description}}</td>
-								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
-								<td>
+								<td align="left">
+									{{$item->item_description}}
+																		<br/>
 									@if($item->supervisor_message)
 										{{ $item->supervisor_message }}
 										<br />
 									@endif
-									<a href = "#" class = "btn btn-success done">Done</a>
+									@if($item->tracking_number)
+
+									<div style="color: red;">
+									Don't Make this Item again.<BR>
+										TRK# {{ $item->tracking_number }}
+									</div>
+									@endif
 								</td>
+								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
+								<!-- td>
+									<a href = "#" class = "btn btn-success done">Done</a>
+								</td -->
 							</tr>
 						@endforeach
 						</tbody>
@@ -156,7 +166,7 @@
 							<td></td>
 							<td></td>
 							<td></td>
-							<td></td>
+							<!-- td></td -->
 						</tr>
 						</tfoot>
 					</table>
