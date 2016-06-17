@@ -172,6 +172,7 @@ class OrderController extends Controller
 
 	public function update (OrderUpdateRequest $request, $id)
 	{
+		#return $request->all();
 		$customer = Customer::find($request->get('customer_id'));
 		$customer->ship_company_name = $request->get('ship_company_name');
 		$customer->bill_company_name = $request->get('bill_company_name');
@@ -198,6 +199,7 @@ class OrderController extends Controller
 		$customer->save();
 
 		$order = Order::where('order_id', $id)
+					  ->latest()
 					  ->first();
 		$order->order_status = Status::where('status_code', $request->get('order_status'))
 									 ->first()->id;
@@ -209,15 +211,19 @@ class OrderController extends Controller
 
 		$index = 0;
 		$items = $request->get('item_id');
-		$item_quantities = $request->get('item_quantity');
+		$item_quantities = $request->get('previous_item_quantity');
 		$item_options = $request->get('item_option');
 		$item_order_statuses = $request->get('item_order_status');
 		#return isset( $item_order_statuses[$index] ) ? $item_order_statuses[$index] : 1;
+		$all_items_grand_total = 0;
+		$total_items = 0;
 		foreach ( $items as $item_id_number ) {
 			$item = Item::find($item_id_number);
 			$item->item_quantity = $item_quantities[$index];
+			$all_items_grand_total += ( (int) $item->item_quantity * (float) $item->item_unit_price );
 			$item->item_order_status_2 = isset( $item_order_statuses[$index] ) ? $item_order_statuses[$index] : 1;
 			$option = $item_options[$index];
+			++$total_items;
 			$pieces = preg_split('/\r\n|[\r\n]/', $option);
 			$index++;
 			$json = [ ];
@@ -232,6 +238,56 @@ class OrderController extends Controller
 			$item->item_option = json_encode($json);
 			$item->save();
 		}
+		$item_skus = $request->get('item_skus');
+		if ( count($item_skus) ) {
+			$item_options = $request->get('item_options');
+			$item_quantities = $request->get('item_quantity');
+			$item_prices = $request->get('item_price', [ ]);
+			$grand_sub_total = 0.0;
+			$error = true;
+			foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
+				// for any reason, the id catalog is not available on item options
+				// the user input as the options they want
+				if ( !array_key_exists($item_id_catalog, $item_options) ) {
+					continue;
+				}
+				++$total_items;
+				// at least one item found without error
+				$error = false;
+				$item = new Item();
+				$item->order_id = $order->order_id;
+				$item->store_id = $order->store_id;
+				$item->item_code = $item_skus[$item_id_catalog];
+				$item->item_id = $item_id_catalog;
+				$options = [ ];
+				foreach ( $item_options[$item_id_catalog] as $item_option_key => $item_option_value ) {
+					$key = str_replace(" ", "_", preg_replace("/\s+/", " ", $item_option_key));
+					$options[$key] = $item_option_value;
+				}
+				$item->item_option = json_encode($options);
+				$item->item_quantity = $item_quantities[$item_id_catalog];
+				$item->item_unit_price = array_key_exists($item_id_catalog, $item_prices) ? floatval($item_prices[$item_id_catalog]) : 0;
+				$grand_sub_total += ( (int) $item->item_quantity * (float) $item->item_unit_price );
+				$all_items_grand_total += $grand_sub_total;
+				$product = Product::where('id_catalog', $item_id_catalog)
+								  ->first();
+
+				if ( $product ) {
+					$item->item_description = $product->product_name;
+					$item->item_thumb = $product->product_thumb;
+					$item->item_url = $product->product_url;
+				}
+
+				$item->data_parse_type = "manual";
+
+				$child_sku = Helper::getChildSku($item);
+				$item->child_sku = $child_sku;
+				$item->save();
+			}
+		}
+		$order->item_count = $total_items;
+		$order->total = ( $all_items_grand_total - $order->coupon_value + $order->gift_wrap_cost + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
+		$order->save();
 		session()->flash('success', 'Order is successfully updated');
 
 		$note_text = trim($request->get('note'));
