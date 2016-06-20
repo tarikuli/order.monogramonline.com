@@ -736,9 +736,13 @@ class ItemController extends Controller
 					$found = false;
 					$values = [ ];
 					foreach ( $keys as $key ) {
-						$trimmed_key = implode("_", explode(" ", trim($key)));
-// Helper::jewelDebug($trimmed_key);
-// Helper::jewelDebug($decoded_options);
+// 						$trimmed_key = implode("_", explode(" ", trim($key)));
+						$trimmed_key = implode(" ", explode(" ", trim($key)));
+// if($key == 'Enter Personalization up to 12 Characters'){
+// 	Helper::jewelDebug($key);
+// 	Helper::jewelDebug($trimmed_key);
+// 	Helper::jewelDebug($decoded_options);
+// }
 						if ( array_key_exists($trimmed_key, $decoded_options) ) {
 							$values[] = $decoded_options[$trimmed_key];
 							$found = true;
@@ -933,9 +937,11 @@ class ItemController extends Controller
 						DB::raw("COUNT(1) as row_count"),
 					]);
 
-		$items = $rows->filter(function ($row) {
-			return Helper::itemsMovedToShippingTable($row->order_id);
-		});
+		$items = $rows->filter(
+				function ($row) {
+					return Helper::itemsMovedToShippingTable($row->order_id);
+				}
+		);
 
 		return view('shipping.waiting_for_another_item')
 			->with('items', $items);
