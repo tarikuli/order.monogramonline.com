@@ -302,14 +302,24 @@ APPEND;
 		// return the items
 		$first_item = $items->first();
 // echo "<pre>"; print_r($first_item); echo "</pre>";
+// Log::info( $first_item);
 		// if ( $first_item->reached_shipping_station == 1 || ( $first_item->reached_shipping_station == 0 && $first_item->item_id == null ) ) {
 
 		if ( $first_item->reached_shipping_station == 1 ) {
 			return $items->filter(function ($row) {
 // Log::info( "Jewel	".$row->id);
-				return !Ship::where('item_id', $row->id)
+// 				return !Ship::where('item_id', $row->id)
+// // 							->where('reached_shipping_station', '=', 1)
+// 							->first();
+
+				$test = !Ship::where('item_id', $row->id)
 // 							->where('reached_shipping_station', '=', 1)
+// 							->whereNull('tracking_number')
 							->first();
+
+// Log::info( $test);
+
+				return $test;
 			});
 		}
 
@@ -326,6 +336,8 @@ APPEND;
 
 	public static function itemsMovedToShippingTable ($order_id)
 	{
+// Helper::jewelDebug($order_id);
+
 		// get all the items with the order id
 		$items = Item::where('order_id', $order_id)
 					 ->get();

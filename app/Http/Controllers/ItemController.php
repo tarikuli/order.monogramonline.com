@@ -10,6 +10,7 @@ use App\Product;
 use App\RejectionReason;
 use App\Setting;
 use App\Station;
+use App\Ship;
 use App\StationLog;
 use App\Template;
 use Illuminate\Http\Request;
@@ -942,6 +943,31 @@ class ItemController extends Controller
 					return Helper::itemsMovedToShippingTable($row->order_id);
 				}
 		);
+
+		$error_count = [];
+
+		foreach($items as $current){
+			$multiple_item_rows = \Monogram\Helper::getAllOrdersFromOrderId($current->order_id);
+
+			if($multiple_item_rows){
+				$findProblemOrder = $multiple_item_rows->toArray();
+				if(count($findProblemOrder) == 0){
+//Helper::jewelDebug("Order#	".$current->order_id."	has waiting for another pic problem");
+					$error_count[] = "Order#	".$current->order_id."	has waiting for another pic problem";
+
+					$getProblemWaiting = Ship::where('order_number', $current->order_id)
+												->whereNull('tracking_number');
+					$getProblemWaiting->delete();
+				}
+			}
+		}
+
+
+		if ( count($error_count)>0 ) {
+			return redirect()
+			->to(url('/shipping'))
+			->withErrors($error_count);
+		}
 
 		return view('shipping.waiting_for_another_item')
 			->with('items', $items);
