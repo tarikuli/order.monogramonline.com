@@ -95,6 +95,9 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('items/grouped', 'ItemController@getGroupedBatch');
 		get('items/release/{item_id}', 'ItemController@release');
 		get('items/release_batch', 'ItemController@releaseBatches');
+		get('items/bulk_item_change', 'ItemController@getBulkItemChange');
+		post('items/bulk_item_change', 'ItemController@postBulkItemChange');
+
 		resource('items', 'ItemController');
 
 		get('products_specifications/step/{id?}', 'ProductSpecificationController@getSteps');
@@ -183,5 +186,5 @@ Route::group([ 'prefix' => 'auth' ], function () {
 });
 
 Event::listen('illuminate.query', function ($q) {
-	#Log::info($q);
+	#Log::info($q); // join
 });

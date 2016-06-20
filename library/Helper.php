@@ -1043,4 +1043,11 @@ APPEND;
 
 		return $zeroStations;
 	}
+
+	public static function jewelDebug($valueArray){
+		echo "<pre>";
+			print_r($valueArray);
+		echo "</pre>";
+		echo "-----------------------------------------------------";
+	}
 }

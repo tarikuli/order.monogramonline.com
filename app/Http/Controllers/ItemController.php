@@ -682,7 +682,6 @@ class ItemController extends Controller
 			$options = $item->item_option;
 
 			if(empty($options)){
-				echo gettype($options);
 				return redirect(url('items/grouped?route=all&station=all&start_date=&end_date=&batch='.$batch_id.'+&status=all'))
 				->withErrors(new MessageBag([
 						'error' => 'Can not creatr CSV<br>Order# '.$item->order_id.' Batch# '.$batch_id.' option empty.',
@@ -691,8 +690,16 @@ class ItemController extends Controller
 
 			$decoded_options_s = json_decode($options, true);
 			$decoded_options = [];
-			foreach ( $decoded_options_s as $key => $values ) {
-				$decoded_options[trim($key)] = $values;
+
+			if ( $decoded_options_s ) {
+				foreach ( $decoded_options_s as $key => $value ) {
+					$decoded_options[trim(str_replace("_", " ", $key))] = $value;
+				}
+			}else{
+				return redirect(url('items/grouped?route=all&station=all&start_date=&end_date=&batch='.$batch_id.'+&status=all'))
+					->withErrors(new MessageBag([
+							'error' => 'Can not creatr CSV<br>Order# '.$item->order_id.' Batch# '.$batch_id.' option empty.',
+					]));
 			}
 
 
@@ -730,6 +737,8 @@ class ItemController extends Controller
 					$values = [ ];
 					foreach ( $keys as $key ) {
 						$trimmed_key = implode("_", explode(" ", trim($key)));
+// Helper::jewelDebug($trimmed_key);
+// Helper::jewelDebug($decoded_options);
 						if ( array_key_exists($trimmed_key, $decoded_options) ) {
 							$values[] = $decoded_options[$trimmed_key];
 							$found = true;
@@ -1214,5 +1223,90 @@ class ItemController extends Controller
 		return redirect()
 			->back()
 			->with('success', $message);
+	}
+
+	public function getBulkItemChange(){
+
+
+		return view ( 'items.bulk_item_change' );
+	}
+
+	public function postBulkItemChange (Request $request) {
+
+		$posted_batches = $request->get ( 'item_id' );
+
+
+		// remove newlines and spaces
+		$itemIds = explode ( "\n", $posted_batches ) ;
+		$errors = [];
+
+
+		foreach (array_filter($itemIds) as $key => $item_id){
+
+			$item = Item::with ( 'order' )
+						->where ( 'id', $item_id )
+						->first ();
+
+			/* Jewel */
+			//### Get next Shipping Station from Route
+			$batch_route_id = $item->batch_route_id;
+			// Get All station in Route
+			$route = BatchRoute::with('stations')
+								 ->find($batch_route_id);
+
+			// Put stations in an Array
+			$stations =  array_map(function ($elem) {
+				return $elem['station_name'];
+			}, $route->stations->toArray());
+
+// echo "<br>".$key ." =	".$item_id." route:	".$route->batch_code." Batch# ".$item->batch_number ;
+// echo "<pre>"; print_r($stations); echo "</pre>";
+
+			// Get Shipping Station from Array.
+			$current_route_shp_station = [];
+			foreach(Helper::$shippingStations as $key=>$val){
+				if(in_array($val,$stations)){
+					$current_route_shp_station[] = $val;
+				}
+			}
+			//### Get next Shipping Station from Route
+
+			//### Insert Item in Shipping Table
+			if (count($current_route_shp_station) <= 0) {
+				$item->station_name = 'R-SHP';
+			}
+			try {
+				set_time_limit(0);
+				Helper::populateShippingData ( $item );
+
+// 				echo "<br>".$order_id = $item->order_id." reached_shipping_station =".$item->reached_shipping_station;
+// 				echo "<pre>"; print_r($current_route_shp_station); echo "</pre>";
+
+				if (count($current_route_shp_station)>0){
+					$item->station_name = $current_route_shp_station[0];
+				}
+// Log::error($item_id."	".$item->batch_number);
+
+				$item->item_order_status_2 = 99;
+				$item->item_order_status = "complete";
+				$item->save ();
+
+				// 			echo "<pre>"; print_r($item->toArray()); echo "</pre>";
+
+
+			} catch(Exception $e) {
+				Log::error('item_id:	'.$item_id.'	batches:	'.$item->batch_number.'	Station_name:	'.$item->station_name.'	In Route dont have correct Shipping station	'.$e->getMessage());
+				$errors [] = 'item_id:	'.$item_id.'	batches:	'.$item->batch_number.'	Station_name:	'.$item->station_name.'	In Route dont have correct Shipping station	'.$e->getMessage();
+			}
+		}
+
+		// redirect with errors if any error found
+		if (count ( $errors )) {
+			return redirect ()->back ()->withErrors ( $errors );
+		}
+
+// 		dd($itemIds);
+		return redirect ()->back ()->with ( 'success', sprintf ( "Total of: %d items moved to Shipping station", count($itemIds)) );
+
 	}
 }

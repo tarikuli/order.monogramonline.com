@@ -81,6 +81,7 @@ class StationController extends Controller {
 		return redirect ( $url );
 		// return redirect(url('stations'));
 	}
+
 	public function destroy($id) {
 		$station = Station::where ( 'is_deleted', 0 )->find ( $id );
 
@@ -123,7 +124,7 @@ class StationController extends Controller {
 	 */
 	public function change(Request $request) {
 
-// "_token" => "mXfbcS6KiNmKpzhG9DoB6alyyGxMJC8lCGNTriW5"
+// "_token" => "mXfbcS6KiNmKpzhG9DoB6alyyGxMJC8lCGNTriW5" Export batch
 // "item_id" => "53506"
 // "action" => "done"
 
@@ -386,6 +387,7 @@ class StationController extends Controller {
 
 		return view ( 'items.bulk_change' )->with ( 'stations', $stations );
 	}
+
 	public function postBulkChange(Request $request) {
 		$posted_station = trim ( $request->get ( 'station' ) );
 		// check if station exists
@@ -459,6 +461,7 @@ class StationController extends Controller {
 
 		return redirect ()->back ()->with ( 'success', sprintf ( "Total of: %d items moved to station: %s", $changed, $posted_station ) );
 	}
+
 	private function apply_station_change($items, $station_name) {
 		foreach ( $items as $item ) {
 			$item->station_name = $station_name;
@@ -477,6 +480,7 @@ class StationController extends Controller {
 
 		return $items->count ();
 	}
+
 	public function getExportStationLog(Request $request) {
 		$start = trim ( $request->get ( 'start_date' ) );
 		$output = null;
@@ -529,6 +533,7 @@ class StationController extends Controller {
 
 		return view ( 'stations.export_station' )->with ( 'request', $request )->with ( 'output', $output );
 	}
+
 	public function postExportStationLog(Request $request) {
 		// grab the month
 		$start = trim ( $request->get ( 'start_date' ) );
@@ -598,6 +603,7 @@ class StationController extends Controller {
 
 		return response ()->download ( $fully_specified_path );
 	}
+
 	private function range_date($first, $last) {
 		$arr = array ();
 		$now = strtotime ( $first );
