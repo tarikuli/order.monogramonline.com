@@ -25,7 +25,7 @@
 </head>
 <body>
 	@include('includes.header_menu')
-	<div class = "container">
+	<div class = "container" style="min-width: 1550px; margin-left: 10px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li class = "active">Batch list</li>
@@ -92,7 +92,8 @@
 						<th>Lines</th>
 						<th>Current station</th>
 						<th>Current station since</th>
-						<th>Next station</th>
+						<th>Image</th>
+						<th style="width:250px;">Child SKU</th>
 						<th>Status</th>
 						<th>MinOrderDate</th>
 					</tr>
@@ -126,9 +127,16 @@
 								      title = "{{ $row['current_station_description'] }}">{{ $row['current_station_name'] }}</span>
 							</td>
 							<td>{{ $row['batch_creation_date'] }}</td>
-							<td><span data-toggle = "tooltip" data-placement = "top"
-							          title = "{{ $row['next_station_description'] }}">{{ $row['next_station_name'] }}</span>
+							<td>
+							{{-- <span data-toggle = "tooltip" data-placement = "top"
+							          title = "{{ $row['next_station_description'] }}">{{ $row['next_station_name'] }}</span> --}}
+							  <span data-toggle = "tooltip" data-placement = "top"
+							          title = "{{ $row['child_sku'] }}">
+							  	<img src = "{{ $row['item_thumb'] }}" width = "70" height = "70" />
+							  </span>
+
 							</td>
+							<td>{{ $row['child_sku'] }}</td>
 							<td>{{$row['batch_status']}}</td>
 							<td>{{$row['min_order_date']}}</td>
 						</tr>

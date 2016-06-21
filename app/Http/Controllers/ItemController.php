@@ -335,6 +335,9 @@ class ItemController extends Controller
 				if ( $searched_station_name && $station_name != $searched_station_name ) {
 					continue;
 				}
+// 				return $item;
+				$row['item_thumb'] = $item->item_thumb;
+				$row['child_sku'] = $item->child_sku;
 				$row['batch_number'] = $item->batch_number;
 				$row['batch_creation_date'] = substr($item->batch_creation_date, 0, 10);
 				$row['route_code'] = $item->route->batch_code;
