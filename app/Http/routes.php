@@ -92,6 +92,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		// Add changeBatchStation
 		put('items/{batch_number}', 'ItemController@changeBatchStation');
 
+
+		get('items/doctor', 'ItemController@doctorCheckup');
 		get('items/grouped', 'ItemController@getGroupedBatch');
 		get('items/release/{item_id}', 'ItemController@release');
 		get('items/release_batch', 'ItemController@releaseBatches');
@@ -125,6 +127,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('logistics/create_child_sku', 'LogisticsController@post_create_child_sku');
 		post('logistics/post_preview', 'LogisticsController@post_preview');
 
+
 		get('stations/bulk', 'StationController@getBulkChange');
 		post('stations/bulk', 'StationController@postBulkChange');
 		get('export_station', 'StationController@getExportStationLog');
@@ -135,6 +138,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('stations/on_change_apply', 'StationController@on_change_apply');
 		get('stations/my_station', 'StationController@my_station');
 		get('summary', 'StationController@summary');
+		get('summary/export', 'ItemController@exportItemTable');
+
 
 		resource('departments', 'DepartmentController');
 
@@ -188,3 +193,6 @@ Route::group([ 'prefix' => 'auth' ], function () {
 Event::listen('illuminate.query', function ($q) {
 	#Log::info($q); // join
 });
+//  `items`.`item_status` = statuses.id ( `statuses`.`status_name` ) = 6
+// item_order_status = complete
+// item_order_status_2 =2

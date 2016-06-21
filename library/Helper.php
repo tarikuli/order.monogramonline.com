@@ -781,6 +781,8 @@ APPEND;
 																   // returned
 																   8,
 																   // cancelled
+																   6,
+							 									   // Shipped
 							 ])
 							 ->where(function ($query) {
 								 return $query->where('parameter_options.batch_route_id', '!=', 115)
@@ -1056,10 +1058,24 @@ APPEND;
 		return $zeroStations;
 	}
 
+// 	public static function getDebug(){
+// 		return Item::join('orders', 'items.order_id', '=', 'orders.order_id')
+// 							->join('shipping', 'items.order_id', '=', 'shipping.order_number')
+// 							->where('item_count','>',1)
+// 							->limit(10)
+// 							->get();
+
+// 	}
 	public static function jewelDebug($valueArray){
 		echo "<pre>";
+		if (is_string($valueArray)){
+			echo $valueArray;
+		}else{
 			print_r($valueArray);
+		}
 		echo "</pre>";
 		echo "-----------------------------------------------------";
+		Log::info("---jewelDebug---");
+		Log::info($valueArray);
 	}
 }

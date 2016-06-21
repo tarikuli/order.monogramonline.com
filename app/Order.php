@@ -22,6 +22,12 @@ class Order extends Model
 					->where('is_deleted', 0);
 	}
 
+	public function shipping ()
+	{
+		return $this->hasMany('App\Ship', 'order_number', 'order_id')
+		->where('is_deleted', 0);
+	}
+
 	public function order_sub_total ()
 	{
 		return $this->hasOne('App\Item', 'order_id', 'order_id')

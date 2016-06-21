@@ -25,6 +25,7 @@
 
 		@if(count($summaries) > 0)
 			<h3 class = "page-header">Not Started & Active (unshipped) Batches By Stations summary</h3>
+			<a href = "{{url('summary/export')}}">Export Item Table</a>
 			<table class = "table table-bordered">
 				<tr>
 					<th>Station</th>

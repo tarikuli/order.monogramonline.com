@@ -22,6 +22,16 @@ class Item extends Model
 					]);
 	}
 
+	private function tableColumns ()
+	{
+		$columns = $this->getConnection()
+					->getSchemaBuilder()
+					->getColumnListing($this->getTable());
+
+		return array_slice($columns, 0, -1);
+	}
+
+
 	public function parameter_options ()
 	{
 		return $this->hasMany('App\Option', 'store_id', 'store_id');
@@ -288,107 +298,9 @@ class Item extends Model
 					 ->where('batch_creation_date', '<=', $ending);
 
 	}
-	/*public function scopeSearchByOrderId ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}
 
-	public function scopeSearchByOrderDate ($query, $search_for, $search_in)
+	public static function getTableColumns ()
 	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order_date' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
+		return (new static())->tableColumns();
 	}
-
-	public function scopeSearchByStoreId ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}
-
-	public function scopeSearchByState ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}
-
-	public function scopeSearchByDescription ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}
-
-	public function scopeSearchByItemId ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}
-
-	public function scopeSearchByBatch ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}
-
-	public function scopeSearchByBatchCreationDate ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}*/
 }

@@ -40,6 +40,7 @@ class ItemController extends Controller
 	public function index (Request $request)
 	{
 		#return [$request->get('search_for_first'), $request->get('search_in_first')];
+
 		$items = Item::with('order.customer', 'store', 'route.stations_list')
 					 ->where('is_deleted', 0)
 					 ->search($request->get('search_for_first'), $request->get('search_in_first'))
@@ -52,16 +53,17 @@ class ItemController extends Controller
 
 		// For debug
 		#return $items;
-
+		set_time_limit(0);
 		$unassignedProducts = Option::where(function ($query) {
 			return $query->whereNull('batch_route_id')
 						 ->orWhere('batch_route_id', Helper::getDefaultRouteId());
-		})
-									->get();
+		})->get();
+
 		$unassignedOrderCount = Item::whereIn('child_sku', $unassignedProducts->lists('child_sku')
-																			  ->toArray())
+								  	->toArray())
 									->where('is_deleted', 0)
 									->count();
+
 		$unassignedProductCount = $unassignedProducts->count();
 
 		$unassigned = Helper::countPossibleBatches();
@@ -1339,6 +1341,122 @@ class ItemController extends Controller
 
 // 		dd($itemIds);
 		return redirect ()->back ()->with ( 'success', sprintf ( "Total of: %d items moved to Shipping station", count($itemIds)) );
+
+	}
+
+	public function doctorCheckup () {
+
+		$orders = Order::with ( 'items', 'shipping' )
+						->where('item_count','>',1)
+						->limit(10)
+						->get();
+
+
+
+		foreach ($orders as $key => $order){
+			$checkShippingTable = [];
+			$checkItemTable = [];
+// 			Helper::jewelDebug($order->order_id);
+
+			echo "<br>".$order->order_id;
+
+			foreach ($order->items as $item){
+				$checkItemTable[$item->id] = 1;
+// 				echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number;
+
+				foreach ($order->shipping as $ship){
+					if($item->id == $ship->item_id){
+						echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number."	---	".$ship->item_id;
+						$checkShippingTable[$ship->item_id]= 1;
+					}				}
+				echo "<br>---------+++++++++--------------";
+			}
+			Helper::jewelDebug($checkShippingTable);
+			Helper::jewelDebug($checkItemTable);
+
+			$uniqueIds = array_diff($checkItemTable, $checkShippingTable);
+			Helper::jewelDebug($uniqueIds);
+
+			if(count($checkShippingTable) == ($order->item_count)){
+				// Full Item Shipped
+
+				// Update Order Status Update item Status to complete
+
+				// Update item Status to complete
+
+			}else{
+
+			}
+			echo "<br>---------***********************--------------";
+		}
+// 		return $order;
+
+	}
+
+	public function exportItemTable (Request $request)
+	{
+
+		$tableColumns = Item::getTableColumns();
+		$file_path = sprintf("%s/assets/exports/inventories/", public_path());
+		$file_name = sprintf("item_table-%s-%s.csv", date("y-m-d-h-i-s", strtotime('now')), str_random(5));
+		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
+
+		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'a+'), 'w');
+		$csv->insertOne($tableColumns);
+// Helper::jewelDebug($tableColumns);
+
+		set_time_limit(0);
+		$items = Item::where('is_deleted', 0)
+					->limit(900000)
+					->get($tableColumns);
+
+			foreach ($items as $item) {
+
+				$item_option = str_replace(',','',$item->item_option);
+				$item_option = str_replace('\\','',$item_option);
+				$item_option = str_replace('":"',' = ',$item_option);
+
+				$row = [
+						$item->id,
+						$item->order_id,
+						$item->store_id,
+						$item->item_code,
+						$item->child_sku,
+						$item->item_description,
+						$item->item_id,
+						$item_option,
+						$item->item_quantity,
+						$item->item_thumb,
+						$item->item_unit_price,
+						$item->item_url,
+						$item->item_taxable,
+						$item->tracking_number,
+						$item->batch_route_id,
+						$item->batch_creation_date,
+						$item->batch_number,
+						$item->station_name,
+						$item->previous_station,
+						$item->item_order_status,
+						$item->item_order_status_2,
+						$item->data_parse_type,
+						$item->item_status,
+						$item->rejection_reason,
+						$item->rejection_message,
+						$item->supervisor_message,
+						$item->reached_shipping_station,
+						$item->is_deleted,
+						$item->created_at
+
+				];
+
+				$csv->insertOne($row);
+			}
+
+
+
+// 		$csv->insertAll($items);
+
+		return response()->download($fully_specified_path);
 
 	}
 }

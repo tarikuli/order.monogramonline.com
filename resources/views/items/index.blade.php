@@ -83,7 +83,7 @@
 			</div>
 
 			<div class = "form-group col-xs-2">
-				<label for = "status">Order Status</label>
+				<label for = "status">Batch Status</label>
 				{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'status', 'class' => 'form-control']) !!}
 			</div>
 
