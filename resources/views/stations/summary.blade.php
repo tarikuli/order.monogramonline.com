@@ -14,6 +14,7 @@
 			white-space: nowrap;
 		}
 	</style>
+
 </head>
 <body>
 	@include('includes.header_menu')
@@ -25,7 +26,10 @@
 
 		@if(count($summaries) > 0)
 			<h3 class = "page-header">Not Started & Active (unshipped) Batches By Stations summary</h3>
+
 			<a href = "{{url('summary/export')}}">Export Item Table</a>
+
+
 			<table class = "table table-bordered">
 				<tr>
 					<th>Station</th>
@@ -68,5 +72,6 @@
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script type = "text/javascript"></script>
+
 </body>
 </html>

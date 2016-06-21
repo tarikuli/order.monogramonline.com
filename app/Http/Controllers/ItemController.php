@@ -1406,58 +1406,55 @@ class ItemController extends Controller
 
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'a+'), 'w');
 		$csv->insertOne($tableColumns);
-// Helper::jewelDebug($tableColumns);
 
 		set_time_limit(0);
-		$items = Item::where('is_deleted', 0)
-					->limit(900000)
-					->get($tableColumns);
+// 		$items = Item::where('is_deleted', 0)
+// 					->limit(10)
+// 					->get($tableColumns);
+// 			 Item::where('is_deleted', 0)->chunk(500, function($items) use($csv) {
+			 Item::chunk(500, function($items) use($csv) {
+			        foreach ($items as $item) {
+			            // Add a new row with data
+			        	$item_option = str_replace(',','',$item->item_option);
+			        	$item_option = str_replace('\\','',$item_option);
+			        	$item_option = str_replace('":"',' = ',$item_option);
 
-			foreach ($items as $item) {
+			        	$row = [
+			        			$item->id,
+			        			$item->order_id,
+			        			$item->store_id,
+			        			$item->item_code,
+			        			$item->child_sku,
+			        			$item->item_description,
+			        			$item->item_id,
+			        			$item_option,
+			        			$item->item_quantity,
+			        			$item->item_thumb,
+			        			$item->item_unit_price,
+			        			$item->item_url,
+			        			$item->item_taxable,
+			        			$item->tracking_number,
+			        			$item->batch_route_id,
+			        			$item->batch_creation_date,
+			        			$item->batch_number,
+			        			$item->station_name,
+			        			$item->previous_station,
+			        			$item->item_order_status,
+			        			$item->item_order_status_2,
+			        			$item->data_parse_type,
+			        			$item->item_status,
+			        			$item->rejection_reason,
+			        			$item->rejection_message,
+			        			$item->supervisor_message,
+			        			$item->reached_shipping_station,
+			        			$item->is_deleted,
+			        			$item->created_at
 
-				$item_option = str_replace(',','',$item->item_option);
-				$item_option = str_replace('\\','',$item_option);
-				$item_option = str_replace('":"',' = ',$item_option);
+			        	];
 
-				$row = [
-						$item->id,
-						$item->order_id,
-						$item->store_id,
-						$item->item_code,
-						$item->child_sku,
-						$item->item_description,
-						$item->item_id,
-						$item_option,
-						$item->item_quantity,
-						$item->item_thumb,
-						$item->item_unit_price,
-						$item->item_url,
-						$item->item_taxable,
-						$item->tracking_number,
-						$item->batch_route_id,
-						$item->batch_creation_date,
-						$item->batch_number,
-						$item->station_name,
-						$item->previous_station,
-						$item->item_order_status,
-						$item->item_order_status_2,
-						$item->data_parse_type,
-						$item->item_status,
-						$item->rejection_reason,
-						$item->rejection_message,
-						$item->supervisor_message,
-						$item->reached_shipping_station,
-						$item->is_deleted,
-						$item->created_at
-
-				];
-
-				$csv->insertOne($row);
-			}
-
-
-
-// 		$csv->insertAll($items);
+			        	$csv->insertOne($row);
+			        }
+			    });
 
 		return response()->download($fully_specified_path);
 
