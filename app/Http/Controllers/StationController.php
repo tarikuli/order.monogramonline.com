@@ -20,11 +20,13 @@ use League\Csv\Writer;
 use Monogram\Helper;
 
 class StationController extends Controller {
+
 	private $statuses = [
 			'not started' => 'Not started',
 			'active' => 'Active',
 			'completed' => 'Completed'
 	];
+
 	public function index() {
 		$count = 1;
 		$stations = Station::with ( 'departments_list' )->where ( 'is_deleted', 0 )->orderBy ( 'station_name', 'asc' )->paginate ( 200 );
@@ -33,9 +35,11 @@ class StationController extends Controller {
 
 		return view ( 'stations.index', compact ( 'stations', 'count', 'departments' ) );
 	}
+
 	public function create() {
 		return view ( 'stations.create' );
 	}
+
 	public function store(StationCreateRequest $request) {
 		$station = new Station ();
 		$station->station_name = trim ( $request->get ( 'station_name' ) );
@@ -46,6 +50,7 @@ class StationController extends Controller {
 
 		return redirect ( url ( 'stations' ) );
 	}
+
 	public function show($id) {
 		$station = Station::where ( 'is_deleted', 0 )->find ( $id );
 
@@ -55,6 +60,7 @@ class StationController extends Controller {
 
 		return view ( 'stations.show', compact ( 'station' ) );
 	}
+
 	public function edit($id) {
 		$station = Station::where ( 'is_deleted', 0 )->find ( $id );
 
@@ -64,6 +70,7 @@ class StationController extends Controller {
 
 		return view ( 'stations.edit', compact ( 'station' ) );
 	}
+
 	public function update(StationUpdateRequest $request, $id) {
 		$station = Station::where ( 'is_deleted', 0 )->find ( $id );
 
@@ -73,6 +80,7 @@ class StationController extends Controller {
 
 		$station->station_name = trim ( $request->get ( 'station_name' ) );
 		$station->station_description = $request->get ( 'station_description' );
+		$station->station_status = $request->get ( 'station_status' );
 		$station->save ();
 
 		session ()->flash ( 'success', 'Station is successfully updated.' );
@@ -94,6 +102,7 @@ class StationController extends Controller {
 
 		return redirect ( url ( 'stations' ) );
 	}
+
 	public function status(Request $request) {
 		$station_name = $request->get ( 'station_name' );
 		$stations = Station::where ( 'is_deleted', 0 )->lists ( 'station_description', 'station_name' );
@@ -105,6 +114,7 @@ class StationController extends Controller {
 
 		return view ( 'stations.status', compact ( 'station_name', 'stations', 'items', 'request' ) );
 	}
+
 	public function my_station() {
 		$station_id = session ( 'station_id' );
 		$station = Station::find ( $station_id );

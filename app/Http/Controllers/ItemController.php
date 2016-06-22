@@ -1459,4 +1459,64 @@ class ItemController extends Controller
 		return response()->download($fully_specified_path);
 
 	}
+
+	public function getOrderStatus (Request $request)
+	{
+
+		$orderNumber = trim ( $request->get ( 'order' ) );
+		$email = trim ( $request->get ( 'email' ) );
+		$orderinfo = [];
+
+		if ((!empty ( $orderNumber ))) {
+			// Start coder for Valide Input
+			$rules = [
+					'order'  => 'required',
+					'email' => 'required|email',
+			];
+
+			$inputs = [
+					'order'         => $request->get('order'),
+					'email' => $request->get('email'),
+			];
+
+			$validator = Validator::make($inputs, $rules);
+
+			if ( $validator->fails() ) {
+				return redirect(url('/trk_order_status'))
+				->withErrors($validator);
+			}
+			// End coder for Valide Input
+
+			// ----------------
+			$orders = Order::with ('items', 'shipping', 'customer' )
+						->where('short_order','=', $orderNumber)
+// 						->where('bill_email','=', $email)
+						->limit(1)
+						->get();
+// return $orders;
+			foreach ($orders as $key => $order){
+
+				if(($order->customer->bill_email) != $email){
+					return redirect(url('/trk_order_status'))
+					->withErrors(new MessageBag([
+							'error' => 'Email:'.$email.' not found for Order# '.$orderNumber,
+					]));
+				}
+
+				//---- Insert for display front end.
+				$orderinfo['short_order'] 		= $order->short_order;
+				$orderinfo['ship_full_name'] 	= $order->customer->ship_full_name;
+				$orderinfo['ship_city_state'] 	= $order->customer->ship_city.', '.$order->customer->ship_state;
+				$orderinfo['items_subtotal'] 	= $order->item_count.' /'.$order->total;
+				$orderinfo['order_date'] 		= $order->order_date;
+				$orderinfo['shipping'] 			= $order->customer->shipping;
+				$orderinfo['tracking'] 			= $order->items->first()->tracking_number;
+				$orderinfo['status'] 			= $order->items->first()->station_name;
+			}
+			//-----------------
+ 		}
+
+		return view ( 'items.trk_order_status' )->with ( 'request', $request )
+												->with ( 'orderinfo', $orderinfo );
+	}
 }

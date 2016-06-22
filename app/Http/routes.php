@@ -179,6 +179,7 @@ Route::group([ 'middleware' => [ 'guest' ] ], function () {
 	get('login', 'AuthenticationController@getLogin');
 	post('login', 'AuthenticationController@postLogin');
 	post('hook', 'OrderController@hook');
+	get('trk_order_status', 'ItemController@getOrderStatus');
 });
 
 // Redefinition of routes
