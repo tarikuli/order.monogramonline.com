@@ -439,6 +439,11 @@ class OrderController extends Controller
 		return view('orders.add', compact('stores'));
 	}
 
+	/**
+	 * Pull Order from Yahoo store by order ID
+	 * @param Request $request
+	 * @return \Illuminate\Http\$this|Ambigous <\Illuminate\Routing\Redirector, \Illuminate\Http\RedirectResponse>
+	 */
 	public function postAddOrder (Request $request)
 	{
 		$order_ids = [ ];
@@ -755,6 +760,7 @@ class OrderController extends Controller
 			$order->short_order = $short_order;
 			$order->item_count = count($request->get('item_id_catalog'));
 			$order->order_date = date('Y-m-d h:i:s', strtotime("now"));
+			$order->order_numeric_time = strtotime('Y-m-d h:i:s', strtotime("now"));
 			$order->store_id = $request->get('store');
 
 			$order->sub_total = floatval($request->get('subtotal', 0));
@@ -913,7 +919,9 @@ class OrderController extends Controller
 		$order->card_expiry = $request->get('Card-Expiry');
 		$order->order_comments = $request->get('Comments');
 		$order->order_date = date('Y-m-d H:i:s', strtotime($request->get('Date')));
-		$order->order_numeric_time = strtotime($request->get('Numeric-Time'));
+		//$order->order_numeric_time = strtotime($request->get('Numeric-Time'));
+		// 06-22-2016 Change by Jewel
+		$order->order_numeric_time = ($request->get('Numeric-Time'));
 		$order->order_ip = $request->get('IP');
 		$order->paypal_merchant_email = $request->get('PayPal-Merchant-Email', '');
 		$order->paypal_txid = $request->get('PayPal-TxID', '');
