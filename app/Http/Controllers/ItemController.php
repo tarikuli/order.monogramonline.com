@@ -1521,7 +1521,7 @@ class ItemController extends Controller
 // 						$station = $order->items->first()->station_name." > ".$station->first()->station_status;
 						$station = $station->first()->station_status;
 					}else{
-						$station = "Not In production";
+						$station = "New order received. In queue for production";
 					}
 				}else{
 					$station = "Shipped";
