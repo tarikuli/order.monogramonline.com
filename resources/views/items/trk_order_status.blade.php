@@ -70,7 +70,7 @@
 						<td>Ship method (% shipped)</td>	<td>{{$orderinfo['shipping']}}</td>
 					</tr>
 					<tr>
-						<td>Tracking#</td>					<td>{{$orderinfo['tracking']}}</td>
+						<td>Tracking#</td>					<td><a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $orderinfo['tracking'])) }}" target = "_blank">{{$orderinfo['tracking']}}</a></td>
 					</tr>
 					<tr>
 						<td>Status</td>						<td>{{$orderinfo['status']}}</td>

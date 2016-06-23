@@ -1493,7 +1493,6 @@ class ItemController extends Controller
 // 						->where('bill_email','=', $email)
 						->limit(1)
 						->get();
-// return $orders;
 			foreach ($orders as $key => $order){
 
 				if(($order->customer->bill_email) != $email){
@@ -1503,6 +1502,7 @@ class ItemController extends Controller
 					]));
 				}
 
+
 				//---- Insert for display front end.
 				$orderinfo['short_order'] 		= $order->short_order;
 				$orderinfo['ship_full_name'] 	= $order->customer->ship_full_name;
@@ -1511,7 +1511,23 @@ class ItemController extends Controller
 				$orderinfo['order_date'] 		= $order->order_date;
 				$orderinfo['shipping'] 			= $order->customer->shipping;
 				$orderinfo['tracking'] 			= $order->items->first()->tracking_number;
-				$orderinfo['status'] 			= $order->items->first()->station_name;
+
+				if(empty($order->items->first()->tracking_number)){
+					$station = Station::where ( 'is_deleted', 0 )
+										->where('station_name',$order->items->first()->station_name )
+										->limit(1)
+										->get();
+					if(count($station)> 0){
+// 						$station = $order->items->first()->station_name." > ".$station->first()->station_status;
+						$station = $station->first()->station_status;
+					}else{
+						$station = "Not In production";
+					}
+				}else{
+					$station = "Shipped";
+				}
+
+				$orderinfo['status'] 			= $station;
 			}
 			//-----------------
  		}
