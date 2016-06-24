@@ -55,6 +55,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('exports/batch_routes', 'ExportController@batch_routes');
 
 		get('exports/batch/{id}', 'ItemController@export_batch');
+		post('orders/mailer', 'MailController@mailer');
+		post('orders/send_mail', 'MailController@send_mail');
 
 		post('products/change_mixing_status', 'ProductController@change_mixing_status');
 		get('products/unassigned', 'ProductController@unassigned');
