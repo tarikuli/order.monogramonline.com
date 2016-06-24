@@ -159,41 +159,29 @@
 
 								@endforeach
 
-								<tr>
-									<td colspan = "7" align = "left" valign = "top">
-										<table border="0" width="100%" cellspacing="0" cellpadding="0">
-										<tbody>
-											{{-- <tr>
-												<td width="90%" align = "right"> <p><strong>Subtotal:</strong>&nbsp;</p></td>
-												<td nowrap="nowrap"> <p>{{$order->sub_total}} </p></td>
-											</tr> --}}
-											<tr>
-												<td width="90%" align = "right"><p><strong>Coupon:</strong>{{$order->coupon_id}}</p></td>
-												<td nowrap="nowrap"><p>{{$order->coupon_value}} </p></td>
-											</tr>
-											<tr>
-												<td align = "right"><p><strong>Tax:</strong>&nbsp;</p></td>
-												<td nowrap="nowrap"><p>{{$order->tax_charge}} </p></td>
-											</tr>
-											<tr>
-												<td align = "right"><p><strong>Shipping Cost:</strong>&nbsp;</p></td>
-												<td nowrap="nowrap"><p>{{$order->shipping_charge}}</p></td>
-											</tr>
-											<tr>
-												<td align = "right"><p><strong>Total:</strong>&nbsp;</p></td>
-												<td nowrap="nowrap"><p>{{$order->total}}</p></td>
-											</tr>
+									<tr>
+										<td colspan = "6" align = "right" valign = "top"><strong>Coupon: </strong> ({{$order->coupon_id}}) </td>
+										<td align = "right" ><p>{{$order->coupon_value}} </p></td>
+									</tr>
+									<tr>
+										<td colspan = "6" align = "right" ><strong>Tax:</strong>&</td>
+										<td align = "right" ><p>{{$order->tax_charge}} </p></td>
+									</tr>
+									<tr>
+										<td colspan = "6" align = "right" ><strong>Shipping Cost:</strong></td>
+										<td align = "right" ><p>{{$order->shipping_charge}} </p></td>
+									</tr>
+									<tr>
+										<td colspan = "6" align = "right" ><strong>Total:</strong></td>
+										<td align = "right" ><p>{{$order->total}} </p></td>
+									</tr>
 
-										</tbody>
-										</table>
-									</td>
-								</tr>
 
-								<tr valign = "top">
-									<td colspan = "7">
-										<hr size = "1">
-									</td>
-								</tr>
+									<tr valign = "top">
+										<td colspan = "7">
+											<hr size = "1">
+										</td>
+									</tr>
 
 
 								<tr valign = "top">
