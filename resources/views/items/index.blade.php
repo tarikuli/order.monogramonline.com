@@ -141,7 +141,7 @@
 						<td>
 							{{$item->shipInfo ? ($item->shipInfo->tracking_number  ?: "Not shipped") : "N/A"}}
 							<br/>
-							<a href = "{{url(sprintf('prints/email_packing?order_id[]=%s', $item->order->first()->order_id))}}">Send Email</a>
+							<a href = "{{url(sprintf('prints/email_packing?order_id[]=%s', $item->order_id))}}">Send Email</a>
 						</td>
 						<td>{{ $item->shipInfo ? $item->shipInfo->postmark_date : "N/A" }}
 						<td><a href = "{{ url("customers/".$item->order->customer->id) }}" title = "This is customer id"

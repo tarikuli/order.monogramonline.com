@@ -160,11 +160,11 @@
 								@endforeach
 
 									<tr>
-										<td colspan = "6" align = "right" valign = "top"><strong>Coupon: </strong> ({{$order->coupon_id}}) </td>
+										<td colspan = "6" align = "right" valign = "top"><strong>Coupon: </strong> ({{$order->coupon_id}}): </td>
 										<td align = "right" ><p>{{$order->coupon_value}} </p></td>
 									</tr>
 									<tr>
-										<td colspan = "6" align = "right" ><strong>Tax:</strong>&</td>
+										<td colspan = "6" align = "right" ><strong>Tax:</strong></td>
 										<td align = "right" ><p>{{$order->tax_charge}} </p></td>
 									</tr>
 									<tr>
