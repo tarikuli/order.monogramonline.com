@@ -32,6 +32,12 @@ class AppMailer
 	protected $to;
 
 	/**
+	 * The recipient cc of the emails.
+	 * @var string
+	 */
+	protected $cc;
+
+	/**
 	 * The view for the emails.
 	 * @var string
 	 */
@@ -108,6 +114,7 @@ class AppMailer
 		$this->mailer->send($this->view, $this->data, function ($message) {
 			$message->from($this->from, $this->sender_name)
 					->to($this->to)
+					->cc($this->cc)
 					->subject($this->subject);
 		});
 	}
