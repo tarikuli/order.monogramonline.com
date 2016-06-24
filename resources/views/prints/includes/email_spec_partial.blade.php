@@ -163,24 +163,24 @@
 									<td colspan = "7" align = "left" valign = "top">
 										<table border="0" width="100%" cellspacing="0" cellpadding="0">
 										<tbody>
-											<tr>
-												<td width="90%"> <p><strong>Subtotal:</strong>&nbsp;</p></td>
+											{{-- <tr>
+												<td width="90%" align = "right"> <p><strong>Subtotal:</strong>&nbsp;</p></td>
 												<td nowrap="nowrap"> <p>{{$order->sub_total}} </p></td>
-											</tr>
+											</tr> --}}
 											<tr>
-												<td width="90%"><p><strong>Coupon:</strong>{{$order->coupon_id}}</p></td>
+												<td width="90%" align = "right"><p><strong>Coupon:</strong>{{$order->coupon_id}}</p></td>
 												<td nowrap="nowrap"><p>{{$order->coupon_value}} </p></td>
 											</tr>
 											<tr>
-												<td><p><strong>Tax:</strong>&nbsp;</p></td>
+												<td align = "right"><p><strong>Tax:</strong>&nbsp;</p></td>
 												<td nowrap="nowrap"><p>{{$order->tax_charge}} </p></td>
 											</tr>
 											<tr>
-												<td><p><strong>Shipping Cost:</strong>&nbsp;</p></td>
+												<td align = "right"><p><strong>Shipping Cost:</strong>&nbsp;</p></td>
 												<td nowrap="nowrap"><p>{{$order->shipping_charge}}</p></td>
 											</tr>
 											<tr>
-												<td><p><strong>Total:</strong>&nbsp;</p></td>
+												<td align = "right"><p><strong>Total:</strong>&nbsp;</p></td>
 												<td nowrap="nowrap"><p>{{$order->total}}</p></td>
 											</tr>
 
