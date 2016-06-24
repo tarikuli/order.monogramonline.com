@@ -43,8 +43,8 @@
 						</td>
 					</tr>
 					<tr valign = "top">
-						<td><strong>Date:</strong></td>
-						<td>{{date("m/d/y", strtotime("now"))}}</td>
+						<td><strong>Order Date:</strong></td>
+						<td>{{date("m/d/y", strtotime($order->order_date) )}}</td>
 						<td>
 
 						</td>
