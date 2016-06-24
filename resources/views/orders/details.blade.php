@@ -190,7 +190,10 @@
 				<td style = "padding-left:20px">
 					{!! Form::text('bill_email', $order->customer->bill_email, ['id' => 'bill_email','style'=>'width: 300px']) !!}
 					@if($order->customer->bill_email)
-						<i class="fa fa-envelope-o fa-2x"></i>
+						<button type = "button" class = "btn btn-link" data-toggle = "modal"
+						        data-target = "#large-email-modal-lg">
+							<i class = "fa fa-envelope-o"></i>
+						</button>
 					@endif
 				</td>
 				<!-- {!! Form::text('email', $order->customer->ship_email, ['id' => 'email', 'class' => 'form-control']) !!}
@@ -481,9 +484,134 @@
 	<div class = "col-md-12">
 
 	</div>
+	<div class = "row">
+		<div class = "col-md-12">
+			<div class = "modal fade bs-example-modal-lg" id = "large-email-modal-lg" tabindex = "-1" role = "dialog"
+			     aria-labelledby = "large-modal">
+				<div class = "modal-dialog modal-lg">
+					<div class = "modal-content">
+						<div class = "modal-header">
+							<button type = "button" class = "close" data-dismiss = "modal" aria-label = "Close">
+								<span aria-hidden = "true">×</span>
+							</button>
+							<h4 class = "modal-title">Send email to customer</h4>
+						</div>
+						<div class = "modal-body">
+							{!! Form::open(['url' => '/orders/send_mail', 'id' => 'email-sender-form']) !!}
+							<table class = "table table-bordered">
+								<tr>
+									<td>Email</td>
+									<td>{!! Form::text('recipient', $order->customer->bill_email, ['id' => 'email-recipient', 'class' => 'form-control']) !!}</td>
+								</tr>
+								<tr>
+									<td>Message type</td>
+									<td>
+										{!! Form::select('message_types', $message_types, null, ['id' => 'message-types', 'class' => 'form-control']) !!}
+									</td>
+								</tr>
+								<tr>
+									<td>Subject</td>
+									<td> {!! Form::text('subject', sprintf("Order %s", $order->short_order), ['id' => 'email-subject', 'class' => 'form-control', 'data-default-subject' =>  sprintf("Order %s", $order->short_order)]) !!} </td>
+								</tr>
+								<tr>
+									<td></td>
+									<td>
+										{!! Form::textarea('message', null, ['id' => 'email-message', 'class' => 'form-control' ]) !!}
+									</td>
+								</tr>
+							</table>
+							{!! Form::close() !!}
+						</div>
+						<div class = "modal-footer">
+							<button type = "button" class = "btn btn-default" data-dismiss = "modal"
+							        id = "dismiss-email">Close
+							</button>
+							<button type = "button" class = "btn btn-primary" id = "send-email">Send</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script src = "//cdn.ckeditor.com/4.5.9/standard/ckeditor.js"></script>
 	<script type = "text/javascript" src = "/assets/js/nprogress.js"></script>
+	<script type = "text/javascript">
+		var editor = null;
+		function initializeCkeditor ()
+		{
+			editor = CKEDITOR.replace('email-message');
+		}
+
+		initializeCkeditor();
+
+		function reInitializeCkeditor ()
+		{
+			CKEDITOR.remove(CKEDITOR.instances['email-message']);
+			$("#cke_email-message").remove();
+			setTimeout(initializeCkeditor, 100);
+		}
+
+		function setEmailMessageSubject (subject)
+		{
+			$("#email-subject").val(subject);
+		}
+
+		function setEmailMessageToEditor(message){
+			CKEDITOR.instances['email-message'].setData(message);
+		}
+
+		function setEmailMessageToTextArea(message){
+			$("#email-message").val(message);
+		}
+
+		// on message type select change
+		$("#message-types").on('change', function (event)
+		{
+			var message_type = $(this).val();
+			if ( message_type == 0 || message_type == undefined ) {
+				// no action is selected.
+				reInitializeCkeditor();
+				setEmailMessageSubject($("#email-subject").attr('data-default-subject'));
+				return;
+			}
+			var url = "/orders/mailer";
+			var order_id = "{{ $order->order_id }}";
+			var data = {
+				order: order_id, message_type: message_type, _token: "{{ csrf_token() }}"
+			};
+			var method = "POST";
+			ajax(url, method, data, emailMessageTypeSelectionSuccessHandler, emailMessageTypeSelectionErrorHandler);
+		});
+
+		function emailMessageTypeSelectionSuccessHandler (data)
+		{
+			setEmailMessageSubject(data.order);
+			setEmailMessageToEditor(data['_token']);
+		}
+
+		function emailMessageTypeSelectionErrorHandler (data)
+		{
+			console.log(data);
+			alert("Something went wrong!");
+		}
+
+		editor.on('change', function (event)
+		{
+			setEmailMessageToTextArea(event.editor.getData());
+		});
+
+		$("#send-email").on('click', function (event)
+		{
+			ajax("/orders/send_mail", "POST", $("#email-sender-form").serialize(), emailMessageSuccessHandler, setEmailMessageSubject);
+		});
+
+		function emailMessageSuccessHandler (data)
+		{
+			//setMessageSubject(data.order);
+		}
+	</script>
 	<script type = "text/javascript">
 		$("a#add-note").on('click', function (event)
 		{

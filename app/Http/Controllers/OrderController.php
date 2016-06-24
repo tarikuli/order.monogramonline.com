@@ -427,8 +427,10 @@ class OrderController extends Controller
 		$shipping_methods = Customer::groupBy('shipping')
 									->lists('shipping', 'shipping');
 
+		$message_types = (new Collection(Helper::$MESSAGE_TYPES));//->prepend("Select from below");
+
 		#return compact('order', 'order_id', 'shipping_methods', 'statuses');
-		return view('orders.details', compact('order', 'order_id', 'shipping_methods', 'statuses'));
+		return view('orders.details', compact('order', 'order_id', 'shipping_methods', 'statuses'))->with('message_types', $message_types);
 	}
 
 	public function getAddOrder ()
@@ -441,7 +443,9 @@ class OrderController extends Controller
 
 	/**
 	 * Pull Order from Yahoo store by order ID
+	 *
 	 * @param Request $request
+	 *
 	 * @return \Illuminate\Http\$this|Ambigous <\Illuminate\Routing\Redirector, \Illuminate\Http\RedirectResponse>
 	 */
 	public function postAddOrder (Request $request)
@@ -921,7 +925,7 @@ class OrderController extends Controller
 		$order->order_date = date('Y-m-d H:i:s', strtotime($request->get('Date')));
 		//$order->order_numeric_time = strtotime($request->get('Numeric-Time'));
 		// 06-22-2016 Change by Jewel
-		$order->order_numeric_time = ($request->get('Numeric-Time'));
+		$order->order_numeric_time = ( $request->get('Numeric-Time') );
 		$order->order_ip = $request->get('IP');
 		$order->paypal_merchant_email = $request->get('PayPal-Merchant-Email', '');
 		$order->paypal_txid = $request->get('PayPal-TxID', '');

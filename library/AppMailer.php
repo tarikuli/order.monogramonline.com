@@ -65,6 +65,7 @@ class AppMailer
 	public function __construct (Mailer $mailer)
 	{
 		$this->mailer = $mailer;
+		$this->cc = "shlomi@monogramonline.com";//[ ];
 	}
 
 	/**

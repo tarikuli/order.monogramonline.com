@@ -36,6 +36,32 @@ class Helper
 		'Batch route',
 	];
 
+	public static $MESSAGE_TYPES = [
+		"Email",
+		"Invoice",
+		"Packing slip",
+		"Return from",
+		"Tracking #",
+		"Back-ordered",
+		"Request to change your order has been completed!",
+		"RESPONSE REQUEST - MISSING INFORMATION ON YOUR ORDER",
+		"Need address verification",
+		"Order DELAY",
+		"Your recent purchase is currently on back-order",
+		"Refund has been issued",
+		"Store credit has been issued",
+		"Order status",
+		"Bottle Opener - Error",
+		"Repair Fee",
+		"Cancelled Order",
+		"Drop shipper order - Split",
+		"RETURNED Item - Address verification",
+		"Return ITEM - Old returns",
+		"Item SOLD OUT - Color, Model, Design etc.",
+		"Incomplete gift baskets",
+		"Holiday back order status",
+	];
+
 	private static $carrier = [
 		"USPS"     => 'USPS',
 		"UPS"      => 'UPS',
@@ -292,32 +318,30 @@ APPEND;
 		// order by reached shipping station flag in descending order
 
 		// joining is done, because, one or more items may be added on the shipping table before
-		$items = Item::where('order_id', $order_id)
-// 					 ->where('batch_number', '!=', 0)
-// 					 ->whereNull('tracking_number')
+		$items = Item::where('order_id', $order_id)// 					 ->where('batch_number', '!=', 0)
+		// 					 ->whereNull('tracking_number')
 					 ->orderBy('items.reached_shipping_station', 'DESC')
 					 ->get();
 		// if the first item has the value of 1
 		// then at least one item reached the shipping stations
 		// return the items
 		$first_item = $items->first();
-// echo "<pre>"; print_r($first_item); echo "</pre>";
-// Log::info( $first_item);
+		// echo "<pre>"; print_r($first_item); echo "</pre>";
+		// Log::info( $first_item);
 		// if ( $first_item->reached_shipping_station == 1 || ( $first_item->reached_shipping_station == 0 && $first_item->item_id == null ) ) {
 
 		if ( $first_item->reached_shipping_station == 1 ) {
 			return $items->filter(function ($row) {
-// Log::info( "Jewel	".$row->id);
-// 				return !Ship::where('item_id', $row->id)
-// // 							->where('reached_shipping_station', '=', 1)
-// 							->first();
+				// Log::info( "Jewel	".$row->id);
+				// 				return !Ship::where('item_id', $row->id)
+				// // 							->where('reached_shipping_station', '=', 1)
+				// 							->first();
 
-				$test = !Ship::where('item_id', $row->id)
-// 							->where('reached_shipping_station', '=', 1)
-// 							->whereNull('tracking_number')
-							->first();
+				$test = !Ship::where('item_id', $row->id)// 							->where('reached_shipping_station', '=', 1)
+				// 							->whereNull('tracking_number')
+							 ->first();
 
-// Log::info( $test);
+				// Log::info( $test);
 
 				return $test;
 			});
@@ -336,7 +360,7 @@ APPEND;
 
 	public static function itemsMovedToShippingTable ($order_id)
 	{
-// Helper::jewelDebug($order_id);
+		// Helper::jewelDebug($order_id);
 
 		// get all the items with the order id
 		$items = Item::where('order_id', $order_id)
@@ -405,8 +429,10 @@ APPEND;
 
 	/**
 	 * Get next Station Name
+	 *
 	 * @param string $batch_route_id
 	 * @param string $current_station_name
+	 *
 	 * @return NULL
 	 */
 	public static function getNextStationName ($batch_route_id, $current_station_name)
@@ -525,6 +551,7 @@ APPEND;
 	/**
 	 * Insert items (Lines) in shipping station table.
 	 * when items (Lines) reached to Shipping station
+	 *
 	 * @param Array $items
 	 */
 	public static function populateShippingData ($items)
@@ -558,15 +585,15 @@ APPEND;
 		$reached_shipping_station_count = 0;
 		foreach ( $items as $current ) {
 			if ( $current->reached_shipping_station ) {
-// Log::info("Jewel reached_shipping_station: ".$current->reached_shipping_station);
+				// Log::info("Jewel reached_shipping_station: ".$current->reached_shipping_station);
 				++$reached_shipping_station_count;
 			}
 		}
 
-// Log::info("Jewel order_id: ".$order_id." items->count: ".$items->count()."  reached_shipping_station_count: ".$reached_shipping_station_count);
+		// Log::info("Jewel order_id: ".$order_id." items->count: ".$items->count()."  reached_shipping_station_count: ".$reached_shipping_station_count);
 
 		if ( $items->count() && ( $items->count() == $reached_shipping_station_count ) ) { // move to shipping table
-// Log::info("Jewel get the item id from the shipping table");
+			// Log::info("Jewel get the item id from the shipping table");
 			// get the item id from the shipping table
 			$items_exist_in_shipping = Ship::where('order_number', $order_id)
 										   ->lists('item_id');
@@ -574,20 +601,20 @@ APPEND;
 			// filter the item ids those are available in shipping table
 			$items = $items->filter(function ($row) use ($items_exist_in_shipping) {
 				// return false if the shipping table has the item id
-// 				echo "<br>".$row->id;
+				// 				echo "<br>".$row->id;
 				return $items_exist_in_shipping->contains($row->id) ? false : true;
 			});
-// Log::info("Jewel generateShippingUniqueId: ".$uniqueId->first()->order);
+			// Log::info("Jewel generateShippingUniqueId: ".$uniqueId->first()->order);
 			// generate new order id
 			$unique_order_id = static::generateShippingUniqueId($uniqueId->first()->order);
 
 			foreach ( $items as $current_item ) {
-// Log::info("Jewel Push all the items to shipping table with the unique order id ".$current_item." unique id: ".$unique_order_id);
+				// Log::info("Jewel Push all the items to shipping table with the unique order id ".$current_item." unique id: ".$unique_order_id);
 				// push all the items to shipping table with the unique order id
 				static::insertDataIntoShipping($current_item, $unique_order_id);
 			}
 		} elseif ( $items->count() ) {
-// Log::info("Jewel waiting for another PCS: ".$order_id);
+			// Log::info("Jewel waiting for another PCS: ".$order_id);
 			// order has more than 0
 			// any of the items has not reached the shipping station
 
@@ -601,11 +628,11 @@ APPEND;
 	}
 
 
-// 	private static function checkRow ($items_exist_in_shipping) {
-// 		// return false if the shipping table has the item id
-// 		// 	echo "<br>".$row->id;
-// 		return $items_exist_in_shipping->contains($row->id) ? false : true;
-// 	}
+	// 	private static function checkRow ($items_exist_in_shipping) {
+	// 		// return false if the shipping table has the item id
+	// 		// 	echo "<br>".$row->id;
+	// 		return $items_exist_in_shipping->contains($row->id) ? false : true;
+	// 	}
 
 	public static function insertDataIntoShipping ($item, $unique_order_id = null)
 	{
@@ -782,7 +809,7 @@ APPEND;
 																   8,
 																   // cancelled
 																   6,
-							 									   // Shipped
+																   // Shipped
 							 ])
 							 ->where(function ($query) {
 								 return $query->where('parameter_options.batch_route_id', '!=', 115)
@@ -1058,19 +1085,20 @@ APPEND;
 		return $zeroStations;
 	}
 
-// 	public static function getDebug(){
-// 		return Item::join('orders', 'items.order_id', '=', 'orders.order_id')
-// 							->join('shipping', 'items.order_id', '=', 'shipping.order_number')
-// 							->where('item_count','>',1)
-// 							->limit(10)
-// 							->get();
+	// 	public static function getDebug(){
+	// 		return Item::join('orders', 'items.order_id', '=', 'orders.order_id')
+	// 							->join('shipping', 'items.order_id', '=', 'shipping.order_number')
+	// 							->where('item_count','>',1)
+	// 							->limit(10)
+	// 							->get();
 
-// 	}
-	public static function jewelDebug($valueArray){
+	// 	}
+	public static function jewelDebug ($valueArray)
+	{
 		echo "<pre>";
-		if (is_string($valueArray)){
+		if ( is_string($valueArray) ) {
 			echo $valueArray;
-		}else{
+		} else {
 			print_r($valueArray);
 		}
 		echo "</pre>";
