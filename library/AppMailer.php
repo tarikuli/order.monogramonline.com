@@ -112,6 +112,8 @@ class AppMailer
 		$this->view = 'emails.shippingconfirm';
 		$this->data = compact('modules');
 		$this->deliver();
+
+		return true;
 	}
 
 	/**
