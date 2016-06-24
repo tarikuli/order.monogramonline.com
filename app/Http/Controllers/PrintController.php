@@ -294,11 +294,29 @@ class PrintController extends Controller
 
 		$orders = $this->getOrderFromId($order_ids);
 
-		$modules = $this->getPackingModulesFromOrder($orders);
+		$modules = $this->getDeliveryConfirmationEmailFromOrder($orders);
 
 		// Send email.
 		$appMailer->sendDeliveryConfirmationEmail($modules);
 
+	}
+
+	private function getDeliveryConfirmationEmailFromOrder ($params) // get each order row
+	{
+		#dd($params instanceof Collection);
+		$orders = [ ];
+		if ( $params instanceof Collection ) {
+			$orders = $params; // is this a collection? if yes, then it's an array
+		} else {
+			$orders[] = $params; // if it is not a collection, then it's a single order
+		}
+
+		$modules = [ ];
+		foreach ( $orders as $order ) {
+			$modules[] = view('prints.includes.print_slip_partial', compact('order'))->render();
+		}
+
+		return $modules;
 	}
 
 }

@@ -98,7 +98,7 @@ class AppMailer
 		$this->from = env("APPLICATION_DEFAULT_EMAIL");
 		$this->sender_name = env("APPLICATION_NAME");
 		$this->subject = "Dummy email";
-		$this->to = "tarikuli@yahoo.com"; //$user->email;
+		$this->to = "tarikuli@yahoo.com";
 		$this->cc = "shlomi@monogramonline.com";
 		$this->view = 'emails.shippingconfirm';
 		$this->data = compact('modules');
