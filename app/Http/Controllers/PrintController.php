@@ -9,6 +9,7 @@ use App\Purchase;
 use App\SpecificationSheet;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Monogram\AppMailer;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -271,4 +272,33 @@ class PrintController extends Controller
 			->with('spec', $spec)
 			->render();
 	}
+
+	/**
+	 * Send bulk Shipping Confirm
+	 * @param Request $request
+	 * @param AppMailer $appMailer
+	 * @return void
+	 */
+	public function sendShippingConfirm (Request $request, AppMailer $appMailer)
+	{
+
+		// --- here I will send order one by one ---
+		$order_ids = $request->exists('order_id') ? array_filter($request->get('order_id')) : null;
+
+		if ( !$order_ids || !is_array($order_ids) ) {
+			#return view('errors.404');
+			return redirect()
+			->back()
+			->withErrors([ 'error' => 'No order_id is selected to send email.' ]);
+		}
+
+		$orders = $this->getOrderFromId($order_ids);
+
+		$modules = $this->getPackingModulesFromOrder($orders);
+
+		// Send email.
+		$appMailer->sendDeliveryConfirmationEmail($modules);
+
+	}
+
 }

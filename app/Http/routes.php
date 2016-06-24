@@ -45,6 +45,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('prints/purchase/{purchase_id}', 'PrintController@purchase');
 		get('prints/batches', 'PrintController@batches');
 		get('prints/batch_packing', 'PrintController@batch_packing_slip');
+		get('prints/email_packing', 'PrintController@sendShippingConfirm');
 		get('prints/sheets', 'PrintController@print_spec_sheet');
 
 		resource('logs', 'StationLogController');
@@ -197,3 +198,4 @@ Event::listen('illuminate.query', function ($q) {
 //  `items`.`item_status` = statuses.id ( `statuses`.`status_name` ) = 6
 // item_order_status = complete
 // item_order_status_2 =2
+// Thanks for signing up!

@@ -3,6 +3,7 @@
 
 use App\User;
 use Illuminate\Contracts\Mail\Mailer;
+use App\Order;
 
 class AppMailer
 {
@@ -75,6 +76,26 @@ class AppMailer
 		$this->to = $user->email;
 		$this->view = 'emails.confirm';
 		$this->data = compact('user');
+		$this->deliver();
+	}
+
+
+	/**
+	 * Deliver the emails confirmation.
+	 *
+	 * @param  User $user
+	 *
+	 * @return void
+	 */
+	public function sendDeliveryConfirmationEmail ($modules)
+	{
+		$this->from = env("APPLICATION_DEFAULT_EMAIL");
+		$this->sender_name = env("APPLICATION_NAME");
+		$this->subject = "Dummy email";
+		$this->to = "tarikuli@yahoo.com"; //$user->email;
+		$this->cc = "shlomi@monogramonline.com";
+		$this->view = 'emails.shippingconfirm';
+		$this->data = compact('modules');
 		$this->deliver();
 	}
 
