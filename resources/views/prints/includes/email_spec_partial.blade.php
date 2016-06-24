@@ -62,7 +62,7 @@
 						</td>
 					</tr>
 					<tr valign = "top">
-						<td><strong>Ship to:</strong></td>
+						<td><strong>Shipping Address:</strong></td>
 						<td>
 							{{$order->customer->ship_full_name}}<br>
 							{{$order->customer->ship_address_1}}<br>
@@ -72,7 +72,7 @@
 							{{$order->customer->ship_phone}}
 						</td>
 						<td></td>
-						<td><strong>Bill To:</strong></td>
+						<td><strong>Billing Address:</strong></td>
 						<td>
 							{{$order->customer->bill_full_name}}<br>
 							{{$order->customer->bill_address_1}}<br>
@@ -103,12 +103,11 @@
 								<tr valign = "top">
 									<td></td>
 									<td></td>
-									<td align = "left"><strong>Name</strong></td>
-									<td align = "left"><strong>Code</strong></td>
-									<td align = "right"><strong>Qty</strong></td>
-									<td align = "right"></td>
-									<td align = "left"><strong>Options</strong></td>
-									<td align = "left"><strong>B/O</strong></td>
+									<td align = "center"><strong>Name</strong></td>
+									<td align = "center"><strong>Code</strong></td>
+									<td align = "center"><strong>Item Price</strong></td>
+									<td align = "center"><strong>Qty</strong></td>
+									<td align = "center"><strong>Total</strong></td>
 								</tr>
 								<tr height = "10" valign = "top">
 									<td colspan = "9">
@@ -127,6 +126,7 @@
 										</td>
 										<td align = "left">
 											{{$item->item_description}}
+											{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}
 											@if($item->shipInfo)
 												<br />
 												Shipped on {{substr($item->shipInfo->transaction_datetime, 0, 10)}} by
@@ -135,37 +135,69 @@
 												Trk# <a href = "#">{{$item->shipInfo->tracking_number}}</a>
 											@endif
 										</td>
+										{{-- SKU --}}
 										<td align = "left">{{$item->item_code}}</td>
+										{{-- item unit price --}}
+										<td align = "right">{{$item->item_unit_price}}</td>
+										{{-- QTY --}}
 										<td align = "right" style = "font-size:18px;">
 											<strong>{{$item->item_quantity}}</strong>
 										</td>
-										<td align = "right"></td>
-										<td align = "left">
-											{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}
-										</td>
-										<td align = "left"></td>
+										{{-- Total --}}
+										<td align = "right">{{ (($item->item_quantity)  * ($item->item_unit_price) )}}</td>
 									</tr>
 
 									<tr>
-										<td colspan = "8" align = "left" valign = "top">
+										<td colspan = "7" align = "left" valign = "top">
 											 Item# {{ $item->id}}
 
 											@if($item->tracking_number)
-												<a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number)) }}" target = "_blank"> {{$orderinfo['tracking']}} </a>
+												<a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number)) }}" target = "_blank"> {{ $item->tracking_number }} </a>
 											@endif
 										</td>
 									</tr>
 
 								@endforeach
+
+								<tr>
+									<td colspan = "7" align = "left" valign = "top">
+										<table border="0" width="100%" cellspacing="0" cellpadding="0">
+										<tbody>
+											<tr>
+												<td width="90%"> <p><strong>Subtotal:</strong>&nbsp;</p></td>
+												<td nowrap="nowrap"> <p>{{$order->sub_total}} </p></td>
+											</tr>
+											<tr>
+												<td width="90%"><p><strong>Coupon:</strong>{{$order->coupon_id}}</p></td>
+												<td nowrap="nowrap"><p>{{$order->coupon_value}} </p></td>
+											</tr>
+											<tr>
+												<td><p><strong>Tax:</strong>&nbsp;</p></td>
+												<td nowrap="nowrap"><p>{{$order->tax_charge}} </p></td>
+											</tr>
+											<tr>
+												<td><p><strong>Shipping Cost:</strong>&nbsp;</p></td>
+												<td nowrap="nowrap"><p>{{$order->shipping_charge}}</p></td>
+											</tr>
+											<tr>
+												<td><p><strong>Total:</strong>&nbsp;</p></td>
+												<td nowrap="nowrap"><p>{{$order->total}}</p></td>
+											</tr>
+
+										</tbody>
+										</table>
+									</td>
+								</tr>
+
 								<tr valign = "top">
-									<td colspan = "9">
+									<td colspan = "7">
 										<hr size = "1">
 									</td>
 								</tr>
 
 
 								<tr valign = "top">
-									<td align = "center" colspan = "9">
+									<td align = "center" colspan = "7">
 										<table width = "100%" cellpadding = "5" cellspacing = "5" border = "1">
 											<tr valign = "top">
 												<td align = "center"><p style = "text-align: center;">

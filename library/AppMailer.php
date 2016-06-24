@@ -93,13 +93,14 @@ class AppMailer
 	 *
 	 * @return void
 	 */
-	public function sendDeliveryConfirmationEmail ($modules)
+	public function sendDeliveryConfirmationEmail ($modules, $bill_email, $subject)
 	{
+// 		dd($bill_email, $subject);
 		$this->from = env("APPLICATION_DEFAULT_EMAIL");
 		$this->sender_name = env("APPLICATION_NAME");
-		$this->subject = "Dummy email";
-		$this->to = "tarikuli@yahoo.com";
-		$this->cc = "shlomi@monogramonline.com";
+		$this->subject = $subject;
+		$this->to = $bill_email;
+		$this->cc = "shlomi@monogramonline.com, jewel@monogramonline.com";
 		$this->view = 'emails.shippingconfirm';
 		$this->data = compact('modules');
 		$this->deliver();

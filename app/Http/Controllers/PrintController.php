@@ -294,10 +294,20 @@ class PrintController extends Controller
 
 		$orders = $this->getOrderFromId($order_ids);
 
+		$orders->first()->customer->bill_email;
+
+		if ( !$orders->first()->customer->bill_email ) {
+			return redirect()->to('/items')
+			->withErrors([ 'error' => 'No Billing email address fount for order# '.$order_ids[0] ]);
+		}
+
+// return $orders->first()->customer->bill_email ;
+
 		$modules = $this->getDeliveryConfirmationEmailFromOrder($orders);
 
-		// Send email.
-		$appMailer->sendDeliveryConfirmationEmail($modules);
+		// Send email. nortonzanini@gmail.com
+		$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$orders->first()->short_order.")";
+		$appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject);
 
 	}
 
@@ -313,7 +323,7 @@ class PrintController extends Controller
 
 		$modules = [ ];
 		foreach ( $orders as $order ) {
-			$modules[] = view('prints.includes.print_slip_partial', compact('order'))->render();
+			$modules[] = view('prints.includes.email_spec_partial', compact('order'))->render();
 		}
 
 		return $modules;
