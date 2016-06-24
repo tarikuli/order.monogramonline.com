@@ -54,7 +54,6 @@
 								<tr valign = "top">
 									<td align = "left"><strong>{{$order->short_order}}</strong></td>
 									<td align = "right">
-										{!! \Monogram\Helper::getHtmlBarcode(\Monogram\Helper::orderNameFormatter($order)."-0") !!}
 										<br>Shipping# {{\Monogram\Helper::orderNameFormatter($order)."-0"}}
 									</td>
 								</tr>
@@ -79,7 +78,8 @@
 							{{$order->customer->bill_city}} {{$order->customer->bill_state}}  {{$order->customer->bill_zip}}
 							<br>
 							{{$order->customer->bill_country}}<br>
-							{{$order->customer->bill_phone}}
+							{{$order->customer->bill_phone}}<br>
+							{{$order->customer->bill_email}}
 						</td>
 					</tr>
 					<tr valign = "top">
@@ -132,7 +132,7 @@
 												Shipped on {{substr($item->shipInfo->transaction_datetime, 0, 10)}} by
 												{{$item->shipInfo->mail_class}}
 												<br />
-												Trk# <a href = "#">{{$item->shipInfo->tracking_number}}</a>
+												Trk# <a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number)) }}" target = "_blank">{{$item->shipInfo->tracking_number}}</a>
 											@endif
 										</td>
 										{{-- SKU --}}
