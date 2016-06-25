@@ -54,7 +54,6 @@
 								<tr valign = "top">
 									<td align = "left"><strong>{{$order->short_order}}</strong></td>
 									<td align = "right">
-										{!! \Monogram\Helper::getHtmlBarcode(\Monogram\Helper::orderNameFormatter($order)."-0") !!}
 										<br>Shipping# {{\Monogram\Helper::orderNameFormatter($order)."-0"}}
 									</td>
 								</tr>
@@ -79,7 +78,8 @@
 							{{$order->customer->bill_city}} {{$order->customer->bill_state}}  {{$order->customer->bill_zip}}
 							<br>
 							{{$order->customer->bill_country}}<br>
-							{{$order->customer->bill_phone}}
+							{{$order->customer->bill_phone}}<br>
+							{{$order->customer->bill_email}}
 						</td>
 					</tr>
 					<tr valign = "top">
@@ -132,7 +132,7 @@
 												Shipped on {{substr($item->shipInfo->transaction_datetime, 0, 10)}} by
 												{{$item->shipInfo->mail_class}}
 												<br />
-												Trk# <a href = "#">{{$item->shipInfo->tracking_number}}</a>
+												Trk# <a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number)) }}" target = "_blank">{{$item->shipInfo->tracking_number}}</a>
 											@endif
 										</td>
 										{{-- SKU --}}
@@ -159,41 +159,29 @@
 
 								@endforeach
 
-								<tr>
-									<td colspan = "7" align = "left" valign = "top">
-										<table border="0" width="100%" cellspacing="0" cellpadding="0">
-										<tbody>
-											<tr>
-												<td width="90%"> <p><strong>Subtotal:</strong>&nbsp;</p></td>
-												<td nowrap="nowrap"> <p>{{$order->sub_total}} </p></td>
-											</tr>
-											<tr>
-												<td width="90%"><p><strong>Coupon:</strong>{{$order->coupon_id}}</p></td>
-												<td nowrap="nowrap"><p>{{$order->coupon_value}} </p></td>
-											</tr>
-											<tr>
-												<td><p><strong>Tax:</strong>&nbsp;</p></td>
-												<td nowrap="nowrap"><p>{{$order->tax_charge}} </p></td>
-											</tr>
-											<tr>
-												<td><p><strong>Shipping Cost:</strong>&nbsp;</p></td>
-												<td nowrap="nowrap"><p>{{$order->shipping_charge}}</p></td>
-											</tr>
-											<tr>
-												<td><p><strong>Total:</strong>&nbsp;</p></td>
-												<td nowrap="nowrap"><p>{{$order->total}}</p></td>
-											</tr>
+									<tr>
+										<td colspan = "6" align = "right" valign = "top"><strong>Coupon: </strong> ({{$order->coupon_id}}): </td>
+										<td align = "right" ><p>{{$order->coupon_value}} </p></td>
+									</tr>
+									<tr>
+										<td colspan = "6" align = "right" ><strong>Tax:</strong></td>
+										<td align = "right" ><p>{{$order->tax_charge}} </p></td>
+									</tr>
+									<tr>
+										<td colspan = "6" align = "right" ><strong>Shipping Cost:</strong></td>
+										<td align = "right" ><p>{{$order->shipping_charge}} </p></td>
+									</tr>
+									<tr>
+										<td colspan = "6" align = "right" ><strong>Total:</strong></td>
+										<td align = "right" ><p>{{$order->total}} </p></td>
+									</tr>
 
-										</tbody>
-										</table>
-									</td>
-								</tr>
 
-								<tr valign = "top">
-									<td colspan = "7">
-										<hr size = "1">
-									</td>
-								</tr>
+									<tr valign = "top">
+										<td colspan = "7">
+											<hr size = "1">
+										</td>
+									</tr>
 
 
 								<tr valign = "top">

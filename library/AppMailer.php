@@ -38,6 +38,12 @@ class AppMailer
 	protected $cc;
 
 	/**
+	 * The recipient cc of the emails.
+	 * @var string
+	 */
+	protected $bcc;
+
+	/**
 	 * The view for the emails.
 	 * @var string
 	 */
@@ -96,15 +102,18 @@ class AppMailer
 	 */
 	public function sendDeliveryConfirmationEmail ($modules, $bill_email, $subject)
 	{
-// 		dd($bill_email, $subject);
+// 		dd($bill_email, $subject); // nortonzanini@gmail.com
 		$this->from = env("APPLICATION_DEFAULT_EMAIL");
 		$this->sender_name = env("APPLICATION_NAME");
 		$this->subject = $subject;
 		$this->to = $bill_email;
-		$this->cc = "shlomi@monogramonline.com, jewel@monogramonline.com";
+		$this->cc = 'shlomi@monogramonline.com';
+		$this->bcc = 'jewel@monogramonline.com';
 		$this->view = 'emails.shippingconfirm';
 		$this->data = compact('modules');
 		$this->deliver();
+
+		return true;
 	}
 
 	/**
@@ -117,6 +126,7 @@ class AppMailer
 			$message->from($this->from, $this->sender_name)
 					->to($this->to)
 					->cc($this->cc)
+					->bcc($this->bcc)
 					->subject($this->subject);
 		});
 	}

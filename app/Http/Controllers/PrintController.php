@@ -307,7 +307,11 @@ class PrintController extends Controller
 
 		// Send email. nortonzanini@gmail.com
 		$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$orders->first()->short_order.")";
-		$appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject);
+		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
+			return redirect()
+							->back()
+							->with('success', sprintf("Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]));
+		}
 
 	}
 
