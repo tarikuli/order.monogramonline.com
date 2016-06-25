@@ -498,6 +498,7 @@
 						</div>
 						<div class = "modal-body">
 							{!! Form::open(['url' => '/orders/send_mail', 'id' => 'email-sender-form']) !!}
+							{!! Form::hidden('order_id', $order->order_id) !!}
 							<table class = "table table-bordered">
 								<tr>
 									<td>Email</td>
@@ -558,11 +559,13 @@
 			$("#email-subject").val(subject);
 		}
 
-		function setEmailMessageToEditor(message){
+		function setEmailMessageToEditor (message)
+		{
 			CKEDITOR.instances['email-message'].setData(message);
 		}
 
-		function setEmailMessageToTextArea(message){
+		function setEmailMessageToTextArea (message)
+		{
 			$("#email-message").val(message);
 		}
 
@@ -587,8 +590,8 @@
 
 		function emailMessageTypeSelectionSuccessHandler (data)
 		{
-			setEmailMessageSubject(data.order);
-			setEmailMessageToEditor(data['_token']);
+			setEmailMessageSubject(data.subject);
+			setEmailMessageToEditor(data.message);
 		}
 
 		function emailMessageTypeSelectionErrorHandler (data)
@@ -604,12 +607,19 @@
 
 		$("#send-email").on('click', function (event)
 		{
-			ajax("/orders/send_mail", "POST", $("#email-sender-form").serialize(), emailMessageSuccessHandler, setEmailMessageSubject);
+			ajax("/orders/send_mail", "POST", $("#email-sender-form").serialize(), emailMessageSuccessHandler, emailMessageErrorSendHandler);
 		});
+
+		function emailMessageErrorSendHandler (data)
+		{
+			$("#large-email-modal-lg").modal('toggle');
+			alert("Something went wrong!");
+		}
 
 		function emailMessageSuccessHandler (data)
 		{
-			//setMessageSubject(data.order);
+			$("#large-email-modal-lg").modal('toggle');
+			alert("Mail was sent to the customer.");
 		}
 	</script>
 	<script type = "text/javascript">

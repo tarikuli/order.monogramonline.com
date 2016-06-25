@@ -1,6 +1,7 @@
 <?php namespace Monogram;
 
 
+use App\Customer;
 use App\User;
 use Illuminate\Contracts\Mail\Mailer;
 use App\Order;
@@ -96,13 +97,15 @@ class AppMailer
 	/**
 	 * Deliver the emails confirmation.
 	 *
-	 * @param  User $user
+	 * @param $modules
+	 * @param $bill_email
+	 * @param $subject
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	public function sendDeliveryConfirmationEmail ($modules, $bill_email, $subject)
 	{
-// 		dd($bill_email, $subject); // nortonzanini@gmail.com
+		// 		dd($bill_email, $subject); // nortonzanini@gmail.com
 		$this->from = env("APPLICATION_DEFAULT_EMAIL");
 		$this->sender_name = env("APPLICATION_NAME");
 		$this->subject = $subject;
@@ -114,6 +117,17 @@ class AppMailer
 		$this->deliver();
 
 		return true;
+	}
+
+	public function sendMailToCustomer (Customer $customer, $subject, $message)
+	{
+		$this->from = env("APPLICATION_DEFAULT_EMAIL");
+		$this->sender_name = env("APPLICATION_NAME");
+		$this->subject = $subject;
+		$this->to = $customer->bill_email; /*"sirajul.islam.anik@gmail.com";*/
+		$this->view = 'emails.all_email_placeholder';
+		$this->data = [ 'email_body' => $message ];
+		$this->deliver();
 	}
 
 	/**
