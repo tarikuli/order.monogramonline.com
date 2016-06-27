@@ -400,7 +400,6 @@ foreach ($orders as $order){
 			Log::error('No order_id is selected to send email in Order confirmation.');
 
 		}
-Helper::jewelDebug($order_ids);
 		$orders = $this->getOrderFromId($order_ids);
 
 		$orders->first()->customer->bill_email;
@@ -464,7 +463,7 @@ Helper::jewelDebug($order_ids);
 		// Send email. nortonzanini@gmail.com
 		$subject = $orders->first()->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
 
-		$appMailer = new AppMailer();
+		$appMailer = new \Monogram\AppMailer();
 
 		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
 			// 			return redirect()
