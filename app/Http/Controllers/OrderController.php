@@ -11,8 +11,8 @@ use App\Status;
 use App\Store;
 
 use Route;
-
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
