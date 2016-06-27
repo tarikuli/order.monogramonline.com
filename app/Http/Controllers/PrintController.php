@@ -315,6 +315,42 @@ class PrintController extends Controller
 
 	}
 
+	/**
+	 * Send bulk Shipping Confirm
+	 * @param Request $request
+	 * @param AppMailer $appMailer
+	 * @return void
+	 */
+	public function sendShippingConfirmByScript (AppMailer $appMailer)
+	{
+
+		// --- here I will send order one by one ---
+
+
+
+		$orders = $this->getOrderFromId($order_ids);
+
+		$orders->first()->customer->bill_email;
+
+		if ( !$orders->first()->customer->bill_email ) {
+			return redirect()->to('/items')
+			->withErrors([ 'error' => 'No Billing email address fount for order# '.$order_ids[0] ]);
+		}
+
+		// return $orders->first()->customer->bill_email ;
+
+		$modules = $this->getDeliveryConfirmationEmailFromOrder($orders);
+
+		// Send email. nortonzanini@gmail.com
+		$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$orders->first()->short_order.")";
+		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
+			return redirect()
+			->back()
+			->with('success', sprintf("Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]));
+		}
+
+	}
+
 
 	private function getDeliveryConfirmationEmailFromOrder ($params) // get each order row
 	{
