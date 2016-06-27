@@ -816,7 +816,7 @@ class OrderController extends Controller
 
 // 			$getTests = (new PrintController)->sendOrderConfirm();
 ## Jewel
-			$parameters['order_id'] = $item->order_id ;
+			$parameters['order_id'] = $order->order_id ;
 			$request = Request::create('prints/email_order_status', 'GET', $parameters);
 			Route::dispatch($request)->getContent();
 ## Jewel
