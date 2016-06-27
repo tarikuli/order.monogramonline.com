@@ -1348,8 +1348,9 @@ class ItemController extends Controller
 	}
 
 	public function doctorCheckup () {
-
+// items/doctor
 		$orders = Order::with ( 'items', 'shipping' )
+						->where('order_id','yhst-128796189915726-689283')
 						->where('item_count','>',1)
 						->limit(10)
 						->get();

@@ -1,4 +1,6 @@
-<?php namespace App\Http\Controllers;
+<?php
+
+namespace App\Http\Controllers;
 
 use App\Customer;
 use App\Item;
@@ -1060,7 +1062,7 @@ class OrderController extends Controller
 // 			Controller::getRouter()->dispatch($request)->getContent();
 // 			return  Controller::getRouter()->dispatch($request)->getContent();
 
-			Log::info($res);
+// 			Log::info($res);
 
 		}
 
