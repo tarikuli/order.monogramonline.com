@@ -1055,9 +1055,9 @@ class OrderController extends Controller
 // 			$res = Request::create(url(sprintf('prints/email_order_status?order_id[]=%s', $item->order_id)), 'GET');
 // 			Log::info(url(sprintf('prints/email_order_status?order_id[]=%s', $item->order_id)));
 
-			$parameters['order_id'] = $item->order_id ;
-			$res = Request::create('prints/email_order_status', 'GET', $parameters);
-			Controller::getRouter()->dispatch($request)->getContent();
+// 			$parameters['order_id'] = $item->order_id ;
+// 			$res = Request::create('prints/email_order_status', 'GET', $parameters);
+// 			Controller::getRouter()->dispatch($request)->getContent();
 // 			return  Controller::getRouter()->dispatch($request)->getContent();
 
 			Log::info($res);
