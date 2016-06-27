@@ -10,7 +10,6 @@ use App\Product;
 use App\Status;
 use App\Store;
 
-use Route;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -25,7 +24,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\MessageBag;
 use Monogram\ApiClient;
 use Monogram\Helper;
-
+use Monogram\AppMailer;
 
 class OrderController extends Controller
 {
@@ -814,7 +813,27 @@ class OrderController extends Controller
 			$customer->save();
 
 ## Jewel
-			$getTests = (new PrintController)->sendOrderConfirmFromMethod($order->order_id);
+// 			$getTests = (new PrintController)->sendOrderConfirmFromMethod($order->order_id);
+
+
+			$orders = $this->getOrderFromId($order_ids);
+			$orders->first()->customer->bill_email;
+			if ( !$orders->first()->customer->bill_email ) {
+				Log::error( 'No Billing email address fount for order# '.$order_ids[0] .' in Order confirmation.');
+			}
+
+			$orders1[] = $orders; // if it is not a collection, then it's a single order
+			$modules = [ ];
+			foreach ( $orders1 as $order ) {
+				$modules[] = view('prints.includes.order_spec_partial', compact('order'))->render();
+			}
+
+			// Send email. nortonzanini@gmail.com
+			$subject = $orders->first()->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
+			if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
+				Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]) );
+			}
+
 ## Jewel
 			return redirect()
 				->back()
