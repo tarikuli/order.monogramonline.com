@@ -37,27 +37,40 @@
 					</tr>
 					<tr valign = "top">
 						<td colspan = "5" align = "center"><strong>
-								Shipping Confirmation for order#
+								Order Confirmation for order#
 								{{$order->short_order}} </strong>
 							<hr size = "1">
 						</td>
 					</tr>
 					<tr valign = "top">
-						<td><strong>Order Date:</strong></td>
-						<td>{{date("m/d/y", strtotime($order->order_date) )}}</td>
-						<td>
-
+						<td colspan = "5" align = "left">
+							<strong> {{$order->customer->bill_full_name}} </strong><br/>
+							Thank you for the order you have placed with MonogramOnline.com.<br/>
+							We would like to keep you informed and up to date with your order status.<br/><br/>
+							<hr size = "1">
 						</td>
-						<td><strong>Order #</strong></td>
-						<td>
-							<table width = "100%" cellpadding = "0" cellspacing = "0" border = "0">
-								<tr valign = "top">
-									<td align = "left"><strong>{{$order->short_order}}</strong></td>
-									<td align = "right">
-										<br>Shipping# {{\Monogram\Helper::orderNameFormatter($order)."-0"}}
-									</td>
-								</tr>
-							</table>
+					</tr>
+
+					<tr valign = "top">
+						<td colspan = "3" align = "left"> <strong>Your order was placed on :</strong></td>
+						<td colspan = "2" align = "left">{{date("m/d/y", strtotime($order->order_date) )}}</td>
+					</tr>
+					<tr valign = "top">
+						<td colspan = "3" align = "left">Order Status:</td>
+						<td colspan = "2" align = "left">In Production</td>
+					</tr>
+					<tr>
+						<td colspan = "3" align = "left">Expected shipping time :</td>
+						<td colspan = "2" align = "left">12 - 14 Days from order date </td>
+					</tr>
+					<tr>
+						<td colspan = "5" align = "left"><br/><br/>(Please allow an additional 3-5 days for the delivery time.)<br/><br/>
+						We would like to assure you that we are working diligently to fulfill your orders.<br/>
+						If you have any questions please contact our customer service team at 856-320-3210 M-F 9 am - 5 pm EST, or send us an email cs@monogramonline.com.<br/>
+						<br/>
+						We appreciate your business,<br/>
+						MonogramOnline Team
+
 						</td>
 					</tr>
 					<tr valign = "top">
@@ -109,8 +122,8 @@
 									<td align = "center"><strong>Qty</strong></td>
 									<td align = "center"><strong>Total</strong></td>
 								</tr>
-								<tr height = "10" valign = "top">
-									<td colspan = "7">
+								<tr height = "7" valign = "top">
+									<td colspan = "9">
 										<hr size = "1">
 									</td>
 								</tr>
@@ -131,8 +144,6 @@
 												<br />
 												Shipped on {{substr($item->shipInfo->transaction_datetime, 0, 10)}} by
 												{{$item->shipInfo->mail_class}}
-												<br />
-												Trk# <a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number)) }}" target = "_blank">{{$item->shipInfo->tracking_number}}</a>
 											@endif
 										</td>
 										{{-- SKU --}}
@@ -147,15 +158,6 @@
 										<td align = "right">{{ (($item->item_quantity)  * ($item->item_unit_price) )}}</td>
 									</tr>
 
-									<tr>
-										<td colspan = "7" align = "left" valign = "top">
-											 Item# {{ $item->id}}
-
-											@if($item->tracking_number)
-												<a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number)) }}" target = "_blank"> {{ $item->tracking_number }} </a>
-											@endif
-										</td>
-									</tr>
 
 								@endforeach
 
