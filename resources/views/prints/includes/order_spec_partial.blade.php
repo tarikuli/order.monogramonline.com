@@ -70,7 +70,7 @@
 						<br/>
 						We appreciate your business,<br/>
 						MonogramOnline Team
-
+						<hr size = "1">
 						</td>
 					</tr>
 					<tr valign = "top">
@@ -162,8 +162,8 @@
 								@endforeach
 
 									<tr>
-										<td colspan = "6" align = "right" valign = "top"><strong>Coupon: </strong> ({{$order->coupon_id}}): </td>
-										<td align = "right" ><p>{{$order->coupon_value}} </p></td>
+										<td colspan = "6" align = "right" ><strong>Coupon: </strong> ({{$order->coupon_id}}): </td>
+										<td align = "right" ><p> {{$order->coupon_value}} </p></td>
 									</tr>
 									<tr>
 										<td colspan = "6" align = "right" ><strong>Tax:</strong></td>

@@ -7,6 +7,7 @@ use App\Order;
 use App\Product;
 use App\Status;
 use App\Store;
+
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\MessageBag;
 use Monogram\ApiClient;
 use Monogram\Helper;
+use GuzzleHttp\Client;
 
 class OrderController extends Controller
 {
@@ -1047,6 +1049,11 @@ class OrderController extends Controller
 
 			$product->save();
 			// -------------- Products table data insertion ended ---------------------- //
+// 			url(sprintf('prints/email_packing?order_id[]=%s', $item->order_id));
+// 			$client = new Client();
+// 			$res = $client->get(url(sprintf('prints/email_packing?order_id[]=%s', $item->order_id)));
+			$res = Request::create(url(sprintf('prints/email_order_status?order_id[]=%s', $item->order_id)), 'GET');
+
 		}
 
 		return response()->json([
