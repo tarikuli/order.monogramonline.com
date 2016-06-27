@@ -1066,18 +1066,20 @@ class OrderController extends Controller
 
 			$product->save();
 			// -------------- Products table data insertion ended ---------------------- //
-// 			url(sprintf('prints/email_packing?order_id[]=%s', $item->order_id));
-// 			$client = new Client();
-// 			$res = $client->get(url(sprintf('prints/email_packing?order_id[]=%s', $item->order_id)));
-// 			$res = Request::create(url(sprintf('prints/email_order_status?order_id[]=%s', $item->order_id)), 'GET');
-// 			Log::info(url(sprintf('prints/email_order_status?order_id[]=%s', $item->order_id)));
 
-// 			$parameters['order_id'] = $item->order_id ;
-// 			$res = Request::create('prints/email_order_status', 'GET', $parameters);
-// 			Controller::getRouter()->dispatch($request)->getContent();
-// 			return  Controller::getRouter()->dispatch($request)->getContent();
-
-// 			Log::info($res);
+			// -------------- Order Confirmation email sent Start ---------------------- //
+			$orders = $this->getOrderFromId($order_id);
+			$orders->first()->customer->bill_email;
+			if ( !$orders->first()->customer->bill_email ) {
+				Log::error( 'No Billing email address fount for order# '.$order_id .' in Order confirmation.');
+			}
+			$modules = $this->getOrderConfirmationEmailFromOrder($orders);
+			// Send email. nortonzanini@gmail.com
+			$subject = $orders->first()->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
+			if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
+				Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_id) );
+			}
+			// -------------- Order Confirmation email sent End---------------------- //
 
 		}
 
@@ -1120,6 +1122,24 @@ class OrderController extends Controller
 				}
 
 			return $modules;
+	}
+
+	private function getOrderConfirmationEmailFromOrder ($params) // get each order row
+	{
+		#dd($params instanceof Collection);
+		$orders = [ ];
+		if ( $params instanceof Collection ) {
+			$orders = $params; // is this a collection? if yes, then it's an array
+		} else {
+			$orders[] = $params; // if it is not a collection, then it's a single order
+		}
+
+		$modules = [ ];
+		foreach ( $orders as $order ) {
+			$modules[] = view('prints.includes.order_spec_partial', compact('order'))->render();
+		}
+
+		return $modules;
 	}
 
 }
