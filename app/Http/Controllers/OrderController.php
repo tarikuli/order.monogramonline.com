@@ -816,11 +816,10 @@ class OrderController extends Controller
 
 // 			$getTests = (new PrintController)->sendOrderConfirm();
 ## Jewel
-			$originalInput = Request::input();//backup original input
-
 			$parameters['order_id'] = $order->order_id ;
 // 			$request = Request::create('prints/email_order_status', 'GET', $parameters);
 			$request = Request::create('prints/email_packing?order_id[]='.$order->order_id, 'GET');
+			$originalInput = Request::input();//backup original input
 			Request::replace($request->input());
 			Route::dispatch($request)->getContent();
 ## Jewel
