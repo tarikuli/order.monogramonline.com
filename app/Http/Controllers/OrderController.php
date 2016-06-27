@@ -910,7 +910,7 @@ class OrderController extends Controller
 		return response()->json($data, $statusCode);
 	}
 
-	public function hook (Request $request)
+	public function hook (Request $request, AppMailer $appMailer)
 	{
 		$order_id = $request->get('ID');
 		$previous_order = Order::where('order_id', $order_id)
