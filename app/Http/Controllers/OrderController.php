@@ -813,14 +813,8 @@ class OrderController extends Controller
 			$customer->bill_mailing_list = $request->get('bill_mailing_list');
 			$customer->save();
 
-// 			$getTests = (new PrintController)->sendOrderConfirm();
 ## Jewel
-			$parameters['order_id'] = $order->order_id ;
-// 			$request = Request::create('prints/email_order_status', 'GET', $parameters);
-			$request = Request::create('prints/email_packing?order_id[]='.$order->order_id, 'GET');
-			$originalInput = Request::input();//backup original input
-			Request::replace($request->input());
-			Route::dispatch($request)->getContent();
+			$getTests = (new PrintController)->sendOrderConfirmFromMethod($order->order_id);
 ## Jewel
 			return redirect()
 				->back()
