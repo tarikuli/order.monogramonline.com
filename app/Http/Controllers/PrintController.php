@@ -296,23 +296,21 @@ class PrintController extends Controller
 
 		$orders = $this->getOrderFromId($order_ids);
 
-		$orders->first()->customer->bill_email;
-
-		if ( !$orders->first()->customer->bill_email ) {
+		if ( !$orders->customer->bill_email ) {
 			return redirect()->to('/items')
 			->withErrors([ 'error' => 'No Billing email address fount for order# '.$order_ids[0] ]);
 		}
 
-// return $orders->first()->customer->bill_email ;
+// return $orders->customer->bill_email ;
 
 		$modules = $this->getDeliveryConfirmationEmailFromOrder($orders);
 
 		// Send email. nortonzanini@gmail.com
-		$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$orders->first()->short_order.")";
-		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
+		$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$orders->short_order.")";
+		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject)){
 			return redirect()
 							->back()
-							->with('success', sprintf("Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]));
+							->with('success', sprintf("Email sent to %s Order# %s.", $orders->customer->bill_email,$order_ids[0]));
 		}
 
 	}
@@ -326,36 +324,32 @@ class PrintController extends Controller
 	public function sendShippingConfirmByScript (AppMailer $appMailer)
 	{
 
-		// --- here I will send order one by one chunk ---
-
 		$ships = Ship::whereNull('shipping_unique_id')
 					->lists('order_number')
 					->toArray();
-// Helper::jewelDebug($ships);
 
 		$orders = $this->getOrderFromId($ships);
 
-
 		foreach ($orders as $order){
-Helper::jewelDebug($order->customer->bill_email);
-
 			if ( !$order->customer->bill_email ) {
 				log::error('No Billing email address fount for order# '.$order->order_id);
+			}else{
+				// return $orders->customer->bill_email ;
+				$modules = $this->getDeliveryConfirmationEmailFromOrder($order);
+				// Send email. nortonzanini@gmail.com
+				$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$order->short_order.")";
+				if($appMailer->sendDeliveryConfirmationEmail($modules, $order->customer->bill_email, $subject)){
+					Log::info( sprintf("Shipping Confirmation Email sent to %s Order# %s.", $order->customer->bill_email, $order->order_id) );
+
+					// Update numbe of Station assign from items_to_shift
+					Ship::where('order_number', 'LIKE', $order->order_id)
+					->update([
+					'shipping_unique_id' => 'send',
+					]);
+				}else{
+					log::error('No Billing email address fount for order# '.$order->order_id);
+				}
 			}
-
-			// return $orders->customer->bill_email ;
-			$modules = $this->getDeliveryConfirmationEmailFromOrder($order);
-			// Send email. nortonzanini@gmail.com
-			$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$order->short_order.")";
-// 			if($appMailer->sendDeliveryConfirmationEmail($modules, $order->customer->bill_email, $subject)){
-				Log::info( sprintf("Shipping Confirmation Email sent to %s Order# %s.", $order->customer->bill_email, $order->order_id) );
-// 			}
-
-			// Update numbe of Station assign from items_to_shift
-			Ship::where('order_number', 'LIKE', $order->order_id)
-			->update([
-				'shipping_unique_id' => 'send',
-			]);
 		}
 	}
 
