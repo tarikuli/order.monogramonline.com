@@ -6,6 +6,7 @@ use App\BatchRoute;
 use App\Item;
 use App\Order;
 use App\Purchase;
+Use App\Ship;
 use App\SpecificationSheet;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use Monogram\AppMailer;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use Monogram\Helper;
 
 class PrintController extends Controller
@@ -324,32 +326,39 @@ class PrintController extends Controller
 	public function sendShippingConfirmByScript (AppMailer $appMailer)
 	{
 
-		// --- here I will send order one by one ---
+		// --- here I will send order one by one chunk ---
 
 		$ships = Ship::whereNull('shipping_unique_id')
-					->where('is_deleted', 0);
+					->lists('order_number')
+					->toArray();
+// Helper::jewelDebug($ships);
 
-		$orders = $this->getOrderFromId($order_ids);
+		$orders = $this->getOrderFromId($ships);
 
-		$orders->first()->customer->bill_email;
 
-		if ( !$orders->first()->customer->bill_email ) {
-			return redirect()->to('/items')
-			->withErrors([ 'error' => 'No Billing email address fount for order# '.$order_ids[0] ]);
+foreach ($orders as $order){
+
+		$order->first()->customer->bill_email;
+
+		if ( !$order->first()->customer->bill_email ) {
+			log::error('No Billing email address fount for order# '.$order->order_id);
 		}
 
 		// return $orders->first()->customer->bill_email ;
-
-		$modules = $this->getDeliveryConfirmationEmailFromOrder($orders);
-
+		$modules = $this->getDeliveryConfirmationEmailFromOrder($order);
 		// Send email. nortonzanini@gmail.com
-		$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$orders->first()->short_order.")";
-		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
-			return redirect()
-			->back()
-			->with('success', sprintf("Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]));
+		$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$order->first()->short_order.")";
+		if($appMailer->sendDeliveryConfirmationEmail($modules, $order->first()->customer->bill_email, $subject)){
+			Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $order->first()->customer->bill_email, $order->order_id) );
 		}
 
+		// Update numbe of Station assign from items_to_shift
+		Ship::where('order_number', 'LIKE', $order->order_id)
+		->update([
+			'shipping_unique_id' => 'send',
+		]);
+
+}
 	}
 
 

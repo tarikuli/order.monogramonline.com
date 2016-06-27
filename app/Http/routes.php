@@ -46,6 +46,9 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('prints/batches', 'PrintController@batches');
 		get('prints/batch_packing', 'PrintController@batch_packing_slip');
 		get('prints/email_packing', 'PrintController@sendShippingConfirm');
+
+		get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
+
 		get('prints/email_order_status', 'PrintController@sendOrderConfirm');
 
 		get('prints/sheets', 'PrintController@print_spec_sheet');
