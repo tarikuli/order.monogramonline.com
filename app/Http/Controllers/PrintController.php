@@ -337,18 +337,18 @@ class PrintController extends Controller
 
 
 		foreach ($orders as $order){
-Helper::jewelDebug($order->first()->customer->bill_email);
+Helper::jewelDebug($order->customer->bill_email);
 
-			if ( !$order->first()->customer->bill_email ) {
+			if ( !$order->customer->bill_email ) {
 				log::error('No Billing email address fount for order# '.$order->order_id);
 			}
 
-			// return $orders->first()->customer->bill_email ;
+			// return $orders->customer->bill_email ;
 			$modules = $this->getDeliveryConfirmationEmailFromOrder($order);
 			// Send email. nortonzanini@gmail.com
-			$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$order->first()->short_order.")";
-// 			if($appMailer->sendDeliveryConfirmationEmail($modules, $order->first()->customer->bill_email, $subject)){
-				Log::info( sprintf("Shipping Confirmation Email sent to %s Order# %s.", $order->first()->customer->bill_email, $order->order_id) );
+			$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$order->short_order.")";
+// 			if($appMailer->sendDeliveryConfirmationEmail($modules, $order->customer->bill_email, $subject)){
+				Log::info( sprintf("Shipping Confirmation Email sent to %s Order# %s.", $order->customer->bill_email, $order->order_id) );
 // 			}
 
 			// Update numbe of Station assign from items_to_shift
@@ -394,18 +394,18 @@ Helper::jewelDebug($order->first()->customer->bill_email);
 		}
 		$orders = $this->getOrderFromId($order_ids);
 
-		$orders->first()->customer->bill_email;
+		$orders->customer->bill_email;
 
-		if ( !$orders->first()->customer->bill_email ) {
+		if ( !$orders->customer->bill_email ) {
 			Log::error( 'No Billing email address fount for order# '.$order_ids[0] .' in Order confirmation.');
 		}
 
 		$modules = $this->getOrderConfirmationEmailFromOrder($orders);
 
 		// Send email. nortonzanini@gmail.com
-		$subject = $orders->first()->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
-		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
-			Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]) );
+		$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->short_order.")";
+		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject)){
+			Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->customer->bill_email,$order_ids[0]) );
 		}
 
 	}
