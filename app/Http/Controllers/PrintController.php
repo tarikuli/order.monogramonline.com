@@ -326,7 +326,8 @@ class PrintController extends Controller
 
 		// --- here I will send order one by one ---
 
-
+		$ships = Ship::whereNull('shipping_unique_id')
+					->where('is_deleted', 0);
 
 		$orders = $this->getOrderFromId($order_ids);
 
