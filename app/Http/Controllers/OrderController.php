@@ -1053,6 +1053,8 @@ class OrderController extends Controller
 // 			$client = new Client();
 // 			$res = $client->get(url(sprintf('prints/email_packing?order_id[]=%s', $item->order_id)));
 			$res = Request::create(url(sprintf('prints/email_order_status?order_id[]=%s', $item->order_id)), 'GET');
+			Log::info(url(sprintf('prints/email_order_status?order_id[]=%s', $item->order_id)));
+			Log::info($res);
 
 		}
 
