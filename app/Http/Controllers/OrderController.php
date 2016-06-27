@@ -10,6 +10,8 @@ use App\Product;
 use App\Status;
 use App\Store;
 
+use Route;
+
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -24,7 +26,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\MessageBag;
 use Monogram\ApiClient;
 use Monogram\Helper;
-use GuzzleHttp\Client;
+
 
 class OrderController extends Controller
 {
