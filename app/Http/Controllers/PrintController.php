@@ -432,7 +432,7 @@ Helper::jewelDebug($order_ids);
 	 * @param AppMailer $appMailer
 	 * @return void
 	 */
-	public function sendOrderConfirmFromMethod ($order_ids, AppMailer $appMailer)
+	public function sendOrderConfirmFromMethod ($order_ids)
 	{
 
 		// --- here I will send order one by one ---
@@ -463,6 +463,9 @@ Helper::jewelDebug($order_ids);
 
 		// Send email. nortonzanini@gmail.com
 		$subject = $orders->first()->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
+
+		$appMailer = new AppMailer();
+
 		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
 			// 			return redirect()
 			// 			->back()
