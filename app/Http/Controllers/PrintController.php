@@ -400,7 +400,7 @@ foreach ($orders as $order){
 			Log::error('No order_id is selected to send email in Order confirmation.');
 
 		}
-Helper::jewelDebug($order_ids);
+// Helper::jewelDebug($order_ids);
 		$orders = $this->getOrderFromId($order_ids);
 
 		$orders->first()->customer->bill_email;

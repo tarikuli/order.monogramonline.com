@@ -711,7 +711,7 @@ class OrderController extends Controller
 		return view('orders.manual_order')->with('stores', $stores);
 	}
 
-	public function postManual (Requests\ManualOrderCreateRequest $request)
+	public function postManual (Requests\ManualOrderCreateRequest $request, AppMailer $appMailer)
 	{
 		#return $request->all();
 		$manual_order_count = Order::where('short_order', "LIKE", sprintf("%%WH%%"))
@@ -815,24 +815,20 @@ class OrderController extends Controller
 ## Jewel
 // 			$getTests = (new PrintController)->sendOrderConfirmFromMethod($order->order_id);
 
-
-			$orders = $this->getOrderFromId($order_ids);
+			$orders = $this->getOrderFromId($order->order_id);
 			$orders->first()->customer->bill_email;
 			if ( !$orders->first()->customer->bill_email ) {
 				Log::error( 'No Billing email address fount for order# '.$order_ids[0] .' in Order confirmation.');
 			}
-
-			$orders1[] = $orders; // if it is not a collection, then it's a single order
-			$modules = [ ];
-			foreach ( $orders1 as $order ) {
-				$modules[] = view('prints.includes.order_spec_partial', compact('order'))->render();
-			}
-
+			$modules = $this->getOrderConfirmationEmailFromOrder($orders);
 			// Send email. nortonzanini@gmail.com
 			$subject = $orders->first()->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
 			if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
 				Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]) );
 			}
+
+
+
 
 ## Jewel
 			return redirect()
@@ -1094,4 +1090,40 @@ class OrderController extends Controller
 			'message' => 'data inserted',
 		], 200);
 	}
+
+	private function getOrderFromId ($order_ids) // get an id or an array of order id
+	{
+		if ( is_array($order_ids) ) {
+			$orders = Order::with('customer', 'items.shipInfo')
+			->whereIn('order_id', $order_ids)
+			->get();
+
+			return $orders;
+		} else {
+			$order = Order::with('customer', 'items.shipInfo')
+			->where('order_id', $order_ids)
+			->first();
+
+			return $order;
+		}
+
+	}
+
+	private function getPackingModulesFromOrder ($params) // get each order row
+	{
+			#dd($params instanceof Collection);
+			$orders = [ ];
+			if ( $params instanceof Collection ) {
+			$orders = $params; // is this a collection? if yes, then it's an array
+			} else {
+			$orders[] = $params; // if it is not a collection, then it's a single order
+			}
+			$modules = [ ];
+			foreach ( $orders as $order ) {
+			$modules[] = view('prints.includes.print_slip_partial', compact('order'))->render();
+				}
+
+			return $modules;
+	}
+
 }
