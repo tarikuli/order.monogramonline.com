@@ -336,35 +336,32 @@ class PrintController extends Controller
 		$orders = $this->getOrderFromId($ships);
 
 
-foreach ($orders as $order){
+		foreach ($orders as $order){
+Helper::jewelDebug($order->first()->customer->bill_email);
 
-		$order->first()->customer->bill_email;
+			if ( !$order->first()->customer->bill_email ) {
+				log::error('No Billing email address fount for order# '.$order->order_id);
+			}
 
-		if ( !$order->first()->customer->bill_email ) {
-			log::error('No Billing email address fount for order# '.$order->order_id);
+			// return $orders->first()->customer->bill_email ;
+			$modules = $this->getDeliveryConfirmationEmailFromOrder($order);
+			// Send email. nortonzanini@gmail.com
+			$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$order->first()->short_order.")";
+// 			if($appMailer->sendDeliveryConfirmationEmail($modules, $order->first()->customer->bill_email, $subject)){
+				Log::info( sprintf("Shipping Confirmation Email sent to %s Order# %s.", $order->first()->customer->bill_email, $order->order_id) );
+// 			}
+
+			// Update numbe of Station assign from items_to_shift
+			Ship::where('order_number', 'LIKE', $order->order_id)
+			->update([
+				'shipping_unique_id' => 'send',
+			]);
 		}
-
-		// return $orders->first()->customer->bill_email ;
-		$modules = $this->getDeliveryConfirmationEmailFromOrder($order);
-		// Send email. nortonzanini@gmail.com
-		$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$order->first()->short_order.")";
-		if($appMailer->sendDeliveryConfirmationEmail($modules, $order->first()->customer->bill_email, $subject)){
-			Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $order->first()->customer->bill_email, $order->order_id) );
-		}
-
-		// Update numbe of Station assign from items_to_shift
-		Ship::where('order_number', 'LIKE', $order->order_id)
-		->update([
-			'shipping_unique_id' => 'send',
-		]);
-
-}
 	}
 
 
 	private function getDeliveryConfirmationEmailFromOrder ($params) // get each order row
 	{
-		#dd($params instanceof Collection);
 		$orders = [ ];
 		if ( $params instanceof Collection ) {
 			$orders = $params; // is this a collection? if yes, then it's an array
@@ -388,66 +385,31 @@ foreach ($orders as $order){
 	 */
 	public function sendOrderConfirm (Request $request, AppMailer $appMailer)
 	{
-
 		// --- here I will send order one by one ---
 		$order_ids = $request->exists('order_id') ? array_filter($request->get('order_id')) : null;
 
 		if ( !$order_ids || !is_array($order_ids) ) {
-			#return view('errors.404');
-// 			return redirect()
-// 			->back()
-// 			->withErrors([ 'error' => 'No order_id is selected to send email.' ]);
 			Log::error('No order_id is selected to send email in Order confirmation.');
 
 		}
-// Helper::jewelDebug($order_ids);
 		$orders = $this->getOrderFromId($order_ids);
 
 		$orders->first()->customer->bill_email;
 
 		if ( !$orders->first()->customer->bill_email ) {
-// 			return redirect()->to('/items')
-// 			->withErrors([ 'error' => 'No Billing email address fount for order# '.$order_ids[0] ]);
 			Log::error( 'No Billing email address fount for order# '.$order_ids[0] .' in Order confirmation.');
 		}
-
-		// return $orders->first()->customer->bill_email ;
 
 		$modules = $this->getOrderConfirmationEmailFromOrder($orders);
 
 		// Send email. nortonzanini@gmail.com
 		$subject = $orders->first()->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
 		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
-// 			return redirect()
-// 			->back()
-// 			->with('success', sprintf("Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]));
 			Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]) );
 		}
 
 	}
 
-// 	/**
-// 	 * Send bulk Order receive Confirm
-// 	 * @param Request $request
-// 	 * @param AppMailer $appMailer
-// 	 * @return void
-// 	 */
-// 	public function sendOrderConfirmFromMethod ($order_ids, AppMailer $appMailer)
-// 	{
-
-// 		$orders = $this->getOrderFromId($order_ids);
-// 		$orders->first()->customer->bill_email;
-// 		if ( !$orders->first()->customer->bill_email ) {
-// 			Log::error( 'No Billing email address fount for order# '.$order_ids[0] .' in Order confirmation.');
-// 		}
-// 		$modules = $this->getOrderConfirmationEmailFromOrder($orders);
-// 		// Send email. nortonzanini@gmail.com
-// 		$subject = $orders->first()->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
-// 		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
-// 			Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]) );
-// 		}
-
-// 	}
 
 	private function getOrderConfirmationEmailFromOrder ($params) // get each order row
 	{

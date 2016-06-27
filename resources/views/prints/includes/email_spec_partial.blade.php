@@ -212,7 +212,4 @@
 			</td>
 		</tr>
 	</table>
-	<script>
-		window.print();
-	</script>
 </div>

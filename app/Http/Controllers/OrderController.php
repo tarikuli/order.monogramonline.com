@@ -813,18 +813,13 @@ class OrderController extends Controller
 			$customer->save();
 
 ## Jewel
-// 			$getTests = (new PrintController)->sendOrderConfirmFromMethod($order->order_id);
-
 			$orders = $this->getOrderFromId($order->order_id);
-// Helper::jewelDebug($orders->customer->bill_email);
-
-// dd($orders);
 			if ( !$orders->customer->bill_email ) {
 				Log::error( 'No Billing email address fount for order# '.$order->order_id .' in Order confirmation.');
 			}
 			$modules = $this->getOrderConfirmationEmailFromOrder($orders);
 			// Send email. nortonzanini@gmail.com
-			$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
+			$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->short_order.")";
 			if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject)){
 				Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->customer->bill_email,$order->order_id) );
 			}
@@ -1068,22 +1063,21 @@ class OrderController extends Controller
 
 			$product->save();
 			// -------------- Products table data insertion ended ---------------------- //
-
-			// -------------- Order Confirmation email sent Start ---------------------- //
-			$orders = $this->getOrderFromId($order_id);
-			$orders->customer->bill_email;
-			if ( !$orders->customer->bill_email ) {
-				Log::error( 'No Billing email address fount for order# '.$order_id .' in Order confirmation.');
-			}
-			$modules = $this->getOrderConfirmationEmailFromOrder($orders);
-			// Send email. nortonzanini@gmail.com
-			$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
-			if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject)){
-				Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->customer->bill_email,$order_id) );
-			}
-			// -------------- Order Confirmation email sent End---------------------- //
-
 		}
+
+		// -------------- Order Confirmation email sent Start ---------------------- //
+		$orders = $this->getOrderFromId($order_id);
+		$orders->customer->bill_email;
+		if ( !$orders->customer->bill_email ) {
+			Log::error( 'No Billing email address fount for order# '.$order_id .' in Order confirmation.');
+		}
+		$modules = $this->getOrderConfirmationEmailFromOrder($orders);
+		// Send email. nortonzanini@gmail.com
+		$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->short_order.")";
+		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject)){
+			Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->customer->bill_email,$order_id) );
+		}
+		// -------------- Order Confirmation email sent End---------------------- //
 
 		return response()->json([
 			'error'   => false,

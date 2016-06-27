@@ -163,21 +163,25 @@
 
 									<tr>
 										<td colspan = "6" align = "right" ><strong>Coupon: </strong> ({{$order->coupon_id}}): </td>
-										<td align = "right" ><p> {{$order->coupon_value}} </p></td>
+										<td align = "right" ><p>${{$order->coupon_value}} </p></td>
 									</tr>
 									<tr>
 										<td colspan = "6" align = "right" ><strong>Tax:</strong></td>
-										<td align = "right" ><p>{{$order->tax_charge}} </p></td>
+										<td align = "right" ><p>${{$order->tax_charge}} </p></td>
 									</tr>
 									<tr>
 										<td colspan = "6" align = "right" ><strong>Shipping Cost:</strong></td>
-										<td align = "right" ><p>{{$order->shipping_charge}} </p></td>
+										<td align = "right" ><p>${{$order->shipping_charge}} </p></td>
 									</tr>
 									<tr>
-										<td colspan = "6" align = "right" ><strong>Total:</strong></td>
-										<td align = "right" ><p>{{$order->total}} </p></td>
+										<td colspan = "6" align = "right" ><strong>Total Paid:</strong></td>
+										<td align = "right" ><p>${{$order->total}} </p></td>
 									</tr>
 
+									<tr>
+										<td colspan = "6" align = "right" ><strong>Balance Due:</strong></td>
+										<td align = "right" ><p>$0.00</p></td>
+									</tr>
 
 									<tr valign = "top">
 										<td colspan = "7">
@@ -191,17 +195,8 @@
 										<table width = "100%" cellpadding = "5" cellspacing = "5" border = "1">
 											<tr valign = "top">
 												<td align = "center"><p style = "text-align: center;">
-														<strong>IMPORTANT PLEASE NOTE:&nbsp; </strong></p>
-													<p style = "text-align: center;">
-														Each item is shipped in a separate envelope.&nbsp;</p>
-													<p style = "text-align: center;">
-														If you have placed an order of more than one item(s) in the SAME ORDER,&nbsp;</p>
-													<p style = "text-align: center;">
-														You will receive each item in a separate package.&nbsp;</p>
-													<p style = "text-align: center;">
-														We thank you for your business and we hope you enjoy your new MonogramOnline.com product. &nbsp;</p>
-													<p style = "text-align: center;">
-														If for any unlikely&nbsp;reason you are not satisfied with your order please contact us through our website and we will make all efforts to make sure that you are satisfied with your purchase at MonogramOnline.com.</p>
+													<p style = "text-align: center;">We thank you for your business and we hope you enjoy your new MonogramOnline.com product.  &nbsp;</p>
+													<p style = "text-align: center;">If for any unlikely reason you are not satisfied with your order please contact us through our website and we will make all efforts to make sure that you are satisfied with your purchase at MonogramOnline.com.</p>
 												</td>
 											</tr>
 										</table>
@@ -214,7 +209,4 @@
 			</td>
 		</tr>
 	</table>
-	<script>
-		window.print();
-	</script>
 </div>
