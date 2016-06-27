@@ -325,6 +325,7 @@ class PrintController extends Controller
 	{
 
 		$ships = Ship::whereNull('shipping_unique_id')
+					->whereNotNull('tracking_number')
 					->lists('order_number')
 					->toArray();
 
