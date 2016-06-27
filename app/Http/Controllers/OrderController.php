@@ -818,7 +818,6 @@ class OrderController extends Controller
 			$orders = $this->getOrderFromId($order->order_id);
 // Helper::jewelDebug($orders->customer->bill_email);
 
-// dd($orders);
 			if ( !$orders->customer->bill_email ) {
 				Log::error( 'No Billing email address fount for order# '.$order->order_id .' in Order confirmation.');
 			}
