@@ -463,9 +463,8 @@ foreach ($orders as $order){
 		// Send email. nortonzanini@gmail.com
 		$subject = $orders->first()->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
 
-		$appMailer = new \Monogram\AppMailer();
 
-		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
+		if(\Monogram\AppMailer::sendDeliveryConfirmationEmail($modules, $orders->first()->customer->bill_email, $subject)){
 			// 			return redirect()
 			// 			->back()
 			// 			->with('success', sprintf("Email sent to %s Order# %s.", $orders->first()->customer->bill_email,$order_ids[0]));
