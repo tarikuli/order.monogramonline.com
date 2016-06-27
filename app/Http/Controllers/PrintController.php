@@ -398,6 +398,7 @@ foreach ($orders as $order){
 // 			->back()
 // 			->withErrors([ 'error' => 'No order_id is selected to send email.' ]);
 			Log::error('No order_id is selected to send email in Order confirmation.');
+
 		}
 Helper::jewelDebug($order_ids);
 		$orders = $this->getOrderFromId($order_ids);
