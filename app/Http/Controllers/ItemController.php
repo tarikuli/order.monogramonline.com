@@ -1347,56 +1347,6 @@ class ItemController extends Controller
 
 	}
 
-	public function doctorCheckup () {
-// items/doctor
-		$orders = Order::with ( 'items', 'shipping' )
-						->where('order_id','yhst-128796189915726-689283')
-						->where('item_count','>',1)
-						->limit(10)
-						->get();
-
-
-
-		foreach ($orders as $key => $order){
-			$checkShippingTable = [];
-			$checkItemTable = [];
-// 			Helper::jewelDebug($order->order_id);
-
-			echo "<br>".$order->order_id;
-
-			foreach ($order->items as $item){
-				$checkItemTable[$item->id] = 1;
-// 				echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number;
-
-				foreach ($order->shipping as $ship){
-					if($item->id == $ship->item_id){
-						echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number."	---	".$ship->item_id;
-						$checkShippingTable[$ship->item_id]= 1;
-					}				}
-				echo "<br>---------+++++++++--------------";
-			}
-			Helper::jewelDebug($checkShippingTable);
-			Helper::jewelDebug($checkItemTable);
-
-			$uniqueIds = array_diff($checkItemTable, $checkShippingTable);
-			Helper::jewelDebug($uniqueIds);
-
-			if(count($checkShippingTable) == ($order->item_count)){
-				// Full Item Shipped
-
-				// Update Order Status Update item Status to complete
-
-				// Update item Status to complete
-
-			}else{
-
-			}
-			echo "<br>---------***********************--------------";
-		}
-// 		return $order;
-
-	}
-
 	public function exportItemTable (Request $request)
 	{
 
@@ -1535,5 +1485,55 @@ class ItemController extends Controller
 
 		return view ( 'items.trk_order_status' )->with ( 'request', $request )
 												->with ( 'orderinfo', $orderinfo );
+	}
+
+	public function doctorCheckup () {
+		// items/doctor
+		$orders = Order::with ( 'items', 'shipping' )
+// 		->where('order_id','yhst-128796189915726-689283')
+		->where('item_count','>',1)
+		->limit(10)
+		->get();
+
+dd($orders);
+
+		foreach ($orders as $key => $order){
+			$checkShippingTable = [];
+			$checkItemTable = [];
+			// 			Helper::jewelDebug($order->order_id);
+
+			echo "<br>".$order->order_id;
+
+			foreach ($order->items as $item){
+				$checkItemTable[$item->id] = 1;
+				// 				echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number;
+
+				foreach ($order->shipping as $ship){
+					if($item->id == $ship->item_id){
+						echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number."	---	".$ship->item_id;
+						$checkShippingTable[$ship->item_id]= 1;
+					}				}
+					echo "<br>---------+++++++++--------------";
+			}
+			Helper::jewelDebug($checkShippingTable);
+			Helper::jewelDebug($checkItemTable);
+
+			$uniqueIds = array_diff($checkItemTable, $checkShippingTable);
+			Helper::jewelDebug($uniqueIds);
+
+			if(count($checkShippingTable) == ($order->item_count)){
+				// Full Item Shipped
+
+				// Update Order Status Update item Status to complete
+
+				// Update item Status to complete
+
+			}else{
+
+			}
+			echo "<br>---------***********************--------------";
+		}
+		// 		return $order;
+
 	}
 }

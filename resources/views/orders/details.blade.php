@@ -194,11 +194,13 @@
 						        data-target = "#large-email-modal-lg">
 							<i class = "fa fa-envelope-o"></i>
 						</button>
+						<br/>
+						<a href = "{{url(sprintf('prints/email_packing?order_id[]=%s', $order->order_id))}}">Email Packing Slip</a>
 					@endif
 				</td>
-				<!-- {!! Form::text('email', $order->customer->ship_email, ['id' => 'email', 'class' => 'form-control']) !!}
-						-->
-				<td></td>
+				<td>
+
+				</td>
 			</tr>
 			<tr>
 				<td>Paid:</td>
@@ -346,52 +348,6 @@
 					</table>
 				</div>
 			</div>
-			{{-- Deleted from line: 346 --}}
-			{{-- <div class = "row">
-				<div class = "col-md-12">
-					<table style = "margin-left:775px">
-						<tr>
-							<td></td>
-							<td>Only insert numbers below except coupon id</td>
-						</tr>
-						<tr>
-							<td align = "right" style = "padding-right:40px ">Subtotal:</td>
-							<td align = "right">{!! Form::number('subtotal', 0.0, ['id' => 'subtotal', 'readonly' => 'readonly', 'step' => 'any']) !!}</td>
-						</tr>
-						<tr>
-							<td align = "right" style = "padding-right:40px ">Coupon-discount</b>:</td>
-							<td align = "right">{!! Form::text('coupon_id', null, ['placeholder' => 'Coupon id']) !!} - {!! Form::number('coupon_value', 0.0, ['id' => 'coupon_value', 'step' => 'any']) !!}</td>
-						</tr>
-						<tr>
-							<td align = "right" style = "padding-right:40px ">Gift Wrap:</td>
-							<td align = "right">{!! Form::number('gift_wrap_cost', 0.0, ['id' => 'gift_wrap_cost', 'step' => 'any']) !!}</td>
-						</tr>
-						<tr>
-							<td align = "right" style = "padding-right:40px ">Shipping:</td>
-							<td align = "right">{!! Form::number('shipping_charge', 0.0, ['id' => 'shipping_charge', 'step' => 'any']) !!}</td>
-						</tr>
-						<tr>
-							<td align = "right" style = "padding-right:40px ">Insurance:</td>
-							<td align = "right">{!! Form::number('insurance', 0.0, ['id' => 'insurance', 'step' => 'any']) !!}</td>
-						</tr>
-						<tr>
-							<td align = "right" style = "padding-right:45px ">Adjustments:</td>
-							<td align = "right">{!! Form::number('adjustments', 0.0, ['id' => 'adjustments', 'step' => 'any']) !!}</td>
-						</tr>
-						<tr>
-							<td align = "right" style = "padding-right:45px ">Tax:</td>
-							<td align = "right">{!! Form::number('tax_charge', 0.0, ['id' => 'tax_charge', 'step' => 'any']) !!}</td>
-						</tr>
-						<tr>
-							<td align = "right" style = "padding-right:45px ">Total:</td>
-							<td align = "right">{!! Form::number('total', 0.0, ['id' => 'total', 'readonly' => 'readonly', 'step' => 'any']) !!}</td>
-						</tr>
-						<tr>
-
-						</tr>
-					</table>
-				</div>
-			</div> --}}
 			<div class = "row" id = "items-holder">
 			</div>
 		</div>

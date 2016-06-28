@@ -111,7 +111,7 @@ class AppMailer
 		$this->subject = $subject;
 		$this->to = $bill_email;
 // 		$this->cc = 'shlomi@monogramonline.com';
-		$this->bcc = 'jewel@monogramonline.com';
+		$this->cc = 'jewel@monogramonline.com';
 		$this->view = 'emails.shippingconfirm';
 		$this->data = compact('modules');
 		$this->deliver();
@@ -140,7 +140,7 @@ class AppMailer
 			$message->from($this->from, $this->sender_name)
 					->to($this->to)
 					->cc($this->cc)
-					->bcc($this->bcc)
+// 					->bcc($this->bcc)
 					->subject($this->subject);
 		});
 	}
