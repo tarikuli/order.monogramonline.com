@@ -824,7 +824,7 @@ class OrderController extends Controller
 			}
 			$modules = $this->getOrderConfirmationEmailFromOrder($orders);
 			// Send email. nortonzanini@gmail.com
-			$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
+			$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->short_order.")";
 			if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject)){
 				Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->customer->bill_email,$order->order_id) );
 			}
@@ -1078,7 +1078,7 @@ class OrderController extends Controller
 		}
 		$modules = $this->getOrderConfirmationEmailFromOrder($orders);
 		// Send email. nortonzanini@gmail.com
-		$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->first()->short_order.")";
+		$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->short_order.")";
 		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject)){
 			Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->customer->bill_email,$order_id) );
 		}
