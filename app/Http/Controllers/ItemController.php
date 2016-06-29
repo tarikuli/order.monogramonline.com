@@ -5,6 +5,7 @@ use App\Department;
 use App\Item;
 use App\Option;
 use App\Order;
+use App\Status;
 use App\Parameter;
 use App\Product;
 use App\RejectionReason;
@@ -1510,7 +1511,12 @@ class ItemController extends Controller
 
 // Item::chunk(500, function($items) use($csv) {
 
-$ordersx = Order::with ( 'items', 'shipping' )->chunk(500, function($orders) {
+		$statuses = Status::where('is_deleted', 0)
+				->lists('status_name', 'id');
+
+
+
+$ordersx = Order::with ( 'items', 'shipping' )->chunk(500, function($orders) use($statuses) {
 
 		foreach ($orders as $key => $order){
 			$checkShippingTable = [];
@@ -1546,8 +1552,10 @@ $ordersx = Order::with ( 'items', 'shipping' )->chunk(500, function($orders) {
 			$uniqueIds = array_diff($checkItemTable, $checkShippingTable);
 
 			if(count($uniqueIds)>0){
-				echo "<br>Item Waiting for shipping Order_ID = <a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date;
+
+				echo "<pre>Item Waiting for shipping Order_ID =	<a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date."	Order_Status:	".$statuses[$order->order_status]."</pre>";
 // 				Helper::jewelDebug("---Total ".count($uniqueIds)." Item Waiting for shipping---		order_id	".$order->order_id."	order_date		".$order->order_date);
+
 			}
 // 			Helper::jewelDebug($uniqueIds);
 

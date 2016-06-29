@@ -324,7 +324,9 @@ class StationController extends Controller {
 		return redirect ()->back ();
 	}
 	public function summary() {
-		$items = Item::where ( 'station_name', '!=', '' )->groupBy ( 'station_name' )->get ();
+		$items = Item::where ( 'station_name', '!=', '' )
+				->groupBy ( 'station_name' )
+				->get ();
 
 		$summaries = [ ];
 		$total_lines = 0;
