@@ -657,23 +657,24 @@ class ItemController extends Controller
 		$columns = $template->exportable_options->lists('option_name')
 												->toArray();
 
-		// add graphic sku column immediately after the sku
-		// if there is no sku in template, then that'll be inserted at the end of the array
-		$key = array_search("sku", array_map("strtolower", $columns));
-		if ( $key !== false ) {
-			$place = $key + 1;
-			array_splice($columns, $place, 0, [ 'graphic_sku' ]);
-		}
+		// Jewel comment on 06292016
+// 		// add graphic sku column immediately after the sku
+// 		// if there is no sku in template, then that'll be inserted at the end of the array
+// 		$key = array_search("sku", array_map("strtolower", $columns));
+// 		if ( $key !== false ) {
+// 			$place = $key + 1;
+// 			array_splice($columns, $place, 0, [ 'graphic_sku' ]);
+// 		}
 
-		// change the sku to parent sku
-		// change the graphic sku to sku
-		foreach ( $columns as &$column ) {
-			if ( strtolower($column) == "sku" ) {
-				$column = "Parent SKU";
-			} elseif ( strtolower($column) == "graphic_sku" ) {
-				$column = "SKU";
-			}
-		}
+// 		// change the sku to parent sku
+// 		// change the graphic sku to sku
+// 		foreach ( $columns as &$column ) {
+// 			if ( strtolower($column) == "sku" ) {
+// 				$column = "Parent SKU";
+// 			} elseif ( strtolower($column) == "graphic_sku" ) {
+// 				$column = "SKU";
+// 			}
+// 		}
 
 		$file_path = sprintf("%s/assets/exports/batches/", public_path());
 		$file_name = sprintf("%s.csv", $batch_id);
@@ -720,10 +721,12 @@ class ItemController extends Controller
 					// previous line is commented after the sku became parent sku
 					// and, graphic_sku became sku
 					//} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "parentsku" ) { // if the template value is sku
-					$result = $item->item_code;
+						// Jewel comment on 06292016
+						//$result = $item->item_code;
 					// as the sku exists, the next column is the graphic sku
 					// insert result to the row
-					$row[] = $result;
+						// Jewel comment on 06292016
+						//$row[] = $result;
 
 					// get the graphic sku, and the result will be saving the graphic sku value
 					$result = $this->getGraphicSKU($item);
@@ -1516,7 +1519,7 @@ $ordersx = Order::with ( 'items', 'shipping' )->chunk(500, function($orders) {
 			$checkItemTable = [];
 			// 			Helper::jewelDebug($order->order_id);
 
-			echo "<br>Order_ID = <a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date;
+// 			echo "<br>Order_ID = <a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date;
 
 			set_time_limit(0);
 			foreach ($order->items as $item){
@@ -1545,7 +1548,8 @@ $ordersx = Order::with ( 'items', 'shipping' )->chunk(500, function($orders) {
 			$uniqueIds = array_diff($checkItemTable, $checkShippingTable);
 
 			if(count($uniqueIds)>0){
-				Helper::jewelDebug("---Total ".count($uniqueIds)." Item Waiting for shipping---		order_id	".$order->order_id."	order_date		".$order->order_date);
+				echo "<br>Order_ID = <a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date;
+// 				Helper::jewelDebug("---Total ".count($uniqueIds)." Item Waiting for shipping---		order_id	".$order->order_id."	order_date		".$order->order_date);
 			}
 // 			Helper::jewelDebug($uniqueIds);
 

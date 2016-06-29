@@ -330,6 +330,7 @@ class PrintController extends Controller
 		$orders = $this->getOrderFromId($ships);
 
 		foreach ($orders as $order){
+			set_time_limit(0);
 			if ( !$order->customer->bill_email ) {
 				log::error('No Billing email address fount for order# '.$order->order_id);
 			}else{

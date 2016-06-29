@@ -1103,7 +1103,7 @@ APPEND;
 		}
 		echo "</pre>";
 		echo "-----------------------------------------------------";
-		Log::info("---jewelDebug---");
+// 		Log::info("---jewelDebug---");
 		Log::info($valueArray);
 	}
 }
