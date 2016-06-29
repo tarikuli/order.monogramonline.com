@@ -1494,21 +1494,19 @@ class ItemController extends Controller
 
 		$order_ids = $request->exists('order_id') ? array_filter($request->get('order_id')) : null;
 
-		if ( !empty($order_ids) ) {
-			// items/doctor?order_id[]=yhst-128796189915726-689763
-			$orders = Order::with ( 'items', 'shipping' )
-							->where('order_id',$order_ids)
-// 							->where('item_count','>',1)
-							->limit(10)
-							->get();
-		}else{
-			$orders = Order::with ( 'items', 'shipping' )
-// 							->where('item_count','>',5)
-							->limit(10)
-							->get();
-		}
-// return $orders;
-// dd($orders);
+// 		if ( !empty($order_ids) ) {
+// 			// items/doctor?order_id[]=yhst-128796189915726-689763
+// 			$orders = Order::with ( 'items', 'shipping' )
+// 							->where('order_id',$order_ids)
+// // 							->where('item_count','>',1)
+// 							->limit(10)
+// 							->get();
+// 		}else{
+// 			$orders = Order::with ( 'items', 'shipping' )
+// // 							->where('item_count','>',5)
+// 							->limit(10)
+// 							->get();
+// 		}
 
 // Item::chunk(500, function($items) use($csv) {
 
@@ -1548,7 +1546,7 @@ $ordersx = Order::with ( 'items', 'shipping' )->chunk(500, function($orders) {
 			$uniqueIds = array_diff($checkItemTable, $checkShippingTable);
 
 			if(count($uniqueIds)>0){
-				echo "<br>Order_ID = <a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date;
+				echo "<br>Item Waiting for shipping Order_ID = <a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date;
 // 				Helper::jewelDebug("---Total ".count($uniqueIds)." Item Waiting for shipping---		order_id	".$order->order_id."	order_date		".$order->order_date);
 			}
 // 			Helper::jewelDebug($uniqueIds);

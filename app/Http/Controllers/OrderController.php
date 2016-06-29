@@ -596,6 +596,7 @@ class OrderController extends Controller
 				$idCatalog = $item_id;
 				$item->item_id = $item_id;
 
+
 				#$item_options = "";
 				$item_options = [ ];
 				#$item_option_count = $order->ItemList->Item[$item_count_index]->SelectedOptionList->Option->count();
@@ -632,6 +633,10 @@ class OrderController extends Controller
 				$item_taxable = $order->ItemList->Item[$item_count_index]->Taxable;
 				$item->item_taxable = ( $item_taxable == 'true' ? 'Yes' : 'No' );
 				$item->data_parse_type = 'xml';
+
+				// 06.29.2016 Jewel add Child SKU ligic in Pull Order
+				$item->item_code = Helper::getChildSku($item);
+
 				$item->save();
 
 				$product = Product::where('id_catalog', $idCatalog)
