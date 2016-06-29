@@ -265,9 +265,17 @@ class StationController extends Controller {
 
 
 	public function supervisor(Request $request) {
-		$routes = BatchRoute::where ( 'is_deleted', 0 )->orderBy ( 'batch_route_name' )->latest ()->lists ( 'batch_route_name', 'id' )->prepend ( 'Select a route', 'all' );
+		$routes = BatchRoute::where ( 'is_deleted', 0 )
+							->orderBy ( 'batch_route_name' )
+							->latest ()
+							->lists ( 'batch_route_name', 'id' )
+							->prepend ( 'Select a route', 'all' );
 
-		$stations = Station::where ( 'is_deleted', 0 )->orderBy ( 'station_name', 'asc' )->lists ( 'station_description', 'id' )->prepend ( 'Select a station', 'all' );
+		$stations = Station::where ( 'is_deleted', 0 )
+// 							->whereNotIn( 'station_name', Helper::$shippingStations)
+							->orderBy ( 'station_name', 'asc' )
+							->lists ( 'station_description', 'id' )
+							->prepend ( 'Select a station', 'all' );
 
 		// $statuses = (new Collection($this->statuses))->prepend('Select status', 'all');
 		$statuses = (new Collection ( Helper::getBatchStatusList () ))->prepend ( 'Select status', 'all' );
@@ -302,6 +310,16 @@ class StationController extends Controller {
 		}
 		if ($request->has ( 'station_name' )) {
 			$station_name = $request->get ( 'station_name' );
+
+			// Jewel from Supervisor station Implement validation move to Shipping station.
+			if (in_array ( $station_name, Helper::$shippingStations )) {
+				return redirect()
+				->back()
+				->withErrors([
+						'error' => 'You can not Move in Shipping Station',
+				]);
+			}
+
 			$item->station_name = $station_name;
 			$supervisor_message = trim ( $request->get ( 'supervisor_message' ) );
 			$item->supervisor_message = ! empty ( $supervisor_message ) ? $supervisor_message : null;
@@ -324,9 +342,12 @@ class StationController extends Controller {
 		return redirect ()->back ();
 	}
 	public function summary() {
+
 		$items = Item::where ( 'station_name', '!=', '' )
+				->whereNotIn( 'station_name', Helper::$shippingStations)
 				->groupBy ( 'station_name' )
 				->get ();
+
 
 		$summaries = [ ];
 		$total_lines = 0;
@@ -346,6 +367,7 @@ class StationController extends Controller {
 			// ->toSql();
 			// echo "<pre>"; echo print_r($lines_count->count()); echo " -- ".$station_name."</pre>";
 
+// 			if (($lines_count->count () > 0) && (!in_array($station_name, Helper::$shippingStations))) {
 			if ($lines_count->count () > 0) {
 				// Get number of Items in a Station
 				$items_count = Item::where ( 'station_name', $station_name )
@@ -391,12 +413,12 @@ class StationController extends Controller {
 	public function getBulkChange() {
 		// https://www.neontsunami.com/posts/using-lists()-in-laravel-with-custom-attribute-accessors
 		$stations = Station::where ( 'is_deleted', 0 )
+							->whereNotIn( 'station_name', Helper::$shippingStations)
 							->get ()
 							->lists ( 'custom_station_name', 'station_name' )
 							->prepend ( 'Select a station', 0 );
 
-		// return $stations;
-
+// 		return $stations;
 		return view ( 'items.bulk_change' )->with ( 'stations', $stations );
 	}
 

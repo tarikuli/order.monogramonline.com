@@ -881,20 +881,28 @@ class ItemController extends Controller
 	{
 
 		if (in_array ( $request->get('station'), Helper::$shippingStations )) {
-			return redirect(url('/summary'))
-			->withErrors(new MessageBag([
-					'error' => 'Can not move from shipping Station.',
-			]));
+// 			return redirect(url('/summary'))
+// 				->withErrors(new MessageBag([
+// 						'error' => 'Can not move from shipping Station.',
+// 				]));
+
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'You can not search in Shipping Station',
+			]);
 		}
 
 		$items = Item::with('lowest_order_date', 'route.stations')
 					 ->searchActiveByStation($request->get('station'))
 					 ->where('batch_number', '!=', '0')
 					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
+					 ->orderBy('child_sku', 'ASC')
 					 ->paginate(2000);
 
 		$current_station_name = $request->get('station');
 		$stations = Station::where('is_deleted', 0)
+						   ->whereNotIn( 'station_name', Helper::$shippingStations)
 						   ->latest()
 						   ->get()
 						   ->lists('custom_station_name', 'station_name')
@@ -1079,10 +1087,13 @@ class ItemController extends Controller
 
 		$items_to_shift = intval($request->get('item_to_shift'));
 		$current_station_name = $request->get('current_station_name');
+
 		#$station_id = $request->get('station');
 		$station_id = $request->get('batch_stations');
 		// Check station exist
 		$station = Station::find($station_id);
+
+
 		if ( !$station ) {
 			return redirect()
 				->back()
@@ -1090,6 +1101,14 @@ class ItemController extends Controller
 					'Not a valid station selected',
 				]);
 		}
+
+		if(in_array($station->station_name, Helper::$shippingStations)){
+
+			return redirect()
+					->back()
+					->withErrors(['You can not move to Shipping Station.']);
+		}
+
 		// Get one station Name
 		$station_name = $station->station_name;
 

@@ -22,23 +22,10 @@
 		@include('includes.success_div')
 		<div class = "col-xs-12">
 			{!! Form::open(['method' => 'get']) !!}
-			{{--<div class = "form-group col-xs-2">
-				<label for = "batch">Batch#</label>
-				{!! Form::text('batch', $request->get('batch'), ['id'=>'batch', 'class' => 'form-control', 'placeholder' => 'Search in batch']) !!}
-			</div>--}}
-
-			{{--<div class = "form-group col-xs-3">
-				<label for = "route">Route</label>
-				{!! Form::select('route', $routes, $request->get('route'), ['id'=>'route', 'class' => 'form-control']) !!}
-			</div>--}}
 			<div class = "form-group col-xs-3">
 				<label for = "route">Station</label>
 				{!! Form::select('station', $stations, $request->get('station', ''), ['id'=>'station', 'class' => 'form-control']) !!}
 			</div>
-			{{--<div class = "form-group col-xs-2">
-				<label for = "status">Status</label>
-				{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'status', 'class' => 'form-control']) !!}
-			</div>--}}
 			<div class = "form-group col-xs-2">
 				<label for = "" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
@@ -98,13 +85,6 @@
 						<td></td>
 						<td></td>
 					</tr>
-					{{--<tr>
-						<td colspan = "11">
-							{!! Form::button('Select / Deselect all', ['id' => 'select_deselect', 'class' => 'btn btn-link']) !!}
-							{!! Form::button('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
-							{!! Form::button('Packing Slip', ['id' => 'packing_slip', 'class' => 'btn btn-link']) !!}
-						</td>
-					</tr>--}}
 					{{--{!! Form::close() !!}--}}
 				</table>
 				<div class="col-md-12 text-center">

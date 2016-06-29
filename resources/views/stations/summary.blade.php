@@ -45,8 +45,8 @@
 						{{-- print_r($summary) --}}
 							<a href = "{{url(sprintf("/items/grouped?station=%s", $summary['station_id']))}}">{{$summary['station_name']}} - {{$summary['station_description']}}</a>
 						</td>
-						<td align="right">{{ number_format($summary['lines_count'],2) }}</td>
-						<td align="right">{{ number_format($summary['items_count'],2) }}</td>
+						<td align="right">{{ number_format($summary['lines_count'],0) }}</td>
+						<td align="right">{{ number_format($summary['items_count'],0) }}</td>
 						<td>{{$summary['earliest_batch_creation_date']}}</td>
 						<td>{{$summary['earliest_order_date']}}</td>
 						<td><a href = "{{$summary['link']}}" target = "_blank">View active sku</a></td>
@@ -54,8 +54,8 @@
 				@endforeach
 				<tr>
 					<td align="right">Totals:</td>
-					<td align="right">{{ number_format($total_lines, 2) }}</td>
-					<td align="right">{{ number_format($total_items, 2) }}</td>
+					<td align="right">{{ number_format($total_lines, 0) }}</td>
+					<td align="right">{{ number_format($total_items, 0) }}</td>
 					<td></td>
 					<td></td>
 				</tr>
