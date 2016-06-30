@@ -85,9 +85,9 @@
 						</td>
 					</tr>
 					<tr valign = "top">
-						<td colspan = "2" align = "right"><strong>Total</strong></td>
+						<td colspan = "2" align = "right"><strong>Total: </strong></td>
 						{{--<td><strong>{{\Monogram\Helper::getItemCount($item->groupedItems)}}</strong></td>--}}
-						<td><strong>{{ $count }}</strong></td>
+						<td colspan = "5" align = "left"><strong>{{ $count }} /{{\Monogram\Helper::getItemCount($item->groupedItems)}} </strong></td>
 					</tr>
 				</table>
 			</td>

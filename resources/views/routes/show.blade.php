@@ -6,7 +6,6 @@
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-	.
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/css/bootstrap-select.min.css">
 	<link type = "text/css" rel = "stylesheet"
@@ -84,7 +83,7 @@
 						<thead>
 						<tr>
 							<th>
-								<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>
+								<!-- <button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>  -->
 							</th>
 							<th>SL#</th>
 							<th>
@@ -98,6 +97,7 @@
 							<th>SKU</th>
 							<th>Item name</th>
 							<th>Options</th>
+							<th></th>
 							<!-- th>
 								<button type = "button" class = "btn btn-success" id = "done-all">Done all</button>
 							</th -->
@@ -152,6 +152,9 @@
 								<!-- td>
 									<a href = "#" class = "btn btn-success done">Done</a>
 								</td -->
+								<td>
+									<a href = "#" class = "btn btn-success complete">Complete</a>
+								</td>
 							</tr>
 						@endforeach
 						</tbody>
@@ -166,7 +169,7 @@
 							<td></td>
 							<td></td>
 							<td></td>
-							<!-- td></td -->
+							<td></td>
 						</tr>
 						</tfoot>
 					</table>
@@ -317,6 +320,11 @@
 					.appendTo($(form));
 
 			$(form).submit();
+		});
+
+
+		$("a.complete").on('click', function (event){
+			$(this).closest('tr').css("background-color", "#4E9563");
 		});
 
 		$("a.done").on('click', function (event)

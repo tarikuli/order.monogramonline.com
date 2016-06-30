@@ -982,7 +982,7 @@ APPEND;
 		$option->id_catalog = $item->item_id;
 		$option->parent_sku = $item->item_code;
 		$option->graphic_sku = 'NeedGraphicFile';
-		$option->allow_mixing = 1;
+		$option->allow_mixing = 0;
 		$option->batch_route_id = static::getDefaultRouteId();
 		$option_array = [ ];
 		// add the found parameters
