@@ -350,6 +350,7 @@ class PrintController extends Controller
 						->update([
 						'shipping_unique_id' => 'send',
 						]);
+					sleep(1);
 				}else{
 					log::error('No Billing email address fount for order# '.$order->order_id);
 				}
