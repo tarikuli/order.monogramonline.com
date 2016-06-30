@@ -58,6 +58,7 @@ class PrintController extends Controller
 
 	public function batches (Request $request)
 	{
+// 		return $request->all();
 		/*https://www.4psitelink.com/setup/batch_print.php?ad[]=22602*/
 		$batches = $request->exists('batch_number') && is_array($request->get('batch_number')) ? array_filter($request->get('batch_number')) : null;
 		if ( !$batches || !is_array($batches) ) {
@@ -101,6 +102,7 @@ class PrintController extends Controller
 
 		$order_ids = Item::whereIn('batch_number', $batches)
 						 ->searchByStation($station_name)
+						 ->WhereNull('tracking_number')
 						 ->lists('order_id')
 						 ->toArray();
 
@@ -120,9 +122,11 @@ class PrintController extends Controller
 	{
 		$item = Item::with('shipInfo', 'order.customer', 'lowest_order_date', 'route.stations_list', 'groupedItems', 'order', 'station_details', 'product')
 					->where('batch_number', '=', $batch_number)
+					->whereNull('tracking_number')
 					->groupBy('batch_number')
 					->latest('batch_creation_date')
 					->first();
+
 		/*if ( !count($item) ) {*/
 		if ( !$item ) {
 			return view('errors.404');

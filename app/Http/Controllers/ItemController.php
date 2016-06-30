@@ -403,6 +403,7 @@ class ItemController extends Controller
 		$items = Item::with('order')
 					 ->where('batch_number', $batch_number)
 					 ->where('station_name', $station_name)
+					 ->WhereNull('tracking_number')
 					 ->get();
 
 		if ( !count($items) ) {
@@ -636,6 +637,7 @@ class ItemController extends Controller
 
 		// Get list of Items from Item Table by Batch Number
 		$items = Item::where('batch_number', $batch_id)
+					 ->whereNull('tracking_number')
 					 ->get();
 
 		// If items not found belong to this Batch number then return to error page.

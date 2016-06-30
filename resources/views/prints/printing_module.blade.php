@@ -51,6 +51,9 @@
 					@setvar($count = 0)
 					@foreach($item->groupedItems as $row)
 						@if(!$station_name || $row->station_name == $station_name)
+
+						@if($row->shipInfo)
+						@if(!$row->shipInfo->tracking_number)
 							@setvar(++$count)
 							<tr valign = "top">
 
@@ -69,6 +72,10 @@
 									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $row->id)) !!}
 								</td>
 							</tr>
+						@endif
+						@endif
+
+
 						@endif
 					@endforeach
 					<tr valign = "top">
