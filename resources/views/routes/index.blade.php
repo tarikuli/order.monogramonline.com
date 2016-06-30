@@ -141,7 +141,7 @@
 							<td>{{$row['min_order_date']}}</td>
 						</tr>
 					@endforeach
-					<tr>
+					{{--<tr>
 						<td colspan = "11">
 							{!! Form::button('Select / Deselect all', ['id' => 'select_deselect', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
@@ -152,7 +152,7 @@
 							@endif
 
 						</td>
-					</tr>
+					</tr> --}}
 					{!! Form::close() !!}
 				</table>
 			@else

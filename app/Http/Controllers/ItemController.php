@@ -203,6 +203,7 @@ class ItemController extends Controller
 
 		$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
 					 ->where('batch_number', '!=', '0')
+					 ->whereNotIn( 'station_name', Helper::$shippingStations)
 					 ->searchBatch($request->get('batch'))
 					 ->searchRoute($request->get('route'))
 					 ->searchStation(session('station', 'all'))
@@ -225,9 +226,11 @@ class ItemController extends Controller
 
 		// Get Station List
 		$stations = Station::where('is_deleted', 0)
+						   ->whereNotIn( 'station_name', Helper::$shippingStations)
 						   ->orderBy('station_description', 'asc')
 						   ->lists('station_description', 'id')
 						   ->prepend('Select a station', 'all');
+
 		//  Get Station Name by Station Request parameter.
 		$station_name = Station::find($request->get('station'));
 		$current_station_by_url = $station_name['station_name'];
