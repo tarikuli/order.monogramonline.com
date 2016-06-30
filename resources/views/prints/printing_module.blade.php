@@ -50,17 +50,17 @@
 					</tr>
 					@setvar($count = 0)
 					@foreach($item->groupedItems as $row)
+					{{-- {!! \Monogram\Helper::jewelDebug($row->toArray()) !!} --}}
 						@if(!$station_name || $row->station_name == $station_name)
 
-						@if($row->shipInfo)
-						@if(!$row->shipInfo->tracking_number)
+						@if(!$row->tracking_number)
 							@setvar(++$count)
 							<tr valign = "top">
 
-								<td align = "left">{{$row->order->short_order}}</td>
+								<td align = "left">Order# {{$row->order->short_order}}</td>
 								<td align = "left">{{substr($row->order->order_date, 0, 10)}}</td>
 								<td align = "center">{{$row->item_quantity}}</td>
-								<td align = "left">{{$row->item_code}}</td>
+								<td align = "left">{{$row->child_sku}}</td>
 								<td align = "left" rowspan = "2">{{$row->item_description}}</td>
 								<td align = "left"
 								    rowspan = "2">{!! \Monogram\Helper::jsonTransformer($row->item_option, "<br/>") !!}</td>
@@ -70,9 +70,10 @@
 							<tr>
 								<td colspan = "4" align = "left" valign = "top">
 									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $row->id)) !!}
+									<br/>
+									Item# {{ $row->id }}
 								</td>
 							</tr>
-						@endif
 						@endif
 
 
