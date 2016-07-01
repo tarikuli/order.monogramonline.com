@@ -971,7 +971,11 @@ APPEND;
 		if ( !$option ) {
 			$option = new Option();
 			$option->child_sku = $child_sku;
+$this->jewelDebug("New Create ");
+$this->jewelDebug($option->child_sku);
 		} else {
+$this->jewelDebug("Defult Create ");
+$this->jewelDebug($option->child_sku);
 			return $option->child_sku;
 		}
 		// no child sku was found
