@@ -200,6 +200,12 @@ class StationController extends Controller {
 				}
 			}
 
+			if(!$current_route_shp_station){
+				return redirect(url('batches/'.$item->batch_number.'/'.$item->station_name))
+				->withErrors(new MessageBag([
+						'error' => 'In Route dont have correct Shipping station.',
+				]));
+			}
 
 			if (count($current_route_shp_station)>0) {
 				Helper::populateShippingData ( $item );
