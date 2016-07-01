@@ -182,7 +182,7 @@ class StationController extends Controller {
 
 			// Get All station in Route
 			$route = BatchRoute::with('stations')
-			->find($batch_route_id);
+								->find($batch_route_id);
 
 // echo "<pre>";
 // print_r($route->stations->toArray());
