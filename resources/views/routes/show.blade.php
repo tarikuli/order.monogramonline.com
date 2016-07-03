@@ -122,6 +122,8 @@
 									@if(!in_array ( $current_batch_station->station_name, \Monogram\Helper::$shippingStations ))
 										<a href = "#" class = "move_to_shipping">Move 2 Shipping</a>
 									@endif
+									<br/>
+									<a href = "#" class = "move_to_shipping">Back 2 QC</a>
 
 								</td>
 								<td><a href = "{{ $item->item_url }}" target = "_blank"><img

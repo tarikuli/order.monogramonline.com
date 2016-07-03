@@ -443,6 +443,23 @@ class ItemController extends Controller
 		$department_name = $department ? $department->department_name : 'NO DEPARTMENT IS SET';
 		$stations = Helper::routeThroughStations($items[0]->batch_route_id, $station_name);
 
+		if(!strpos($stations, '-QCD')){
+// 			dd("ssds");
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'Batch# '.$batch_number." and Route# ".$route->batch_code." Need QCD Station.",
+			]);
+		}
+
+		if(!strpos($stations, '-SHP')){
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'Batch# '.$batch_number." and Route# ".$route->batch_code." Need SHP Station.",
+			]);
+		}
+
 		#return $items;
 		$count = 1;
 
@@ -1519,84 +1536,141 @@ class ItemController extends Controller
 
 		$order_ids = $request->exists('order_id') ? array_filter($request->get('order_id')) : null;
 
-// 		if ( !empty($order_ids) ) {
-// 			// items/doctor?order_id[]=yhst-128796189915726-689763
-// 			$orders = Order::with ( 'items', 'shipping' )
-// 							->where('order_id',$order_ids)
-// // 							->where('item_count','>',1)
-// 							->limit(10)
-// 							->get();
-// 		}else{
-// 			$orders = Order::with ( 'items', 'shipping' )
-// // 							->where('item_count','>',5)
-// 							->limit(10)
-// 							->get();
-// 		}
+		// 		if ( !empty($order_ids) ) {
+		// 			// items/doctor?order_id[]=yhst-128796189915726-689763
+		// 			$orders = Order::with ( 'items', 'shipping' )
+		// 							->where('order_id',$order_ids)
+		// // 							->where('item_count','>',1)
+		// 							->limit(10)
+		// 							->get();
+		// 		}else{
+		// 			$orders = Order::with ( 'items', 'shipping' )
+		// // 							->where('item_count','>',5)
+		// 							->limit(10)
+		// 							->get();
+		// 		}
 
-// Item::chunk(500, function($items) use($csv) {
+		// Item::chunk(500, function($items) use($csv) {
 
-		$statuses = Status::where('is_deleted', 0)
-				->lists('status_name', 'id');
+				$statuses = Status::where('is_deleted', 0)
+									->lists('status_name', 'id');
 
 
 
-$ordersx = Order::with ( 'items', 'shipping' )->chunk(500, function($orders) use($statuses) {
+		$ordersx = Order::with ( 'items', 'shipping' )->chunk(500, function($orders) use($statuses) {
 
-		foreach ($orders as $key => $order){
-			$checkShippingTable = [];
-			$checkItemTable = [];
-			// 			Helper::jewelDebug($order->order_id);
+				foreach ($orders as $key => $order){
+					$checkShippingTable = [];
+					$checkItemTable = [];
+					// 			Helper::jewelDebug($order->order_id);
 
-// 			echo "<br>Order_ID = <a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date;
+		// 			echo "<br>Order_ID = <a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date;
 
-			set_time_limit(0);
-			foreach ($order->items as $item){
-				if(empty($item->batch_number)){
-					if($item->batch_number != 10000){
-						$checkItemTable[$item->id] = 1;
-						// 				echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number;
+					set_time_limit(0);
+					foreach ($order->items as $item){
+						if(empty($item->batch_number)){
+							if($item->batch_number != 10000){
+								$checkItemTable[$item->id] = 1;
+								// 				echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number;
 
-						foreach ($order->shipping as $ship){
-							if($item->id == $ship->item_id){
-		// 						echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number."	---	".$ship->item_id;
-								$checkShippingTable[$ship->item_id]= 1;
-							}				}
-		// 					echo "<br>---------+++++++++--------------";
+								foreach ($order->shipping as $ship){
+									if($item->id == $ship->item_id){
+				// 						echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number."	---	".$ship->item_id;
+										$checkShippingTable[$ship->item_id]= 1;
+									}				}
+				// 					echo "<br>---------+++++++++--------------";
+							}
+						}
 					}
+
+		// 			echo "<br>---Total ".count($checkItemTable)." Item in Itmes Table checkItemTable---";
+		// 			Helper::jewelDebug($checkItemTable);
+
+		// 			echo "<br>---Total ".count($checkShippingTable)." Item in Shipping Table checkShippingTable---";
+		// 			Helper::jewelDebug($checkShippingTable);
+
+
+					$uniqueIds = array_diff($checkItemTable, $checkShippingTable);
+
+					if(count($uniqueIds)>0){
+
+						echo "<pre>Item Waiting for shipping Order_ID =	<a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date."	Order_Status:	".$statuses[$order->order_status]."</pre>";
+		// 				Helper::jewelDebug("---Total ".count($uniqueIds)." Item Waiting for shipping---		order_id	".$order->order_id."	order_date		".$order->order_date);
+
+					}
+		// 			Helper::jewelDebug($uniqueIds);
+
+					if(count($checkShippingTable) == ($order->item_count)){
+						// Full Item Shipped
+
+						// Update Order Status Update item Status to complete
+
+						// Update item Status to complete
+
+					}else{
+
+					}
+		// 			echo "<br>---------***********************--------------";
 				}
-			}
-
-// 			echo "<br>---Total ".count($checkItemTable)." Item in Itmes Table checkItemTable---";
-// 			Helper::jewelDebug($checkItemTable);
-
-// 			echo "<br>---Total ".count($checkShippingTable)." Item in Shipping Table checkShippingTable---";
-// 			Helper::jewelDebug($checkShippingTable);
-
-
-			$uniqueIds = array_diff($checkItemTable, $checkShippingTable);
-
-			if(count($uniqueIds)>0){
-
-				echo "<pre>Item Waiting for shipping Order_ID =	<a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date."	Order_Status:	".$statuses[$order->order_status]."</pre>";
-// 				Helper::jewelDebug("---Total ".count($uniqueIds)." Item Waiting for shipping---		order_id	".$order->order_id."	order_date		".$order->order_date);
-
-			}
-// 			Helper::jewelDebug($uniqueIds);
-
-			if(count($checkShippingTable) == ($order->item_count)){
-				// Full Item Shipped
-
-				// Update Order Status Update item Status to complete
-
-				// Update item Status to complete
-
-			}else{
-
-			}
-// 			echo "<br>---------***********************--------------";
-		}
-});
+		});
 		// 		return $order;
 
 	}
+
+//	public function doctorCheckup (Request $request) {
+
+
+// 		$ordersx = Item::where('child_sku', 'LIKE', sprintf("%%%s%%", '-yes,iconfirm'))->chunk(500, function($items) {
+
+// 				set_time_limit(0);
+// 				foreach ($items as $item){
+// // 					Helper::jewelDebug($item->id."		".$item->child_sku);
+// 					$removed = str_replace("-yes,iconfirm","",$item->child_sku);
+// // 					Helper::jewelDebug($removed);
+// 					Item::where('id', $item->id)
+// 					->update([
+// 						'child_sku' => $removed,
+// 					]);
+
+// 				}
+
+
+// 		});
+
+
+// 		$ordersx = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", '-yes,iconfirm'))
+// 						->where('batch_route_id','115')
+// 						->chunk(500, function($options)  {
+// 			foreach ($options as $key => $option){
+// 				$checkShippingTable = [];
+// 				$checkItemTable = [];
+
+// // 				echo "<br>".$option->id."  ------------	".$option->child_sku;
+// // 				Helper::jewelDebug("DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$option->id);
+
+// 				$removed = str_replace("-yes,iconfirm","",$option->child_sku);
+
+// 				set_time_limit(0);
+
+// 				$optionForDeletes = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", $removed))
+// 										->where('batch_route_id','115')
+// 										->get();
+
+// 				foreach ($optionForDeletes as $optionForDelete ){
+// // 					Helper::jewelDebug($optionForDelete->id);
+// // 					echo "<br>".$option->id."  ------------	".$option->child_sku;
+// 					echo "<br>DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$optionForDelete->id.";";
+// // 					Helper::jewelDebug("DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$option->id);
+// 				}
+
+// // 				Helper::jewelDebug($optionForDelete);
+
+// // 				Option::where('id', $option->id)
+// // 				->update([
+// // 				'child_sku' => $removed,
+// // 				]);
+// 			}
+// 		});
+
+//	}
 }
