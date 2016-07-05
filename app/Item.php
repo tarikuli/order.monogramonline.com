@@ -144,6 +144,7 @@ class Item extends Model
 				return $query->whereIn('order_id', $order_ids);
 			}
 			return;
+
 		} elseif ( $search_in == 'order' ) {
 
 			return $query->where('order_id', 'REGEXP', implode("|", $values));
