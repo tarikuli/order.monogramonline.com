@@ -51,15 +51,9 @@
 				{!! Form::close() !!}
 			</div>
 			<div class = "col-md-4">
-				<p>eBay Template keywords:</p>
-				<ul class = "list-unstyled">
-					@foreach(\Monogram\Helper::$TEMPLATE_EBAY_KEYWORDS as $keyword => $keyword_replacer)
-						<li>{{ $keyword }} >> {{ $keyword_replacer[0] }}</li>
-					@endforeach
-				</ul>
 				<p>email template keywords</p>
 				<ul class = "list-unstyled">
-					@foreach(\Monogram\Helper::$TEMPLATE_EMAIL_KEYWORDS as $keyword => $keyword_replacer)
+					@foreach(\Monogram\Helper::$EMAIL_TEMPLATE_KEYWORDS as $keyword => $keyword_replacer)
 						<li><b>{{ $keyword }}</b> >> {{ $keyword_replacer[0] }}</li>
 					@endforeach
 				</ul>

@@ -62,89 +62,113 @@ class Helper
 		"Holiday back order status",
 	];
 
-	public static $TEMPLATE_EBAY_KEYWORDS = [
-		'!ID!'       => [ 'item ID' ],
-		'!NAME!'     => [ 'item name' ],
-		'!DESC!'     => [ 'item description' ],
-		'!IMG!'      => [ 'item image' ],
-		'!IMGR!'     => [ 'item image absolute url' ],
-		'!INSET!'    => [ 'item inset' ],
-		'!MULTI!'    => [ 'additional item images' ],
-		'!MODEL!'    => [ 'item model' ],
-		'!UPC!'      => [ 'item\'s UPC' ],
-		'!VIDEO!'    => [ 'video code/youtube' ],
-		'!FEATURES!' => [ 'product features' ],
-		'!OPTIONS!'  => [ 'product option list' ],
+	public static $EMAIL_TEMPLATE_SPECIAL_KEYWORDS = [
+		'@@STORECTOT@@' => [
+			'Total storecredit a/v to the customer',
+			'---',
+		],
+		'@@STOREC@@'    => [
+			'Store credit added',
+			'---',
+		],
+		'@@STORECREF@@' => [
+			'Reference added to the store credit by the user',
+			'---',
+		],
+		'@@REFUND@@'    => [
+			'Refund amount',
+			'---',
+		],
+		'@@CCR@@'       => [
+			'Payment method used for the refund',
+			'---',
+		],
 	];
 
-	public static $TEMPLATE_EMAIL_KEYWORDS = [
+	public static $EMAIL_TEMPLATE_KEYWORDS = [
 		/*'TEMPLATE-KEY'           => [
 			'replaceable-value-on-view',
-			'replaceable-value-on-code',
+			'replaceable-value-on-code-relationship-or-closer',
 		],*/
 		'@@NAME@@'               => [
 			'customer name',
-			'customer.full_name',
+			'order.customer.ship_full_name',
 		],
 		'@@B_NAME@@'             => [
 			'billed customer name',
-			'customer.full_name',
+			'order.customer.bill_full_name',
 		],
 		'@@FIRST@@'              => [
 			'customer first name',
-			'customer.full_name',
+			'order.customer.ship_first_name',
 		],
 		'@@LAST@@'               => [
 			'customer last name',
-			'customer.full_name',
+			'order.customer.ship_last_name',
 		],
 		'@@ID@@'                 => [
 			'order Id',
-			'customer.full_name',
+			'order.order_id',
 		],
 		'@@IDS@@'                => [
 			'short order Id',
-			'customer.full_name',
+			'order.short_order',
 		],
-		'@@4PID@@'               => [
+		/*'@@4PID@@'               => [
 			'4P order #',
 			'customer.full_name',
-		],
+		],*/
 		'@@ODATE@@'              => [
 			'Order date',
-			'customer.full_name',
+			'order.order_date',
 		],
 		'@@COMPANY@@'            => [
 			'company name',
-			'customer.full_name',
+			'order.store.store_name',
 		],
-		'@@SIGN@@'               => [
+		/*'@@SIGN@@'               => [
 			'Contact name',
 			'customer.full_name',
-		],
+		],*/
 		'@@URL@@'                => [
 			'Company main domain',
-			'-------',
+			'order.store_name',
 		],
-		'@@EMAIL@@'              => [
+		/*'@@EMAIL@@'              => [
 			'Customer support email',
 			'-------',
-		],
-		'@@PHONE@@'              => [
+		],*/
+		/*'@@PHONE@@'              => [
 			'company phone',
 			'-------',
-		],
-		'@@RMA@@'                => [
+		],*/
+		/*'@@RMA@@'                => [
 			'Order RMA',
 			'-------',
-		],
+		],*/
 		'@@ShipTo.FullAddress@@' => [
 			'Full shipping address',
-			'-------',
+			[
+				'order.customer.ship_phone',
+				'order.customer.ship_address_1',
+				'order.customer.ship_address_2',
+				'order.customer.ship_city',
+				'order.customer.ship_state',
+				'order.customer.ship_zip',
+				'order.customer.ship_country',
+			],
 		],
 		'@@BillTo.FullAddress@@' => [
 			'Full billing address',
-			'-------',
+			[
+				'order.customer.bill_phone',
+				'order.customer.bill_address_1',
+				'order.customer.bill_address_2',
+				'order.customer.bill_city',
+				'order.customer.bill_state',
+				'order.customer.bill_zip',
+				'order.customer.bill_country',
+			],
 		],
 		'@@Lines.Summary@@'      => [
 			'order lines & summary',
@@ -172,7 +196,7 @@ class Helper
 		],
 		'@@SHIPMETHOD@@'         => [
 			'Order ship method',
-			'-------',
+			'order.customer.shipping',
 		],
 		'@@CC@@'                 => [
 			'Credit Card #',
@@ -226,7 +250,19 @@ class Helper
 			'customer\'s email',
 			'-------',
 		],
-		/*'---'        => [
+		'@@ITEM@@'               => [
+			'Product SKU/Name',
+			'-------',
+		],
+		'@@ITEMCODE@@'           => [
+			'Product SKU/Code',
+			'-------',
+		],
+		'@@ITEMNAME@@'           => [
+			'Item name',
+			'-------',
+		],
+		/*'---'                    => [
 			'-------',
 			'-------',
 		],*/

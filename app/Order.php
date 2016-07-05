@@ -1,5 +1,4 @@
 <?php
-
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
@@ -25,7 +24,12 @@ class Order extends Model
 	public function shipping ()
 	{
 		return $this->hasMany('App\Ship', 'order_number', 'order_id')
-		->where('is_deleted', 0);
+					->where('is_deleted', 0);
+	}
+
+	public function store ()
+	{
+		return $this->belongsTo(Store::class);
 	}
 
 	public function order_sub_total ()
@@ -93,9 +97,9 @@ class Order extends Model
 					'S-',
 				], "", $value);
 			}, $values);
+
 			return $query->where('short_order', 'REGEXP', implode("|", $values));
 		}
-
 		if ( $search_in == 'five_p_order' ) {
 			$values = array_map(function ($value) {
 				return intval($value);
@@ -112,7 +116,6 @@ class Order extends Model
 		if ( !$start_date ) {
 			return;
 		}
-
 		$starting = sprintf("%s 00:00:00", $start_date);
 		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
 

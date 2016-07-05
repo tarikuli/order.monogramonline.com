@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
+use Monogram\Helper;
 
 class EmailTemplateUpdateRequest extends Request
 {
@@ -12,8 +13,11 @@ class EmailTemplateUpdateRequest extends Request
 
 	public function rules ()
 	{
+		$id = $this->route()
+				   ->parameter('email_templates', 0);
+
 		return [
-			'message_type'  => 'required|exists:email_templates,message_type',
+			'message_type'  => sprintf('required|%s', Helper::getUniquenessRule("EmailTemplate", $id, "message_type")),
 			'message_title' => 'required',
 			#'message'       => 'required',
 		];
