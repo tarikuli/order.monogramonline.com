@@ -34,6 +34,7 @@
 					<li><a href = "/logistics/sku_import">Export/Import options coded SKUs CSV file</a></li>
 					<li><a href = "/logs">Station logs</a></li>
 					<li><a href = "/logistics/create_child_sku">Create Child SKU</a></li>
+					<li><a href = "/email_templates">Email templates</a></li>
 				</ul>
 			</div>
 			<div class = "col-xs-12">

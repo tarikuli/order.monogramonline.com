@@ -62,6 +62,176 @@ class Helper
 		"Holiday back order status",
 	];
 
+	public static $TEMPLATE_EBAY_KEYWORDS = [
+		'!ID!'       => [ 'item ID' ],
+		'!NAME!'     => [ 'item name' ],
+		'!DESC!'     => [ 'item description' ],
+		'!IMG!'      => [ 'item image' ],
+		'!IMGR!'     => [ 'item image absolute url' ],
+		'!INSET!'    => [ 'item inset' ],
+		'!MULTI!'    => [ 'additional item images' ],
+		'!MODEL!'    => [ 'item model' ],
+		'!UPC!'      => [ 'item\'s UPC' ],
+		'!VIDEO!'    => [ 'video code/youtube' ],
+		'!FEATURES!' => [ 'product features' ],
+		'!OPTIONS!'  => [ 'product option list' ],
+	];
+
+	public static $TEMPLATE_EMAIL_KEYWORDS = [
+		/*'TEMPLATE-KEY'           => [
+			'replaceable-value-on-view',
+			'replaceable-value-on-code',
+		],*/
+		'@@NAME@@'               => [
+			'customer name',
+			'customer.full_name',
+		],
+		'@@B_NAME@@'             => [
+			'billed customer name',
+			'customer.full_name',
+		],
+		'@@FIRST@@'              => [
+			'customer first name',
+			'customer.full_name',
+		],
+		'@@LAST@@'               => [
+			'customer last name',
+			'customer.full_name',
+		],
+		'@@ID@@'                 => [
+			'order Id',
+			'customer.full_name',
+		],
+		'@@IDS@@'                => [
+			'short order Id',
+			'customer.full_name',
+		],
+		'@@4PID@@'               => [
+			'4P order #',
+			'customer.full_name',
+		],
+		'@@ODATE@@'              => [
+			'Order date',
+			'customer.full_name',
+		],
+		'@@COMPANY@@'            => [
+			'company name',
+			'customer.full_name',
+		],
+		'@@SIGN@@'               => [
+			'Contact name',
+			'customer.full_name',
+		],
+		'@@URL@@'                => [
+			'Company main domain',
+			'-------',
+		],
+		'@@EMAIL@@'              => [
+			'Customer support email',
+			'-------',
+		],
+		'@@PHONE@@'              => [
+			'company phone',
+			'-------',
+		],
+		'@@RMA@@'                => [
+			'Order RMA',
+			'-------',
+		],
+		'@@ShipTo.FullAddress@@' => [
+			'Full shipping address',
+			'-------',
+		],
+		'@@BillTo.FullAddress@@' => [
+			'Full billing address',
+			'-------',
+		],
+		'@@Lines.Summary@@'      => [
+			'order lines & summary',
+			'-------',
+		],
+		'@@Lines.Only@@'         => [
+			'order lines',
+			'-------',
+		],
+		'@@Lines.Only.BO@@'      => [
+			'order lines that are on b/o',
+			'-------',
+		],
+		'@@Lines.Only.NP@@'      => [
+			'order lines that w/o price',
+			'-------',
+		],
+		'@@USERNAME@@'           => [
+			'User\'s name',
+			'-------',
+		],
+		'@@DATE@@'               => [
+			'Email date',
+			'-------',
+		],
+		'@@SHIPMETHOD@@'         => [
+			'Order ship method',
+			'-------',
+		],
+		'@@CC@@'                 => [
+			'Credit Card #',
+			'-------',
+		],
+		'@@EXPIRE@@'             => [
+			'CC expiration date',
+			'-------',
+		],
+		'@@RETVAL@@'             => [
+			'Return total',
+			'-------',
+		],
+		'@@COMPADDR@@'           => [
+			'Company address',
+			'-------',
+		],
+		'@@STORENAME@@'          => [
+			'Store name',
+			'-------',
+		],
+		'@@STOREDOMAIN@@'        => [
+			'store url',
+			'-------',
+		],
+		'@@TRK@@'                => [
+			'order trk#',
+			'-------',
+		],
+		'@@ORDERTOTAL@@'         => [
+			'order total',
+			'-------',
+		],
+		'@@GIFTWRAPMESSAGE@@'    => [
+			'Gift message',
+			'-------',
+		],
+		'@@SHIPPHONE@@'          => [
+			'Ship to phone',
+			'-------',
+		],
+		'@@LOGO@@'               => [
+			'store/company logo',
+			'-------',
+		],
+		'@@COMM@@'               => [
+			'customer comments',
+			'-------',
+		],
+		'@@CEMAIL@@'             => [
+			'customer\'s email',
+			'-------',
+		],
+		/*'---'        => [
+			'-------',
+			'-------',
+		],*/
+	];
+
 	private static $carrier = [
 		"USPS"     => 'USPS',
 		"UPS"      => 'UPS',
@@ -239,7 +409,6 @@ class Helper
 		if ( !$shippingInfo ) {
 			return;
 		}
-
 		$tracking_numbers = $shippingInfo->lists('tracking_number')
 										 ->toArray();
 
@@ -252,7 +421,6 @@ class Helper
 <div style="height: 12em; width: 20em; overflow: auto;">
 				<div class="checkbox">
 Container;
-
 		foreach ( $options as $optionKey => $optionValue ) {
 			$checked = '';
 			if ( is_array($value) ) {
@@ -316,7 +484,6 @@ APPEND;
 	{
 		// get all the items of an order,
 		// order by reached shipping station flag in descending order
-
 		// joining is done, because, one or more items may be added on the shipping table before
 		$items = Item::where('order_id', $order_id)// 					 ->where('batch_number', '!=', 0)
 		// 					 ->whereNull('tracking_number')
@@ -329,24 +496,20 @@ APPEND;
 		// echo "<pre>"; print_r($first_item); echo "</pre>";
 		// Log::info( $first_item);
 		// if ( $first_item->reached_shipping_station == 1 || ( $first_item->reached_shipping_station == 0 && $first_item->item_id == null ) ) {
-
 		if ( $first_item->reached_shipping_station == 1 ) {
 			return $items->filter(function ($row) {
 				// Log::info( "Jewel	".$row->id);
 				// 				return !Ship::where('item_id', $row->id)
 				// // 							->where('reached_shipping_station', '=', 1)
 				// 							->first();
-
 				$test = !Ship::where('item_id', $row->id)// 							->where('reached_shipping_station', '=', 1)
 				// 							->whereNull('tracking_number')
 							 ->first();
 
 				// Log::info( $test);
-
 				return $test;
 			});
 		}
-
 		// no item reached the shipping station,
 		// return nothing
 		return [ ];
@@ -361,7 +524,6 @@ APPEND;
 	public static function itemsMovedToShippingTable ($order_id)
 	{
 		// Helper::jewelDebug($order_id);
-
 		// get all the items with the order id
 		$items = Item::where('order_id', $order_id)
 					 ->get();
@@ -412,7 +574,6 @@ APPEND;
 		}*/
 		$formatted_string = '';
 		$json_array = json_decode($json, true);
-
 		if ( $json_array ) {
 			foreach ( $json_array as $key => $value ) {
 				$formatted_string .= sprintf("%s = %s%s", str_replace("_", " ", $key), $value, $separator);
@@ -439,17 +600,13 @@ APPEND;
 	{
 		$batch_route_id = $batch_route_id;
 		$current_station_name = $current_station_name;
-
 		$current_station = Station::where('station_name', $current_station_name)
 								  ->first();
-
 		if ( !$current_station ) {
 			return null;
 		}
 		$current_station_id = $current_station->id;
-
 		$next_stations = DB::select(sprintf("SELECT * FROM batch_route_station WHERE batch_route_id = %d and id > ( SELECT id FROM batch_route_station WHERE batch_route_id = %d AND station_id = %d)", $batch_route_id, $batch_route_id, $current_station_id));
-
 		if ( count($next_stations) ) {
 			return Station::find($next_stations[0]->station_id)->station_name;
 		} else {
@@ -531,11 +688,9 @@ APPEND;
 		}
 		$route = BatchRoute::with('stations')
 						   ->find($route_id);
-
 		$stations = implode(" > ", array_map(function ($elem) {
 			return $elem['station_name'];
 		}, $route->stations->toArray()));
-
 		if ( $station_name ) {
 			$stations = str_replace($station_name, sprintf("<strong>%s</strong>", $station_name), $stations);
 		}
@@ -571,17 +726,13 @@ APPEND;
 		#Jewel need to fix this function
 		// if all items in a same order does pass shipping stations
 		$order_id = $item->order_id;
-
 		// set reached_shipping_station to 1, as it reaches the shipping station
 		$item->reached_shipping_station = 1;
 		$item->save();
-
-
 		$items = Item::with('order')
 					 ->where('order_id', $order_id)
 					 ->get();
 		$uniqueId = $items;
-
 		$reached_shipping_station_count = 0;
 		foreach ( $items as $current ) {
 			if ( $current->reached_shipping_station ) {
@@ -589,15 +740,12 @@ APPEND;
 				++$reached_shipping_station_count;
 			}
 		}
-
 		// Log::info("Jewel order_id: ".$order_id." items->count: ".$items->count()."  reached_shipping_station_count: ".$reached_shipping_station_count);
-
 		if ( $items->count() && ( $items->count() == $reached_shipping_station_count ) ) { // move to shipping table
 			// Log::info("Jewel get the item id from the shipping table");
 			// get the item id from the shipping table
 			$items_exist_in_shipping = Ship::where('order_number', $order_id)
 										   ->lists('item_id');
-
 			// filter the item ids those are available in shipping table
 			$items = $items->filter(function ($row) use ($items_exist_in_shipping) {
 				// return false if the shipping table has the item id
@@ -607,7 +755,6 @@ APPEND;
 			// Log::info("Jewel generateShippingUniqueId: ".$uniqueId->first()->order);
 			// generate new order id
 			$unique_order_id = static::generateShippingUniqueId($uniqueId->first()->order);
-
 			foreach ( $items as $current_item ) {
 				// Log::info("Jewel Push all the items to shipping table with the unique order id ".$current_item." unique id: ".$unique_order_id);
 				// push all the items to shipping table with the unique order id
@@ -617,14 +764,12 @@ APPEND;
 			// Log::info("Jewel waiting for another PCS: ".$order_id);
 			// order has more than 0
 			// any of the items has not reached the shipping station
-
 			Order::where('order_id', $order_id)
 				 ->update([
 					 'order_status' => 9,
 					 // WAITING FOR ANOTHER PC
 				 ]);
 		}
-
 	}
 
 
@@ -633,17 +778,14 @@ APPEND;
 	// 		// 	echo "<br>".$row->id;
 	// 		return $items_exist_in_shipping->contains($row->id) ? false : true;
 	// 	}
-
 	public static function insertDataIntoShipping ($item, $unique_order_id = null)
 	{
 		$post_value = $item->item_quantity * $item->item_unit_price;
 		$sku = $item->item_code;
-
 		$triggers = RuleTrigger::where('rule_trigger_parameter', 'SKU')
 							   ->where('rule_trigger_value', 'REGEXP', $sku)#'MS-GFT172'
 							   ->get();
 		$rule_id = 0;
-
 		if ( $triggers->count() ) {
 			$rule_id = $triggers->first()->rule_id;
 		} else {
@@ -655,26 +797,20 @@ APPEND;
 				$rule_id = 1;
 			}
 		}
-
 		$actions = RuleAction::where('rule_id', $rule_id)
 							 ->get();
-
 		$product = Product::where('product_model', $sku)
 						  ->first();
-
 		$product_weight = 0.0;
 		$final_weight = 0.0;
 		$add_weight = 0.0;
-
 		if ( $product ) {
 			$product_weight = $product->ship_weight;
 		}
-
 		$mail_class = '';
 		$package_shape = '';
 		$tracking_type = '';
 		$carrier = 'carrier';
-
 		foreach ( $actions as $action ) {
 			// From RuleController@getAction
 			if ( $action->rule_action_parameter == 'ADW' ) {
@@ -687,18 +823,14 @@ APPEND;
 				$package_shape = static::$package_shape[$action->rule_action_value];
 			}
 		}
-
 		$final_weight = $add_weight + $product_weight;
-
 		$order_number = $item->order_id;
 		$customer = Customer::where('order_id', $order_number)
 							->first();
-
 		$name = sprintf("%s %s", $customer->ship_first_name, $customer->ship_last_name);
 		if ( !trim($name) ) {
 			$name = sprintf("%s %s", $customer->bill_first_name, $customer->bill_last_name);
 		}
-
 		$last_name = $customer->ship_last_name;
 		$company = trim($customer->ship_company_name) ? $customer->ship_company_name : $customer->bill_company_name;
 		$address_1 = trim($customer->ship_address_1) ? $customer->ship_address_1 : $customer->bill_address_1;
@@ -710,10 +842,8 @@ APPEND;
 		$email = trim($customer->ship_email) ? $customer->ship_email : $customer->bill_email;
 		$phone = trim($customer->ship_phone) ? $customer->ship_phone : $customer->bill_phone;
 		$item_id = $item->id;
-
 		#$unique_order_id = sprintf("%06s", $item->order->id);
 		$unique_order_id = $unique_order_id ?: static::generateShippingUniqueId($item->order);
-
 		$ship = new Ship();
 		$ship->order_number = $order_number;
 		$ship->unique_order_id = $unique_order_id;
@@ -833,7 +963,6 @@ APPEND;
 						 ->where('batch_routes.is_deleted', 0)
 						 ->where('batch_routes.batch_max_units', '>', 0)
 						 ->get();
-
 		/*
 		 * PREVIOUS QUERY
 		 return BatchRoute::with([
@@ -870,7 +999,6 @@ APPEND;
 			$station_log->batch_number = $item->batch_number;
 			$station_log->station_id = Station::where('station_name', $new_station_name)
 											  ->first()->id;
-
 			$station_log->started_at = date('Y-m-d', strtotime("now"));
 			$station_log->user_id = Auth::user()->id;
 			$station_log->save();
@@ -886,23 +1014,18 @@ APPEND;
 		if ( !is_array($item_options) ) {
 			return $item->item_code;
 		}
-
 		// get the keys from that order options
 		$item_option_keys = array_keys($item_options);
-
 		$store_id = $item->store_id;
 		// get the keys available as parameter
 		$parameters = Parameter::where('store_id', $store_id)
 							   ->lists('parameter_value')
 							   ->toArray();
-
 		$parameter_to_html_form_name = array_map(function ($element) {
 			return Helper::textToHTMLFormName($element);
 		}, $parameters);
-
 		$parameter_options = Option::where('parent_sku', $item->item_code)
 								   ->get();
-
 		// get the common in the keys
 		$options_in_common = array_intersect($parameter_to_html_form_name, $item_option_keys);
 		//generate the new sku
@@ -915,7 +1038,6 @@ APPEND;
 	{
 		// parameter options is an array of rows
 		$item_options = json_decode($item->item_option, true);
-
 		// 20160515 remove (+ character from child_sku
 		$explode_values = [ ];
 		foreach ( $item_options as $item_key => $item_value ) {
@@ -924,7 +1046,6 @@ APPEND;
 				$item_options[$item_key] = $explode_values[0];
 			}
 		}
-
 		foreach ( $parameter_options as $option ) {
 			// item options has replaced space with underscore
 			// parameter options has spaces intact
@@ -965,7 +1086,6 @@ APPEND;
 		$child_sku = empty( $child_sku_postfix ) ? $item->item_code : sprintf("%s-%s", $item->item_code, $child_sku_postfix);
 		// should have to match the previous check.
 		// again check if the child sku is present or not
-
 		$option = Option::where('child_sku', $child_sku)
 						->first();
 		if ( !$option ) {
@@ -976,7 +1096,6 @@ APPEND;
 		}
 		// no child sku was found
 		// insert into database
-
 		$option->store_id = $store_id;
 		$option->unique_row_value = static::generateUniqueRowId();
 		$option->id_catalog = $item->item_id;
@@ -989,7 +1108,6 @@ APPEND;
 		foreach ( $matches as $match ) {
 			$option_array[static::htmlFormNameToText($match)] = $item_options[$match];
 		}
-
 		$option->parameter_option = json_encode($option_array);
 		$option->save();
 
@@ -1034,7 +1152,6 @@ APPEND;
 			#$value = str_replace(" ", "", strtolower($value));
 			array_push($group, $value);
 		}
-
 		if ( $i >= count($data) ) {
 			$array = [
 				'nodes'      => $group,
@@ -1091,7 +1208,6 @@ APPEND;
 	// 							->where('item_count','>',1)
 	// 							->limit(10)
 	// 							->get();
-
 	// 	}
 	public static function jewelDebug ($valueArray)
 	{
@@ -1103,7 +1219,7 @@ APPEND;
 		}
 		echo "</pre>";
 		echo "-----------------------------------------------------";
-// 		Log::info("---jewelDebug---");
+		// 		Log::info("---jewelDebug---");
 		Log::info($valueArray);
 	}
 }

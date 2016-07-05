@@ -126,6 +126,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('logistics/add_child_sku', 'LogisticsController@get_add_child_sku');
 		post('logistics/add_child_sku', 'LogisticsController@post_add_child_sku');
 
+		resource('email_templates', 'EmailTemplateController');
+
 		put('logistics/{store_id}/update', 'LogisticsController@sku_converter_update');
 		get('logistics/sku_import', 'LogisticsController@get_sku_import');
 		post('logistics/sku_import', 'LogisticsController@post_sku_import');

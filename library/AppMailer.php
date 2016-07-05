@@ -1,6 +1,5 @@
 <?php namespace Monogram;
 
-
 use App\Customer;
 use App\User;
 use Illuminate\Contracts\Mail\Mailer;
@@ -68,7 +67,6 @@ class AppMailer
 	 *
 	 * @param Mailer $mailer
 	 */
-
 	public function __construct (Mailer $mailer)
 	{
 		$this->mailer = $mailer;
@@ -110,8 +108,8 @@ class AppMailer
 		$this->sender_name = env("APPLICATION_NAME");
 		$this->subject = $subject;
 		$this->to = $bill_email;
-// 		$this->cc = 'shlomi@monogramonline.com';
-// 		$this->cc = 'jewel@monogramonline.com';
+		// 		$this->cc = 'shlomi@monogramonline.com';
+		// 		$this->cc = 'jewel@monogramonline.com';
 		$this->view = 'emails.shippingconfirm';
 		$this->data = compact('modules');
 		$this->deliver();
@@ -124,7 +122,7 @@ class AppMailer
 		$this->from = env("APPLICATION_DEFAULT_EMAIL");
 		$this->sender_name = env("APPLICATION_NAME");
 		$this->subject = $subject;
-		$this->to = $customer->bill_email; /*"sirajul.islam.anik@gmail.com";*/
+		$this->to = "sirajul.islam.anik@gmail.com";// $customer->bill_email; /*"sirajul.islam.anik@gmail.com";*/
 		$this->view = 'emails.all_email_placeholder';
 		$this->data = [ 'email_body' => $message ];
 		$this->deliver();
@@ -138,9 +136,7 @@ class AppMailer
 	{
 		$this->mailer->send($this->view, $this->data, function ($message) {
 			$message->from($this->from, $this->sender_name)
-					->to($this->to)
-// 					->cc($this->cc)
-// 					->bcc($this->bcc)
+					->to($this->to)// ->cc($this->cc)->bcc($this->bcc)
 					->subject($this->subject);
 		});
 	}
