@@ -10,7 +10,6 @@ get('phantom', function (\Illuminate\Http\Request $request) {
 	$reader = new \Monogram\DOMReader($response);
 
 	return json_decode($reader->readCrawledData());
-
 });
 get('combination', 'HomeController@combination');
 get('update_items', 'HomeController@bulk_item_update');
@@ -60,6 +59,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('exports/batch_routes', 'ExportController@batch_routes');
 
 		get('exports/batch/{id}', 'ItemController@export_batch');
+
 		post('orders/mailer', 'MailController@mailer');
 		post('orders/send_mail', 'MailController@send_mail');
 
@@ -100,7 +100,6 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		// Add changeBatchStation
 		put('items/{batch_number}', 'ItemController@changeBatchStation');
 
-
 		get('items/doctor', 'ItemController@doctorCheckup');
 		get('items/grouped', 'ItemController@getGroupedBatch');
 		get('items/release/{item_id}', 'ItemController@release');
@@ -137,7 +136,6 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('logistics/create_child_sku', 'LogisticsController@post_create_child_sku');
 		post('logistics/post_preview', 'LogisticsController@post_preview');
 
-
 		get('stations/bulk', 'StationController@getBulkChange');
 		post('stations/bulk', 'StationController@postBulkChange');
 		get('export_station', 'StationController@getExportStationLog');
@@ -149,7 +147,6 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('stations/my_station', 'StationController@my_station');
 		get('summary', 'StationController@summary');
 		get('summary/export', 'ItemController@exportItemTable');
-
 
 		resource('departments', 'DepartmentController');
 

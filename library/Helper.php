@@ -36,30 +36,14 @@ class Helper
 		'Batch route',
 	];
 
+	public static $REGEX_ESCAPES = [
+		'.' => '\.',
+	];
+
 	public static $MESSAGE_TYPES = [
 		"Email",
 		"Invoice",
 		"Packing slip",
-		"Return from",
-		"Tracking #",
-		"Back-ordered",
-		"Request to change your order has been completed!",
-		"RESPONSE REQUEST - MISSING INFORMATION ON YOUR ORDER",
-		"Need address verification",
-		"Order DELAY",
-		"Your recent purchase is currently on back-order",
-		"Refund has been issued",
-		"Store credit has been issued",
-		"Order status",
-		"Bottle Opener - Error",
-		"Repair Fee",
-		"Cancelled Order",
-		"Drop shipper order - Split",
-		"RETURNED Item - Address verification",
-		"Return ITEM - Old returns",
-		"Item SOLD OUT - Color, Model, Design etc.",
-		"Incomplete gift baskets",
-		"Holiday back order status",
 	];
 
 	public static $EMAIL_TEMPLATE_SPECIAL_KEYWORDS = [
@@ -88,7 +72,7 @@ class Helper
 	public static $EMAIL_TEMPLATE_KEYWORDS = [
 		/*'TEMPLATE-KEY'           => [
 			'replaceable-value-on-view',
-			'replaceable-value-on-code-relationship-or-closer',
+			'replaceable-value-on-code-relationship-or-closure',
 		],*/
 		'@@NAME@@'               => [
 			'customer name',
@@ -149,25 +133,25 @@ class Helper
 		'@@ShipTo.FullAddress@@' => [
 			'Full shipping address',
 			[
-				'order.customer.ship_phone',
 				'order.customer.ship_address_1',
 				'order.customer.ship_address_2',
 				'order.customer.ship_city',
 				'order.customer.ship_state',
 				'order.customer.ship_zip',
 				'order.customer.ship_country',
+				'order.customer.ship_phone',
 			],
 		],
 		'@@BillTo.FullAddress@@' => [
 			'Full billing address',
 			[
-				'order.customer.bill_phone',
 				'order.customer.bill_address_1',
 				'order.customer.bill_address_2',
 				'order.customer.bill_city',
 				'order.customer.bill_state',
 				'order.customer.bill_zip',
 				'order.customer.bill_country',
+				'order.customer.bill_phone',
 			],
 		],
 		'@@Lines.Summary@@'      => [

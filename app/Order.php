@@ -29,7 +29,7 @@ class Order extends Model
 
 	public function store ()
 	{
-		return $this->belongsTo(Store::class);
+		return $this->belongsTo(Store::class, "store_id", "store_id");
 	}
 
 	public function order_sub_total ()

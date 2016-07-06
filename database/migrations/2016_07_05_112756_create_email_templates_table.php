@@ -14,6 +14,7 @@ class CreateEmailTemplatesTable extends Migration
 			$table->enum('is_deleted', [0, 1]);
 			$table->timestamps();
 		});
+		DB::update("ALTER TABLE email_templates AUTO_INCREMENT = 3;");
 	}
 
 	public function down ()

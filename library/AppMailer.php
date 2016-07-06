@@ -122,7 +122,7 @@ class AppMailer
 		$this->from = env("APPLICATION_DEFAULT_EMAIL");
 		$this->sender_name = env("APPLICATION_NAME");
 		$this->subject = $subject;
-		$this->to = "sirajul.islam.anik@gmail.com";// $customer->bill_email; /*"sirajul.islam.anik@gmail.com";*/
+		$this->to = $customer->bill_email;/*"sirajul.islam.anik@gmail.com";*/
 		$this->view = 'emails.all_email_placeholder';
 		$this->data = [ 'email_body' => $message ];
 		$this->deliver();

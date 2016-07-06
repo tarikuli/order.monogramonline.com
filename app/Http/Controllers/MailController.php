@@ -1,8 +1,8 @@
 <?php namespace App\Http\Controllers;
 
+use App\EmailTemplate;
 use App\Order;
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Monogram\AppMailer;
@@ -10,130 +10,72 @@ use Monogram\Helper;
 
 class MailController extends Controller
 {
+	private $order = null;
+
 	public function mailer (Request $request)
 	{
 		$message_type = intval($request->get('message_type'));
 		$order_id = $request->get('order');
+		$in_static_data = array_key_exists($message_type, Helper::$MESSAGE_TYPES);
+		$template = EmailTemplate::where('is_deleted', 0)
+								 ->find($message_type);
+		$this->order = Order::with('items', 'customer', 'store')
+							->where('order_id', $order_id)
+							->where('is_deleted', 0)
+							->first();
 
-		if ( !array_key_exists($message_type, Helper::$MESSAGE_TYPES) ) {
+		// not in static message types
+		// and not in template table
+		// or order is not available
+		if ( ( !$in_static_data && !$template ) || !$this->order ) {
+			// nothing found
 			return response()->json([
-
 			], 422);
 		}
-
-		$order = Order::with('items', 'customer')
-					  ->where('order_id', $order_id)
-					  ->where('is_deleted', 0)
-					  ->first();
-
-		if ( !$order ) {
-			return response()->json([ ], 404);
+		// check if the message type in static data
+		$subject = '';
+		$message_body = '';
+		if ( $in_static_data ) {
+			if ( $message_type == 0 ) {
+				$subject = "Email";
+				$message_body = '';
+			} elseif ( $message_type == 1 ) {
+				$subject = sprintf("Invoice - Order - %s", $this->order->short_order);
+				// this is the view, was created before for the order page,
+				// that's why you need to render
+				// as the page is not served by the browser
+				$message_body = (new PrintController())->invoice($order_id)
+													   ->render();
+			} elseif ( $message_type == 2 ) {
+				$subject = sprintf("Packing slip - Order - %s", $this->order->short_order);
+				// this is the view, was created before for the order page,
+				// that's why you need to render
+				// as the page is not served by the browser
+				$message_body = (new PrintController())->packing($order_id)
+													   ->render();
+			}
+		} elseif ( $template ) {
+			// or in template
+			$subject = $template->message_title;
+			$message_body = $this->messageBuilder($template->message);
 		}
-		$message_body = null;
-		if ( $message_type == 0 ) {
-			$message_body = '';
-		} elseif ( $message_type == 1 ) {
-			/*$message_body = view('emails.abcd')
-				->with('order', $order)
-				->render();*/
-			$message_body = 'invoice';
-		} elseif ( $message_type == 2 ) {
-			/*$message_body = view('emails.abcd')
-				->with('order', $order)
-				->render();*/
-			$message_body = "Packing slip";
-		} elseif ( $message_type == 3 ) {
-			$message_body = view('emails.return_from')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 4 ) {
-			$message_body = view('emails.tracking')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 5 ) {
-			$message_body = view('emails.back_ordered')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 6 ) {
-			$message_body = view('emails.request_to_change')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 7 ) {
-			$message_body = view('emails.response_requested')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 8 ) {
-			$message_body = view('emails.need_address_verification')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 9 ) {
-			$message_body = view('emails.order_delay')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 10 ) {
-			$message_body = view('emails.purchase_in_back_order')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 11 ) {
-			$message_body = view('emails.refund_issued')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 12 ) {
-			$message_body = view('emails.store_credit')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 13 ) {
-			$message_body = view('emails.order_status')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 14 ) {
-			$message_body = view('emails.bottle_opener_error')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 15 ) {
-			$message_body = view('emails.repair_fee')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 16 ) {
-			$message_body = view('emails.cancelled_order')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 17 ) {
-			$message_body = view('emails.drop_shipper_order')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 18 ) {
-			$message_body = view('emails.return_items')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 19 ) {
-			$message_body = view('emails.return_item_old_return')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 20 ) {
-			$message_body = view('emails.item_sold_out')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 21 ) {
-			$message_body = view('emails.incomplete_gift_basket')
-				->with('order', $order)
-				->render();
-		} elseif ( $message_type == 22 ) {
-			$message_body = view('emails.holiday_back_order')
-				->with('order', $order)
-				->render();
-		}
+		$subject = $this->subjectBuilder($subject);
 
 		return response()->json([
 			'error'   => false,
-			'subject' => $this->subjectBuilder($message_type, $order),
+			'subject' => $subject,
 			'message' => $message_body,
 		]);
 	}
 
-	private function subjectBuilder ($type, $order)
+	private function messageBuilder ($message)
 	{
-		return sprintf("%s - ORDER - %s", Helper::$MESSAGE_TYPES[$type], $order->short_order);
+		return $this->stringParser($message);
+	}
+
+	private function subjectBuilder ($subject)
+	{
+		return $this->stringParser(sprintf("%s", $subject));
 	}
 
 	public function send_mail (Request $request, AppMailer $mailer)
@@ -149,5 +91,61 @@ class MailController extends Controller
 			return response()->json([ ], 404);
 		}
 		$mailer->sendMailToCustomer($order->customer, $subject, $message);
+	}
+
+	private function stringParser ($string)
+	{
+		$pattern = implode("|", array_keys(Helper::$EMAIL_TEMPLATE_KEYWORDS));
+		// escape the string
+		$pattern = str_replace(array_keys(Helper::$REGEX_ESCAPES), array_values(Helper::$REGEX_ESCAPES), $pattern);
+		$pattern = sprintf("~%s~", $pattern);
+		$parsed = preg_replace_callback($pattern, [
+			$this,
+			"processor",
+		], $string);
+
+		return $parsed;
+	}
+
+	private function processor ($match)
+	{
+		$found = $match[0];
+		if ( array_key_exists($found, Helper::$EMAIL_TEMPLATE_KEYWORDS) ) {
+			// get the value at index 1 on email template
+			$relations = Helper::$EMAIL_TEMPLATE_KEYWORDS[$found][1];
+			// if relation as string
+			if ( is_string($relations) ) {
+				return $this->extractRelationInformation($relations);
+				// given as array,
+				// multiple relation
+			} elseif ( is_array($relations) ) {
+				$extracted_relation = [ ];
+				foreach ( $relations as $relation ) {
+					$extracted_relation[] = $this->extractRelationInformation($relation);
+				}
+				// before joining the array,
+				// filter down the empty results
+				#return implode(", ", array_filter($extracted_relation));
+				return implode(", ", $extracted_relation);
+			}
+
+			return $relations;
+		}
+
+		return $found;
+	}
+
+	private function extractRelationInformation ($relation)
+	{
+		// explode the string based on dot
+		$parts = explode(".", $relation);
+		$data = $this->order;
+		foreach ( array_slice($parts, 1) as $part ) {
+			// keep extracting the data until the final data is found
+			$data = $data->$part;
+		}
+
+		// return data
+		return $data;
 	}
 }

@@ -1,17 +1,15 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\EmailTemplate;
 use App\Item;
 use App\Note;
 use App\Order;
 use App\Product;
 use App\Status;
 use App\Store;
-
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderCreateRequest;
@@ -72,7 +70,6 @@ class OrderController extends Controller
 		$order->order_status = $request->get('order_status');
 		$order->sub_total = $request->get('sub_total');
 		$order->save();
-
 		$customer = new Customer();
 		$customer->order_id = $request->get('order_id');
 		$customer->ship_full_name = $request->get('ship_full_name');
@@ -104,7 +101,6 @@ class OrderController extends Controller
 		$customer->save();
 
 		return redirect(url('orders'));
-
 		/*$order = new Order();
 		$order->order_id = $request->get('order_id');
 		$order->emails = $request->get('emails');
@@ -201,7 +197,6 @@ class OrderController extends Controller
 		$customer->bill_email = $request->get('bill_email');
 		$customer->shipping = $request->get('shipping');
 		$customer->save();
-
 		$order = Order::where('order_id', $id)
 					  ->latest()
 					  ->first();
@@ -212,7 +207,6 @@ class OrderController extends Controller
 		$order->insurance = floatval($request->get('insurance', 0));
 		$order->adjustments = floatval($request->get('adjustments', 0));
 		$order->save();
-
 		$index = 0;
 		$items = $request->get('item_id');
 		$item_quantities = $request->get('previous_item_quantity');
@@ -238,7 +232,6 @@ class OrderController extends Controller
 				list( $key, $value ) = explode("=", $piece);
 				$json[str_replace(" ", "_", trim($key))] = trim($value);
 			}
-
 			$item->item_option = json_encode($json);
 			$item->save();
 		}
@@ -275,15 +268,12 @@ class OrderController extends Controller
 				$all_items_grand_total += $grand_sub_total;
 				$product = Product::where('id_catalog', $item_id_catalog)
 								  ->first();
-
 				if ( $product ) {
 					$item->item_description = $product->product_name;
 					$item->item_thumb = $product->product_thumb;
 					$item->item_url = $product->product_url;
 				}
-
 				$item->data_parse_type = "manual";
-
 				$child_sku = Helper::getChildSku($item);
 				$item->child_sku = $child_sku;
 				$item->save();
@@ -293,7 +283,6 @@ class OrderController extends Controller
 		$order->total = ( $all_items_grand_total - $order->coupon_value + $order->gift_wrap_cost + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
 		$order->save();
 		session()->flash('success', 'Order is successfully updated');
-
 		$note_text = trim($request->get('note'));
 		if ( $note_text ) {
 			$note = new Note();
@@ -317,7 +306,6 @@ class OrderController extends Controller
 		$order->save();
 
 		return redirect(url('orders'));
-
 	}
 
 	public function getList (Request $request)
@@ -340,22 +328,18 @@ class OrderController extends Controller
 						   'order_status',
 						   'total',
 					   ]);
-
 		$statuses = Status::where('is_deleted', 0)
 						  ->lists('status_name', 'status_code');
 		$statuses->prepend('All', 'all');
-
 		$stores = Store::where('is_deleted', 0)
 					   ->lists('store_name', 'store_id');
 		$stores->prepend('All', 'all');
-
 		$shipping_methods = Customer::groupBy('shipping')
 									->lists('shipping', 'shipping')
 									->filter(function ($row) {
 										return !empty( $row );
 									});
 		$shipping_methods->prepend('All', 'all');
-
 		$total_money = Order::with('customer')
 							->where('is_deleted', 0)
 							->storeId($request->get('store'))
@@ -366,7 +350,6 @@ class OrderController extends Controller
 							->latest()
 							->get([ \DB::raw('SUM(total) as money') ])
 							->first();
-
 		$search_in = [
 			'store_order'  => 'Store Order#',
 			'five_p_order' => '5P#',
@@ -396,15 +379,12 @@ class OrderController extends Controller
 		$statuses = Status::where('is_deleted', 0)
 						  ->lists('status_name', 'status_code');
 		$statuses->prepend('All', 'all');
-
 		$stores = Store::where('is_deleted', 0)
 					   ->lists('store_name', 'store_id');
 		$stores->prepend('All', 'all');
-
 		$shipping_methods = Customer::groupBy('shipping')
 									->lists('shipping', 'shipping');
 		$shipping_methods->prepend('All', 'all');
-
 		$search_in = [
 			'short_order' => 'Order',
 			'id'          => '5P#',
@@ -424,15 +404,14 @@ class OrderController extends Controller
 		if ( !$order ) {
 			return view('errors.404');
 		}
-
 		$statuses = Status::where('is_deleted', 0)
 						  ->lists('status_name', 'status_code');
-
 		$shipping_methods = Customer::groupBy('shipping')
 									->lists('shipping', 'shipping');
-
-		$message_types = (new Collection(Helper::$MESSAGE_TYPES));//->prepend("Select from below");
-
+		$templates = EmailTemplate::where('is_deleted', 0)
+								  ->lists('message_type', 'id');
+		$message_types = (new Collection(Helper::$MESSAGE_TYPES))->merge($templates);
+		
 		#return compact('order', 'order_id', 'shipping_methods', 'statuses');
 		return view('orders.details', compact('order', 'order_id', 'shipping_methods', 'statuses'))->with('message_types', $message_types);
 	}
@@ -491,7 +470,6 @@ class OrderController extends Controller
 				->back()
 				->withErrors($errors);
 		}
-
 		Session::flash('success', sprintf('%d order(s) are inserted successfully.', ( count($responses) - $errors->count() )));
 
 		return redirect(url('orders/add'));
@@ -505,10 +483,8 @@ class OrderController extends Controller
 		}
 		#dd($xml);
 		$RequestID = $xml->RequestID;
-
 		foreach ( $xml->ResponseResourceList->OrderList->children() as $order ) {
 			$insertOrder = new Order();
-
 			$order_id = $order->OrderID;
 			$full_order_id = sprintf("%s-%d", $this->store_id, $order_id);
 			$previousOrder = Order::where('order_id', $full_order_id)
@@ -526,11 +502,9 @@ class OrderController extends Controller
 			$insertOrder->order_id = $full_order_id;
 			$insertOrder->store_name = strtolower(Store::where('store_id', $this->store_id)
 													   ->first()->store_name);
-
 			$order_date = $order->CreationTime;
 			$insertOrder->order_date = date('Y-m-d H:i:s', strtotime($order_date));
 			$insertOrder->order_numeric_time = strtotime($order_date);
-
 			$tracking_number = $order->CartShipmentInfo->TrackingNumber;
 			#$StatusID = $order->StatusList->OrderStatus->StatusID;
 			#$insertOrder->tracking_number = $tracking_number;
@@ -538,10 +512,8 @@ class OrderController extends Controller
 			$ship_state = $order->CartShipmentInfo->ShipState;
 			$insertOrder->ship_state = $ship_state;
 			$shipping_method = empty( $order->ShipMethod ) ? "N/A" : $order->ShipMethod;
-
 			$customer = new Customer();
 			$customer->order_id = $full_order_id;
-
 			$ship_first_name = $order->ShipToInfo->GeneralInfo->FirstName;
 			$ship_last_name = $order->ShipToInfo->GeneralInfo->LastName;
 			$customer->ship_full_name = sprintf("%s %s", $ship_first_name, $ship_last_name);
@@ -557,10 +529,8 @@ class OrderController extends Controller
 			$customer->ship_phone = $order->ShipToInfo->GeneralInfo->PhoneNumber;
 			$customer->ship_email = $order->ShipToInfo->GeneralInfo->Email;
 			$customer->shipping = $shipping_method;
-
 			$bill_first_name = $order->BillToInfo->GeneralInfo->FirstName;
 			$bill_last_name = $order->BillToInfo->GeneralInfo->LastName;
-
 			$customer->bill_full_name = sprintf("%s %s", $bill_first_name, $bill_last_name);
 			$customer->bill_first_name = $order->BillToInfo->GeneralInfo->FirstName;
 			$customer->bill_last_name = $order->BillToInfo->GeneralInfo->LastName;
@@ -577,26 +547,20 @@ class OrderController extends Controller
 			$customer->save();
 			// $BuyerEmail = $order->BuyerEmail;
 			// new field didn't find any perfect position
-
 			$item_count = $order->ItemList->Item->count();
 			$insertOrder->item_count = $item_count;
 			for ( $item_count_index = 0; $item_count_index < $item_count; $item_count_index++ ) {
 				$model = $order->ItemList->Item[$item_count_index]->ItemCode;
-
 				$item = new Item();
 				$item->order_id = $full_order_id;
 				$item->store_id = $this->store_id;
 				$item->item_code = $model;
-
 				$product_name = $order->ItemList->Item[$item_count_index]->Description;
 				$item->item_description = $product_name;
-
 				# $LineNumber = $order->ItemList->Item[$item_count_index]->LineNumber;
 				$item_id = $order->ItemList->Item[$item_count_index]->ItemID;
 				$idCatalog = $item_id;
 				$item->item_id = $item_id;
-
-
 				#$item_options = "";
 				$item_options = [ ];
 				#$item_option_count = $order->ItemList->Item[$item_count_index]->SelectedOptionList->Option->count();
@@ -614,40 +578,30 @@ class OrderController extends Controller
 					#$item->item_option = $item_options;
 					$item->item_option = json_encode($item_options);
 				}*/
-
 				$item_quantity = $order->ItemList->Item[$item_count_index]->Quantity;
 				$item->item_quantity = $item_quantity;
-
 				preg_match("~.*src\s*=\s*(\"|\'|)?(.*)\s?\\1.*~im", $order->ItemList->Item[$item_count_index]->ThumbnailURL, $matches);
 				$item_thumb = trim($matches[2], ">");
 				$item->item_thumb = $item_thumb;
-
 				$item_unit_price = $order->ItemList->Item[$item_count_index]->UnitPrice;
 				$item->item_unit_price = $item_unit_price;
-
 				$item_name = $product_name;
-
 				$item_url = $order->ItemList->Item[$item_count_index]->URL;
 				$item->item_url = $item_url;
-
 				$item_taxable = $order->ItemList->Item[$item_count_index]->Taxable;
 				$item->item_taxable = ( $item_taxable == 'true' ? 'Yes' : 'No' );
 				$item->data_parse_type = 'xml';
-
 				// 06.29.2016 Jewel add Child SKU ligic in Pull Order
 				$child_sku = Helper::getChildSku($item);
 				Helper::jewelDebug($child_sku);
 				$item->child_sku = $child_sku;
-
 				$item->save();
-
 				$product = Product::where('id_catalog', $idCatalog)
 								  ->first();
 				if ( !$product ) {
 					$product = new Product();
 					$product->id_catalog = $idCatalog;
 				}
-
 				$product->store_id = $this->store_id;
 				$product->product_model = $model;
 				$product->product_url = $item_url;
@@ -655,43 +609,30 @@ class OrderController extends Controller
 				$product->product_price = $item_unit_price;
 				$product->is_taxable = ( $item_taxable == 'true' ? 1 : 0 );
 				$product->product_thumb = $item_thumb;
-
 				$product->save();
 			}
 			$sub_total = $order->OrderTotals->Subtotal;
 			$insertOrder->sub_total = $sub_total;
-
 			$shipping = $order->OrderTotals->Shipping;
 			$insertOrder->shipping_charge = $shipping;
-
 			$tax = $order->OrderTotals->Tax;
 			$insertOrder->tax_charge = $tax;
-
 			$coupon_value = $order->OrderTotals->Coupon;
 			$insertOrder->coupon_value = $coupon_value;
-
 			$order_total = $order->OrderTotals->Total;
 			$insertOrder->total = $order_total;
-
 			$Referer = $order->Referer;
 			$MerchantNotes = $order->MerchantNotes;
 			$EntryPoint = $order->EntryPoint;
-
 			$order_comment = $order->BuyerComments;
 			$insertOrder->order_comments = $order_comment;
-
 			$Currency = $order->Currency;
 			$payment_method = $order->PaymentProcessor;
-
 			$credit_card_type = $order->PaymentType;
 			$insertOrder->card_name = $credit_card_type;
-
-
 			$LastUpdatedTime = $order->LastUpdatedTime;
-
 			$ip_address = $order->BuyerIP;
 			$insertOrder->order_ip = $ip_address;
-
 			if ( $order->CardEvents->count() != 0 && $order->CardEvents[0]->CardEvent->count() != 0 ) {
 				foreach ( $order->CardEvents[0]->CardEvent[0]->children() as $event ) {
 					switch ( $event ) {
@@ -725,7 +666,6 @@ class OrderController extends Controller
 								   ->count();
 		$short_order = sprintf("WH%d", ( 10000 + $manual_order_count ));
 		$order_id = sprintf("%s-%s", $request->get('store'), $short_order);
-
 		$item_skus = $request->get('item_skus');
 		$item_options = $request->get('item_options');
 		$item_quantities = $request->get('item_quantity');
@@ -756,15 +696,12 @@ class OrderController extends Controller
 			$grand_sub_total += ( (int) $item->item_quantity * (float) $item->item_unit_price );
 			$product = Product::where('id_catalog', $item_id_catalog)
 							  ->first();
-
 			if ( $product ) {
 				$item->item_description = $product->product_name;
 				$item->item_thumb = $product->product_thumb;
 				$item->item_url = $product->product_url;
 			}
-
 			$item->data_parse_type = "manual";
-
 			$child_sku = Helper::getChildSku($item);
 			$item->child_sku = $child_sku;
 			$item->save();
@@ -777,7 +714,6 @@ class OrderController extends Controller
 			$order->order_date = date('Y-m-d h:i:s', strtotime("now"));
 			$order->order_numeric_time = strtotime('Y-m-d h:i:s', strtotime("now"));
 			$order->store_id = $request->get('store');
-
 			$order->sub_total = floatval($request->get('subtotal', 0));
 			$order->coupon_id = $request->get('coupon_id', '');
 			$order->coupon_value = floatval($request->get('coupon_value', 0));
@@ -788,7 +724,6 @@ class OrderController extends Controller
 			$order->tax_charge = floatval($request->get('tax_charge', 0));
 			$order->total = ( $grand_sub_total - $order->coupon_value + $order->gift_wrap_cost + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
 			$order->save();
-
 			$customer = new Customer();
 			$customer->order_id = $order->order_id;
 			$customer->ship_full_name = $request->get('ship_full_name');
@@ -818,24 +753,22 @@ class OrderController extends Controller
 			$customer->bill_email = $request->get('bill_email');
 			$customer->bill_mailing_list = $request->get('bill_mailing_list');
 			$customer->save();
-
-## Jewel
-// 			$getTests = (new PrintController)->sendOrderConfirmFromMethod($order->order_id);
-
+			## Jewel
+			// 			$getTests = (new PrintController)->sendOrderConfirmFromMethod($order->order_id);
 			$orders = $this->getOrderFromId($order->order_id);
-// Helper::jewelDebug($orders->customer->bill_email);
-
-// dd($orders);
+			// Helper::jewelDebug($orders->customer->bill_email);
+			// dd($orders);
 			if ( !$orders->customer->bill_email ) {
-				Log::error( 'No Billing email address fount for order# '.$order->order_id .' in Order confirmation.');
+				Log::error('No Billing email address fount for order# ' . $order->order_id . ' in Order confirmation.');
 			}
 			$modules = $this->getOrderConfirmationEmailFromOrder($orders);
 			// Send email. nortonzanini@gmail.com
-			$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->short_order.")";
-			if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject)){
-				Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->customer->bill_email,$order->order_id) );
+			$subject = $orders->customer->bill_full_name . " - Your Order Status with MonogramOnline.com (Order # " . $orders->short_order . ")";
+			if ( $appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject) ) {
+				Log::info(sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->customer->bill_email, $order->order_id));
 			}
-## Jewel
+
+			## Jewel
 			return redirect()
 				->back()
 				->with('success', "Order is successfully saved");
@@ -846,8 +779,6 @@ class OrderController extends Controller
 					'error' => 'Something went wrong inserting order!',
 				]);
 		}
-
-
 	}
 
 	public function ajax (Request $request)
@@ -855,7 +786,6 @@ class OrderController extends Controller
 		if ( !$request->ajax() ) {
 			return response()->json([ ], 405);
 		}
-
 		$sku = trim($request->get('sku', ""));
 		$data = [ ];
 		$data['search'] = $request->get('sku');
@@ -932,10 +862,8 @@ class OrderController extends Controller
 			Customer::where('order_id', $order_id)
 					->update([ 'is_deleted' => 1 ]);
 		}
-
 		$exploded = explode("-", $order_id);
 		$short_order = $exploded[2];
-
 		// -------------- Orders table data insertion started ----------------------//
 		$order = new Order();
 		$order->order_id = $request->get('ID');
@@ -963,7 +891,6 @@ class OrderController extends Controller
 		$order->order_status = 4;
 		$order->save();
 		// -------------- Orders table data insertion ended ----------------------//
-
 		// -------------- Customers table data insertion started ----------------------//
 		$customer = new Customer();
 		$customer->order_id = $request->get('ID');
@@ -980,7 +907,6 @@ class OrderController extends Controller
 		$customer->ship_phone = $request->get('Ship-Phone');
 		$customer->ship_email = $request->get('Ship-Email');
 		$customer->shipping = $request->get('Shipping', "N/A");
-
 		$customer->bill_full_name = $request->get('Bill-Name');
 		$customer->bill_first_name = $request->get('Bill-Firstname');
 		$customer->bill_last_name = $request->get('Bill-Lastname');
@@ -996,7 +922,6 @@ class OrderController extends Controller
 		$customer->bill_mailing_list = $request->get('Bill-maillist');
 		$customer->save();
 		// -------------- Customers table data insertion ended ----------------------//
-
 		// -------------- Items table data insertion started ----------------------//
 		for ( $item_count_index = 1; $item_count_index <= $request->get('Item-Count'); $item_count_index++ ) {
 			$ItemOption = array();
@@ -1008,7 +933,6 @@ class OrderController extends Controller
 			$matches = [ ];
 			preg_match("~.*src\s*=\s*(\"|\'|)?(.*)\s?\\1.*~im", $request->get('Item-Thumb-' . $item_count_index), $matches);
 			$item_thumb = trim($matches[2], ">");
-
 			$item = new Item();
 			$item->order_id = $request->get('ID');
 			$item->store_id = $order->store_id;
@@ -1025,9 +949,7 @@ class OrderController extends Controller
 			$item->data_parse_type = 'hook';
 			$item->child_sku = Helper::getChildSku($item);
 			$item->save();
-
 			// -------------- Items table data insertion ended ---------------------- //
-
 			// -------------- Products table data insertion started ---------------------- //
 			#$product = Product::where('id_catalog', $item->item_id)->first();
 			/*
@@ -1046,7 +968,6 @@ class OrderController extends Controller
 				$product = Product::where('id_catalog', $item->item_id)
 								  ->first();
 			}*/
-
 			$product = Product::where('id_catalog', $item->item_id)
 							  ->orWhere('product_model', $item->item_code)
 							  ->first();
@@ -1063,7 +984,6 @@ class OrderController extends Controller
 					$product->id_catalog = $item->item_id;
 				}
 			}
-
 			$product->store_id = sprintf("%s-%s", $exploded[0], $exploded[1]);
 			#$product->product_model = $item->item_code;
 			#$product->id_catalog = $item->item_id;
@@ -1072,23 +992,22 @@ class OrderController extends Controller
 			$product->product_price = $item->item_unit_price;
 			$product->is_taxable = ( $item->item_taxable == 'Yes' ? 1 : 0 );
 			$product->product_thumb = $item->item_thumb;
-
 			$product->save();
 			// -------------- Products table data insertion ended ---------------------- //
 		}
-
 		// -------------- Order Confirmation email sent Start ---------------------- //
 		$orders = $this->getOrderFromId($order_id);
 		$orders->customer->bill_email;
 		if ( !$orders->customer->bill_email ) {
-			Log::error( 'No Billing email address fount for order# '.$order_id .' in Order confirmation.');
+			Log::error('No Billing email address fount for order# ' . $order_id . ' in Order confirmation.');
 		}
 		$modules = $this->getOrderConfirmationEmailFromOrder($orders);
 		// Send email. nortonzanini@gmail.com
-		$subject = $orders->customer->bill_full_name." - Your Order Status with MonogramOnline.com (Order # ".$orders->short_order.")";
-		if($appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject)){
-			Log::info( sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->customer->bill_email,$order_id) );
+		$subject = $orders->customer->bill_full_name . " - Your Order Status with MonogramOnline.com (Order # " . $orders->short_order . ")";
+		if ( $appMailer->sendDeliveryConfirmationEmail($modules, $orders->customer->bill_email, $subject) ) {
+			Log::info(sprintf("Order Confirmation Email sent to %s Order# %s.", $orders->customer->bill_email, $order_id));
 		}
+
 		// -------------- Order Confirmation email sent End---------------------- //
 		return response()->json([
 			'error'   => false,
@@ -1100,35 +1019,34 @@ class OrderController extends Controller
 	{
 		if ( is_array($order_ids) ) {
 			$orders = Order::with('customer', 'items.shipInfo')
-			->whereIn('order_id', $order_ids)
-			->get();
+						   ->whereIn('order_id', $order_ids)
+						   ->get();
 
 			return $orders;
 		} else {
 			$order = Order::with('customer', 'items.shipInfo')
-			->where('order_id', $order_ids)
-			->first();
+						  ->where('order_id', $order_ids)
+						  ->first();
 
 			return $order;
 		}
-
 	}
 
 	private function getPackingModulesFromOrder ($params) // get each order row
 	{
-			#dd($params instanceof Collection);
-			$orders = [ ];
-			if ( $params instanceof Collection ) {
+		#dd($params instanceof Collection);
+		$orders = [ ];
+		if ( $params instanceof Collection ) {
 			$orders = $params; // is this a collection? if yes, then it's an array
-			} else {
+		} else {
 			$orders[] = $params; // if it is not a collection, then it's a single order
-			}
-			$modules = [ ];
-			foreach ( $orders as $order ) {
+		}
+		$modules = [ ];
+		foreach ( $orders as $order ) {
 			$modules[] = view('prints.includes.print_slip_partial', compact('order'))->render();
-				}
+		}
 
-			return $modules;
+		return $modules;
 	}
 
 	private function getOrderConfirmationEmailFromOrder ($params) // get each order row
@@ -1140,7 +1058,6 @@ class OrderController extends Controller
 		} else {
 			$orders[] = $params; // if it is not a collection, then it's a single order
 		}
-
 		$modules = [ ];
 		foreach ( $orders as $order ) {
 			$modules[] = view('prints.includes.order_spec_partial', compact('order'))->render();
