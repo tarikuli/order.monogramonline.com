@@ -124,14 +124,26 @@ class Item extends Model
 			return;
 
 		} elseif ( $search_in == '5p_order' ) {
+
 			$order_ids = Order::where('id', 'REGEXP', implode("|", $values))
 							  ->lists('order_id')
 							  ->toArray();
+
 			if ( empty( $order_ids ) ) {
 				return $query->where('order_id', "not_found");
 			}
 
 			return $query->where('order_id', $order_ids);
+
+		} elseif ( $search_in == 'customer' ) {
+
+			$order_ids = Customer::where('ship_full_name', 'REGEXP', implode("|", $values))
+								  ->lists('order_id')
+								  ->toArray();
+			if ( count($order_ids) ) {
+				return $query->whereIn('order_id', $order_ids);
+			}
+			return;
 
 		} elseif ( $search_in == 'order' ) {
 
