@@ -327,6 +327,7 @@ class StationController extends Controller {
 			}
 
 			$item->station_name = $station_name;
+			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 			$supervisor_message = trim ( $request->get ( 'supervisor_message' ) );
 			$item->supervisor_message = ! empty ( $supervisor_message ) ? $supervisor_message : null;
 			$item->rejection_message = null;
@@ -505,6 +506,7 @@ class StationController extends Controller {
 	private function apply_station_change($items, $station_name) {
 		foreach ( $items as $item ) {
 			$item->station_name = $station_name;
+			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 			$item->save ();
 			if (in_array ( $station_name, Helper::$shippingStations )) {
 				Helper::populateShippingData ( $item );

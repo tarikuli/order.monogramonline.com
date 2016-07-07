@@ -10,6 +10,9 @@
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "/assets/css/nprogress.css">
+	<link type = "text/css" rel = "stylesheet"
+	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+
 	<style type = "text/css">
 		body {
 			font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -91,7 +94,21 @@
 				</td>
 			</tr>
 		</table>
+
 		<table>
+		<tr>
+			<td style = "font-weight: bold;color: #686869;padding-top:15px">Expidite date:</td>
+			<td>
+				 <div class="form-group">
+					<div class = 'input-group date' id = 'expidite_date_picker'>
+					{!! Form::text('start_date', '', ['id'=>'start_date', 'class' => 'form-control', 'placeholder' => 'Enter Expidite date']) !!}
+						<span class = "input-group-addon">
+	                        <span class = "glyphicon glyphicon-calendar"></span>
+	                    </span>
+					</div>
+				</div>
+			</td>
+		</tr>
 			<tr>
 				<td style = "font-weight: bold;color: #686869;padding-top:15px">Ship To:</td>
 				<td style = "font-weight: bold;color: #686869;padding-left:487px;padding-top:15px">Bill To:</td>
@@ -491,9 +508,13 @@
 		</div>
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script src = "//cdn.ckeditor.com/4.5.9/standard/ckeditor.js"></script>
 	<script type = "text/javascript" src = "/assets/js/nprogress.js"></script>
+	<script type = "text/javascript"
+	        src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+
 	<script type = "text/javascript">
 		var editor = null;
 		function initializeCkeditor ()
@@ -587,6 +608,17 @@
 			$("#instant-add-note").show();
 		});
 	</script>
+
+	<script type = "text/javascript">
+		var options = {
+			format: "YYYY-MM-DD", maxDate: new Date()
+		};
+		$(function ()
+		{
+			$('#expidite_date_picker').datetimepicker(options);
+		});
+	</script>
+
 	<script type = "text/javascript">
 		var searched = '';
 		var timeout = null;

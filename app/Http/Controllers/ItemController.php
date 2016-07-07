@@ -164,6 +164,7 @@ class ItemController extends Controller
 				$station_id = $batch->stations_list[0]->station_id;
 				$station_name = $batch->stations_list[0]->station_name;
 				$item->station_name = $station_name;
+				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->item_order_status = Helper::getBatchStatus();
 				$item->batch_creation_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->item_order_status_2 = 2;
@@ -498,6 +499,7 @@ class ItemController extends Controller
 			foreach ( $items as $item ) {
 
 				$item->station_name = $toStationName;
+				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->save();
 			}
 
@@ -540,6 +542,7 @@ class ItemController extends Controller
 			$station_name = $station->station_name;
 			foreach ( $items as $item ) {
 				$item->station_name = $station_name;
+				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->save();
 			}
 		}
@@ -885,6 +888,7 @@ class ItemController extends Controller
 		$item->batch_number = 0;
 		$item->batch_route_id = null;
 		$item->station_name = null;
+		$item->change_date = null;
 		$item->item_order_status = null;
 		$item->batch_creation_date = null;
 		$item->tracking_number = null;
@@ -1164,6 +1168,7 @@ class ItemController extends Controller
 			->limit($items_to_shift)
 			->update([
 				'station_name' => $station_name,
+				'change_date' => date('Y-m-d H:i:s', strtotime('now')),
 			]);
 
 		// After update station return to active_batch_group page
@@ -1202,6 +1207,7 @@ class ItemController extends Controller
 					}
 					$updates = [
 						'station_name' => $next_station_name,
+						'change_date' => date('Y-m-d H:i:s', strtotime('now')),
 					];
 
 					if ( $next_station_name == '' ) {
@@ -1355,9 +1361,10 @@ class ItemController extends Controller
 			//### Get next Shipping Station from Route
 
 			//### Insert Item in Shipping Table
-			if (count($current_route_shp_station) <= 0) {
-				$item->station_name = 'R-SHP';
-			}
+// 			if (count($current_route_shp_station) <= 0) {
+// 				$item->station_name = 'R-SHP';
+// 				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+// 			}
 			try {
 				set_time_limit(0);
 				Helper::populateShippingData ( $item );
@@ -1367,6 +1374,7 @@ class ItemController extends Controller
 
 				if (count($current_route_shp_station)>0){
 					$item->station_name = $current_route_shp_station[0];
+					$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 				}
 // Log::error($item_id."	".$item->batch_number);
 
@@ -1435,6 +1443,7 @@ class ItemController extends Controller
 			        			$item->batch_creation_date,
 			        			$item->batch_number,
 			        			$item->station_name,
+			        			$item->change_date,
 			        			$item->previous_station,
 			        			$item->item_order_status,
 			        			$item->item_order_status_2,
