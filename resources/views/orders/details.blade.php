@@ -100,8 +100,8 @@
 			<td style = "font-weight: bold;color: #686869;padding-top:15px">Expidite date:</td>
 			<td>
 				 <div class="form-group">
-					<div class = 'input-group date' id = 'expidite_date_picker'>
-					{!! Form::text('start_date', '', ['id'=>'start_date', 'class' => 'form-control', 'placeholder' => 'Enter Expidite date']) !!}
+					<div class = 'input-group date' id = 'expidite_date'>
+					{!! Form::text('expidite_date', $order->expidite_date, ['id'=>'expidite_date', 'class' => 'form-control', 'placeholder' => 'Enter Expidite date']) !!}
 						<span class = "input-group-addon">
 	                        <span class = "glyphicon glyphicon-calendar"></span>
 	                    </span>
@@ -611,11 +611,11 @@
 
 	<script type = "text/javascript">
 		var options = {
-			format: "YYYY-MM-DD", maxDate: new Date()
+			format: "YYYY-MM-DD"
 		};
 		$(function ()
 		{
-			$('#expidite_date_picker').datetimepicker(options);
+			$('#expidite_date').datetimepicker(options);
 		});
 	</script>
 

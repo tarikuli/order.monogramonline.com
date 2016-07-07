@@ -206,6 +206,7 @@ class OrderController extends Controller
 		$order->gift_wrap_cost = floatval($request->get('gift_wrap_cost', 0));
 		$order->insurance = floatval($request->get('insurance', 0));
 		$order->adjustments = floatval($request->get('adjustments', 0));
+		$order->expidite_date = $request->get('expidite_date');
 		$order->save();
 		$index = 0;
 		$items = $request->get('item_id');
@@ -411,7 +412,7 @@ class OrderController extends Controller
 		$templates = EmailTemplate::where('is_deleted', 0)
 								  ->lists('message_type', 'id');
 		$message_types = (new Collection(Helper::$MESSAGE_TYPES))->merge($templates);
-		
+
 		#return compact('order', 'order_id', 'shipping_methods', 'statuses');
 		return view('orders.details', compact('order', 'order_id', 'shipping_methods', 'statuses'))->with('message_types', $message_types);
 	}
