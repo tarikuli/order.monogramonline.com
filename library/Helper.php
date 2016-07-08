@@ -422,6 +422,7 @@ class Helper
 		'H-SHP',
 		'PK-SHP',
 		'ST-SHP',
+		'D-SHP'
 	];
 
 	public static function tracking_number_formatter ($shippingInfo, $new_line_formatter = '<br/>')

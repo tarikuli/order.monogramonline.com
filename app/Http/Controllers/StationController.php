@@ -15,6 +15,7 @@ use App\Http\Requests\StationUpdateRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Validator;
 use League\Csv\Writer;
 use Monogram\Helper;
@@ -193,7 +194,7 @@ class StationController extends Controller {
 				return $elem['station_name'];
 			}, $route->stations->toArray());
 
-
+			$current_route_shp_station = null;
 			foreach(Helper::$shippingStations as $key=>$val){
 				if(in_array($val,$stations)){
 					$current_route_shp_station[] = $val;
