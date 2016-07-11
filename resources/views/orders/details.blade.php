@@ -236,8 +236,7 @@
 				<td>Ship Via:</td>
 				<td style = "padding-left:32px">
 					<b>{!! Form::select('shipping', $shipping_methods, $order->customer->shipping, ['id' => 'shipping_method','style' => 'color: #FF0000;font-weight: bold; height: 16px;font-size: 10px;']) !!}</b>
-					<br>
-					<span>Weight *** Lbs.</span>
+
 				</td>
 				<td style = "padding-left:289px">
 					<label><b>Customer comment</b></label><br>
@@ -279,7 +278,8 @@
 						   target = "_blank">{{$item->item_description}}</a>
 					</td>
 					<td>
-						{{ $item->child_sku }} /
+						{!! Form::text("child_sku[$ind]", $item->child_sku, ['id' => 'child_sku']) !!}
+						/
 						<a style = 'color:red'
 						   href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $item->item_code)) }}"
 						   target = "_blank">{{$item->item_code}}</a>
@@ -298,6 +298,8 @@
 								@if($item->station_name)
 									<br />
 									<span>Current station: {{ $item->station_name }} ({{ $item->station_details->station_description }}) </span>
+									<br/>
+									Last Update: {{ $item->updated_at }}
 								@endif
 							</p>
 						@endif
@@ -310,7 +312,10 @@
 				</tr>
 				@if($item->shipInfo && $item->shipInfo->tracking_number)
 					<tr>
-						<td colspan = "8">Shipped on {{date("m/d/y", strtotime($item->shipInfo->postmark_date ?: "now" ))}} by {{$item->shipInfo->tracking_type}} , Trk# {{$item->shipInfo->tracking_number}}</td>
+						<td colspan = "8">
+							Shipped on {{date("m/d/y", strtotime($item->shipInfo->postmark_date ?: "now" ))}} by {{$item->shipInfo->tracking_type}} ,
+							<a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->shipInfo->tracking_number )) }}" target = "_blank"> Trk# {{ $item->shipInfo->tracking_number }}</a>
+						</td>
 					</tr>
 				@endif
 			@endforeach

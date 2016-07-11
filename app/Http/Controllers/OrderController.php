@@ -210,6 +210,7 @@ class OrderController extends Controller
 		$order->save();
 		$index = 0;
 		$items = $request->get('item_id');
+		$child_sku = $request->get('child_sku');
 		$item_quantities = $request->get('previous_item_quantity');
 		$item_options = $request->get('item_option');
 		$item_order_statuses = $request->get('item_order_status');
@@ -219,6 +220,7 @@ class OrderController extends Controller
 		foreach ( $items as $item_id_number ) {
 			$item = Item::find($item_id_number);
 			$item->item_quantity = $item_quantities[$index];
+			$item->child_sku = $child_sku[$index];
 			$all_items_grand_total += ( (int) $item->item_quantity * (float) $item->item_unit_price );
 			$item->item_order_status_2 = isset( $item_order_statuses[$index] ) ? $item_order_statuses[$index] : 1;
 			$option = $item_options[$index];
@@ -924,7 +926,7 @@ class OrderController extends Controller
 		$customer->bill_mailing_list = $request->get('Bill-maillist');
 		$customer->save();
 		// -------------- Customers table data insertion ended ----------------------//
-		// -------------- Items table data insertion started ----------------------//
+		// -------------- Items table data insertion started ------------------------//
 		for ( $item_count_index = 1; $item_count_index <= $request->get('Item-Count'); $item_count_index++ ) {
 			$ItemOption = array();
 			foreach ( $request->all() as $key => $value ) {
