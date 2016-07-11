@@ -396,7 +396,7 @@ class OrderController extends Controller
 
 	public function details ($order_id)
 	{
-		$order = Order::with('customer', 'items.shipInfo', 'items.product', 'order_sub_total', 'notes.user')
+		$order = Order::with('customer', 'items.shipInfo', 'items.station_details', 'items.product', 'order_sub_total', 'notes.user')
 					  ->where('is_deleted', 0)
 					  ->where('order_id', $order_id)
 					  ->latest()
@@ -414,7 +414,8 @@ class OrderController extends Controller
 		$message_types = (new Collection(Helper::$MESSAGE_TYPES))->merge($templates);
 
 		#return compact('order', 'order_id', 'shipping_methods', 'statuses');
-		return view('orders.details', compact('order', 'order_id', 'shipping_methods', 'statuses'))->with('message_types', $message_types);
+		return view('orders.details', compact('order', 'order_id', 'shipping_methods', 'statuses'))
+				->with('message_types', $message_types);
 	}
 
 	public function getAddOrder ()
