@@ -752,6 +752,7 @@ APPEND;
 		$item->save();
 		$items = Item::with('order')
 					 ->where('order_id', $order_id)
+					 ->where('is_deleted',0)
 					 ->get();
 		$uniqueId = $items;
 		$reached_shipping_station_count = 0;
@@ -763,7 +764,7 @@ APPEND;
 		}
 		// Log::info("Jewel order_id: ".$order_id." items->count: ".$items->count()."  reached_shipping_station_count: ".$reached_shipping_station_count);
 		if ( $items->count() && ( $items->count() == $reached_shipping_station_count ) ) { // move to shipping table
-			// Log::info("Jewel get the item id from the shipping table");
+// 			Log::info("Jewel get the item id from the shipping table");
 			// get the item id from the shipping table
 			$items_exist_in_shipping = Ship::where('order_number', $order_id)
 										   ->lists('item_id');

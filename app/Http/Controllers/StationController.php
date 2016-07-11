@@ -10,6 +10,7 @@ use App\StationLog;
 use App\Status;
 use Illuminate\Http\Request;
 use App\Station;
+use App\Ship;
 use App\Http\Requests\StationCreateRequest;
 use App\Http\Requests\StationUpdateRequest;
 use Illuminate\Support\Collection;
@@ -252,6 +253,74 @@ class StationController extends Controller {
 			$item->rejection_message = trim ( $request->get ( 'rejection_message' ) );
 			$item->reached_shipping_station = 0;
 			$item->save ();
+
+		}elseif ($action == 'back_to_qc') {
+
+			// Get All station in Route
+			$route = BatchRoute::with('stations')
+			->find($batch_route_id);
+
+			// Put stations in an Array
+			$stations =  array_map(function ($elem) {
+				return $elem['station_name'];
+			}, $route->stations->toArray());
+
+			// Find Shipping Station from Route
+			$current_route_shp_station = null;
+			foreach(Helper::$shippingStations as $key=>$val){
+				if(in_array($val,$stations)){
+					$current_route_shp_station[] = $val;
+				}
+			}
+
+			if(!$current_route_shp_station){
+				return redirect(url('batches/'.$item->batch_number.'/'.$item->station_name))
+				->withErrors(new MessageBag([
+						'error' => 'In Route dont have correct Shipping station.',
+				]));
+			}
+
+			// Check QDC station exist in current Route and Shipping station > 0
+			if (count($current_route_shp_station)>0 && ($item->tracking_number == null)) {
+				$qdc_station = substr($current_route_shp_station[0], 0, 1)."-QCD";
+
+				if (in_array($qdc_station, $stations)) {
+
+					$items = Item::where('id', $item->id)
+								 ->where('is_deleted',0)
+								 ->whereNull('tracking_number')
+					->update([
+							'station_name'      => $qdc_station,
+							'previous_station'  => $current_route_shp_station[0],
+							'reached_shipping_station'  => 0,
+							'item_order_status_2' => 2,
+							'item_order_status' => "active",
+					]);
+
+					Ship::where('item_id', $item_id)
+						 ->whereNull('tracking_number')
+						 ->delete();
+
+ 					$station_log = new StationLog ();
+ 					$station_log->item_id = $item->id;
+ 					$station_log->batch_number = $item->batch_number;
+ 					$station_log->station_id = Station::where ( 'station_name', $current_route_shp_station[0] )->first ()->id;
+ 					$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
+ 					$station_log->user_id = Auth::user ()->id;
+ 					$station_log->save ();
+ 					return redirect ( url ( 'batches/'.$item->batch_number.'/'.$qdc_station ) );
+				}else{
+					return redirect(url('batches/'.$item->batch_number.'/'.$item->station_name))
+					->withErrors(new MessageBag([
+							'error' => $qdc_station.' Station Not Found.',
+					]));
+				}
+			} else {
+				return redirect(url('batches/'.$item->batch_number.'/'.$item->station_name))
+				->withErrors(new MessageBag([
+						'error' => 'In Route dont have correct Shipping station and QCD Station.',
+				]));
+			}
 		}
 
 		$batch_item_count = Item::where ( 'batch_route_id', $batch_route_id )

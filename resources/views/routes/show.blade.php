@@ -123,7 +123,7 @@
 										<a href = "#" class = "move_to_shipping">Move 2 Shipping</a>
 									@endif
 									<br/>
-									<a href = "#" class = "move_to_shipping">Back 2 QC</a>
+									<a href = "#" class = "back_to_qc">Back 2 QC</a>
 
 								</td>
 								<td><a href = "{{ $item->item_url }}" target = "_blank"><img
@@ -270,6 +270,22 @@
 					.appendTo($("form#station-action"));
 			$("form#station-action").submit();
 		});
+
+		$("a.back_to_qc").on('click', function (event)
+				{
+					event.preventDefault();
+					var value = $(this).closest('tr').attr('data-id');
+					$("<input type='hidden' value='' />")
+							.attr("name", "item_id")
+							.attr("value", value)
+							.appendTo($("form#station-action"));
+					$("<input type='hidden' value='' />")
+							.attr("name", "action")
+							.attr("value", 'back_to_qc')
+							.appendTo($("form#station-action"));
+					$("form#station-action").submit();
+				});
+
 
 		$("a.reject").on('click', function (event)
 		{
