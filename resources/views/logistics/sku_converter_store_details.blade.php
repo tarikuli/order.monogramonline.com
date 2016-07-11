@@ -132,7 +132,8 @@
 									@endif
 								</td>
 								<td class = 'maxtdwidth'>
-									<a href = "{{$option->product->product_url}}"
+								{{ $option->id  }}
+									<a href = "{{$option->product->first()->product_url}}"
 									   target = "_blank">{{ $option->id_catalog }}</a>
 								</td>
 								<td class = 'maxtdwidth'>
