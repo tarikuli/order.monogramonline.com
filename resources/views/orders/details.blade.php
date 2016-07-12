@@ -299,7 +299,7 @@
 									<br />
 									<span>Current station: {{ $item->station_name }} ({{ $item->station_details->station_description }}) </span>
 									<br/>
-									Last Update: {{ $item->updated_at }}
+									Last Update: {{ $item->change_date }}
 								@endif
 							</p>
 						@endif
