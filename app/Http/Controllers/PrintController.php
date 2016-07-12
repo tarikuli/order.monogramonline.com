@@ -58,7 +58,7 @@ class PrintController extends Controller
 
 	public function batches (Request $request)
 	{
-// 		return $request->all();
+		#return $request->all();
 		/*https://www.4psitelink.com/setup/batch_print.php?ad[]=22602*/
 		$batches = $request->exists('batch_number') && is_array($request->get('batch_number')) ? array_filter($request->get('batch_number')) : null;
 		if ( !$batches || !is_array($batches) ) {
@@ -82,15 +82,22 @@ class PrintController extends Controller
 			}
 		}*/
 		foreach ( $batches as $batch_number ) {
-			$module = $this->batch_printing_module($batch_number, $station_name);
+			$batch_number = explode('tarikuli', $batch_number);
+			$batch_num = $batch_number[0];
+			if(!$request->exists('station')){
+				$station_name = $batch_number[1];
+			}
+
+			$module = $this->batch_printing_module($batch_num, $station_name);
 			$modules[] = $module->render();
 		}
-
+		#dd($batches);
 		return view('prints.batch_printer')->with('modules', $modules);
 	}
 
 	public function batch_packing_slip (Request $request)
 	{
+// 		return $request->all();
 		$batches = $request->exists('batch_number') ? array_filter($request->get('batch_number')) : null;
 		if ( !$batches || !is_array($batches) ) {
 			#return view('errors.404');
@@ -100,20 +107,23 @@ class PrintController extends Controller
 		}
 		$station_name = $request->get('station', '');
 
-		$order_ids = Item::whereIn('batch_number', $batches)
-						 ->searchByStation($station_name)
-						 ->WhereNull('tracking_number')
-						 ->lists('order_id')
-						 ->toArray();
+		$order_ids = [];
+		foreach ( $batches as $batch_number ) {
+			$batch_number = explode('tarikuli', $batch_number);
+			$batch_num = $batch_number[0];
+			if(!$request->exists('station')){
+				$station_name = $batch_number[1];
+			}
 
+			$order_id = Item::whereIn('batch_number', $batch_number)
+							->searchByStation($station_name)
+							->WhereNull('tracking_number')
+							->lists('order_id')
+							->toArray();
+			$order_ids = array_merge($order_id,$order_ids);
+		}
 		$orders = $this->getOrderFromId($order_ids);
-
 		$modules = $this->getPackingModulesFromOrder($orders);
-
-		/*foreach ( $batches as $batch_number ) {
-			$module = $this->batch_printing_module($batch_number);
-			$modules[] = $module->render();
-		}*/
 
 		return view('prints.batch_printer')->with('modules', $modules);
 	}

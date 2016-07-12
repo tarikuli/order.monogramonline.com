@@ -141,18 +141,20 @@
 							<td>{{$row['min_order_date']}}</td>
 						</tr>
 					@endforeach
-					{{--<tr>
+					<tr>
 						<td colspan = "11">
 							{!! Form::button('Select / Deselect all', ['id' => 'select_deselect', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Packing Slip', ['id' => 'packing_slip', 'class' => 'btn btn-link']) !!}
 
+							{{--
 							@if(auth()->user()->roles->first()->id == 1)
 								{!! Form::button('Release Batch', ['id' => 'release_batch', 'class' => 'btn btn-link']) !!}
 							@endif
+							--}}
 
 						</td>
-					</tr> --}}
+					</tr>
 					{!! Form::close() !!}
 				</table>
 			@else

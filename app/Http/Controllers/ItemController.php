@@ -213,7 +213,7 @@ class ItemController extends Controller
 					 ->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
 					 ->groupBy('batch_number')
 					 ->latest('batch_number')
-					 ->paginate(50);
+					 ->paginate(5);
 
 		$routes = BatchRoute::where('is_deleted', 0)
 							->orderBy('batch_route_name')
@@ -344,7 +344,7 @@ class ItemController extends Controller
 // 				return $item;
 				$row['item_thumb'] = $item->item_thumb;
 				$row['child_sku'] = $item->child_sku;
-				$row['batch_number'] = $item->batch_number;
+				$row['batch_number'] = $item->batch_number."tarikuli".$station_name;
 				$row['batch_creation_date'] = substr($item->batch_creation_date, 0, 10);
 				$row['route_code'] = $item->route->batch_code;
 				$row['route_name'] = $item->route->batch_route_name;
