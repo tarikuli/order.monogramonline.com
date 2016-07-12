@@ -17,17 +17,17 @@
 </head>
 <body style = "background:#ffffff ;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 12px;color: #000000;">
 	@include('includes.header_menu')
-	<div style = "margin-left: 250px;margin-right: 250px">
+	<div style = "min-width: 1550px; margin-left: 10px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li class = "active">Batch rotes</li>
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
-		<div class = "col-xs-12" style = "margin: 10px 0;">
+		<div class = "col-xs-12" >
 
 			<label style = "margin-left:330px">Manage WorkFlow Routes</label>
-			<p>Note: Must use a Shipping Station ('J-SHP', 'R-SHP', 'S-SHP', 'H-SHP', 'PK-SHP', 'ST-SHP') in each Route</p>
+			<p>Note: Must use a Shipping Station ('J-SHP', 'R-SHP', 'S-SHP', 'H-SHP', 'PK-SHP', 'ST-SHP', 'D-SHP') in each Route</p>
 			</table>
 
 		</div>
@@ -72,6 +72,7 @@
 										<th style = "padding-bottom:10px"><b>Max unit</b></th>
 										<th style = "padding-bottom:10px"><b>Stations</b></th>
 										<th style = "padding-bottom:10px"><b>Export template</b></th>
+										<th style = "padding-bottom:10px"><b>CSV<br>Extension</b></th>
 										<th style = "padding-bottom:10px"><b>Options( Comma delimited )</b></th>
 										<th style = "padding-bottom:10px"><b>Action</b></th>
 									</tr>
@@ -90,6 +91,7 @@
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_max_units', $batch_route->batch_max_units, ['style'=>'width:70px;margin-right:25px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_stations', implode(",\n", array_map(function($station) { return $station['station_name']; }, $batch_route->stations_list->toArray())), ['style'=>'width:120px;height:80px;margin-right:10px;overflow-y: scroll;']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::select('s_export_template', $templates, $batch_route->export_template, ['style'=>'width:70px;margin-right:25px']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('csv_extension', $batch_route->csv_extension, ['style'=>'width:70px;margin-right:25px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_options', $batch_route->batch_options, ['style'=>'width:120px;height:80px;margin-left:25px;margin-right:70px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">
 												<a href = "#" class = "update" data-toggle = "tooltip"
