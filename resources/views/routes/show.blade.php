@@ -128,8 +128,9 @@
 
 
 								</td>
-								<td><a href = "{{ $item->item_url }}" target = "_blank"><img
-												src = "{{$item->item_thumb}}" /></a>
+								<td>
+									<a href = "{{ $item->item_url }}" target = "_blank">
+									<img src = "{{$item->item_thumb}}" width="90" height="90" /></a>
 								</td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>

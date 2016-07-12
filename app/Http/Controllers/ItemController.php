@@ -671,11 +671,12 @@ class ItemController extends Controller
 
 		// Get batch_route_id from templates table
 		$route = BatchRoute::find($route_id);
-
+		#return $route;
 		//echo "<pre>"; print_r($route); echo "</pre>";
 
 
 		$template_id = $route->export_template;
+		$csv_extension = $route->csv_extension;
 		// Get templates information by template Id from templates table.
 		$template = Template::with('exportable_options')
 							->find($template_id);
@@ -704,7 +705,11 @@ class ItemController extends Controller
 // 		}
 
 		$file_path = sprintf("%s/assets/exports/batches/", public_path());
-		$file_name = sprintf("%s.csv", $batch_id);
+		if(empty($csv_extension)){
+			$file_name = sprintf("%s.csv", $batch_id);
+		}else{
+			$file_name = sprintf("%s_%s.csv", $csv_extension, $batch_id);
+		}
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
 		$csv->insertOne($columns);

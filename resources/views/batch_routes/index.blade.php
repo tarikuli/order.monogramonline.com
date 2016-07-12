@@ -66,15 +66,15 @@
 							@if(count($batch_routes) > 0)
 								<table>
 									<tr>
-										<th style = "padding-bottom:10px"><b> </b></th>
-										<th style = "padding-bottom:10px"><b>Batch code</b></th>
-										<th style = "padding-bottom:10px"><b>Route name</b></th>
-										<th style = "padding-bottom:10px"><b>Max unit</b></th>
-										<th style = "padding-bottom:10px"><b>Stations</b></th>
-										<th style = "padding-bottom:10px"><b>Export template</b></th>
-										<th style = "padding-bottom:10px"><b>CSV<br>Extension</b></th>
-										<th style = "padding-bottom:10px"><b>Options( Comma delimited )</b></th>
-										<th style = "padding-bottom:10px"><b>Action</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b> </b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Batch code</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Route name</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Max unit</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Stations</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Export<br>template</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>CSV<br>Extension</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Options<br>(Comma delimited)</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Action</b></th>
 									</tr>
 
 									@foreach($batch_routes as $batch_route)
