@@ -88,10 +88,10 @@
 													<i class = "fa fa-times text-danger"></i> </a></td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_code', $batch_route->batch_code, ['style'=>'width:100px;margin-right:10px;margin-left:5px','readonly'=>'readonly']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_route_name', $batch_route->batch_route_name, ['style'=>'width:250px;margin-right:10px']) !!}</td>
-											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_max_units', $batch_route->batch_max_units, ['style'=>'width:70px;margin-right:25px']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_max_units', $batch_route->batch_max_units, ['style'=>'width:50px;margin-right:25px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_stations', implode(",\n", array_map(function($station) { return $station['station_name']; }, $batch_route->stations_list->toArray())), ['style'=>'width:120px;height:80px;margin-right:10px;overflow-y: scroll;']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::select('s_export_template', $templates, $batch_route->export_template, ['style'=>'width:70px;margin-right:25px']) !!}</td>
-											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('csv_extension', $batch_route->csv_extension, ['style'=>'width:70px;margin-right:25px']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_csv_extension', $batch_route->csv_extension, ['style'=>'width:70px;margin-right:25px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_options', $batch_route->batch_options, ['style'=>'width:120px;height:80px;margin-left:25px;margin-right:70px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">
 												<a href = "#" class = "update" data-toggle = "tooltip"
@@ -117,6 +117,7 @@
 								{!! Form::hidden('batch_max_units', null, ['id' => 'update_batch_max_units']) !!}
 								{!! Form::hidden('batch_export_template', null, ['id' => 'update_batch_export_template']) !!}
 								{!! Form::hidden('batch_stations', null, ['id' => 'update_batch_stations']) !!}
+								{!! Form::hidden('csv_extension', null, ['id' => 'update_csv_extension']) !!}
 								{!! Form::hidden('batch_options', null, ['id' => 'update_batch_options']) !!}
 								{!! Form::close() !!}
 
@@ -198,6 +199,7 @@
 			var code = tr.find('input').eq(0).val();
 			var route = tr.find('input').eq(1).val();
 			var unit = tr.find('input').eq(2).val();
+			var csv_extension = tr.find('input').eq(3).val();
 			var stations = tr.find('textarea').eq(0).val();
 			var export_template = tr.find('select').eq(0).val();
 			var options = tr.find('textarea').eq(1).val();
@@ -207,6 +209,7 @@
 			$("input#update_batch_max_units").val(unit);
 			$("input#update_batch_stations").val(stations);
 			$("input#update_batch_export_template").val(export_template);
+			$("input#update_csv_extension").val(csv_extension);
 			$("input#update_batch_options").val(options);
 
 			var form = $("form#update-batch-routes");

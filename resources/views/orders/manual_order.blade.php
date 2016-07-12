@@ -160,13 +160,14 @@
 								<td></td>
 							</tr>
 							<tr>
-								<td>Shipping</td>
-								<td>{!! Form::text('shipping', null, ['id' => 'ship_email']) !!}</td>
+								<td>Shipping Via:</td>
+								<td> {!! Form::select('shipping', $shipping_methods, '', ['id' => 'shipping_method','style' => 'color: #FF0000;font-weight: bold; height: 16px;font-size: 10px;']) !!} </td>
 								<td></td>
 								<td style = "padding-left:97px">Bill mailing list</td>
 								<td>{!! Form::text('bill_mailing_list', null, ['id' => 'bill_mailing_list']) !!}</td>
 								<td></td>
 							</tr>
+
 						</table>
 						<table>
 							<tr>

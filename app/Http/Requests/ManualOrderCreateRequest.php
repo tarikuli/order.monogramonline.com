@@ -18,7 +18,7 @@ class ManualOrderCreateRequest extends Request
 			'ship_first_name' => 'required',
 			'bill_first_name' => 'required',
 			'bill_email' => 'required|email',
-			'shipping_method' => 'required',
+			'shipping' => 'required',
 		];
 	}
 

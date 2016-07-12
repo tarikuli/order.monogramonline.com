@@ -657,10 +657,13 @@ class OrderController extends Controller
 
 	public function getManual (Request $request)
 	{
+		$shipping_methods = Customer::groupBy('shipping')
+									 ->lists('shipping', 'shipping');
+
 		$stores = Store::where('is_deleted', 0)
 					   ->lists('store_name', 'store_id');
 
-		return view('orders.manual_order')->with('stores', $stores);
+		return view('orders.manual_order', compact('shipping_methods'))->with('stores', $stores);
 	}
 
 	public function postManual (Requests\ManualOrderCreateRequest $request, AppMailer $appMailer)

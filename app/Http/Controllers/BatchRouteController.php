@@ -65,11 +65,13 @@ class BatchRouteController extends Controller
 
 	public function update (BatchRouteUpdateRequest $request, $id)
 	{
+		#return $request->all();
 		$batch_route = BatchRoute::find($id);
 		$batch_route->batch_code = $request->get('batch_code');
 		$batch_route->batch_route_name = $request->get('batch_route_name');
 		$batch_route->batch_max_units = $request->get('batch_max_units');
 		$batch_route->export_template = $request->get('batch_export_template');
+		$batch_route->csv_extension = $request->get('csv_extension');
 		$batch_route->batch_options = $request->get('batch_options');
 		$batch_route->save();
 
