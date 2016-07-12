@@ -5,6 +5,7 @@ use App\Department;
 use App\Item;
 use App\Option;
 use App\Order;
+use App\Note;
 use App\Status;
 use App\Parameter;
 use App\Product;
@@ -126,6 +127,7 @@ class ItemController extends Controller
 					 ->where('batch_number', '!=', 0)
 					 ->latest('batch_number')// newly added line, because, just count will overlap the batch again.
 					 ->get();
+
 		$fixed_value = 10000;
 		$max_batch_number = count($items) ? $items->first()->batch_number : $fixed_value;
 		$last_batch_number = $max_batch_number;
@@ -170,6 +172,13 @@ class ItemController extends Controller
 				$item->item_order_status_2 = 2;
 				$item->save();
 
+				// Add note history by order id
+				$note = new Note();
+				$note->note_text = "Batch# ".$batch_number ." created on:". $item->batch_creation_date." for Child_SKU: ".$item->child_sku;
+				$note->order_id = $item->order_id;
+				$note->user_id = Auth::user()->id;
+				$note->save();
+
 				/* add order status to order table*/
 				$order = Order::where('order_id', $item->order_id)
 							  ->first();
@@ -213,7 +222,7 @@ class ItemController extends Controller
 					 ->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
 					 ->groupBy('batch_number')
 					 ->latest('batch_number')
-					 ->paginate(5);
+					 ->paginate(50);
 
 		$routes = BatchRoute::where('is_deleted', 0)
 							->orderBy('batch_route_name')
@@ -501,6 +510,13 @@ class ItemController extends Controller
 				$item->station_name = $toStationName;
 				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->save();
+
+				// Add note history by order id
+				$note = new Note();
+				$note->note_text = "Move to ".$toStationName." station form Batch View page.";
+				$note->order_id = $item->order_id;
+				$note->user_id = Auth::user()->id;
+				$note->save();
 			}
 
 			if ( in_array($toStationName, Helper::$shippingStations) ) {
@@ -890,6 +906,14 @@ class ItemController extends Controller
 				->back()
 				->withError([ 'error' => 'Not a valid batch id' ]);
 		}
+
+		// Add note history by order id
+		$note = new Note();
+		$note->note_text = "Release batch# ".$item->batch_number." from supervisor station";
+		$note->order_id = $item->order_id;
+		$note->user_id = Auth::user()->id;
+		$note->save();
+
 		$item->batch_number = 0;
 		$item->batch_route_id = null;
 		$item->station_name = null;
@@ -905,6 +929,8 @@ class ItemController extends Controller
 		$item->reached_shipping_station = 0;
 		$item->supervisor_message = null;
 		$item->save();
+
+
 
 		return redirect()->back();
 	}
@@ -1161,6 +1187,13 @@ class ItemController extends Controller
 			$station_log->started_at = date('Y-m-d', strtotime("now"));
 			$station_log->user_id = Auth::user()->id;
 			$station_log->save();
+
+			// Add note history by order id
+			$note = new Note();
+			$note->note_text = "Move to ".$station_name." station, Child_SKU: ".$sku." from Active batch by SKU group Page";
+			$note->order_id = $item->order_id;
+			$note->user_id = Auth::user()->id;
+			$note->save();
 		}
 
 		// Update numbe of Station assign from items_to_shift

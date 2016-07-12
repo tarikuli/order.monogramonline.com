@@ -339,7 +339,7 @@
 					.attr("name", "rejection_message")
 					.attr("value", rejection_message)
 					.appendTo($(form));
-
+			//console.log(form);
 			$(form).submit();
 		});
 

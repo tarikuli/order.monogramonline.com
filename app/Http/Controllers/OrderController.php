@@ -226,7 +226,7 @@ class OrderController extends Controller
 			$option = $item_options[$index];
 			++$total_items;
 			$pieces = preg_split('/\r\n|[\r\n]/', $option);
-			$index++;
+
 			$json = [ ];
 			foreach ( $pieces as $piece ) {
 				if ( !$piece ) {
@@ -237,6 +237,7 @@ class OrderController extends Controller
 			}
 			$item->item_option = json_encode($json);
 			$item->save();
+			$index++;
 		}
 		$item_skus = $request->get('item_skus');
 		if ( count($item_skus) ) {
@@ -276,7 +277,7 @@ class OrderController extends Controller
 					$item->item_thumb = $product->product_thumb;
 					$item->item_url = $product->product_url;
 				}
-				$item->data_parse_type = "manual";
+				$item->data_parse_type = "manual_update";
 				$child_sku = Helper::getChildSku($item);
 				$item->child_sku = $child_sku;
 				$item->save();
@@ -287,13 +288,16 @@ class OrderController extends Controller
 		$order->save();
 		session()->flash('success', 'Order is successfully updated');
 		$note_text = trim($request->get('note'));
-		if ( $note_text ) {
+
 			$note = new Note();
-			$note->note_text = $note_text;
+			if ( $note_text ) {
+				$note->note_text = $note_text;
+			}else{
+				$note->note_text = "Order Info Manually Updated";
+			}
 			$note->order_id = $id;
 			$note->user_id = Auth::user()->id;
 			$note->save();
-		}
 
 		return redirect()->back();
 	}

@@ -46,7 +46,6 @@
 						<th>Assign station</th>
 						<th>Action</th>
 					</tr>
-					{{--{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}--}}
 					@foreach($rows as $row)
 						<tr data-sku = "{{ $row['sku'] }}" id = "{{ $row['current_station_anchor'] }}">
 							<td>
@@ -85,7 +84,6 @@
 						<td></td>
 						<td></td>
 					</tr>
-					{{--{!! Form::close() !!}--}}
 				</table>
 				<div class="col-md-12 text-center">
 					{!! $pagination !!}

@@ -6,7 +6,9 @@ use App\BatchRoute;
 use App\Department;
 use App\Item;
 use App\Order;
+use App\Note;
 use App\StationLog;
+use App\RejectionReason;
 use App\Status;
 use Illuminate\Http\Request;
 use App\Station;
@@ -139,7 +141,7 @@ class StationController extends Controller {
 // "_token" => "mXfbcS6KiNmKpzhG9DoB6alyyGxMJC8lCGNTriW5" Export batch
 // "item_id" => "53506"
 // "action" => "done"
-
+		#return $request->all();
 		$action = $request->get ( 'action' );
 		$item_id = $request->get ( 'item_id' );
 
@@ -155,6 +157,8 @@ class StationController extends Controller {
 		$batch_route_id = $item->batch_route_id;
 		$current_station_name = $item->station_name;
 		$next_station_name = Helper::getNextStationName ( $batch_route_id, $current_station_name );
+
+		$note = new Note();
 
 		if ($action == 'done') {
 
@@ -180,6 +184,8 @@ class StationController extends Controller {
 				$station_log->save ();
 			}
 			$item->save ();
+			$note->note_text = "Click Single Done for Move to ".$next_station_name." Sation";
+
 		} elseif ($action == 'move_to_shipping') {
 
 			// Get All station in Route
@@ -237,6 +243,7 @@ class StationController extends Controller {
 				$station_log->save ();
 			}
 			$item->save ();
+			$note->note_text = "Click move_to_shipping for Move to ".$current_route_shp_station[0]." Sation";
 
 		} elseif ($action == 'reject') {
 			$rules = [
@@ -254,6 +261,8 @@ class StationController extends Controller {
 			$item->reached_shipping_station = 0;
 			$item->save ();
 
+			$rejection_reasons = RejectionReason::where('id', $request->get ( 'rejection_reason' ))->get();
+			$note->note_text = "Click reject for Move to ".Helper::getSupervisorStationName ()." Sation, Reject reason: ".$rejection_reasons->first()->rejection_message.", Reject Message: ".$item->rejection_message;
 		}elseif ($action == 'back_to_qc') {
 
 			// Get All station in Route
@@ -308,6 +317,9 @@ class StationController extends Controller {
  					$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
  					$station_log->user_id = Auth::user ()->id;
  					$station_log->save ();
+
+ 					$note->note_text = "Click back_to_qc for Move to ".$qdc_station." Sation";
+
  					return redirect ( url ( 'batches/'.$item->batch_number.'/'.$qdc_station ) );
 				}else{
 					return redirect(url('batches/'.$item->batch_number.'/'.$item->station_name))
@@ -328,6 +340,12 @@ class StationController extends Controller {
 								->where ( 'is_deleted', 0 )
 								->count ();
 
+		// Add note history by order id
+		$note->order_id = $item->order_id;
+		$note->user_id = Auth::user()->id;
+		$note->save();
+		// Add note history by order id
+
 		if ($request->has ( 'return_to' ) && $request->get ( 'return_to' ) == "back") {
 			return redirect ()->back ();
 		}
@@ -341,6 +359,7 @@ class StationController extends Controller {
 
 
 	public function supervisor(Request $request) {
+
 		$routes = BatchRoute::where ( 'is_deleted', 0 )
 							->orderBy ( 'batch_route_name' )
 							->latest ()
@@ -378,6 +397,8 @@ class StationController extends Controller {
 
 		return view ( 'stations.supervisor', compact ( 'items', 'request', 'routes', 'stations', 'statuses', 'item_statuses' ) );
 	}
+
+
 	public function on_change_apply(Request $request) {
 		$item_id = $request->get ( 'item_id' );
 		$item = Item::find ( $item_id );
@@ -403,6 +424,15 @@ class StationController extends Controller {
 			$item->rejection_message = null;
 			$item->rejection_reason = null;
 			$item->save ();
+
+			// Add note history by order id
+			$note = new Note();
+			$note->note_text = "Supervisor move to ".$station_name." station and message is: ".$item->supervisor_message;
+			$note->order_id = $item->order_id;
+			$note->user_id = Auth::user()->id;
+			$note->save();
+
+
 		} elseif ($request->has ( 'order_status' )) {
 			$order_status = $request->get ( 'order_status' );
 			$order = Order::where ( 'order_id', $item->order_id )->first ();

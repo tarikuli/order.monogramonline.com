@@ -84,7 +84,7 @@
 				@foreach($items as $item)
 					<tr data-id = "{{$item->id}}" class = "text-center">
 						<td><a href = "{{ url("orders/details/".$item->order_id) }}"
-						       class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a></td>
+						       class = "btn btn-link" target = "_blank" >{{\Monogram\Helper::orderNameFormatter($item->order)}}</a></td>
 						<td>{{substr($item->order->order_date, 0, 10)}}</td>
 						<td>{{$item->store->store_name}}</td>
 						<td>{{$item->id}}</td>
