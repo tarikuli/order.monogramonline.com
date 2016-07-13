@@ -752,7 +752,7 @@ class ItemController extends Controller
 		if(empty($csv_extension)){
 			$file_name = sprintf("%s.csv", $batch_id);
 		}else{
-			$file_name = sprintf("%s_%s.csv", $csv_extension, $batch_id);
+			$file_name = sprintf("%s%s.csv", $batch_id, $csv_extension);
 		}
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
