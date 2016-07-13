@@ -1355,25 +1355,47 @@ class ItemController extends Controller
 		$batch_numbers = $request->get('batch_number');
 
 		$changes = [
-			'batch_number'             => 0,
-			'batch_route_id'           => null,
-			'station_name'             => null,
-			'item_order_status'        => null,
-			'batch_creation_date'      => null,
-			'tracking_number'          => null,
-			'item_order_status_2'      => null,
-			'previous_station'         => null,
-			'item_status'              => null,
-			'rejection_message'        => null,
-			'rejection_reason'         => null,
-			'supervisor_message'       => null,
-			'reached_shipping_station' => 0,
+				'batch_number'             => 0,
+				'batch_route_id'           => null,
+				'station_name'             => null,
+				'item_order_status'        => null,
+				'batch_creation_date'      => null,
+				'tracking_number'          => null,
+				'item_order_status_2'      => null,
+				'previous_station'         => null,
+				'item_status'              => null,
+				'rejection_message'        => null,
+				'rejection_reason'         => null,
+				'supervisor_message'       => null,
+				'reached_shipping_station' => 0,
 		];
 
-		Item::whereIn('batch_number', $batch_numbers)
-			->update($changes);
+		$batchNumbers = [];
+		foreach ( $batch_numbers as $batch_number ) {
 
-		$message = sprintf("Batches: %s are released.", implode(", ", $batch_numbers));
+			$batch_number = explode('tarikuli', $batch_number);
+			$batchNumbers[] = $batch_number[0];
+// 			$station[] = $batch_number[1];
+			$items = Item::where('batch_number', $batch_number[0])
+					  ->where('station_name', $batch_number[1])
+					  ->whereNull('tracking_number')
+					  ->get();
+
+			foreach ($items as $item){
+				// Add note history by order id
+				$note = new Note();
+				$note->note_text = "Releas Batch# ".$item->batch_number." SKU: ".$item->child_sku." from Batch list";
+				$note->order_id = $item->order_id;
+				$note->user_id = Auth::user()->id;
+				$note->save();
+
+				Item::where('order_id', $item->order_id)
+					->update($changes);
+			}
+
+		}
+
+		$message = sprintf("Batches: %s are released.", implode(", ", $batchNumbers));
 
 		return redirect()
 			->back()
