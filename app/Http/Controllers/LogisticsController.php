@@ -301,7 +301,7 @@ class LogisticsController extends Controller
 	private function save_parameters ($reader, $store_id)
 	{
 		try {
-			Helper::jewelDebug($reader);
+// 			Helper::jewelDebug($reader);
 			$rows = $reader->setOffset(1)
 						   ->fetchAssoc(Helper::$column_names);
 			$batch_routes = BatchRoute::where('is_deleted', 0)
