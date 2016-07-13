@@ -468,7 +468,7 @@ class ItemController extends Controller
 						->latest()
 						->first();
  		if(count($order->notes)>0){
-			$lastupdateby = $order->notes->first()->user->username;
+			$lastupdateby = $order->notes->last()->user->username;
  		}else{
  			$lastupdateby = "No Record Found";
 		}
