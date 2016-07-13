@@ -147,12 +147,9 @@
 							{!! Form::button('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Packing Slip', ['id' => 'packing_slip', 'class' => 'btn btn-link']) !!}
 
-							{{--
 							@if(auth()->user()->roles->first()->id == 1)
 								{!! Form::button('Release Batch', ['id' => 'release_batch', 'class' => 'btn btn-link']) !!}
 							@endif
-							--}}
-
 						</td>
 					</tr>
 					{!! Form::close() !!}
