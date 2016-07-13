@@ -467,9 +467,12 @@ class ItemController extends Controller
 						->where('order_id', $items[0]->order_id)
 						->latest()
 						->first();
-
-
-		$lastupdateby = $order->notes->first()->user->username;
+ 		if(count($order->notes)>0){
+			$lastupdateby = $order->notes->first()->user->username;
+ 		}else{
+ 			$lastupdateby = "No Record Found";
+		}
+		// 15697
 		$lastchangedate = $items[0]->change_date;
 		$department = Department::find($department_id);
 		$department_name = $department ? $department->department_name : 'NO DEPARTMENT IS SET';

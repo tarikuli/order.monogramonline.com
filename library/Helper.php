@@ -34,6 +34,9 @@ class Helper
 		"Graphic SKU",
 		'Allow mixing',
 		'Batch route',
+// 		'Stock Number',
+// 		'Bin Number',
+// 		'Production Time',
 	];
 
 	public static $REGEX_ESCAPES = [

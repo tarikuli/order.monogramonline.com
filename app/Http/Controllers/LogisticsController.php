@@ -199,7 +199,9 @@ class LogisticsController extends Controller
 				$row[] = $option->graphic_sku;
 				$row[] = $option->allow_mixing ? "Yes" : "No";
 				$row[] = $option->route ? $option->route->batch_code : "";
-
+				$row[] = $option->stock_number;
+				$row[] = $option->bin_number;
+				$row[] = $option->production_time;
 				$json_array = json_decode($option->parameter_option, true);
 				$json_array_except = array_filter($json_array, function ($key) {
 					if ( $key == "SKU" ) {
@@ -210,6 +212,7 @@ class LogisticsController extends Controller
 				}, ARRAY_FILTER_USE_KEY);
 
 				$row = array_merge($row, $json_array_except);
+
 				$csv->insertOne($row);
 			}
 
@@ -298,11 +301,12 @@ class LogisticsController extends Controller
 	private function save_parameters ($reader, $store_id)
 	{
 		try {
-
+			Helper::jewelDebug($reader);
 			$rows = $reader->setOffset(1)
 						   ->fetchAssoc(Helper::$column_names);
 			$batch_routes = BatchRoute::where('is_deleted', 0)
-									  ->lists('id', 'batch_code');
+										  ->lists('id', 'batch_code');
+
 			set_time_limit(0);
 			foreach ( $rows as $row ) {
 				$unique_row_value = Helper::generateUniqueRowId();
@@ -325,6 +329,7 @@ class LogisticsController extends Controller
 					$parameter_options[$column_name] = $row[$column_name];
 				}
 				$option->parameter_option = json_encode($parameter_options);
+
 				$option->save();
 			}
 		} catch ( \Exception $e ) {
