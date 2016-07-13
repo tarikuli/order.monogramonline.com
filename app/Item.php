@@ -77,7 +77,10 @@ class Item extends Model
 
 	public function groupedItems ()
 	{
-		return $this->hasMany('App\Item', 'batch_number', 'batch_number');
+		// return $this->hasMany('App\Item', 'batch_number', 'batch_number');
+		return $this->hasMany('App\Item', 'batch_number', 'batch_number')
+					->whereNull('tracking_number')
+					->where('is_deleted', 0);
 	}
 
 	private function commaTrimmer ($string)

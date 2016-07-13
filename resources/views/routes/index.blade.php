@@ -77,7 +77,7 @@
 		<div class = "col-xs-12">
 			@if(count($rows))
 				<h4 class = "page-header">
-					Batches ({{ $items->total() }} items found / {{$items->currentPage()}} of {{$items->lastPage()}} pages)
+					Total ({{ $items->total() }} Batch found / {{$items->currentPage()}} of {{$items->lastPage()}} pages) # of items {{ $total_itemss }}
 				</h4>
 				<table class = "table">
 					<tr>
@@ -102,7 +102,7 @@
 						<tr>
 							<td>
 								<input type = "checkbox" name = "batch_number[]" class = "checkbox"
-								       value = "{{$row['batch_number']}}" />
+								       value = "{{$row['batch_number_c_box']}}" />
 							</td>
 							<td>
 								<a href = "{{url(sprintf('batches/%d/%s',$row['batch_number'], $row['current_station_name']))}}">{{$row['batch_number']}}</a>

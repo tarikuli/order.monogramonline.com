@@ -85,10 +85,13 @@
 							<tr data-id = "{{$item->id}}">
 								<td>{{$count++}}</td>
 								<td>
-									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
-									   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a> - {{$item->id}}
+									Order# <a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
+									   target = "_blank">{{\Monogram\Helper::orderNameFormatter($item->order)}}</a>
 									<br />
-									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
+									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!}
+									<br />
+									Item# {{$item->id}}
+									<br />
 								</td>
 								<td>
 									@if($item->station_details)
@@ -107,7 +110,22 @@
 									<a href = "{{ url(sprintf("logistics/sku_show?store_id=%s&search_for=%s&search_in=child_sku", $item->store_id, $item->child_sku)) }}"
 									   target = "_blank">{{$item->child_sku}}</a>
 								</td>
-								<td class = "description">{{$item->item_description}}</td>
+								<td align="left">
+									{{$item->item_description}}
+																		<br/>
+									@if($item->supervisor_message)
+										<div style="color: brown;">
+											{{ $item->supervisor_message }}
+											<br />
+										</div>
+									@endif
+									@if($item->tracking_number)
+										<div style="color: red;">
+										Don't Make this Item again.<br/>
+										TRK# <a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number )) }}" target = "_blank"> {{ $item->tracking_number }}</a>
+										</div>
+									@endif
+								</td>
 								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '3', 'cols' => '20',]) !!}</td>
 							</tr>
 						@endforeach

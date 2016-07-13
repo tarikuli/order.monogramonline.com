@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use League\Csv\Writer;
 use Monogram\Helper;
+use Psy\Command\HelpCommand;
 
 class ItemController extends Controller
 {
@@ -213,8 +214,10 @@ class ItemController extends Controller
 		}
 
 		$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
+					 ->where('is_deleted', 0)
 					 ->where('batch_number', '!=', '0')
-					 ->whereNotIn( 'station_name', Helper::$shippingStations)
+// 					 ->whereNotIn( 'station_name', Helper::$shippingStations)
+					 ->whereNull('tracking_number')
 					 ->searchBatch($request->get('batch'))
 					 ->searchRoute($request->get('route'))
 					 ->searchStation(session('station', 'all'))
@@ -237,7 +240,7 @@ class ItemController extends Controller
 
 		// Get Station List
 		$stations = Station::where('is_deleted', 0)
-						   ->whereNotIn( 'station_name', Helper::$shippingStations)
+// 						   ->whereNotIn( 'station_name', Helper::$shippingStations)
 						   ->orderBy('station_description', 'asc')
 						   ->lists('station_description', 'id')
 						   ->prepend('Select a station', 'all');
@@ -247,6 +250,7 @@ class ItemController extends Controller
 		$current_station_by_url = $station_name['station_name'];
 
 		$rows = [ ];
+		$total_itemss = 0;
 		foreach ( $items as $item ) {
 			$row = [ ];
 			#$item_first_station = $item->groupedItems[0]->station_name;
@@ -345,6 +349,7 @@ class ItemController extends Controller
 					$searched_station_name = $x->station_name;
 				}
 			}
+
 			foreach ( $items_on_station as $station_name => $total_items ) {
 
 				if ( $searched_station_name && $station_name != $searched_station_name ) {
@@ -353,7 +358,8 @@ class ItemController extends Controller
 // 				return $item;
 				$row['item_thumb'] = $item->item_thumb;
 				$row['child_sku'] = $item->child_sku;
-				$row['batch_number'] = $item->batch_number."tarikuli".$station_name;
+				$row['batch_number_c_box'] = $item->batch_number."tarikuli".$station_name;
+				$row['batch_number'] = $item->batch_number;
 				$row['batch_creation_date'] = substr($item->batch_creation_date, 0, 10);
 				$row['route_code'] = $item->route->batch_code;
 				$row['route_name'] = $item->route->batch_route_name;
@@ -367,17 +373,22 @@ class ItemController extends Controller
 				$row['batch_status'] = $batch_status;
 				$row['current_station_item_count'] = $current_station_item_count;
 				$rows[] = $row;
+				$total_itemss = $total_itemss + $total_items;
+// 				Helper::jewelDebug($total_itemss." >>>>>>>>>>>>>>  ".$total_items);
+
 			}
 
 		}
+// 		#return $total_itemss;
 		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
 
-		return view('routes.index', compact('rows', 'items', 'request', 'routes', 'stations', 'statuses'));
+		return view('routes.index', compact('rows', 'items', 'request', 'routes', 'stations', 'statuses', 'total_itemss'));
 	}
 
 	public function batch_details ($batch_number)
 	{
 		$items = Item::with('order', 'station_details', 'product')
+					 ->where('is_deleted', 0)
 					 ->where('batch_number', $batch_number)
 					 ->get();
 		if ( !count($items) ) {
@@ -412,6 +423,7 @@ class ItemController extends Controller
 		}
 
 		$items = Item::with('order')
+					 ->where('is_deleted', 0)
 					 ->where('batch_number', $batch_number)
 					 ->where('station_name', $station_name)
 					 ->WhereNull('tracking_number')
@@ -454,15 +466,6 @@ class ItemController extends Controller
 		$department_name = $department ? $department->department_name : 'NO DEPARTMENT IS SET';
 		$stations = Helper::routeThroughStations($items[0]->batch_route_id, $station_name);
 
-		if(!strpos($stations, '-QCD')){
-// 			dd("ssds");
-			return redirect()
-			->back()
-			->withErrors([
-					'error' => 'Batch# '.$batch_number." and Route# ".$route->batch_code." Need QCD Station.",
-			]);
-		}
-
 		if(!strpos($stations, '-SHP')){
 			return redirect()
 			->back()
@@ -471,10 +474,35 @@ class ItemController extends Controller
 			]);
 		}
 
+		// Put stations in an Array
+		$getShipingStations =  array_map(function ($elem) {
+			return $elem['station_name'];
+		}, $route->stations->toArray());
+
+			// Find Shipping Station from Route
+			$current_route_shp_station = null;
+			foreach(Helper::$shippingStations as $key=>$val){
+				if(in_array($val,$getShipingStations)){
+					$current_route_shp_station[] = $val;
+				}
+			}
+
+			$qdc_station = substr($current_route_shp_station[0], 0, 1)."-QCD";
+
+		if(!strpos($stations, $current_route_shp_station[0])){
+// 			dd("ssds");
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'Batch# '.$batch_number." and Route# ".$route->batch_code." Need QCD Station.",
+			]);
+		}
+
+		#return $qdc_station;
 		#return $items;
 		$count = 1;
 
-		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'rejection_reasons', 'statuses', 'route', 'stations', 'count', 'department_name', 'current_batch_station'));
+		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'rejection_reasons', 'statuses', 'route', 'stations', 'count', 'department_name', 'current_batch_station', 'qdc_station'));
 	}
 
 	// By Jewel

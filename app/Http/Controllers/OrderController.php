@@ -601,7 +601,6 @@ class OrderController extends Controller
 				$item->data_parse_type = 'xml';
 				// 06.29.2016 Jewel add Child SKU ligic in Pull Order
 				$child_sku = Helper::getChildSku($item);
-				Helper::jewelDebug($child_sku);
 				$item->child_sku = $child_sku;
 				$item->save();
 				$product = Product::where('id_catalog', $idCatalog)

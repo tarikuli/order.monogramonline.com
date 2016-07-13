@@ -61,7 +61,6 @@
 					<p>Route: <a href = "{{ url(sprintf("/batch_routes#%s", $route['batch_code'] )) }}"
 											   target = "_blank">{{$route['batch_code']}}</a> / {{$route['batch_route_name']}} => {!! $stations !!}</p>
 					<p>Department: {{ $department_name }}</p>
-
 					{!! Form::open(['url' =>  url(sprintf("/items/%d", $batch_number)), 'method' => 'put', 'id' => 'chabgeBatchStation']) !!}
 					{!! Form::hidden('current_station_name', $current_batch_station->station_name, ['id' => 'current_station_name']) !!}
 					{!! Form::close() !!}
@@ -77,6 +76,8 @@
 					/
 					<a href = "{{url(sprintf('prints/batch_packing?batch_number[]=%s&station=%s',$batch_number, $current_batch_station->station_name))}}"
 					   target = "_blank">Print packing slip</a>
+					   <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+					   {!! Form::button('Move to QCD Station', ['id' => 'back_to_qc_all', 'value' => $qdc_station, 'class' => 'btn btn-success']) !!}
 				</div>
 				<div class = "col-xs-12">
 					<table class = "table table-bordered" id = "batch-items-table">
@@ -226,6 +227,12 @@
 			$("table#batch-items-table tfoot td#item-quantity-in-total").text("Total quantity: " + totalQuantity);
 
 			// By Jewel 04-25-2016
+			$("button#back_to_qc_all").on('click', function (event)
+			{
+				var value = $(this).val();
+				$("#station").val(value).trigger('change');
+			});
+
 			$("#station").on('change', function (event)
 			{
 				var value = $(this).val();

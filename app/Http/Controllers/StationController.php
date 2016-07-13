@@ -448,12 +448,17 @@ class StationController extends Controller {
 
 		return redirect ()->back ();
 	}
+	/**
+	 * Show Station Summery
+	 * @return Ambigous <\Illuminate\View\View, \Illuminate\Contracts\View\Factory>
+	 */
 	public function summary() {
 
 		$items = Item::where ( 'station_name', '!=', '' )
-				->whereNotIn( 'station_name', Helper::$shippingStations)
-				->groupBy ( 'station_name' )
-				->get ();
+					->where('is_deleted', 0)
+// 					->whereNotIn( 'station_name', Helper::$shippingStations)
+					->groupBy ( 'station_name' )
+					->get ();
 
 
 		$summaries = [ ];
@@ -468,6 +473,7 @@ class StationController extends Controller {
 
 			// Get number of orders in a Station
 			$lines_count = Item::where ( 'station_name', $station_name )
+								->where('is_deleted', 0)
 								->whereNull ( 'tracking_number' )
 								->groupBy ( 'order_id' )
 								->get ();
@@ -478,6 +484,7 @@ class StationController extends Controller {
 			if ($lines_count->count () > 0) {
 				// Get number of Items in a Station
 				$items_count = Item::where ( 'station_name', $station_name )
+								->where('is_deleted', 0)
 								->whereNull ( 'tracking_number' )
 								->groupBy ( 'station_name' )->first ( [
 						DB::raw ( 'SUM(item_quantity) as items_count' )
@@ -485,15 +492,18 @@ class StationController extends Controller {
 
 				// Get Earliest batch creation date
 				$earliest_batch_creation_date = Item::where ( 'station_name', $station_name )
+												->where('is_deleted', 0)
 												->whereNull ( 'tracking_number' )
 												->orderBy ( 'batch_creation_date', 'asc' )
 												->first ()->batch_creation_date;
 
 				$order_ids = Item::where ( 'station_name', $station_name )
+							->where('is_deleted', 0)
 							->whereNull ( 'tracking_number' )
 							->get ();
 
 				$earliest_order_date = Order::whereIn ( 'order_id', $order_ids->lists ( 'order_id' )->toArray () )
+										->where('is_deleted', 0)
 										->orderBy ( 'order_date', 'asc' )
 										->first ()
 										->order_date;
