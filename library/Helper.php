@@ -1053,6 +1053,7 @@ APPEND;
 		//generate the new sku
 		$child_sku = static::generateChildSKU($options_in_common, $parameter_options, $item, $store_id);
 
+		$child_sku = str_replace("-pleaseselect", "", $child_sku);
 		return $child_sku;
 	}
 
@@ -1105,7 +1106,11 @@ APPEND;
 			// and the values from the item options
 			return str_replace(" ", "", strtolower($item_options[$node]));
 		}, $matches));
+
 		$child_sku = empty( $child_sku_postfix ) ? $item->item_code : sprintf("%s-%s", $item->item_code, $child_sku_postfix);
+
+		// Replace Please Select
+		$child_sku = str_replace("-pleaseselect", "", $child_sku);
 		// should have to match the previous check.
 		// again check if the child sku is present or not
 		$option = Option::where('child_sku', $child_sku)

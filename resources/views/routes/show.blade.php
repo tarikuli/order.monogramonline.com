@@ -60,7 +60,7 @@
 
 					<p>Route: <a href = "{{ url(sprintf("/batch_routes#%s", $route['batch_code'] )) }}"
 											   target = "_blank">{{$route['batch_code']}}</a> / {{$route['batch_route_name']}} => {!! $stations !!}</p>
-					<p>Department: {{ $department_name }}</p>
+					<p>Department: {{ $department_name }}, <b>Last Update Date:</b> {{ $lastchangedate  }}, <b>Last Update by:</b> {{ $lastupdateby }}</p>
 					{!! Form::open(['url' =>  url(sprintf("/items/%d", $batch_number)), 'method' => 'put', 'id' => 'chabgeBatchStation']) !!}
 					{!! Form::hidden('current_station_name', $current_batch_station->station_name, ['id' => 'current_station_name']) !!}
 					{!! Form::close() !!}

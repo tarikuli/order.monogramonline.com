@@ -462,6 +462,15 @@ class ItemController extends Controller
 												->prepend('Select a reason', 0);
 		}
 
+		$order = Order::with('notes.user')
+						->where('is_deleted', 0)
+						->where('order_id', $items[0]->order_id)
+						->latest()
+						->first();
+
+
+		$lastupdateby = $order->notes->first()->user->username;
+		$lastchangedate = $items[0]->change_date;
 		$department = Department::find($department_id);
 		$department_name = $department ? $department->department_name : 'NO DEPARTMENT IS SET';
 		$stations = Helper::routeThroughStations($items[0]->batch_route_id, $station_name);
@@ -487,10 +496,9 @@ class ItemController extends Controller
 				}
 			}
 
-			$qdc_station = substr($current_route_shp_station[0], 0, 1)."-QCD";
+		$qdc_station = substr($current_route_shp_station[0], 0, 1)."-QCD";
 
 		if(!strpos($stations, $current_route_shp_station[0])){
-// 			dd("ssds");
 			return redirect()
 			->back()
 			->withErrors([
@@ -502,7 +510,7 @@ class ItemController extends Controller
 		#return $items;
 		$count = 1;
 
-		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'rejection_reasons', 'statuses', 'route', 'stations', 'count', 'department_name', 'current_batch_station', 'qdc_station'));
+		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'rejection_reasons', 'statuses', 'route', 'stations', 'count', 'department_name', 'current_batch_station', 'qdc_station', 'lastchangedate', 'lastupdateby'));
 	}
 
 	// By Jewel

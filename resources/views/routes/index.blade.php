@@ -86,7 +86,6 @@
 							     width = "50" height = "20" border = "0">
 						</th>
 						<th>Batch#</th>
-						<th>View batch</th>
 						<th>Batch creation date</th>
 						<th>Route</th>
 						<th>Lines</th>
@@ -96,6 +95,7 @@
 						<th style="width:250px;">Child SKU</th>
 						<th>Status</th>
 						<th>MinOrderDate</th>
+						<th>Batch details</th>
 					</tr>
 					{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}
 					@foreach($rows as $row)
@@ -106,10 +106,6 @@
 							</td>
 							<td>
 								<a href = "{{url(sprintf('batches/%d/%s',$row['batch_number'], $row['current_station_name']))}}">{{$row['batch_number']}}</a>
-							</td>
-							<td>
-								<a href = "{{url(sprintf('batch_details/%d',$row['batch_number']))}}"
-								   target = "_blank">View batch</a>
 							</td>
 							<td>{{$row['batch_creation_date']}}</td>
 							<td><span data-toggle = "tooltip" data-placement = "top"
@@ -139,6 +135,10 @@
 							<td>{{ $row['child_sku'] }}</td>
 							<td>{{$row['batch_status']}}</td>
 							<td>{{$row['min_order_date']}}</td>
+							<td>
+								<a href = "{{url(sprintf('batch_details/%d',$row['batch_number']))}}"
+								   target = "_blank">Batch details</a>
+							</td>
 						</tr>
 					@endforeach
 					<tr>

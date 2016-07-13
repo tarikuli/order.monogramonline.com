@@ -393,7 +393,7 @@
 			@foreach($order->notes as $note)
 				<tr>
 					<td>
-						({{$note->created_at}}) Note by: {{$note->user->username}}
+						({{$note->created_at}}) by: {{$note->user->username}}
 					</td>
 				</tr>
 				<tr>
