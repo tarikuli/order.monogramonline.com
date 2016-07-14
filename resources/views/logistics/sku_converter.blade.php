@@ -28,6 +28,18 @@
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li class = "active">Set store options to SKU conversion parameters</li>
 		</ol>
+		@if($errors->any())
+			<div class = "alert alert-danger">
+				<ul>
+					@foreach($errors->all() as $error)
+						<li>{!! $error !!}</li>
+					@endforeach
+				</ul>
+			</div>
+		@endif
+		@if(session('success'))
+			<div class = "alert alert-success">{!! session('success') !!}</div>
+		@endif
 		<div class = "col-md-6 col-md-offset-3" style = "margin-bottom: 10px;">
 			{!! Form::open(['method' => 'get',]) !!}
 			<div class = "form-group">

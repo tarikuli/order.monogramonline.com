@@ -374,7 +374,6 @@ class ItemController extends Controller
 				$row['current_station_item_count'] = $current_station_item_count;
 				$rows[] = $row;
 				$total_itemss = $total_itemss + $total_items;
-// 				Helper::jewelDebug($total_itemss." >>>>>>>>>>>>>>  ".$total_items);
 
 			}
 
@@ -832,13 +831,8 @@ class ItemController extends Controller
 					$found = false;
 					$values = [ ];
 					foreach ( $keys as $key ) {
-// 						$trimmed_key = implode("_", explode(" ", trim($key)));
 						$trimmed_key = implode(" ", explode(" ", trim($key)));
-// if($key == 'Enter Personalization up to 12 Characters'){
-// 	Helper::jewelDebug($key);
-// 	Helper::jewelDebug($trimmed_key);
-// 	Helper::jewelDebug($decoded_options);
-// }
+
 						if ( array_key_exists($trimmed_key, $decoded_options) ) {
 							$values[] = $decoded_options[$trimmed_key];
 							$found = true;
@@ -1066,7 +1060,6 @@ class ItemController extends Controller
 			if($multiple_item_rows){
 				$findProblemOrder = $multiple_item_rows->toArray();
 				if(count($findProblemOrder) == 0){
-//Helper::jewelDebug("Order#	".$current->order_id."	has waiting for another pic problem");
 					$error_count[] = "Order#	".$current->order_id."	has waiting for another pic problem";
 
 					$getProblemWaiting = Ship::where('order_number', $current->order_id)

@@ -65,6 +65,21 @@ class LogisticsController extends Controller
 
 	public function sku_converter_update (Request $request, $store_id)
 	{
+		$parameters = array_unique($request->get('parameters'));
+
+		if(count($request->get('parameters')) !== count($parameters)){
+			$duplicates =  array_unique( array_diff_assoc( $request->get('parameters'), array_unique( $request->get('parameters') ) ) );
+			$duplicates = implode(",",$duplicates);
+
+// 			dd($request->get('parameters'), $parameters,$duplicates);
+
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => "Can not insert duplicate kayes: ".$duplicates,
+			]);
+		}
+
 		#Parameter::where('store_id', $store_id)->delete();
 		if ( $request->has('parameters') ) {
 			/*foreach ( $request->get('parameters') as $parameter_value ) {
@@ -74,6 +89,7 @@ class LogisticsController extends Controller
 				$parameter->save();
 			}*/
 			$this->insert_parameters_into_table($request->get('parameters'), $store_id);
+			session()->flash('success', 'successfully Updated.');
 		}
 
 		return redirect(url(sprintf('logistics/sku_converter?store_id=%s', $store_id)));
@@ -91,42 +107,8 @@ class LogisticsController extends Controller
 				'store_id'        => $store_id,
 			];
 		}, array_filter($parameters));
+
 		Parameter::insert($rows);
-		/*$before_operation = [ ];
-		$after_operation = [ ];
-
-		// get the row ids before the update/insert
-		$before_operation = Parameter::where('store_id', $store_id)
-									 ->lists('id')
-									 ->toArray();
-
-		foreach ( $parameters as $parameter_value ) {
-			$trimmed_parameter_value = trim($parameter_value);
-			if ( empty( $trimmed_parameter_value ) ) {
-				continue;
-			}
-
-			$parameter = Parameter::where(DB::raw('BINARY `parameter_value`'), $trimmed_parameter_value)// binary for case sensitivity
-								  ->where('store_id', $store_id)
-								  ->first();
-			if ( !$parameter ) {
-				$parameter = new Parameter();
-				$parameter->store_id = $store_id;
-				$parameter->parameter_value = trim($parameter_value);
-				$parameter->save();
-			}
-			// gather the parameter ids while insert/update
-			$after_operation[] = $parameter->id;
-		}
-
-		#delete the other ids
-		$difference = array_diff($before_operation, $after_operation);
-		if ( count($difference) ) {
-			// if the difference is greater than 0
-			// delete those ids
-			Parameter::destroy(array_diff($before_operation, $after_operation));
-		}*/
-
 	}
 
 	public function get_sku_import ()
@@ -301,7 +283,6 @@ class LogisticsController extends Controller
 	private function save_parameters ($reader, $store_id)
 	{
 		try {
-// 			Helper::jewelDebug($reader);
 			$rows = $reader->setOffset(1)
 						   ->fetchAssoc(Helper::$column_names);
 			$batch_routes = BatchRoute::where('is_deleted', 0)
