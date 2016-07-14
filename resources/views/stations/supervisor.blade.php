@@ -60,13 +60,13 @@
 		</div>
 		@if(count($items) > 0)
 			<h3 class = "page-header">
-				Items for supervision
+				Supervision Station Toatl ({{ $items->total() }} Issue found / {{$items->currentPage()}} of {{$items->lastPage()}} pages)
 			</h3>
 			<table class = "table table-bordered">
 				<tr>
-					<th>Order#</th>
+					{{-- <th>Store id</th> --}}
 					<th>Order date</th>
-					<th>Store id</th>
+					<th>Order#</th>
 					<th>Item#</th>
 					<th>SKU</th>
 					<th>Qty.</th>
@@ -83,10 +83,10 @@
 				</tr>
 				@foreach($items as $item)
 					<tr data-id = "{{$item->id}}" class = "text-center">
+						{{-- <td>{{$item->store->store_name}}</td>  --}}
+						<td>{{substr($item->order->order_date, 0, 10)}}</td>
 						<td><a href = "{{ url("orders/details/".$item->order_id) }}"
 						       class = "btn btn-link" target = "_blank" >{{\Monogram\Helper::orderNameFormatter($item->order)}}</a></td>
-						<td>{{substr($item->order->order_date, 0, 10)}}</td>
-						<td>{{$item->store->store_name}}</td>
 						<td>{{$item->id}}</td>
 						<td>{{$item->item_code}}</td>
 						<td>{{$item->item_quantity}}</td>

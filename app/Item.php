@@ -270,9 +270,9 @@ class Item extends Model
 			return;
 		}
 		$trimmed_text = trim($option_text);
-		$underscored_text = str_replace(" ", "_", $trimmed_text);
-
-		return $query->where('item_option', 'LIKE', sprintf("%%%s%%", $underscored_text));
+// 		$underscored_text = str_replace(" ", "_", $trimmed_text);
+// 		return $query->where('item_option', 'LIKE', sprintf("%%%s%%", $underscored_text));
+		return $query->where('item_option', 'LIKE', sprintf("%%%s%%", $trimmed_text));
 	}
 
 	public function scopeSearchOrderIds ($query, $order_ids)

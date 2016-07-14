@@ -369,7 +369,7 @@ class StationController extends Controller {
 							->prepend ( 'Select a route', 'all' );
 
 		$stations = Station::where ( 'is_deleted', 0 )
-// 							->whereNotIn( 'station_name', Helper::$shippingStations)
+							->whereNotIn( 'station_name', Helper::$shippingStations)
 							->orderBy ( 'station_name', 'asc' )
 							->lists ( 'station_description', 'id' )
 							->prepend ( 'Select a station', 'all' );
@@ -384,17 +384,18 @@ class StationController extends Controller {
 					->searchBatch ( $request->get ( 'batch' ) )
 					->searchRoute ( $request->get ( 'route' ) )
 					->searchStatus ( $request->get ( 'status' ) )
-					->searchStation ( $request->get ( 'station' ) )
+					->where ( 'station_name', Helper::getSupervisorStationName () )
+// 					->searchStation ( $request->get ( 'station' ) )
 					->searchOptionText ( $request->get ( 'option_text' ) )
 					->searchOrderIds ( $request->get ( 'order_id' ) )
 					->where ( 'is_deleted', 0 )
-					->paginate ( 50 );
+					->paginate ( 25 );
 		} else {
 			$items = Item::with ( 'route.stations_list', 'order' )
 					->where ( 'is_deleted', 0 )
-					->whereNotNull ( 'batch_number' )
+// 					->whereNotNull ( 'batch_number' )
 					->where ( 'station_name', Helper::getSupervisorStationName () )
-					->paginate ( 50 );
+					->paginate ( 25 );
 		}
 
 		return view ( 'stations.supervisor', compact ( 'items', 'request', 'routes', 'stations', 'statuses', 'item_statuses' ) );

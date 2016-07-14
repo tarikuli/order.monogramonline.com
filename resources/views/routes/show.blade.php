@@ -108,7 +108,11 @@
 						@foreach($items as $item)
 							<tr data-id = "{{$item->id}}">
 								<td>
-									<a href = "#" class = "btn btn-danger reject">Reject</a>
+									@if(!in_array ( $current_batch_station->station_name, \Monogram\Helper::$shippingStations ))
+										<a href = "#" class = "btn btn-danger reject">Reject</a>
+									@endif
+
+
 								</td>
 								<td>{{$count++}}</td>
 								<td>

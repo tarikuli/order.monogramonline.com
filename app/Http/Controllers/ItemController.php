@@ -617,6 +617,7 @@ class ItemController extends Controller
 
 	public function postBatchItems (Request $request, $batch_number, $station_name)
 	{
+		return $request-all();
 		$action = $request->get('action');
 		switch ( $action ) {
 			case 'done':
