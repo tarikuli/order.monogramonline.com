@@ -84,6 +84,7 @@ class ItemController extends Controller
 			'store_id'            => 'Store',
 			'state'               => 'State',
 			'description'         => 'Description',
+			'item_option'         => 'Option',
 			'item_code'           => 'SKU',
 			'batch'               => 'Batch',
 			'batch_creation_date' => 'Batch Creation date',
@@ -498,7 +499,9 @@ class ItemController extends Controller
 				}
 			}
 
-		$qdc_station = substr($current_route_shp_station[0], 0, 1)."-QCD";
+		//$qdc_station = substr($current_route_shp_station[0], 0, 1)."-QCD";
+		$qdc_station = explode("-",$current_route_shp_station[0]);
+		$qdc_station = $qdc_station[0]."-QCD";
 
 		if(!strpos($stations, $current_route_shp_station[0])){
 			return redirect()

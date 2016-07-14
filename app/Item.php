@@ -90,7 +90,8 @@ class Item extends Model
 
 	private function exploder ($string)
 	{
-		return explode(",", str_replace(" ", "", $this->commaTrimmer($string)));
+// 		return explode(",", str_replace(" ", "", $this->commaTrimmer($string)));
+		return explode(",", trim($string));
 	}
 
 	public function shipInfo ()
@@ -177,6 +178,10 @@ class Item extends Model
 		} elseif ( $search_in == 'description' ) {
 
 			return $query->where('item_description', 'REGEXP', implode("|", $values));
+
+		} elseif ( $search_in == 'item_option' ) {
+// 			dd( "%".implode("|", $values)."%");
+			return $query->where('item_option', 'LIKE', "%".implode("|", $values)."%");
 
 		} elseif ( $search_in == 'item_code' ) {
 

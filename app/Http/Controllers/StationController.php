@@ -291,7 +291,9 @@ class StationController extends Controller {
 
 			// Check QDC station exist in current Route and Shipping station > 0
 			if (count($current_route_shp_station)>0 && ($item->tracking_number == null)) {
-				$qdc_station = substr($current_route_shp_station[0], 0, 1)."-QCD";
+// 				$qdc_station = substr($current_route_shp_station[0], 0, 1)."-QCD";
+				$qdc_station = explode("-",$current_route_shp_station[0]);
+				$qdc_station = $qdc_station[0]."-QCD";
 
 				if (in_array($qdc_station, $stations)) {
 

@@ -9,6 +9,7 @@ use App\Order;
 use App\Product;
 use App\Status;
 use App\Store;
+use App\Ship;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -200,6 +201,7 @@ class OrderController extends Controller
 		$order = Order::where('order_id', $id)
 					  ->latest()
 					  ->first();
+
 		$order->order_status = Status::where('status_code', $request->get('order_status'))
 									 ->first()->id;
 		$order->order_comments = $request->get('order_comments');
@@ -286,6 +288,32 @@ class OrderController extends Controller
 		$order->item_count = $total_items;
 		$order->total = ( $all_items_grand_total - $order->coupon_value + $order->gift_wrap_cost + $order->shipping_charge + $order->insurance + $order->adjustments + $order->tax_charge );
 		$order->save();
+
+		$ships = Ship::where('order_number',$id)
+						->where('is_deleted', 0)
+						->whereNull('tracking_number')
+						->get();
+
+		if ( !empty($ships) ) {
+			Ship::where('order_number',$id)
+				->whereNull('tracking_number')
+				->update([
+					'name' => sprintf("%s %s", $request->get('ship_first_name'), $request->get('ship_last_name')),
+					'last_name' => $request->get('ship_last_name'),
+					'company' => $request->get('ship_company_name'),
+					'address1' => $request->get('ship_address_1'),
+					'address2' => $request->get('ship_address_2'),
+					'city' => $request->get('ship_city'),
+					'state_city' => $request->get('ship_state'),
+					'postal_code' => $request->get('ship_zip'),
+					'country' => $request->get('ship_country'),
+					'email' => $request->get('bill_email'),
+					'phone' => $request->get('ship_phone'),
+					'mail_class' => $request->get('shipping_method'),
+				]);
+
+		}
+
 		session()->flash('success', 'Order is successfully updated');
 		$note_text = trim($request->get('note'));
 
@@ -304,7 +332,6 @@ class OrderController extends Controller
 
 	public function destroy ($id)
 	{
-		// JAZLYN.CARTAGENA926@GMAIL.COM
 		$order = Order::find($id);
 		if ( !$order ) {
 			return view('errors.404');
