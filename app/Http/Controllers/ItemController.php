@@ -902,7 +902,7 @@ class ItemController extends Controller
 		if($savepath == null){
 			$file_path = sprintf("%s/assets/exports/batches/", public_path());
 		}else{
-			$file_path = sprintf("%s", $savepath);
+			$file_path = sprintf("%s/", $savepath);
 		}
 // 		dd($file_path);
 
