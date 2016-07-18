@@ -166,6 +166,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		]);
 
 		get('remove_shipping', 'ShippingController@removeTrackingNumber');
+		put('shipping_update', 'ShippingController@updateTrackingNumber');
 		resource('shipping', 'ShippingController');
 
 		get('rules/parameter', 'RuleController@parameter_option');

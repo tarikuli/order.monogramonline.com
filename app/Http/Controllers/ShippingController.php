@@ -41,13 +41,15 @@ class ShippingController extends Controller
 					 ->searchCriteria($request->get('search_for_second'), $request->get('search_in_second'))
 					 ->searchWithinDate($request->get('start_date'), $request->get('end_date'))
 					 ->latest('postmark_date')
-					 ->paginate(50);
+					 ->paginate(10);
+// return $ships;
 
 		$counter = Ship::where('is_deleted', 0)
 					   ->first([
 						   DB::raw('COUNT(*) - COUNT(tracking_number) AS unassigned_count'),
 						   DB::raw('COUNT(tracking_number) AS assigned_count'),
 					   ]);
+
 		$tracking_number_not_assigned = $counter->unassigned_count;
 		$tracking_number_assigned = $counter->assigned_count;
 
@@ -74,5 +76,30 @@ class ShippingController extends Controller
 		return redirect()
 			->back()
 			->with('success', "Items successfully moved to shipping list");
+	}
+
+	public function updateTrackingNumber(Request $request)
+	{
+
+
+		$order_number = $request->get('order_number_update');
+		$tracking_number_update = $request->get('tracking_number_update');
+		if ( $order_number ) {
+
+			Ship::where('order_number', $order_number)
+			->update([
+				'tracking_number' => $tracking_number_update,
+			]);
+
+			return redirect()
+			->back()
+			->with('success', "Tracking # successfully Updated");
+		}
+
+		return redirect()
+		->back()
+		->withErrors([
+				'error' => 'Can not Tracking # Updated',
+		]);
 	}
 }

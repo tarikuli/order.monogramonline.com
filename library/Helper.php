@@ -936,6 +936,7 @@ APPEND;
 					   3,
 					   7,
 					   8,
+			   		   6,
 				   ])
 				   ->where('parameter_options.batch_route_id', '!=', 115)
 				   ->whereNotNull('parameter_options.batch_route_id')

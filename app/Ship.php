@@ -30,6 +30,7 @@ class Ship extends Model
 
 	public function scopeSearchTrackingNumberAssigned ($query, $is_assigned = 0)
 	{
+// 		dd($query, $is_assigned);
 		if ( intval($is_assigned) == 0 ) {
 			return $query->whereNull('tracking_number');
 		} elseif ( intval($is_assigned) == 1 ) {
