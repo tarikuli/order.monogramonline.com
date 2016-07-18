@@ -719,7 +719,7 @@ class ItemController extends Controller
 			$station = $batch_number[1];
 			echo "<br>".$batch_id." --------> ".$station;
 
-			$savepath = '/media/Ji-share/Jewel/monogramonline.monogramonline.com';
+			$savepath = '/media/Ji-share/5p_batch_csv_export';
 			$this->export_batch ($batch_id, $station, $savepath);
 
 // 			// Get list of Items from Item Table by Batch Number
@@ -902,7 +902,7 @@ class ItemController extends Controller
 		if($savepath == null){
 			$file_path = sprintf("%s/assets/exports/batches/", public_path());
 		}else{
-			$file_path = sprintf("%s/exports/", $savepath);
+			$file_path = sprintf("%s", $savepath);
 		}
 // 		dd($file_path);
 
