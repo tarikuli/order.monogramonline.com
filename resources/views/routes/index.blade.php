@@ -124,8 +124,6 @@
 							</td>
 							<td>{{ $row['batch_creation_date'] }}</td>
 							<td>
-							{{-- <span data-toggle = "tooltip" data-placement = "top"
-							          title = "{{ $row['next_station_description'] }}">{{ $row['next_station_name'] }}</span> --}}
 							  <span data-toggle = "tooltip" data-placement = "top"
 							          title = "{{ $row['child_sku'] }}">
 							  	<img src = "{{ $row['item_thumb'] }}" width = "70" height = "70" />
@@ -144,6 +142,7 @@
 					<tr>
 						<td colspan = "11">
 							{!! Form::button('Select / Deselect all', ['id' => 'select_deselect', 'class' => 'btn btn-link']) !!}
+							{!! Form::button('Bulk Export', ['id' => 'export_batches', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Packing Slip', ['id' => 'packing_slip', 'class' => 'btn btn-link']) !!}
 
@@ -188,6 +187,13 @@
 			var url = "{{ url('/prints/batches') }}";
 			setFormUrlAndSubmit(url);
 		});
+
+		$("button#export_batches").on('click', function (event)
+		{
+			var url = "{{ url('/exports/batchbulk') }}";
+			setFormUrlAndSubmit(url);
+		});
+
 		$("button#packing_slip").on('click', function (event)
 		{
 			var url = "{{ url('/prints/batch_packing') }}";

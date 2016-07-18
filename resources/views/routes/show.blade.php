@@ -46,7 +46,7 @@
 			@if($items)
 				<div class = "col-xs-8">
 					<p>Batch: # <span>{{$batch_number}}</span></p>
-					<a href = "{{url('exports/batch/'.$batch_number)}}">Export batch</a>
+					<a href = "{{url('exports/batch/'.$batch_number.'/'.$current_batch_station->station_name)}}">Export batch</a>
 					<p>Batch creation date: <span>{{substr($items[0]->batch_creation_date, 0, 10)}}</span></p>
 
 					{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}

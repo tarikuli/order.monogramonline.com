@@ -58,7 +58,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('exports/inventory', 'ExportController@inventory');
 		get('exports/batch_routes', 'ExportController@batch_routes');
 
-		get('exports/batch/{id}', 'ItemController@export_batch');
+		get('exports/batch/{id}/{station}', 'ItemController@export_batch');
+		get('exports/batchbulk', 'ItemController@export_bulk');
 
 		post('orders/mailer', 'MailController@mailer');
 		post('orders/send_mail', 'MailController@send_mail');
@@ -194,6 +195,7 @@ Route::group([ 'middleware' => [ 'guest' ] ], function () {
 get('home', function () {
 	return redirect(url('/'));
 });
+
 Route::group([ 'prefix' => 'auth' ], function () {
 	get('login', 'AuthenticationController@getLogin');
 	get('logout', 'AuthenticationController@getLogout');
@@ -202,6 +204,7 @@ Route::group([ 'prefix' => 'auth' ], function () {
 Event::listen('illuminate.query', function ($q) {
 	#Log::info($q); // join
 });
+
 //  `items`.`item_status` = statuses.id ( `statuses`.`status_name` ) = 6
 // item_order_status = complete
 // item_order_status_2 =2

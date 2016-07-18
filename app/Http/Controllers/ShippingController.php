@@ -6,6 +6,7 @@ use App\Item;
 use App\Ship;
 use Illuminate\Http\Request;
 
+use App\Note;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -63,14 +64,23 @@ class ShippingController extends Controller
 	{
 		$tracking_numbers = $request->get('tracking_numbers', [ ]);
 		if ( count($tracking_numbers) ) {
-			Item::whereIn('tracking_number', $tracking_numbers)
-				->update([
-					'tracking_number' => null,
-				]);
+
 			Ship::whereIn('tracking_number', $tracking_numbers)
 				->update([
-					'tracking_number' => null,
-				]);
+				'tracking_number' => null,
+			]);
+
+			Item::whereIn('tracking_number', $tracking_numbers)
+				->update([
+				'tracking_number' => null,
+			]);
+
+			// Add note history by order id
+			$note = new Note();
+			$note->note_text = "Back to Shipping station for Update Tracking#";
+			$note->order_id = $item->order_id;
+			$note->user_id = Auth::user()->id;
+			$note->save();
 		}
 
 		return redirect()
@@ -90,6 +100,14 @@ class ShippingController extends Controller
 			->update([
 				'tracking_number' => $tracking_number_update,
 			]);
+
+
+			// Add note history by order id
+			$note = new Note();
+			$note->note_text = "Manualy Update Tracking#";
+			$note->order_id = $item->order_id;
+			$note->user_id = Auth::user()->id;
+			$note->save();
 
 			return redirect()
 			->back()

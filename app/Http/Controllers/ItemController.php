@@ -707,15 +707,152 @@ class ItemController extends Controller
 		return redirect(url('items/grouped'));
 	}
 
-	public function export_batch (Request $request, $id)
+	public function export_bulk (Request $request)
+	{
+
+		$batch_numbers = $request->get('batch_number');
+
+		foreach ( $batch_numbers as $batch_number ) {
+
+			$batch_number = explode('tarikuli', $batch_number);
+			$batch_id = $batch_number[0];
+			$station = $batch_number[1];
+			echo "<br>".$batch_id." --------> ".$station;
+
+			$savepath = '/media/Ji-share/Jewel/monogramonline.monogramonline.com/';
+			$this->export_batch ($batch_id, $station, $savepath);
+
+// 			// Get list of Items from Item Table by Batch Number
+// 			$items = Item::where('batch_number', $batch_id)
+// 			->where('station_name', $station)
+// 			->whereNull('tracking_number')
+// 			->get();
+
+// 			// If items not found belong to this Batch number then return to error page.
+// 			if ( !$items ) {
+// 				return view('errors.404');
+// 			}
+
+// 			// Get Batch Route Id from first Item, because all Items route id are same.
+// 			$route_id = $items[0]->batch_route_id;
+
+// 			// Get batch_route_id from templates table
+// 			$route = BatchRoute::find($route_id);
+// 			#return $route;
+// 			//echo "<pre>"; print_r($route); echo "</pre>";
+
+
+// 			$template_id = $route->export_template;
+// 			$csv_extension = $route->csv_extension;
+// 			// Get templates information by template Id from templates table.
+// 			$template = Template::with('exportable_options')
+// 								->find($template_id);
+
+// 			// Get all list of options name from template_options by options name.
+// 			$columns = $template->exportable_options->lists('option_name')
+// 								->toArray();
+
+
+// 			$file_path = sprintf("%s/assets/exports/batches/", public_path());
+// 			if(empty($csv_extension)){
+// 				$file_name = sprintf("%s.csv", $batch_id);
+// 			}else{
+// 				$file_name = sprintf("%s%s.csv", $batch_id, $csv_extension);
+// 			}
+// 			$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
+// 			$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
+// 			$csv->insertOne($columns);
+
+// 			set_time_limit(0);
+// 			foreach ( $items as $item ) {
+// 				$row = [ ];
+// 				#$row[] = explode("-", $item->order_id)[2];
+// 				$options = $item->item_option;
+
+// 				if(empty($options)){
+// 					return redirect(url('items/grouped?route=all&station=all&start_date=&end_date=&batch='.$batch_id.'+&status=all'))
+// 					->withErrors(new MessageBag([
+// 							'error' => 'Can not creatr CSV<br>Order# '.$item->order_id.' Batch# '.$batch_id.' option empty.',
+// 					]));
+// 				}
+
+// 				$decoded_options_s = json_decode($options, true);
+// 				$decoded_options = [];
+
+// 				if ( $decoded_options_s ) {
+// 					foreach ( $decoded_options_s as $key => $value ) {
+// 						$decoded_options[trim(str_replace("_", " ", $key))] = $value;
+// 					}
+// 				}else{
+// 					return redirect(url('items/grouped?route=all&station=all&start_date=&end_date=&batch='.$batch_id.'+&status=all'))
+// 					->withErrors(new MessageBag([
+// 							'error' => 'Can not creatr CSV<br>Order# '.$item->order_id.' Batch# '.$batch_id.' option empty.',
+// 					]));
+// 				}
+
+
+// 				foreach ( $template->exportable_options as $column ) {
+// 					$result = '';
+// 					if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
+// 						#$result = array_slice(explode("-", $item->order_id), -1, 1);
+// 						$exp = explode("-", $item->order_id); // explode the short order
+// 						$result = $exp[count($exp) - 1];
+// 						#$result = $item->order_id;
+// 					} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "sku" ) { // if the template value is sku
+// 						// get the graphic sku, and the result will be saving the graphic sku value
+// 						$result = $this->getGraphicSKU($item);
+// 						// this result will be inserted to the row array below
+// 					} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "po#" ) { // if string is po/batch number
+// 						$result = $item->batch_number;
+// 					} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "orderdate" ) {//if the string is order date
+// 						$result = substr($item->order->order_date, 0, 10);
+// 					} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "itemqty" ) {//if the string is item quantity = Item Qty
+// 						$result = intval($item->item_quantity);
+// 					} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "itemdescription" ) {//if the string is item quantity = Item Qty
+// 						$result = $item->item_description;
+// 					} else {
+// 						$keys = explode(",", $column->value);
+// 						$found = false;
+// 						$values = [ ];
+// 						foreach ( $keys as $key ) {
+// 							$trimmed_key = implode(" ", explode(" ", trim($key)));
+
+// 							if ( array_key_exists($trimmed_key, $decoded_options) ) {
+// 								$values[] = $decoded_options[$trimmed_key];
+// 								$found = true;
+// 							}
+// 						}
+// 						if ( $values ) {
+// 							$result = implode(",", $values);
+// 						}
+// 					}
+// 					$row[] = $result;
+// 				}
+
+// 				$csv->insertOne($row);
+// 			}
+		}
+
+		$message = sprintf("Batches: %s are released.", implode(", ", $batch_numbers));
+
+		return redirect()
+		->back()
+		->with('success', $message);
+
+	}
+
+	public function export_batch ($id, $station, $savepath = null)
 	{
 		if ( !$id || $id == 0 ) {
 			return view('errors.404');
 		}
 		$batch_id = intval($id);
 
+// 		dd($batch_id, $station);
+
 		// Get list of Items from Item Table by Batch Number
 		$items = Item::where('batch_number', $batch_id)
+					 ->where('station_name', $station)
 					 ->whereNull('tracking_number')
 					 ->get();
 
@@ -763,6 +900,7 @@ class ItemController extends Controller
 // 		}
 
 		$file_path = sprintf("%s/assets/exports/batches/", public_path());
+
 		if(empty($csv_extension)){
 			$file_name = sprintf("%s.csv", $batch_id);
 		}else{
