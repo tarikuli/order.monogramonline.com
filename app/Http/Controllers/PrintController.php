@@ -367,6 +367,8 @@ class PrintController extends Controller
 				}
 			}
 		}
+
+		Helper::jewelDebug("Total ".count($orders)." email sent.");
 	}
 
 
