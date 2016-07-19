@@ -1781,6 +1781,24 @@ class ItemController extends Controller
 												->with ( 'orderinfo', $orderinfo );
 	}
 
+	public function delete_item_id ($order_id,$item_id)
+	{
+		Item::where ( 'id', $item_id )->update ( [
+			'is_deleted' => 1
+		] );
+
+		$note = new Note();
+		$note->note_text = "Item #". $item_id." deleted." ;
+		$note->order_id = $order_id;
+		$note->user_id = Auth::user()->id;
+		$note->save();
+
+		return redirect()
+		->back()
+		->with('success', "Item #". $item_id." deleted.");
+	}
+
+
 // 	public function doctorCheckup (Request $request) {
 
 // 		$order_ids = $request->exists('order_id') ? array_filter($request->get('order_id')) : null;

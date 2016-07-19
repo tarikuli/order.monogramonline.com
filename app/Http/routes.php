@@ -79,6 +79,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('orders/add', 'OrderController@postAddOrder');
 		get('orders/manual', 'OrderController@getManual');
 		post('orders/manual', 'OrderController@postManual');
+		get('orders/addmanual/{order_id}', 'OrderController@manualReOrder');
+
 		get('orders/ajax', 'OrderController@ajax');
 		get('orders/product_info', 'OrderController@product_info');
 		get('orders/list', 'OrderController@getList');
@@ -91,7 +93,9 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('items/partial_shipping', 'ItemController@partial_shipping');
 		get('items/waiting_for_another_item', 'ItemController@waiting_for_another_item');
 		get('items/active_batch_group', 'ItemController@get_active_batch_by_sku');
-		/*get('items/active_batch/sku/{sku}/{station_name}', 'ItemController@get_sku_on_stations');*/
+		get('items/delete_item/{order_id}/{item_id}', 'ItemController@delete_item_id');
+
+
 		get('items/active_batch/sku/{sku}', 'ItemController@get_sku_on_stations');
 		put('batches/{batch_number}', 'ItemController@updateBatchItems');
 		get('items/batch', 'ItemController@getBatch');

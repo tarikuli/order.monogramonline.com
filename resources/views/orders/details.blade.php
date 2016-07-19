@@ -307,8 +307,16 @@
 					<td></td>
 					@setvar($ind++)
 				</tr>
-				<tr colspan = "10">
-					<td>Item# {{ $item->id }}{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!} </td>
+				<tr colspan = "9">
+					<td>
+						<a style = 'color:gray' href = "{{ url(sprintf("/items/delete_item/%s/%d", $order->order_id, $item->id)) }}">
+							Delete
+						</a>
+
+					</td>
+					<td>
+						Item# {{ $item->id }}{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!}
+					</td>
 				</tr>
 				@if($item->shipInfo && $item->shipInfo->tracking_number)
 					<tr>
@@ -447,6 +455,7 @@
 			<tr>
 				<td>
 					<a href = "{{ url(sprintf('prints/packing/%s', $order->order_id)) }}">Print Packing slip</a>
+					 | <a href = "{{ url(sprintf('orders/addmanual/%s', $order->order_id)) }}">Manual Re-order</a>
 				</td>
 			</tr>
 			<tr>

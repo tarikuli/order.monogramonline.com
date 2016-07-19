@@ -1103,4 +1103,117 @@ class OrderController extends Controller
 		return $modules;
 	}
 
+	/**
+	 * Manual Re-Order
+	 */
+	public function manualReOrder ($order_id)
+	{
+
+		$exploded = explode("-", $order_id);
+
+		$manual_order_count = Order::where('short_order', "LIKE", sprintf("%%WH%%"))
+									->count();
+		$short_order = sprintf("WH%d", ( 10000 + $manual_order_count ));
+		$order_id_new = sprintf("%s-%s-%s", $exploded[0],$exploded[1], $short_order);
+
+		// -------------- Orders table data insertion started ----------------------//
+		$order_from = Order::where('order_id', $order_id)
+						->where('is_deleted', 0)
+						->get();
+		$order = new Order();
+		$order->order_id = $order_id_new;
+		$order->short_order = $short_order;
+		$order->item_count = $order_from->last()->item_count;
+		$order->coupon_description = $order_from->last()->coupon_description;
+		$order->coupon_id = $order_from->last()->coupon_id;
+		$order->coupon_value = $order_from->last()->coupon_value;
+		$order->shipping_charge = $order_from->last()->shipping_charge;
+		$order->tax_charge = $order_from->last()->tax_charge;
+		$order->total = $order_from->last()->total;
+		$order->card_name = $order_from->last()->card_name;
+		$order->card_expiry = $order_from->last()->card_expiry;
+		$order->order_comments = $order_from->last()->order_comments;
+		$order->order_date = date('Y-m-d H:i:s');
+		//$order->order_numeric_time = strtotime($order_from->last()->Numeric-Time'));
+		// 06-22-2016 Change by Jewel
+		$order->order_numeric_time = strtotime( date('Y-m-d H:i:s'));
+		$order->order_ip = gethostbyname(trim('hostname'));
+		$order->paypal_merchant_email = $order_from->last()->paypal_merchant_email;
+		$order->paypal_txid = $order_from->last()->paypal_txid;
+		$order->space_id = $order_from->last()->space_id;
+		$order->store_name = $order_from->last()->store_name;
+		$order->order_status = 4;
+		$order->save();
+		// -------------- Orders table data insertion ended ----------------------//
+		// -------------- Customers table data insertion started ----------------------//
+		$customer_from = Customer::where('order_id', $order_id)
+								->where('is_deleted', 0)
+								->get();
+		$customer = new Customer();
+		$customer->order_id = $order_id_new;
+		$customer->ship_full_name = $customer_from->last()->ship_full_name;
+		$customer->ship_first_name = $customer_from->last()->ship_first_name;
+		$customer->ship_last_name = $customer_from->last()->ship_last_name;
+		$customer->ship_company_name = $customer_from->last()->ship_company_name;
+		$customer->ship_address_1 = $customer_from->last()->ship_address_1;
+		$customer->ship_address_2 = $customer_from->last()->ship_address_2;
+		$customer->ship_city = $customer_from->last()->ship_city;
+		$customer->ship_state = $customer_from->last()->ship_state;
+		$customer->ship_zip = $customer_from->last()->ship_zip;
+		$customer->ship_country = $customer_from->last()->ship_country;
+		$customer->ship_phone = $customer_from->last()->ship_phone;
+		$customer->ship_email = $customer_from->last()->ship_email;
+		$customer->shipping = $customer_from->last()->shipping;
+		$customer->bill_full_name = $customer_from->last()->bill_full_name;
+		$customer->bill_first_name = $customer_from->last()->bill_first_name;
+		$customer->bill_last_name = $customer_from->last()->bill_last_name;
+		$customer->bill_company_name = $customer_from->last()->bill_company_name;
+		$customer->bill_address_1 = $customer_from->last()->bill_address_1;
+		$customer->bill_address_2 = $customer_from->last()->bill_address_2;
+		$customer->bill_city = $customer_from->last()->bill_city;
+		$customer->bill_state = $customer_from->last()->bill_state;
+		$customer->bill_zip = $customer_from->last()->bill_zip;
+		$customer->bill_country = $customer_from->last()->bill_country;
+		$customer->bill_phone = $customer_from->last()->bill_phone;
+		$customer->bill_email = $customer_from->last()->bill_email;
+		$customer->bill_mailing_list = $customer_from->last()->bill_mailing_list;
+		$customer->save();
+		// -------------- Customers table data insertion ended ----------------------//
+		// -------------- Items table data insertion started ------------------------//
+		$items = Item::where('order_id', $order_id)
+					   ->where('is_deleted', 0)
+					   ->get();
+
+		foreach ( $items as $item_from ) {
+			$item = new Item();
+			$item->order_id = $order_id_new;
+			$item->store_id = $exploded[0]."-".$exploded[1];
+			$item->item_code = $item_from->item_code;
+			$item->item_description = $item_from->item_description;
+			$item->item_id = $item_from->item_id;
+			$item->item_option = $item_from->item_option;
+			$item->item_quantity = $item_from->item_quantity;
+			$item->item_thumb = $item_from->item_thumb;
+			$item->item_unit_price = $item_from->item_unit_price;
+			$item->item_url = $item_from->item_url;
+			$item->item_taxable = $item_from->item_taxable;
+			$item->item_order_status_2 = 4;
+			$item->data_parse_type = 'hook';
+			$item->child_sku = $item_from->child_sku;
+			$item->save();
+		}
+
+
+		$note = new Note();
+		$note->note_text = "Copy from Old Order# ".$order_id." to new Order# ".$order_id_new ;
+		$note->order_id = $order_id_new;
+		$note->user_id = Auth::user()->id;
+		$note->save();
+
+		return redirect()
+		->to(url('orders/details/'.$order_id_new))
+		->with('success', 'Stations changed successfully.');
+
+	}
+
 }
