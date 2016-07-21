@@ -53,8 +53,11 @@ class HomeController extends Controller
 				$item->save();
 			}
 		}
+		echo sprintf("<i>Next ----------- at: %s<br/></i>", date('Y-m-d h:m:s'));
+		$this->update_route();
+	}
 
-
+	private function update_route(){
 
 		set_time_limit(0);
 		foreach ( range(0, 1000) as $count ) {
@@ -66,7 +69,7 @@ class HomeController extends Controller
 				return sprintf("<b>Finish at: %s</b>", date('Y-m-d h:m:s'));
 				break;
 			}
-			echo sprintf("<i>Started %05d at: %s<br/></i>", $items->first()->id, date('Y-m-d h:m:s'));
+			echo sprintf("<i>update_route Started %05d at: %s<br/></i>", $items->first()->id, date('Y-m-d h:m:s'));
 			foreach ( $items as $item ) {
 
 				if($item->batch_route_id){
