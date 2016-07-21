@@ -29,6 +29,7 @@ class PurchaseController extends Controller
 		$vendors = Vendor::where('is_deleted', 0)
 						 ->lists('vendor_name', 'id')
 						 ->prepend('Select a vendor', 0);
+
 		$products = Product::where('is_deleted', 0)
 						   ->lists('product_name', 'id')
 						   ->prepend('Select a product', 0);

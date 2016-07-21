@@ -63,8 +63,8 @@ class ItemController extends Controller
 		})->get();
 
 		$unassignedOrderCount = Item::whereIn('child_sku', $unassignedProducts->lists('child_sku')
-								  	->toArray())
 									->where('is_deleted', 0)
+								  	->toArray())
 									->count();
 
 		$unassignedProductCount = $unassignedProducts->count();
@@ -1783,7 +1783,9 @@ class ItemController extends Controller
 
 	public function delete_item_id ($order_id,$item_id)
 	{
-		Item::where ( 'id', $item_id )->update ( [
+		Item::where ( 'id', $item_id )
+			->whereNull('tracking_number')
+			->update ( [
 			'is_deleted' => 1
 		] );
 

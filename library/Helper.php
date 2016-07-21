@@ -933,10 +933,16 @@ APPEND;
 				   ->where('items.is_deleted', '=', '0')
 				   ->where('orders.is_deleted', '=', '0')
 				   ->whereNotIn('orders.order_status', [
-					   3,
-					   7,
-					   8,
-			   		   6,
+									   2,
+ 									   // Manual Redo
+ 									   3,
+									   // On hold
+									   7,
+									   // returned
+									   8,
+									   // cancelled
+									   6,
+									   // Shipped
 				   ])
 				   ->where('parameter_options.batch_route_id', '!=', 115)
 				   ->whereNotNull('parameter_options.batch_route_id')
@@ -958,7 +964,9 @@ APPEND;
 							 ->where('items.is_deleted', 0)
 							 ->where('orders.is_deleted', 0)
 							 ->whereNotIn('orders.order_status', [ // don't create batch, if the following order statuses are there
-																   3,
+																   2,
+							 									   // Manual Redo
+							 									   3,
 																   // On hold
 																   7,
 																   // returned
