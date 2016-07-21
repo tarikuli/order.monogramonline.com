@@ -63,8 +63,10 @@ class ItemController extends Controller
 		})->get();
 
 		$unassignedOrderCount = Item::whereIn('child_sku', $unassignedProducts->lists('child_sku')
-									->where('is_deleted', 0)
 								  	->toArray())
+								  	->where('is_deleted', 0)
+								  	->whereNull('tracking_number')
+								  	->where('batch_number', '=', '0')
 									->count();
 
 		$unassignedProductCount = $unassignedProducts->count();
