@@ -1785,17 +1785,27 @@ class ItemController extends Controller
 
 	public function delete_item_id ($order_id,$item_id)
 	{
+		$order_item_count = Item::where ( 'order_id', $order_id )
+			->whereNull('tracking_number')
+			->where( 'is_deleted', 0 )
+			->count();
+
+	if($order_item_count > 1){
 		Item::where ( 'id', $item_id )
 			->whereNull('tracking_number')
 			->update ( [
 			'is_deleted' => 1
 		] );
+	}else{
+// 		return  $order_item_count;
+		$message = "First Insert a Item then delete Item #". $item_id;
+		Helper::histort($message, $order_id);
+		return redirect()
+		->back()
+		->withErrors([$message]);
+	}
 
-		$note = new Note();
-		$note->note_text = "Item #". $item_id." deleted." ;
-		$note->order_id = $order_id;
-		$note->user_id = Auth::user()->id;
-		$note->save();
+		Helper::histort("Item #". $item_id." deleted." , $order_id);
 
 		return redirect()
 		->back()

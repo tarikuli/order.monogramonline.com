@@ -8,6 +8,7 @@ use App\Option;
 use App\Order;
 use App\Parameter;
 use App\Product;
+use App\Note;
 use App\Rule;
 use App\RuleAction;
 use App\RuleTrigger;
@@ -1241,13 +1242,14 @@ APPEND;
 		return $zeroStations;
 	}
 
-	// 	public static function getDebug(){
-	// 		return Item::join('orders', 'items.order_id', '=', 'orders.order_id')
-	// 							->join('shipping', 'items.order_id', '=', 'shipping.order_number')
-	// 							->where('item_count','>',1)
-	// 							->limit(10)
-	// 							->get();
-	// 	}
+	public static function histort($note_text,$order_id){
+		$note = new Note();
+		$note->note_text = $note_text;
+		$note->order_id = $order_id;
+		$note->user_id = Auth::user()->id;
+		$note->save();
+	}
+
 	public static function jewelDebug ($valueArray)
 	{
 		echo "<pre>";

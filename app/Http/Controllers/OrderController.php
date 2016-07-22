@@ -224,7 +224,7 @@ class OrderController extends Controller
 			$item->item_quantity = $item_quantities[$index];
 			$item->child_sku = $child_sku[$index];
 			$all_items_grand_total += ( (int) $item->item_quantity * (float) $item->item_unit_price );
-			$item->item_order_status_2 = isset( $item_order_statuses[$index] ) ? $item_order_statuses[$index] : 1;
+// 			$item->item_order_status_2 = isset( $item_order_statuses[$index] ) ? $item_order_statuses[$index] : 1;
 			$option = $item_options[$index];
 			++$total_items;
 			$pieces = preg_split('/\r\n|[\r\n]/', $option);
@@ -238,6 +238,7 @@ class OrderController extends Controller
 				$json[str_replace(" ", "_", trim($key))] = trim($value);
 			}
 			$item->item_option = json_encode($json);
+			$item->item_order_status_2 = $order->order_status;
 			$item->save();
 			$index++;
 		}
