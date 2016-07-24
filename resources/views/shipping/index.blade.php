@@ -243,7 +243,6 @@
 	<script type = "text/javascript"
 	        src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 	<script type = "text/javascript">
-		// href = "{{ url(sprintf("/shipping_update?order_number=%s", $ship->order_number  )) }}"
 		var options = {
 			format: "YYYY-MM-DD", maxDate: new Date()
 		};

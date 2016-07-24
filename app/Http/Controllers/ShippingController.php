@@ -10,6 +10,7 @@ use App\Note;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Monogram\Helper;
 
 class ShippingController extends Controller
 {
@@ -90,8 +91,6 @@ class ShippingController extends Controller
 
 	public function updateTrackingNumber(Request $request)
 	{
-
-
 		$order_number = $request->get('order_number_update');
 		$tracking_number_update = $request->get('tracking_number_update');
 		if ( $order_number ) {
@@ -103,11 +102,7 @@ class ShippingController extends Controller
 
 
 			// Add note history by order id
-			$note = new Note();
-			$note->note_text = "Manualy Update Tracking#";
-			$note->order_id = $item->order_id;
-			$note->user_id = Auth::user()->id;
-			$note->save();
+			Helper::histort("Manualy Update Tracking#", $order_number);
 
 			return redirect()
 			->back()
