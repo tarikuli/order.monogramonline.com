@@ -25,6 +25,9 @@
 					<li><a href = "/customers/create">Create Customer</a></li>
 					<li><a href = "/vendors">Vendors</a></li>
 					<li><a href = "/vendors/create">Create vendor</a></li>
+					<li><a href = "/purchasedinvproducts"><strong>Purchase Inventory Products List</strong></a></li>
+					<li><a href = "/purchases">Purchases</a></li>
+					<li><a href = "/purchases/create">Add purchase</a></li>
 				</ul>
 			</div>
 			<div class = "col-xs-12">
@@ -72,8 +75,6 @@
 					<li><a href = "/summary">Stations summary</a></li>
 					<li><a href = "/export_station">Export station log</a></li>
 					<li><a href = "/rejection_reasons">Rejection reasons</a></li>
-					<li><a href = "/purchases">Purchases</a></li>
-					<li><a href = "/purchases/create">Add purchase</a></li>
 					<li><a href = "/stations/bulk">Bulk batch change</a></li>
 					<li><a href = "/items/active_batch_group">Active batch by SKU group</a></li>
 					<li><a href = "/products_specifications">Product specification sheet</a></li>

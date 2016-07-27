@@ -55,6 +55,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		resource('logs', 'StationLogController');
 
 		resource('inventories', 'InventoryController');
+		resource('purchasedinvproducts', 'PurchasedInvProductsController');
+
 		get('exports/inventory', 'ExportController@inventory');
 		get('exports/batch_routes', 'ExportController@batch_routes');
 
