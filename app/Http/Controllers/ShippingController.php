@@ -43,6 +43,7 @@ class ShippingController extends Controller
 					 ->searchCriteria($request->get('search_for_second'), $request->get('search_in_second'))
 					 ->searchWithinDate($request->get('start_date'), $request->get('end_date'))
 					 ->latest('postmark_date')
+// 					 ->toSql();
 					 ->paginate(10);
 // return $ships;
 

@@ -61,7 +61,7 @@
                     </span>
 				</div>
 			</div>
-
+				{!! Form::hidden('shipped', $request->get('shipped','0'), ['id'=>'shipped']) !!}
 			<div class = "form-group col-xs-2">
 				<label for = "" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
@@ -145,7 +145,7 @@
 						<td>
 							@if($ship->item->tracking_number)
 								{{ $ship->item->tracking_number }}
-								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s", $ship->item->tracking_number )) }}">Move to shipping</a>
+								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s", $ship->item->tracking_number )) }}">Back to shipping</a>
 							@else
 								<br>
 								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}

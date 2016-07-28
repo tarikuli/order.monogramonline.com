@@ -28,9 +28,13 @@ class Ship extends Model
 		return $this->belongsTo('App\Item', 'item_id', 'id');
 	}
 
-	public function scopeSearchTrackingNumberAssigned ($query, $is_assigned = 0)
+	public function scopeSearchTrackingNumberAssigned ($query, $is_assigned)
 	{
 // 		dd($query, $is_assigned);
+// 		if ( !$is_assigned ) {
+// 			return;
+// 		}
+
 		if ( intval($is_assigned) == 0 ) {
 			return $query->whereNull('tracking_number');
 		} elseif ( intval($is_assigned) == 1 ) {
@@ -63,7 +67,7 @@ class Ship extends Model
 		if ( empty( $unique_order_id ) ) {
 			return;
 		}
-
+// dd($query->where('unique_order_id', "LIKE", sprintf("%%%s%%", $unique_order_id)));
 		return $query->where('unique_order_id', "LIKE", sprintf("%%%s%%", $unique_order_id));
 	}
 
