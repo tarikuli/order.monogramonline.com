@@ -479,61 +479,66 @@ class StationController extends Controller {
 			$station_name = $item->station_name;
 
 			// Get number of orders in a Station
-			$lines_count = Item::where ( 'station_name', $station_name )
-								->where('is_deleted', 0)
-								->whereNull ( 'tracking_number' )
-								->whereNotIn ( 'item_order_status_2', [2,3,6,7,8] )
-								->searchBeforeOrderDate($request->get('date'))
-// 								->groupBy ( 'order_id' )
-								->get ();
+// 			$lines_count = Item::where ( 'station_name', $station_name )
+// 								->where('is_deleted', 0)
+// 								->whereNull ( 'tracking_number' )
+// 								->whereNotIn ( 'item_order_status_2', [2,3,6,7,8] )
+// 								->searchBeforeOrderDate($request->get('date'))
+// // 								->groupBy ( 'order_id' )
+// 								->get ();
+
+			if($request->get('cutoff_date')){
+				$end_date = $request->get('cutoff_date');
+			}else{
+				$end_date = date("Y-m-d");
+			}
+			$start_date = "2016-06-03";
+			$starting = sprintf("%s 00:00:00", $start_date);
+
+			$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
+
+			$lines_count =  Item::join('orders', 'items.order_id', '=', 'orders.order_id')
+						->where( 'items.station_name', $station_name )
+						->where('items.batch_number', '!=', '0')
+						->whereNull('items.tracking_number')
+						->where('items.is_deleted', '=', '0')
+						->where('orders.is_deleted', '=', '0')
+						->whereNotIn('orders.order_status', [
+						2,
+						// Manual Redo
+						3,
+						// On hold
+						7,
+						// returned
+						8,
+						// cancelled
+						6,
+						// Shipped
+						])
+						->where('orders.order_date', '>=', $starting)
+						->where('orders.order_date', '<=', $ending)
+						->get ();
 
 			// ->toSql();
 			// echo "<pre>"; echo print_r($lines_count->count()); echo " -- ".$station_name."</pre>";
 $order_ids = array_unique($lines_count->lists ( 'order_id' )->toArray ());
+
+
 $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 
 
 
-// 			if (($lines_count->count () > 0) && (!in_array($station_name, Helper::$shippingStations))) {
 			if (count($order_ids) > 0) {
-
 				$earliest_batch_creation_date = Helper::getEarliest($lines_count->lists ( 'batch_creation_date' )->toArray ());
 
-				$earliest_order_date = Helper::getEarliest($lines_count->lists ( 'created_at' )->toArray ());
+// 				Helper::jewelDebug(($earliest_batch_creation_date));
+// 				Helper::jewelDebug($lines_count->lists ( 'batch_creation_date' )->toArray ());
+				// return $lines_count;
+
+
+				$earliest_order_date = Helper::getEarliest($lines_count->lists ( 'order_date' )->toArray ());
 // 				Helper::jewelDebug($earliest_batch_creation_date);
 
-				// Get number of Items in a Station
-// 				$items_count = Item::where ( 'station_name', $station_name )
-// 								->where('is_deleted', 0)
-// 								->whereNull ( 'tracking_number' )
-// // 								->searchBeforeOrderDate($request->get('date'))
-// 								->groupBy ( 'station_name' )->first ( [
-// 						DB::raw ( 'SUM(item_quantity) as items_count' )
-// 				] )->items_count;
-
-
-				// Get Earliest batch creation date
-// 				$earliest_batch_creation_date = Item::where ( 'station_name', $station_name )
-// 												->where('is_deleted', 0)
-// 												->whereNull ( 'tracking_number' )
-// // 												->searchBeforeOrderDate($request->get('date'))
-// 												->orderBy ( 'batch_creation_date', 'asc' )
-// 												->first()->batch_creation_date;
-
-// 				$order_ids = Item::where ( 'station_name', $station_name )
-// 							->where('is_deleted', 0)
-// 							->whereNull ( 'tracking_number' )
-// 							->searchBeforeOrderDate($request->get('date'))
-// 							->get ();
-
-
-
-// 				$earliest_order_date = Order::whereIn ( 'order_id', $order_ids->lists ( 'order_id' )->toArray () )
-// 				$earliest_order_date = Order::whereIn ( 'order_id', $lines_count->lists ( 'order_id' )->toArray () )
-// 										->where('is_deleted', 0)
-// 										->orderBy ( 'order_date', 'asc' )
-// 										->first ()
-// 										->order_date;
 
 				$station = Station::where ( 'station_name', $station_name )->first ();
 
@@ -541,14 +546,14 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 				$summary ['station_description'] = $station->station_description;
 				$summary ['station_name'] = $station_name;
 				$summary ['lines_count'] = count($order_ids);
-				$summary ['items_count'] = count($items_count);
+				$summary ['items_count'] = $items_count;
 				$summary ['earliest_batch_creation_date'] = substr ( $earliest_batch_creation_date, 0, 10 );
 				$summary ['earliest_order_date'] = substr ( $earliest_order_date, 0, 10 );
 				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s", $station_name ) );
 
 				$summaries [] = $summary;
 				$total_lines += count($order_ids);
-				$total_items += count($items_count);
+				$total_items += $items_count;
 			}
 		}
 

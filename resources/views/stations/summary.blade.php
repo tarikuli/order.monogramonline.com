@@ -8,6 +8,8 @@
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link type = "text/css" rel = "stylesheet"
+	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
 	<style>
 		td {
 			width: 1px;
@@ -24,12 +26,27 @@
 			<li>Active (unshipped) Batches</li>
 		</ol>
 
-		@if(count($summaries) > 0)
 			<h3 class = "page-header">Not Started & Active (unshipped) Batches By Stations summary</h3>
 
-			<a href = "{{url('summary/export')}}">Export Item Table</a>
+			{!! Form::open(['method' => 'get', 'url' => url('summary'), 'id' => 'search-order']) !!}
+			<div class = "form-group col-xs-3">
 
+					<label for = "cutoff_date">CutOff date</label>
+					<div class = 'input-group date' id = 'cutoff_date_picker'>
+						{!! Form::text('cutoff_date', '', ['id'=>'cutoff_date', 'class' => 'form-control', 'placeholder' => 'Enter cutOff date']) !!}
+						<span class = "input-group-addon">
+	                        <span class = "glyphicon glyphicon-calendar"></span>
+	                    </span>
+					</div>
+			</div>
 
+			<div class = "form-group col-xs-2">
+				<label for = "" class = ""></label>
+				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+			</div>
+			{!! Form::close() !!}
+
+			@if(count($summaries) > 0)
 			<table class = "table table-bordered">
 				<tr>
 					<th>Station</th>
@@ -60,7 +77,7 @@
 					<td></td>
 				</tr>
 			</table>
-
+			<a href = "{{url('summary/export')}}">Export Item Table</a>
 		@else
 			<div class = "col-xs-12">
 				<div class = "alert alert-warning text-center">
@@ -71,7 +88,19 @@
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<script type = "text/javascript"></script>
+	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+	<script type = "text/javascript"
+	        src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+	<script type = "text/javascript">
+		var options = {
+			format: "YYYY-MM-DD", maxDate: new Date()
+		};
+		$(function ()
+		{
+			$('#cutoff_date_picker').datetimepicker(options);
+		});
+	</script>
+
 
 </body>
 </html>
