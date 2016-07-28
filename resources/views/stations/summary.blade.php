@@ -60,7 +60,7 @@
 					<tr>
 						<td>
 						{{-- print_r($summary) --}}
-							<a href = "{{url(sprintf("/items/grouped?station=%s", $summary['station_id']))}}">{{$summary['station_name']}} - {{$summary['station_description']}}</a>
+							<a href = "{{url(sprintf("/items/grouped?station=%s&cutoff_date=%s", $summary['station_id'],$request->get('cutoff_date', '')))}}">{{$summary['station_name']}} - {{$summary['station_description']}}</a>
 						</td>
 						<td align="right">{{ number_format($summary['lines_count'],0) }}</td>
 						<td align="right">{{ number_format($summary['items_count'],0) }}</td>

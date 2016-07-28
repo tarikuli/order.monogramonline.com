@@ -216,6 +216,8 @@ class ItemController extends Controller
 			Session::forget('searching_in_station');
 		}
 
+		$station = Station::find(session('station', 'all'));
+
 		$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
 					 ->where('is_deleted', 0)
 					 ->where('batch_number', '!=', '0')
@@ -223,7 +225,10 @@ class ItemController extends Controller
 					 ->whereNull('tracking_number')
 					 ->searchBatch($request->get('batch'))
 					 ->searchRoute($request->get('route'))
-					 ->searchStation(session('station', 'all'))
+
+// 					 ->searchStation(session('station', 'all'))
+					 ->searchCutOffOrderDate($station->station_name,$request->get('cutoff_date'))
+
 					 ->searchStatus($request->get('status'))
 					 ->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
 					 ->groupBy('batch_number')
@@ -235,11 +240,6 @@ class ItemController extends Controller
 							->latest()
 							->lists('batch_route_name', 'id')
 							->prepend('Select a route', 'all');
-
-		/*$stations = Station::where('is_deleted', 0)
-						   ->orderBy('station_description', 'asc')
-						   ->lists('station_description', 'id')
-						   ->prepend('Select a station', 'all');*/
 
 		// Get Station List
 		$stations = Station::where('is_deleted', 0)
@@ -1157,8 +1157,6 @@ class ItemController extends Controller
 			$item_thumb = $sku_groups->first()->item_thumb;
 			$batch_stations = $route->stations->lists('custom_station_name', 'id')
 											  ->prepend('Select station to change', '0');
-
-
 
 			$count = 0;
 			foreach ($sku_groups as $key => $value){
