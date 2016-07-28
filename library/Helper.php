@@ -429,6 +429,21 @@ class Helper
 		'D-SHP'
 	];
 
+
+	/* Order Status Flug */
+	public static $orderStatus = [
+						2,
+						// Manual Redo
+						3,
+						// On hold
+						7,
+						// returned
+						8,
+						// cancelled
+						6,
+						// Shipped
+	];
+
 	public static function tracking_number_formatter ($shippingInfo, $new_line_formatter = '<br/>')
 	{
 		if ( !$shippingInfo ) {
@@ -1265,6 +1280,31 @@ APPEND;
 			}
 		}
 		return date( 'Y-m-d', $earliest_date);
+	}
+
+	public static function getItemsByStationAndDate($station_name, $cutoff_date){
+
+		if($cutoff_date){
+			$end_date = $cutoff_date;
+		}else{
+			$end_date = date("Y-m-d");
+		}
+		$start_date = "2016-06-03";
+		$starting = sprintf("%s 00:00:00", $start_date);
+
+		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
+
+		return Item::join('orders', 'items.order_id', '=', 'orders.order_id')
+					->where( 'items.station_name', $station_name )
+					->where('items.batch_number', '!=', '0')
+					->whereNull('items.tracking_number')
+					->where('items.is_deleted', '=', '0')
+					->where('orders.is_deleted', '=', '0')
+					->whereNotIn('orders.order_status', Helper::$orderStatus)
+					->where('orders.order_date', '>=', $starting)
+					->where('orders.order_date', '<=', $ending)
+					->get ();
+
 	}
 
 	public static function jewelDebug ($valueArray)

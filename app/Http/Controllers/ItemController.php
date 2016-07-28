@@ -1134,9 +1134,10 @@ class ItemController extends Controller
 		}
 
 		$items = Item::with('lowest_order_date', 'route.stations')
-					 ->searchActiveByStation($request->get('station'))
-					 ->where('batch_number', '!=', '0')
-					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
+					 ->searchCutOffOrderDate($request->get('station'),$request->get('cutoff_date'))
+// 					 ->searchActiveByStation($request->get('station'))
+// 					 ->where('batch_number', '!=', '0')
+// 					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
 					 ->orderBy('child_sku', 'ASC')
 					 ->paginate(2000);
 
@@ -1156,20 +1157,28 @@ class ItemController extends Controller
 			$item_thumb = $sku_groups->first()->item_thumb;
 			$batch_stations = $route->stations->lists('custom_station_name', 'id')
 											  ->prepend('Select station to change', '0');
-			$count = $sku_groups->count();
-			$total_count += $count;
-			$rows[] = [
-				'sku'            		 	=> $sku,
-				'current_station_anchor' 	=> str_replace('/', '-', $sku),
-				'redriec_sku' 				=> str_replace('/', '!!!tarikuli!!!', $sku),
-				'item_thumb'	 			=> $item_thumb,
-				'item_name'      			=> $sku_groups->first() ? $sku_groups->first()->item_description : "-",
-				'min_order_date' 			=> $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
-				'item_count'     			=> $count,
-				'action'         			=> url(sprintf('items/active_batch/sku/%s', $sku)),
-				'route'          			=> sprintf("%s:%s", $route->batch_code, $route->batch_route_name),
-				'batch_stations' 			=> $batch_stations,
-			];
+
+
+
+			$count = 0;
+			foreach ($sku_groups as $key => $value){
+				$count = $count + $value->item_quantity;
+			}
+			if($value->station_name == $request->get('station')){
+				$total_count += $count;
+						$rows[] = [
+							'sku'            		 	=> $sku,
+							'current_station_anchor' 	=> str_replace('/', '-', $sku),
+							'redriec_sku' 				=> str_replace('/', '!!!tarikuli!!!', $sku),
+							'item_thumb'	 			=> $item_thumb,
+							'item_name'      			=> $sku_groups->first() ? $sku_groups->first()->item_description : "-",
+							'min_order_date' 			=> $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
+							'item_count'     			=> $count,
+							'action'         			=> url(sprintf('items/active_batch/sku/%s', $sku)),
+							'route'          			=> sprintf("%s:%s", $route->batch_code, $route->batch_route_name),
+							'batch_stations' 			=> $batch_stations,
+						];
+			}
 		}
 
 		return view('routes.active_batch_by_sku')

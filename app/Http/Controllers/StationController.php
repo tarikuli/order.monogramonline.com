@@ -487,40 +487,30 @@ class StationController extends Controller {
 // // 								->groupBy ( 'order_id' )
 // 								->get ();
 
-			if($request->get('cutoff_date')){
-				$end_date = $request->get('cutoff_date');
-			}else{
-				$end_date = date("Y-m-d");
-			}
-			$start_date = "2016-06-03";
-			$starting = sprintf("%s 00:00:00", $start_date);
+// if($request->get('cutoff_date')){
+// 	$end_date = $request->get('cutoff_date');
+// }else{
+// 	$end_date = date("Y-m-d");
+// }
+// $start_date = "2016-06-03";
+// $starting = sprintf("%s 00:00:00", $start_date);
 
-			$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
+// $ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
 
-			$lines_count =  Item::join('orders', 'items.order_id', '=', 'orders.order_id')
-						->where( 'items.station_name', $station_name )
-						->where('items.batch_number', '!=', '0')
-						->whereNull('items.tracking_number')
-						->where('items.is_deleted', '=', '0')
-						->where('orders.is_deleted', '=', '0')
-						->whereNotIn('orders.order_status', [
-						2,
-						// Manual Redo
-						3,
-						// On hold
-						7,
-						// returned
-						8,
-						// cancelled
-						6,
-						// Shipped
-						])
-						->where('orders.order_date', '>=', $starting)
-						->where('orders.order_date', '<=', $ending)
-						->get ();
+// $lines_count =  Item::join('orders', 'items.order_id', '=', 'orders.order_id')
+// 			->where( 'items.station_name', $station_name )
+// 			->where('items.batch_number', '!=', '0')
+// 			->whereNull('items.tracking_number')
+// 			->where('items.is_deleted', '=', '0')
+// 			->where('orders.is_deleted', '=', '0')
+// 			->whereNotIn('orders.order_status', Helper::$orderStatus)
+// 			->where('orders.order_date', '>=', $starting)
+// 			->where('orders.order_date', '<=', $ending)
+// 			->get ();
 
 			// ->toSql();
 			// echo "<pre>"; echo print_r($lines_count->count()); echo " -- ".$station_name."</pre>";
+$lines_count = Helper::getItemsByStationAndDate($station_name, $request->get('cutoff_date'));
 $order_ids = array_unique($lines_count->lists ( 'order_id' )->toArray ());
 
 
@@ -549,7 +539,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 				$summary ['items_count'] = $items_count;
 				$summary ['earliest_batch_creation_date'] = substr ( $earliest_batch_creation_date, 0, 10 );
 				$summary ['earliest_order_date'] = substr ( $earliest_order_date, 0, 10 );
-				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s", $station_name ) );
+				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s&cutoff_date=%s", $station_name, $request->get('cutoff_date') ) );
 
 				$summaries [] = $summary;
 				$total_lines += count($order_ids);
