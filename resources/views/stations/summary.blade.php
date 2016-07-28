@@ -52,8 +52,8 @@
 					<th>Station</th>
 					<th># of lines</th>
 					<th># of items</th>
-					<th>Earliest batch creation date</th>
 					<th>Earliest order date</th>
+					<th>Earliest batch creation date</th>
 					<th>Active SKUs</th>
 				</tr>
 				@foreach($summaries as $summary)
@@ -64,8 +64,8 @@
 						</td>
 						<td align="right">{{ number_format($summary['lines_count'],0) }}</td>
 						<td align="right">{{ number_format($summary['items_count'],0) }}</td>
-						<td>{{$summary['earliest_batch_creation_date']}}</td>
 						<td>{{$summary['earliest_order_date']}}</td>
+						<td>{{$summary['earliest_batch_creation_date']}}</td>
 						<td><a href = "{{$summary['link']}}" target = "_blank">View active sku</a></td>
 					</tr>
 				@endforeach
