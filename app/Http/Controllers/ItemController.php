@@ -1164,6 +1164,7 @@ class ItemController extends Controller
 			foreach ($sku_groups as $key => $value){
 				$count = $count + $value->item_quantity;
 			}
+
 			if($value->station_name == $request->get('station')){
 				$total_count += $count;
 						$rows[] = [
