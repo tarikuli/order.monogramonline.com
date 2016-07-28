@@ -482,6 +482,7 @@ class StationController extends Controller {
 			$lines_count = Item::where ( 'station_name', $station_name )
 								->where('is_deleted', 0)
 								->whereNull ( 'tracking_number' )
+								->whereNotIn ( 'item_order_status_2', [2,3,6,7,8] )
 								->searchBeforeOrderDate($request->get('date'))
 // 								->groupBy ( 'order_id' )
 								->get ();
@@ -492,10 +493,15 @@ $order_ids = array_unique($lines_count->lists ( 'order_id' )->toArray ());
 $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 
 
-Helper::jewelDebug($order_ids);
+
 // 			if (($lines_count->count () > 0) && (!in_array($station_name, Helper::$shippingStations))) {
 			if (count($order_ids) > 0) {
-				$earliest_batch_creation_date = array_search(max($lines_count->lists ( 'batch_creation_date' )->toArray ()), $lines_count->lists ( 'batch_creation_date' )->toArray ());
+
+				$earliest_batch_creation_date = Helper::getEarliest($lines_count->lists ( 'batch_creation_date' )->toArray ());
+
+				$earliest_order_date = Helper::getEarliest($lines_count->lists ( 'created_at' )->toArray ());
+// 				Helper::jewelDebug($earliest_batch_creation_date);
+
 				// Get number of Items in a Station
 // 				$items_count = Item::where ( 'station_name', $station_name )
 // 								->where('is_deleted', 0)
@@ -523,11 +529,11 @@ Helper::jewelDebug($order_ids);
 
 
 // 				$earliest_order_date = Order::whereIn ( 'order_id', $order_ids->lists ( 'order_id' )->toArray () )
-				$earliest_order_date = Order::whereIn ( 'order_id', $lines_count->lists ( 'order_id' )->toArray () )
-										->where('is_deleted', 0)
-										->orderBy ( 'order_date', 'asc' )
-										->first ()
-										->order_date;
+// 				$earliest_order_date = Order::whereIn ( 'order_id', $lines_count->lists ( 'order_id' )->toArray () )
+// 										->where('is_deleted', 0)
+// 										->orderBy ( 'order_date', 'asc' )
+// 										->first ()
+// 										->order_date;
 
 				$station = Station::where ( 'station_name', $station_name )->first ();
 
@@ -541,8 +547,8 @@ Helper::jewelDebug($order_ids);
 				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s", $station_name ) );
 
 				$summaries [] = $summary;
-				$total_lines += $lines_count->count ();
-				$total_items += $items_count;
+				$total_lines += count($order_ids);
+				$total_items += count($items_count);
 			}
 		}
 

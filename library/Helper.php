@@ -1257,6 +1257,16 @@ APPEND;
 		return $colloctionArray;
 	}
 
+	public static function getEarliest( $dateArray){
+		$earliest_date = strtotime($dateArray[0]);
+		foreach($dateArray as $line){
+			if(strtotime($line) < $earliest_date){
+				$earliest_date = strtotime($line);
+			}
+		}
+		return date( 'Y-m-d', $earliest_date);
+	}
+
 	public static function jewelDebug ($valueArray)
 	{
 		echo "<pre>";
