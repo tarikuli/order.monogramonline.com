@@ -323,4 +323,28 @@ class Item extends Model
 	{
 		return (new static())->tableColumns();
 	}
+
+	public function scopeSearchBeforeOrderDate ($query, $end_date)
+	{
+// 		$start_date = "2016-06-03";
+		if ( !$end_date ) {
+			return;
+		}
+		$start_date = "2016-06-03";
+		$starting = sprintf("%s 00:00:00", $start_date);
+		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
+
+// 		return $query->where('batch_creation_date', '>=', $starting)
+// 		->where('batch_creation_date', '<=', $ending);
+
+		$order_ids = Order::where('is_deleted', 0)
+					->where('order_date', '>=', $starting)
+					->where('order_date', '<=', $ending)
+// 					->toSql();
+					->lists('order_id')
+					->toArray();
+// dd($starting, $ending, $order_ids);
+		return $query->whereIn('order_id', $order_ids);
+
+	}
 }

@@ -38,8 +38,8 @@
 		</div>
 
 		@setvar($i = 0)
-		@if(is_array($request->old('product_id')))
-			@foreach($request->old('product_id') as $product)
+		@if(is_array($request->old('product_code')))
+			@foreach($request->old('product_code') as $product)
 				<div class = 'form-group collection'>
 					<div class = "col-md-2">
 						<a class = "btn btn-link">Remove this row</a>
@@ -47,8 +47,8 @@
 					<div class = "col-md-offset-2 col-md-10">
 						<div class = "row">
 							<div class = "col-md-4">
-								{!!Form::label("product_id[$i]",'Product :',['class'=>'control-label col-xs-6'])!!}
-								{!! Form::select("product_id[$i]", $products, null, ['id' => "", 'step' => 'any', 'class' => 'form-control']) !!}
+								{!!Form::label("product_code[$i]",'Product :',['class'=>'control-label col-xs-6'])!!}
+								{!! Form::select("product_code[$i]", $products, null, ['id' => "", 'step' => 'any', 'class' => 'form-control']) !!}
 							</div>
 							<div class = "col-md-4">
 								{!!Form::label("quantity[$i]",'Quantity :',['class'=>'control-label col-xs-6'])!!}
@@ -71,8 +71,8 @@
 				<div class = "col-md-10">
 					<div class = "row">
 						<div class = "col-md-4">
-							{!!Form::label("product_id[$i]",'Product :',['class'=>'control-label col-xs-6'])!!}
-							{!! Form::select("product_id[$i]", $products, null, ['id' => "", 'step' => 'any', 'class' => 'form-control']) !!}
+							{!! Form::label("product_code[$i]",'Product :',['class'=>'control-label col-xs-6'])!!}
+							{!! Form::select("product_code[$i]", $products, null, ['id' => "", 'step' => 'any', 'class' => 'form-control']) !!}
 						</div>
 						<div class = "col-md-4">
 							{!!Form::label("quantity[$i]",'Quantity :',['class'=>'control-label col-xs-6'])!!}

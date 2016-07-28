@@ -455,14 +455,18 @@ class StationController extends Controller {
 	 * Show Station Summery
 	 * @return Ambigous <\Illuminate\View\View, \Illuminate\Contracts\View\Factory>
 	 */
-	public function summary() {
+	public function summary(Request $request) {
 
 		$items = Item::where ( 'station_name', '!=', '' )
 					->where('is_deleted', 0)
 // 					->whereNotIn( 'station_name', Helper::$shippingStations)
+					->whereNull ( 'tracking_number' )
+// 					->searchBeforeOrderDate($request->get('date'))
 					->groupBy ( 'station_name' )
+// 					->toSql();
 					->get ();
 
+// 		return $items;
 
 		$summaries = [ ];
 		$total_lines = 0;
@@ -478,34 +482,48 @@ class StationController extends Controller {
 			$lines_count = Item::where ( 'station_name', $station_name )
 								->where('is_deleted', 0)
 								->whereNull ( 'tracking_number' )
-								->groupBy ( 'order_id' )
+								->searchBeforeOrderDate($request->get('date'))
+// 								->groupBy ( 'order_id' )
 								->get ();
+
 			// ->toSql();
 			// echo "<pre>"; echo print_r($lines_count->count()); echo " -- ".$station_name."</pre>";
+$order_ids = array_unique($lines_count->lists ( 'order_id' )->toArray ());
+$items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 
+
+Helper::jewelDebug($order_ids);
 // 			if (($lines_count->count () > 0) && (!in_array($station_name, Helper::$shippingStations))) {
-			if ($lines_count->count () > 0) {
+			if (count($order_ids) > 0) {
+				$earliest_batch_creation_date = array_search(max($lines_count->lists ( 'batch_creation_date' )->toArray ()), $lines_count->lists ( 'batch_creation_date' )->toArray ());
 				// Get number of Items in a Station
-				$items_count = Item::where ( 'station_name', $station_name )
-								->where('is_deleted', 0)
-								->whereNull ( 'tracking_number' )
-								->groupBy ( 'station_name' )->first ( [
-						DB::raw ( 'SUM(item_quantity) as items_count' )
-				] )->items_count;
+// 				$items_count = Item::where ( 'station_name', $station_name )
+// 								->where('is_deleted', 0)
+// 								->whereNull ( 'tracking_number' )
+// // 								->searchBeforeOrderDate($request->get('date'))
+// 								->groupBy ( 'station_name' )->first ( [
+// 						DB::raw ( 'SUM(item_quantity) as items_count' )
+// 				] )->items_count;
+
 
 				// Get Earliest batch creation date
-				$earliest_batch_creation_date = Item::where ( 'station_name', $station_name )
-												->where('is_deleted', 0)
-												->whereNull ( 'tracking_number' )
-												->orderBy ( 'batch_creation_date', 'asc' )
-												->first ()->batch_creation_date;
+// 				$earliest_batch_creation_date = Item::where ( 'station_name', $station_name )
+// 												->where('is_deleted', 0)
+// 												->whereNull ( 'tracking_number' )
+// // 												->searchBeforeOrderDate($request->get('date'))
+// 												->orderBy ( 'batch_creation_date', 'asc' )
+// 												->first()->batch_creation_date;
 
-				$order_ids = Item::where ( 'station_name', $station_name )
-							->where('is_deleted', 0)
-							->whereNull ( 'tracking_number' )
-							->get ();
+// 				$order_ids = Item::where ( 'station_name', $station_name )
+// 							->where('is_deleted', 0)
+// 							->whereNull ( 'tracking_number' )
+// 							->searchBeforeOrderDate($request->get('date'))
+// 							->get ();
 
-				$earliest_order_date = Order::whereIn ( 'order_id', $order_ids->lists ( 'order_id' )->toArray () )
+
+
+// 				$earliest_order_date = Order::whereIn ( 'order_id', $order_ids->lists ( 'order_id' )->toArray () )
+				$earliest_order_date = Order::whereIn ( 'order_id', $lines_count->lists ( 'order_id' )->toArray () )
 										->where('is_deleted', 0)
 										->orderBy ( 'order_date', 'asc' )
 										->first ()
@@ -516,8 +534,8 @@ class StationController extends Controller {
 				$summary ['station_id'] = $station->id;
 				$summary ['station_description'] = $station->station_description;
 				$summary ['station_name'] = $station_name;
-				$summary ['lines_count'] = $lines_count->count ();
-				$summary ['items_count'] = $items_count;
+				$summary ['lines_count'] = count($order_ids);
+				$summary ['items_count'] = count($items_count);
 				$summary ['earliest_batch_creation_date'] = substr ( $earliest_batch_creation_date, 0, 10 );
 				$summary ['earliest_order_date'] = substr ( $earliest_order_date, 0, 10 );
 				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s", $station_name ) );

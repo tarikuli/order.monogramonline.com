@@ -51,7 +51,7 @@
 					</tr>
 					@foreach($purchase->products as $product)
 						<tr>
-							<td>{{ $product->product_details->product_name }}</td>
+							<td>{{ $product->product_details->name }}</td>
 							<td>{{ $product->quantity }}</td>
 							<td>{{ $product->price }}</td>
 							<td>{{ $product->sub_total }}</td>

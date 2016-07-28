@@ -1250,6 +1250,13 @@ APPEND;
 		$note->save();
 	}
 
+	public static function selectSort($colloctionArray){
+		foreach ($colloctionArray as $key => $product){
+			$colloctionArray[$key] = $key .' - '. $product;
+		}
+		return $colloctionArray;
+	}
+
 	public static function jewelDebug ($valueArray)
 	{
 		echo "<pre>";
