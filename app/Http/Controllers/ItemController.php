@@ -217,23 +217,36 @@ class ItemController extends Controller
 		}
 
 		$station = Station::find(session('station', 'all'));
+		if(!$station){
+			$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
+						->where('is_deleted', 0)
+						->where('batch_number', '!=', '0')
+						->whereNull('tracking_number')
+						->searchBatch($request->get('batch'))
+						->searchRoute($request->get('route'))
+						->searchStation(session('station', 'all'))
+						->searchStatus($request->get('status'))
+						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
+						->groupBy('batch_number')
+						->latest('batch_number')
+						->paginate(50);
+		}else{
+// 			dd($station->station_name);
+			$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
+						->where('is_deleted', 0)
+						->where('batch_number', '!=', '0')
+						->whereNull('tracking_number')
+						->searchBatch($request->get('batch'))
+						->searchRoute($request->get('route'))
+						// 					 ->searchStation(session('station', 'all'))
+						->searchCutOffOrderDate($station->station_name, $request->get('cutoff_date'))
+						->searchStatus($request->get('status'))
+						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
+						->groupBy('batch_number')
+						->latest('batch_number')
+						->paginate(50);
 
-		$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
-					 ->where('is_deleted', 0)
-					 ->where('batch_number', '!=', '0')
-// 					 ->whereNotIn( 'station_name', Helper::$shippingStations)
-					 ->whereNull('tracking_number')
-					 ->searchBatch($request->get('batch'))
-					 ->searchRoute($request->get('route'))
-
-// 					 ->searchStation(session('station', 'all'))
-					 ->searchCutOffOrderDate($station->station_name,$request->get('cutoff_date'))
-
-					 ->searchStatus($request->get('status'))
-					 ->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
-					 ->groupBy('batch_number')
-					 ->latest('batch_number')
-					 ->paginate(50);
+		}
 
 		$routes = BatchRoute::where('is_deleted', 0)
 							->orderBy('batch_route_name')
