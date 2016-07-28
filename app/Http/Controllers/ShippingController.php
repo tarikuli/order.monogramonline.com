@@ -11,6 +11,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Monogram\Helper;
+use Illuminate\Support\Facades\Auth;
 
 class ShippingController extends Controller
 {
@@ -64,6 +65,15 @@ class ShippingController extends Controller
 
 	public function removeTrackingNumber (Request $request)
 	{
+		if(!$request->has('order_number')){
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'No Order Number found',
+			]);
+		}
+
+		$order_number = $request->get('order_number');
 		$tracking_numbers = $request->get('tracking_numbers', [ ]);
 		if ( count($tracking_numbers) ) {
 
@@ -79,8 +89,8 @@ class ShippingController extends Controller
 
 			// Add note history by order id
 			$note = new Note();
-			$note->note_text = "Back to Shipping station for Update Tracking#";
-			$note->order_id = $item->order_id;
+			$note->note_text = "Back to Temp Shipping station for Update Tracking# ".implode(", ",$tracking_numbers);
+			$note->order_id = $order_number;
 			$note->user_id = Auth::user()->id;
 			$note->save();
 		}
@@ -103,7 +113,7 @@ class ShippingController extends Controller
 
 
 			// Add note history by order id
-			Helper::histort("Manualy Update Tracking#", $order_number);
+			Helper::histort("Manualy Update Tracking# ".$tracking_number_update, $order_number);
 
 			return redirect()
 			->back()

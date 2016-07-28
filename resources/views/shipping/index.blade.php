@@ -145,11 +145,11 @@
 						<td>
 							@if($ship->item->tracking_number)
 								{{ $ship->item->tracking_number }}
-								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s", $ship->item->tracking_number )) }}">Back to shipping</a>
+								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&order_number=%s", $ship->item->tracking_number,$ship->order_number )) }}">Back to shipping</a>
 							@else
 								<br>
 								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
-								<a class = "update" href = "#" >Tracking # Update</a>
+								<a class = "update" href = "#" >Manual Tracking # Update</a>
 
 								{!! Form::open(['url' => url('/shipping_update'), 'method' => 'put', 'id' => 'shipping_update']) !!}
 								{!! Form::hidden('tracking_number_update', null, ['id' => 'tracking_number_update']) !!}
