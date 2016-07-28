@@ -557,7 +557,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			}
 		}
 
-		return view ( 'stations.summary', compact ( 'summaries', 'total_lines', 'total_items' ) );
+		return view ( 'stations.summary', compact ( 'summaries', 'total_lines', 'total_items' ))->withRequest($request);
 	}
 	public function getBulkChange() {
 		// https://www.neontsunami.com/posts/using-lists()-in-laravel-with-custom-attribute-accessors

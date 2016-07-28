@@ -33,7 +33,7 @@
 
 					<label for = "cutoff_date">CutOff date</label>
 					<div class = 'input-group date' id = 'cutoff_date_picker'>
-						{!! Form::text('cutoff_date', '', ['id'=>'cutoff_date', 'class' => 'form-control', 'placeholder' => 'Enter cutOff date']) !!}
+						{!! Form::text('cutoff_date', $request->get('cutoff_date', ''), ['id'=>'cutoff_date', 'class' => 'form-control', 'placeholder' => 'Enter cutOff date']) !!}
 						<span class = "input-group-addon">
 	                        <span class = "glyphicon glyphicon-calendar"></span>
 	                    </span>
