@@ -83,6 +83,7 @@ class ItemController extends Controller
 			'order'               => 'Order',
 			'5p_order'            => '5P-Order',
 			'customer'            => 'Customer',
+			'bill_email'          => 'Customer Bill Email',
 			'store_id'            => 'Store',
 			'state'               => 'State',
 			'description'         => 'Description',

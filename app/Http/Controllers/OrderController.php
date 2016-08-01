@@ -198,18 +198,19 @@ class OrderController extends Controller
 		$customer->bill_email = $request->get('bill_email');
 		$customer->shipping = $request->get('shipping');
 		$customer->save();
+
 		$order = Order::where('order_id', $id)
 					  ->latest()
 					  ->first();
-
 		$order->order_status = Status::where('status_code', $request->get('order_status'))
 									 ->first()->id;
+
 		$order->order_comments = $request->get('order_comments');
 		$order->gift_wrap_cost = floatval($request->get('gift_wrap_cost', 0));
 		$order->insurance = floatval($request->get('insurance', 0));
 		$order->adjustments = floatval($request->get('adjustments', 0));
 		$order->expidite_date = $request->get('expidite_date');
-		$order->save();
+// 		$order->save();
 		$index = 0;
 		$items = $request->get('item_id');
 		$child_sku = $request->get('child_sku');
@@ -327,7 +328,7 @@ class OrderController extends Controller
 			$note->order_id = $id;
 			$note->user_id = Auth::user()->id;
 			$note->save();
-
+dd($order->order_status, $request->get('order_status'));
 		return redirect()->back();
 	}
 

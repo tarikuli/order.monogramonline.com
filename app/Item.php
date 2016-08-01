@@ -149,6 +149,16 @@ class Item extends Model
 			}
 			return;
 
+		} elseif ( $search_in == 'bill_email' ) {
+
+			$order_ids = Customer::where('bill_email', 'REGEXP', implode("|", $values))
+								  ->lists('order_id')
+								  ->toArray();
+			if ( count($order_ids) ) {
+				return $query->whereIn('order_id', $order_ids);
+			}
+			return;
+
 		} elseif ( $search_in == 'order' ) {
 
 			return $query->where('order_id', 'REGEXP', implode("|", $values));
