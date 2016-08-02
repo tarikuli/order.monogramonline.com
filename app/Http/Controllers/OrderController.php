@@ -328,7 +328,6 @@ class OrderController extends Controller
 			$note->order_id = $id;
 			$note->user_id = Auth::user()->id;
 			$note->save();
-dd($order->order_status, $request->get('order_status'));
 		return redirect()->back();
 	}
 
