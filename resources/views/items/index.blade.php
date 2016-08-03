@@ -111,7 +111,7 @@
 					<th>Order date</th>
 					<th>Order status</th>
 					<th>Trk#</th>
-					<th>Shipping date</th>
+					{{-- <th>Shipping date</th>--}}
 					<th>Customer</th>
 					<th>State</th>
 					<th>Description</th>
@@ -132,25 +132,20 @@
 							<br/>
 							Item# {{($item->id)}}
 						</td>
-						{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
 						<td><img src = "{{$item->item_thumb}}" width = "70" height = "70" /></td>
 						<td>{{substr($item->order->order_date, 0, 10)}}<br>{{substr($item->order->order_date, 11, 18)}}</td>
-						{{--<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['id' => 'order_status_id','disabled' => 'disabled'])  !!}</td>--}}
 						<td>{!! \App\Status::where('is_deleted', 0)->lists('status_name','id')->get($item->order->order_status)  !!}</td>
-						{{--<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['id' => 'item_order_status_2_id','disabled' => 'disabled'])  !!}</td>--}}
 						<td>
-							{{$item->shipInfo ? ($item->shipInfo->tracking_number  ?: "Not shipped") : "N/A"}}
+							{{$item->tracking_number ? ($item->tracking_number ?: "Not shipped") : "N/A"}}
+							{{-- {{$item->shipInfo ? ($item->shipInfo->tracking_number  ?: "Not shipped") : "N/A"}} --}}
 						</td>
-						<td>{{ $item->shipInfo ? $item->shipInfo->postmark_date : "N/A" }}
+						{{--  <td>{{ $item->shipInfo ? $item->shipInfo->postmark_date : "N/A" }} --}}
 						<td><a href = "{{ url("customers/".$item->order->customer->id) }}" title = "This is customer id"
 						       class = "btn btn-link">{{ !empty($item->order->customer->ship_full_name) ? $item->order->customer->ship_full_name : $item->order->customer->bill_full_name }}</a>
 						</td>
 						<td>{{$item->order->customer->ship_state}}</td>
-						{{--<td>{{$item->item_description}}</td>--}}
-						{{--<td>{!! Form::textarea('desc', $item->item_description, ['rows' => '2', 'cols' => '20']) !!}</td>--}}
 						<td class = "description">{{$item->item_description}}</td>
 						<td>{{$item->child_sku}}</td>
-						{{--<td>{{\Monogram\Helper::jsonTransformer($item->item_option)}}</td>--}}
 						<td>{!! Form::textarea('opt', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '3', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
 						<td>{{$item->item_quantity}}</td>
 						{{-- Add Batch Link --}}

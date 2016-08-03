@@ -43,7 +43,6 @@ class ItemController extends Controller
 	public function index (Request $request)
 	{
 		#return [$request->get('search_for_first'), $request->get('search_in_first')];
-
 		$items = Item::with('order.customer', 'store', 'route.stations_list')
 					 ->where('is_deleted', 0)
 					 ->search($request->get('search_for_first'), $request->get('search_in_first'))
@@ -52,11 +51,11 @@ class ItemController extends Controller
 					 ->searchTrackingDate($request->get('tracking_date'))
 					 ->searchStatus($request->get('status'))
 					 ->latest()
-					 ->paginate(50);
-
-		// For debug
+					 ->paginate(25);
+ 	  // For debug
 		#return $items;
-		set_time_limit(0);
+// 		set_time_limit(0);
+
 		$unassignedProducts = Option::where(function ($query) {
 			return $query->whereNull('batch_route_id')
 						 ->orWhere('batch_route_id', Helper::getDefaultRouteId());
@@ -72,12 +71,18 @@ class ItemController extends Controller
 		$unassignedProductCount = $unassignedProducts->count();
 
 		$unassigned = Helper::countPossibleBatches();
+
 		$emptyStationsCount = count(Helper::getEmptyStation());
+
+
 		if($emptyStationsCount == 0){
 			$emptyStationsCount = "";
 		}else{
 			$emptyStationsCount = $emptyStationsCount." route have no stations assigned.";
 		}
+
+		// $unassigned = 0; $unassignedProductCount=0; $unassignedOrderCount = 0; $emptyStationsCount = 0;
+
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
