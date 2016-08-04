@@ -22,10 +22,12 @@ class PurchasedInvProductsUpdateRequest extends Request
 	public function rules ()
 	{
 		return [
-			"code" => 'required',
-			"name" => 'required',
-			"unit" => 'required',
-			"price" => 'required|numeric',
+			"stock_no" 				 => 'required',
+			"unit" 					 => 'required',
+			"unit_price" 			 => 'required|numeric',
+			"vendor_id" 			 => 'required',
+			"vendor_sku" 			 => 'required',
+			"lead_time_days" 		 => 'required|numeric',
 		];
 	}
 }

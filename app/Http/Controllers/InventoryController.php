@@ -49,7 +49,7 @@ class InventoryController extends Controller
 
 	public function index ()
 	{
-		return view('inventories.index')->with('inventory_indexes', $this->inventory_indexes);
+// 		return view('inventories.index')->with('inventory_indexes', $this->inventory_indexes);
 	}
 
 	public function create ()

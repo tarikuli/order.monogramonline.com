@@ -29,24 +29,32 @@
 			<table class = "table table-bordered">
 				<tr>
 					<th>#</th>
-					<th>Code</th>
-					<th>Name</th>
+					<th>Stock No</th>
+					<th>Stock Name Discription</th>
 					<th>Unit</th>
-					<th>Price</th>
+					<th>Unit Price</th>
+					<th>Vendor Id</th>
+					<th>Vendor Sku</th>
+					<th>Lead Time Days</th>
 					<th>Action</th>
 				</tr>
 				@foreach($purchasedInvProducts as $purchasedInvProduct)
 					<tr data-id = "{{$purchasedInvProduct->id}}">
 						<td>{{ $count++ }}</td>
-						<td>{{ $purchasedInvProduct->code }}</td>
-						<td>{{ $purchasedInvProduct->name }}</td>
-						<td>{{ $purchasedInvProduct->unit }}</td>
-						<td>{{ $purchasedInvProduct->price }}</td>
+						<td>{{ $purchasedInvProduct->stock_no }}</td>
 						<td>
-							<a href = "{{ url(sprintf("/purchasedinvproducts/%d", $purchasedInvProduct->id)) }}" data-toggle = "tooltip"
+							{!! \App\Inventory::where('stock_no_unique', $purchasedInvProduct->stock_no)->take(1)->lists('stock_name_discription','id')->get($purchasedInvProduct->id)  !!}
+						</td>
+						<td>{{ $purchasedInvProduct->unit }}</td>
+						<td>{{ $purchasedInvProduct->unit_price }}</td>
+						<td>{{ $purchasedInvProduct->vendor_id }}</td>
+						<td>{{ $purchasedInvProduct->vendor_sku }}</td>
+						<td>{{ $purchasedInvProduct->lead_time_days }}</td>
+						<td>
+							{{-- <a href = "{{ url(sprintf("/purchasedinvproducts/%d", $purchasedInvProduct->id)) }}" data-toggle = "tooltip"
 							   data-placement = "top"
-							   title = "View this vendor"><i class = 'fa fa-eye text-primary'></i></a>
-							| <a href = "{{ url(sprintf("/purchasedinvproducts/%d/edit", $purchasedInvProduct->id)) }}" data-toggle = "tooltip"
+							   title = "View this vendor"><i class = 'fa fa-eye text-primary'></i></a> --}}
+							 <a href = "{{ url(sprintf("/purchasedinvproducts/%d/edit", $purchasedInvProduct->id)) }}" data-toggle = "tooltip"
 							     data-placement = "top"
 							     title = "View this vendor"><i class = 'fa fa-pencil-square-o text-success'></i></a>
 							| <a href = "#" class = "delete" data-toggle = "tooltip" data-placement = "top"

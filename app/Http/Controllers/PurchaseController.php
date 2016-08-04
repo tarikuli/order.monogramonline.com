@@ -67,8 +67,8 @@ class PurchaseController extends Controller
 											->where('code',$product_code)
 											->get();
 
-			Helper::jewelDebug($product_code);
-			Helper::jewelDebug($product);
+// 			Helper::jewelDebug($product_code);
+// 			Helper::jewelDebug($product);
 
 			if ( !$product ) {
 				// if doesn't exits, then stop and start again
