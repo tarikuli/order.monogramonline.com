@@ -46,7 +46,6 @@ class ShippingController extends Controller
 					 ->latest('postmark_date')
 // 					 ->toSql();
 					 ->paginate(10);
- return $ships;
 
 		$counter = Ship::where('is_deleted', 0)
 					   ->first([

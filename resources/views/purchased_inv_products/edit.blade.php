@@ -89,6 +89,13 @@
 		</div>
 
 		<div class = 'form-group'>
+			{!!Form::label('vendor_sku_name','Sku Name: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::text('vendor_sku_name',  $purchasedInvProducts->vendor_sku_name, ['id' => 'vendor_sku_name','class'=>'form-control']) !!}
+			</div>
+		</div>
+
+		<div class = 'form-group'>
 			{!!Form::label('lead_time_days','Lead Time Days: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::text('lead_time_days', $purchasedInvProducts->lead_time_days, ['id' => 'lead_time_days','class'=>'form-control']) !!}
@@ -104,19 +111,5 @@
 
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
-	<script type = "text/javascript">
-		var message = {
-			delete: 'Are you sure you want to delete?',
-		};
-		$("input#purchasedinvproducts").on('click', function (event)
-		{
-			event.preventDefault();
-			var action = confirm(message.delete);
-			if ( action ) {
-				var form = $("form#delete-purchasedinvproducts-form");
-				form.submit();
-			}
-		});
-	</script>
 </body>
 </html>

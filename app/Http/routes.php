@@ -25,6 +25,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('/', 'HomeController@index');
 		get('logout', 'AuthenticationController@getLogout');
 
+
 		post('imports/inventory', 'ImportController@importInventory');
 		post('imports/batch_route', 'ImportController@importBatchRoute');
 
@@ -55,6 +56,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		resource('logs', 'StationLogController');
 
 		resource('inventories', 'InventoryController');
+		post('inventories/getuniquestock','InventoryController@getStockNoUnique');
+
 		resource('purchasedinvproducts', 'PurchasedInvProductsController');
 
 		get('exports/inventory', 'ExportController@inventory');

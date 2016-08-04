@@ -71,7 +71,7 @@
 		@else
 			<div class = "col-xs-12">
 				<div class = "alert alert-warning text-center">
-					<h3>No vendor found.</h3>
+					<h3>No Purchase Inventory Products found.</h3>
 				</div>
 			</div>
 		@endif

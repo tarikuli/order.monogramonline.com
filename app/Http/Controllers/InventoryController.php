@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Monogram\Helper;
 
 class InventoryController extends Controller
 {
@@ -80,5 +81,11 @@ class InventoryController extends Controller
 	public function destroy ($id)
 	{
 		//
+	}
+
+	public function getStockNoUnique(Request $request)
+	{
+// 		Helper::jewelDebug($request);
+		return response()->json(['response' => 'This is get method']);
 	}
 }

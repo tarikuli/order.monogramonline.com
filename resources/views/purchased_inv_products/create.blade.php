@@ -85,6 +85,13 @@
 		</div>
 
 		<div class = 'form-group'>
+			{!!Form::label('vendor_sku_name','Sku Name: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::text('vendor_sku_name', null, ['id' => 'vendor_sku_name','class'=>'form-control']) !!}
+			</div>
+		</div>
+
+		<div class = 'form-group'>
 			{!!Form::label('lead_time_days','Lead Time Days: ',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::text('lead_time_days', null, ['id' => 'lead_time_days','class'=>'form-control']) !!}
@@ -100,5 +107,17 @@
 	</div>
 	<script src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+	<script type = "text/javascript">
+		$("#stock_no").on('blur', function (event)
+		{
+			stock_no= $("#stock_no").val();
+			console.log($('input[name=_token]').val());
+			urll = '/inventories/getuniquestock';
+
+		});
+
+
+	</script>
 </body>
 </html>

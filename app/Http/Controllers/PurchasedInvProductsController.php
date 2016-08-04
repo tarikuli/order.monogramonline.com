@@ -65,12 +65,12 @@ class PurchasedInvProductsController extends Controller
 			$inventorie->save();
 		}else{
 			/**  Update  stock_no_unique in inventories Table **/
-			$inventorie->stock_name_discription = trim($request->get('stock_name_discription'));
-			$inventorie->sku_weight = trim($request->get('sku_weight'));
-			$inventorie->re_order_qty = trim($request->get('re_order_qty'));
-			$inventorie->min_reorder = trim($request->get('min_reorder'));
-			$inventorie->adjustment = trim($request->get('adjustment'));
-			$inventorie->save();
+			$inventorie[0]->stock_name_discription = trim($request->get('stock_name_discription'));
+			$inventorie[0]->sku_weight = trim($request->get('sku_weight'));
+			$inventorie[0]->re_order_qty = trim($request->get('re_order_qty'));
+			$inventorie[0]->min_reorder = trim($request->get('min_reorder'));
+			$inventorie[0]->adjustment = trim($request->get('adjustment'));
+			$inventorie[0]->save();
 		}
 
 		/**  Add a new  stock_no_unique in inventories Table **/
@@ -80,6 +80,7 @@ class PurchasedInvProductsController extends Controller
 		$purchasedInvProducts->unit_price = trim($request->get('unit_price'));
 		$purchasedInvProducts->vendor_id = trim($request->get('vendor_id'));
 		$purchasedInvProducts->vendor_sku = trim($request->get('vendor_sku'));
+		$purchasedInvProducts->vendor_sku_name = trim($request->get('vendor_sku_name'));
 		$purchasedInvProducts->lead_time_days = trim($request->get('lead_time_days'));
 		$purchasedInvProducts->save();
 
@@ -138,6 +139,7 @@ class PurchasedInvProductsController extends Controller
 		$purchasedInvProducts->unit_price = trim($request->get('unit_price'));
 		$purchasedInvProducts->vendor_id = trim($request->get('vendor_id'));
 		$purchasedInvProducts->vendor_sku = trim($request->get('vendor_sku'));
+		$purchasedInvProducts->vendor_sku_name = trim($request->get('vendor_sku_name'));
 		$purchasedInvProducts->lead_time_days = trim($request->get('lead_time_days'));
 		$purchasedInvProducts->save();
 
