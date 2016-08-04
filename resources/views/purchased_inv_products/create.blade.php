@@ -112,8 +112,31 @@
 		$("#stock_no").on('blur', function (event)
 		{
 			stock_no= $("#stock_no").val();
-			console.log($('input[name=_token]').val());
-			urll = '/inventories/getuniquestock';
+			token = $('input[name=_token]').val();
+			//console.log(token);
+			route = '/inventories/getuniquestock';
+
+			$.ajax({
+				  url: route,
+				  headers: {'X-CSRF-TOKEN': token},
+				  type: 'POST',
+				  dataType: 'json',
+				  data: {data : stock_no},
+				  success:function(response) {
+					  $("#stock_name_discription").val(response.stock_name_discription);
+					  $("#sku_weight").val(response.sku_weight);
+					  $("#re_order_qty").val(response.re_order_qty);
+					  $("#min_reorder").val(response.min_reorder);
+					  $("#adjustment").val(response.adjustment);
+
+					  $("#unit").val(response.unit);
+					  $("#unit_price").val(response.unit_price);
+					  $("#vendor_id").val(response.vendor_id);
+					  $("#vendor_sku").val(response.vendor_sku);
+					  $("#vendor_sku_name").val(response.vendor_sku_name);
+					  $("#lead_time_days").val(response.lead_time_days);
+			    }
+			 });
 
 		});
 
