@@ -146,6 +146,9 @@ class ImportController extends Controller
 				} elseif ( $column == 'batch_options' ) {
 					$batch_options = trim($row['batch_options']);
 					$batch_route->batch_options = $batch_options;
+				} elseif ( $column == 'csv_extension' ) {
+					$csv_extension = trim($row['csv_extension']);
+					$batch_route->csv_extension = $csv_extension;
 				}
 			}
 			$batch_route->save();

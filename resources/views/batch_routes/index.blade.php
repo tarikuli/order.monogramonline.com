@@ -46,7 +46,7 @@
 				<div class = "clearfix"></div>
 				<div class = "tab-content" style = "margin-top: 20px;">
 					<div role = "tabpanel" class = "tab-pane fade" id = "tab-export-import">
-						<div class = "col-xs-6">
+						<div class = "col-xs-4">
 							{!! Form::open(['url' => url('imports/batch_route'), 'files' => true, 'id' => 'importer']) !!}
 							<div class = "form-group">
 								{!! Form::file('csv_file', ['required' => 'required', 'class' => 'form-control', 'accept' => '.csv']) !!}
@@ -56,7 +56,7 @@
 							</div>
 							{!! Form::close() !!}
 						</div>
-						<div class = "col-xs-6">
+						<div class = "col-xs-2">
 							<a class = "btn btn-info pull-right"
 							   href = "{{url('/exports/batch_routes')}}">Export Batch routes</a>
 						</div>
