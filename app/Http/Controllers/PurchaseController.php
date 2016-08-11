@@ -36,17 +36,19 @@ class PurchaseController extends Controller
 // 						   ->lists('product_name', 'id')
 // 						   ->prepend('Select a product', 0);
 
-		$products = PurchasedInvProducts::where('is_deleted', 0)
-							->lists('name', 'code')
-							->prepend('Select a product', 0);
+// 		$products = PurchasedInvProducts::where('is_deleted', 0)
+// 							->lists('name', 'code')
+// 							->prepend('Select a product', 0);
 
-		$products = Helper::selectSort($products);
+// 		$products = Helper::selectSort($products);
 
-		return view('purchases.create', compact('vendors', 'products', 'request'));
+		return view('purchases.create', compact('vendors'));
 	}
 
 	public function store (Requests\PurchaseCreateRequest $request)
 	{
+		return $request->all();
+
 		$purchase = new Purchase();
 		$purchase->vendor_id = $request->get('vendor_id');
 		$purchase->lc_number = trim($request->get('lc_number'));

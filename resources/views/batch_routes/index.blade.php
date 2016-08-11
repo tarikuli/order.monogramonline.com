@@ -85,7 +85,8 @@
 														data-toggle = "tooltip"
 														data-placement = "top"
 														title = "Delete this item">
-													<i class = "fa fa-times text-danger"></i> </a></td>
+													<i class = "fa fa-times text-danger"></i> </a>
+											</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_code', $batch_route->batch_code, ['style'=>'width:100px;margin-right:10px;margin-left:5px','readonly'=>'readonly']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_route_name', $batch_route->batch_route_name, ['style'=>'width:250px;margin-right:10px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_max_units', $batch_route->batch_max_units, ['style'=>'width:50px;margin-right:25px']) !!}</td>
