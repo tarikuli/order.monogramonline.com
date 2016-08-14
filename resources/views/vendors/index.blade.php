@@ -16,7 +16,7 @@
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li class = "active">Vendors</li>
 		</ol>
-		
+
 		@include('includes.error_div')
 		@include('includes.success_div')
 
@@ -37,7 +37,7 @@
 				</tr>
 				@foreach($vendors as $vendor)
 					<tr data-id = "{{$vendor->id}}">
-						<td>{{ $count++ }}</td>
+						<td>{{ $count++ }}) ID = {{ $vendor->id }}</td>
 						<td>{{ substr($vendor->vendor_name, 0, 30) }}</td>
 						<td>{{ $vendor->email }}</td>
 						<td>{{ $vendor->phone_number }}</td>

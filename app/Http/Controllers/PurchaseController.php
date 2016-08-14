@@ -22,6 +22,7 @@ class PurchaseController extends Controller
 							 ->latest()
 							 ->paginate(50);
 		$count = 1;
+// return $purchases->all();
 
 		return view('purchases.index', compact('purchases', 'count'));
 	}
@@ -32,65 +33,48 @@ class PurchaseController extends Controller
 						 ->lists('vendor_name', 'id')
 						 ->prepend('Select a vendor', 0);
 
-// 		$products = Product::where('is_deleted', 0)
-// 						   ->lists('product_name', 'id')
-// 						   ->prepend('Select a product', 0);
-
-// 		$products = PurchasedInvProducts::where('is_deleted', 0)
-// 							->lists('name', 'code')
-// 							->prepend('Select a product', 0);
-
-// 		$products = Helper::selectSort($products);
-
 		return view('purchases.create', compact('vendors'));
 	}
 
 	public function store (Requests\PurchaseCreateRequest $request)
 	{
-		return $request->all();
-
 		$purchase = new Purchase();
-		$purchase->vendor_id = $request->get('vendor_id');
-		$purchase->lc_number = trim($request->get('lc_number'));
-		$purchase->insurance_number = trim($request->get('insurance_number'));
+		$purchase->po_number = $request->get('po_number');
+		$purchase->po_date = trim($request->get('po_date'));
+		$purchase->vendor_id = trim($request->get('vendor_id'));
+		$purchase->grand_total = trim($request->get('grand_total'));
 		$purchase->save();
 
 		// one purchase may have many products
 		$index = 0;
 		// index is used to grab the array of products with details.
-		$product_ids = $request->get('product_code');
-		$quantities = $request->get('quantity');
+		$purchase_ids = $request->get('purchase_id');
+		$product_ids = $request->get('product_id');
+		$stock_nos = $request->get('stock_no');
+		$vendor_skus = $request->get('vendor_sku');
+		$quantitys = $request->get('quantity');
 		$prices = $request->get('price');
+		$sub_totals = $request->get('sub_total');
+		$receive_dates = $request->get('receive_date');
+		$receive_quantitys = $request->get('receive_quantity');
+		$balance_quantitys = $request->get('balance_quantity');
+		//----------
 
-		foreach ( $product_ids as $product_code ) {
-			// check if product id exists
-// 			$product = Product::find($product_id);
-			$product = PurchasedInvProducts::where('is_deleted', 0)
-											->where('code',$product_code)
-											->get();
-
-// 			Helper::jewelDebug($product_code);
-// 			Helper::jewelDebug($product);
-
-			if ( !$product ) {
-				// if doesn't exits, then stop and start again
-				continue;
-			}
-			$quantity = array_key_exists($index, $quantities) && floatval($quantities[$index]) > 0 ? floatval($quantities[$index]) : 1;
-			$price = array_key_exists($index, $prices) && floatval($prices[$index]) > 0 ? floatval($prices[$index]) : 0.1;
-			$sub_total = $quantity * $price;
-
+		foreach ( $purchase_ids as $purchase_id ) {
 			$purchased_products = new PurchaseProduct();
-			$purchased_products->purchase_id = $purchase->id;
-			$purchased_products->product_code = $product_code;
-			$purchased_products->quantity = $quantity;
-			$purchased_products->price = $price;
-			$purchased_products->sub_total = $sub_total;
+				$purchased_products->purchase_id 		= $request->get('po_number');
+				$purchased_products->product_id 		= $product_ids[$index];
+				$purchased_products->stock_no 			= $stock_nos[$index];
+				$purchased_products->vendor_sku 		= $vendor_skus[$index];
+				$purchased_products->quantity 			= $quantitys[$index];
+				$purchased_products->price 				= $prices[$index];
+				$purchased_products->sub_total 			= $sub_totals[$index];
+				$purchased_products->receive_date 		= $receive_dates[$index];
+				$purchased_products->receive_quantity 	= $receive_quantitys[$index];
+				$purchased_products->balance_quantity 	= $balance_quantitys[$index];
 			$purchased_products->save();
-
 			++$index;
 		}
-		return $request->all();
 		session()->flash('success', 'Purchase is added successfully.');
 
 		return redirect()->route('purchases.index');
@@ -98,11 +82,10 @@ class PurchaseController extends Controller
 
 	public function show ($id)
 	{
-// 		$purchase = Purchase::with('products.product_details', 'vendor_details')
-// 							->find($id);
-
 		$purchase = Purchase::with('products.product_details', 'vendor_details')
 							->find($id);
+// 		$purchaseProduct = PurchaseProduct::where('purchase_id', $purchase->po_number)->get();
+// 		return $purchase;
 
 		if ( !$purchase ) {
 			return view('errors.404');
@@ -113,11 +96,81 @@ class PurchaseController extends Controller
 	public function edit ($id)
 	{
 		//
+		$purchase = Purchase::with('products.product_details', 'vendor_details')
+								->where('po_number', $id)
+								->where('is_deleted', 0)
+								->get();
+
+// 		$purchase = Purchase::with('products.product_details', 'vendor_details')
+// 		->find($id);
+
+		if ( count($purchase) == 0 ) {
+			return view('errors.404');
+		}
+		$purchase = $purchase[0];
+// 		return $purchase;
+		return view('purchases.edit', compact('purchase'));
+
 	}
 
 	public function update (Request $request, $id)
 	{
 		//
+// 		return $request->all();
+
+// 		$vendor = Vendor::find($id);
+// 		if ( !$vendor ) {
+// 			return view('errors.404');
+// 		}
+
+		$purchase = Purchase::where('po_number', $id)
+					->where('is_deleted', 0)
+					->get();
+		$purchase = $purchase[0];
+// 		$purchase = new Purchase();
+		$purchase->po_number = $request->get('po_number');
+		$purchase->po_date = trim($request->get('po_date'));
+		$purchase->vendor_id = trim($request->get('vendor_id'));
+		$purchase->grand_total = trim($request->get('grand_total'));
+		$purchase->save();
+
+		PurchaseProduct::where('purchase_id', $id)
+						->delete();
+
+		// one purchase may have many products
+		$index = 0;
+		// index is used to grab the array of products with details.
+		$purchase_ids = $request->get('purchase_id');
+		$product_ids = $request->get('product_id');
+		$stock_nos = $request->get('stock_no');
+		$vendor_skus = $request->get('vendor_sku');
+		$quantitys = $request->get('quantity');
+		$prices = $request->get('price');
+		$sub_totals = $request->get('sub_total');
+		$receive_dates = $request->get('receive_date');
+		$receive_quantitys = $request->get('receive_quantity');
+		$balance_quantitys = $request->get('balance_quantity');
+		//----------
+
+		foreach ( $purchase_ids as $purchase_id ) {
+			$purchased_products = new PurchaseProduct();
+			$purchased_products->purchase_id 		= $request->get('po_number');
+			$purchased_products->product_id 		= $product_ids[$index];
+			$purchased_products->stock_no 			= $stock_nos[$index];
+			$purchased_products->vendor_sku 		= $vendor_skus[$index];
+			$purchased_products->quantity 			= $quantitys[$index];
+			$purchased_products->price 				= $prices[$index];
+			$purchased_products->sub_total 			= $sub_totals[$index];
+			$purchased_products->receive_date 		= $receive_dates[$index];
+			$purchased_products->receive_quantity 	= $receive_quantitys[$index];
+			$purchased_products->balance_quantity 	= $balance_quantitys[$index];
+			$purchased_products->save();
+			++$index;
+		}
+
+		session()->flash('success', 'Purchases is successfully updated.');
+
+		return redirect()->route('purchases.index');
 	}
 
 	public function destroy ($id)
@@ -139,5 +192,54 @@ class PurchaseController extends Controller
 		session()->flash('success', 'Purchase is deleted');
 
 		return redirect()->route('purchases.index');
+	}
+
+	public function getVendorById(Request $request){
+		$vendor = Vendor::find($request->vendor_id);
+		if(!$vendor){
+			/**  Return Null Fields because not found **/
+			return response()->json([
+					'vendor_name' => '',
+					'email' => '',
+					'zip_code' => '',
+					'state' => '',
+					'phone_number' => '',
+			]);
+		}else{
+			/**  Return Null Fields because  found **/
+			return response()->json([
+					'vendor_name' => $vendor->vendor_name,
+					'email' => $vendor->email,
+					'zip_code' => $vendor->zip_code,
+					'state' => $vendor->state,
+					'phone_number' => $vendor->phone_number,
+			]);
+		}
+	}
+
+	public function getPurchasedInvProducts(Request $request){
+		$purchasedInvProducts = PurchasedInvProducts::where('vendor_id', $request->vendor_id)
+													->where('vendor_sku', $request->vendor_sku)
+													->first();
+
+		if(!$purchasedInvProducts){
+			/**  Return Null Fields because not found **/
+			return response()->json([
+					'product_id' => '',
+					'stock_no' => '',
+					'vendor_sku' => '',
+					'price' => '',
+					'vendor_sku_name' => '',
+			]);
+		}else{
+			/**  Return Null Fields because  found **/
+			return response()->json([
+					'product_id' => $purchasedInvProducts->id,
+					'stock_no' => $purchasedInvProducts->stock_no,
+					'vendor_sku' => $purchasedInvProducts->vendor_sku,
+					'price' => $purchasedInvProducts->unit_price,
+					'vendor_sku_name' => $purchasedInvProducts->vendor_sku_name,
+			]);
+		}
 	}
 }

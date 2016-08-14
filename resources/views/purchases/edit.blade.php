@@ -2,7 +2,7 @@
 <html lang = "en">
 <head>
 	<meta charset = "UTF-8">
-	<title>Add purchase</title>
+	<title>Edit purchase</title>
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -15,22 +15,22 @@
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li><a href = "{{url('/purchases')}}">Purchases</a></li>
-			<li class = "active">Add purchase</li>
+			<li class = "active">Edit purchase</li>
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
-		{!! Form::open(['url' => url('/purchases'), 'method' => 'post','class'=>'form-horizontal','role'=>'form']) !!}
+		{!! Form::open(['url' => url(sprintf("/purchases/%s", $purchase->po_number,null)), 'method' => 'put', 'files' => true,'class'=>'form-horizontal','role'=>'form']) !!}
 
 		<div class = 'form-group'>
 			{!!Form::label('po_number','Purchase Order # :',['class'=>'control-label col-xs-2'])!!}
 			<div class = 'col-xs-2'>
-				{!! Form::text('po_number', null, ['id' => 'po_number','class' => 'form-control', 'placeholder' => 'Purchase Order #']) !!}
+				{!! Form::text('po_number', $purchase->po_number,null, ['id' => 'po_number','class' => 'form-control', 'placeholder' => 'Purchase Order #']) !!}
 			</div>
 
 			{!!Form::label('po_date','PO Date:',['class'=>'control-label col-xs-2'])!!}
 			<div class = 'col-xs-2'>
 				<div class = 'input-group date' id = 'expidite_date'>
-				{!! Form::text('po_date', null, ['id'=>'po_date', 'class' => 'form-control', 'placeholder' => 'PO date']) !!}
+				{!! Form::text('po_date', $purchase->po_date,null, ['id'=>'po_date', 'class' => 'form-control', 'placeholder' => 'PO date']) !!}
 					<span class = "input-group-addon">
                         <span class = "glyphicon glyphicon-calendar"></span>
                     </span>
@@ -42,109 +42,113 @@
 		<div class = 'form-group'>
 			{!!Form::label('vendor_id','Vendor ID:',['class'=>'control-label col-xs-2'])!!}
 			<div class = 'col-xs-2'>
-				{!! Form::text('vendor_id', null, ['id' => 'vendor_id','class' => 'form-control', 'placeholder' => 'Vendor ID']) !!}
+				{!! Form::text('vendor_id', $purchase->vendor_details->id, null, ['id' => 'vendor_id','class' => 'form-control', 'placeholder' => 'Vendor ID']) !!}
 			</div>
 
 			{!!Form::label('vendor_name','Vendor Name:',['class'=>'control-label col-xs-2'])!!}
 			<div class = 'col-xs-2'>
-				{!! Form::text('vendor_name', null, ['id' => 'vendor_name','class' => 'form-control', 'placeholder' => 'Vendor Name']) !!}
+				{!! Form::text('vendor_name', $purchase->vendor_details->vendor_name, null, ['id' => 'vendor_name','class' => 'form-control', 'placeholder' => 'Vendor Name']) !!}
 			</div>
 
 			{!!Form::label('email','Email:',['class'=>'control-label col-xs-2'])!!}
 			<div class = 'col-xs-2'>
-				{!! Form::text('email', null, ['id' => 'email','class' => 'form-control', 'placeholder' => 'Email']) !!}
+				{!! Form::text('email',$purchase->vendor_details->email, null, ['id' => 'email','class' => 'form-control', 'placeholder' => 'Email']) !!}
 			</div>
 
 		</div>
 
+
 		<div class = 'form-group'>
 			{!!Form::label('zip_code','Zip Code:',['class'=>'control-label col-xs-2'])!!}
 			<div class = 'col-xs-2'>
-				{!! Form::text('zip_code', null, ['id' => 'zip_code','class' => 'form-control', 'placeholder' => 'Zip Code']) !!}
+				{!! Form::text('zip_code', $purchase->vendor_details->zip_code, null, ['id' => 'zip_code','class' => 'form-control', 'placeholder' => 'Zip Code']) !!}
 			</div>
 
 			{!!Form::label('state','State:',['class'=>'control-label col-xs-2'])!!}
 			<div class = 'col-xs-2'>
-				{!! Form::text('state', null, ['id' => 'state','class' => 'form-control', 'placeholder' => 'State']) !!}
+				{!! Form::text('state',$purchase->vendor_details->state, null, ['id' => 'state','class' => 'form-control', 'placeholder' => 'State']) !!}
 			</div>
 
 			{!!Form::label('phone_number','Phone Number:',['class'=>'control-label col-xs-2'])!!}
 			<div class = 'col-xs-2'>
-				{!! Form::text('phone_number', null, ['id' => 'phone_number','class' => 'form-control', 'placeholder' => 'Phone Number']) !!}
+				{!! Form::text('phone_number', $purchase->vendor_details->phone_number, null, ['id' => 'phone_number','class' => 'form-control', 'placeholder' => 'Phone Number']) !!}
 			</div>
 		</div>
 
 
 		{{-- Code for add item Dynamically --}}
 		@setvar($i = 0)
-		<table>
-		<tr>
-			<td>purchase_id</td>
-			<td>vendor_sku</td>
-			<td>product_id</td>
-			<td>stock_no</td>
-			<td>Sku_Name</td>
-			<td>quantity</td>
-			<td>price</td>
-			<td>sub_total</td>
-			<td>receive_date</td>
-			<td>receive_quantity</td>
-			<td>balance_quantity</td>
-			<td>{!! Form::button('Add new row',['class'=>'btn btn-success btn-block', 'id' => 'add-new-row']) !!}</td>
-		</tr>
-		<tr class="collection">
-			<td >
-				{!! Form::text("purchase_id[$i]", null, ['id' => "purchase_id", 'step' => 'any', 'class' => 'form-control']) !!}
-			</td>
-			<td >
-				{!! Form::text("vendor_sku[$i]", null, ['id' => "vendor_sku", 'step' => 'any', 'class' => 'form-control']) !!}
-			</td>
-			<td >
-				{!! Form::text("product_id[$i]", null, ['id' => "product_id", 'step' => 'any', 'class' => 'form-control', 'readonly']) !!}
-			</td>
-			<td >
-				{!! Form::text("stock_no[$i]", null, ['id' => "stock_no", 'step' => 'any', 'class' => 'form-control', 'readonly']) !!}
-			</td>
-			<td >
-				{!! Form::text("vendor_sku_name[$i]", null, ['id' => "vendor_sku_name", 'step' => 'any', 'class' => 'form-control', 'readonly']) !!}
-			</td>
-			<td >
-				{!! Form::number("quantity[$i]", null, ['id' => "quantity", 'step' => 'any', 'class' => 'form-control']) !!}
-			</td>
-			<td >
-				{!! Form::number("price[$i]", null, ['id' => "price", 'step' => 'any', 'class' => 'form-control']) !!}
-			</td>
-			<td >
-				{!! Form::number("sub_total[$i]", null, ['id' => "sub_total", 'step' => 'any', 'class' => 'form-control sub_total']) !!}
-			</td>
-			<td >
-				{!! Form::number("receive_date[$i]", null, ['id' => "receive_date", 'step' => 'any', 'class' => 'form-control']) !!}
-			</td>
-			<td >
-				{!! Form::number("receive_quantity[$i]", null, ['id' => "receive_quantity", 'step' => 'any', 'class' => 'form-control']) !!}
-			</td>
-			<td >
-				{!! Form::number("balance_quantity[$i]", null, ['id' => "balance_quantity", 'step' => 'any', 'class' => 'form-control']) !!}
-			</td>
-			<td></td>
-		</tr>
+		@if($purchase->products)
+			<table>
+				<tr>
+					<td>purchase_id</td>
+					<td>vendor_sku</td>
+					<td>product_id</td>
+					<td>stock_no</td>
+					<td>Sku_Name</td>
+					<td>quantity</td>
+					<td>price</td>
+					<td>sub_total</td>
+					<td>receive_date</td>
+					<td>receive_quantity</td>
+					<td>balance_quantity</td>
+					<td>{!! Form::button('Add new row',['class'=>'btn btn-success btn-block', 'id' => 'add-new-row']) !!}</td>
+				</tr>
+			@foreach($purchase->products as $product)
+				<tr class="collection">
+					<td >
+						{!! Form::text("purchase_id[$i]", $product->purchase_id, null, ['id' => "purchase_id", 'step' => 'any', 'class' => 'form-control']) !!}
+					</td>
+					<td >
+						{!! Form::text("vendor_sku[$i]", $product->vendor_sku, null, ['id' => "vendor_sku", 'step' => 'any', 'class' => 'form-control']) !!}
+					</td>
+					<td >
+						{!! Form::text("product_id[$i]", $product->product_id,null, ['id' => "product_id", 'step' => 'any', 'class' => 'form-control', 'readonly']) !!}
+					</td>
+					<td >
+						{!! Form::text("stock_no[$i]", $product->stock_no,null, ['id' => "stock_no", 'step' => 'any', 'class' => 'form-control', 'readonly']) !!}
+					</td>
+					<td >
+						{!! Form::text("vendor_sku_name[$i]", $product->product_details->vendor_sku_name, null, ['id' => "vendor_sku_name", 'step' => 'any', 'class' => 'form-control', 'readonly']) !!}
+					</td>
+					<td >
+						{!! Form::number("quantity[$i]", $product->quantity,null, ['id' => "quantity", 'step' => 'any', 'class' => 'form-control']) !!}
+					</td>
+					<td >
+						{!! Form::number("price[$i]", $product->price,null, ['id' => "price", 'step' => 'any', 'class' => 'form-control']) !!}
+					</td>
+					<td >
+						{!! Form::number("sub_total[$i]", $product->sub_total,null, ['id' => "sub_total", 'step' => 'any', 'class' => 'form-control sub_total']) !!}
+					</td>
+					<td >
+						{!! Form::number("receive_date[$i]", $product->receive_date,null, ['id' => "receive_date", 'step' => 'any', 'class' => 'form-control']) !!}
+					</td>
+					<td >
+						{!! Form::number("receive_quantity[$i]", $product->receive_quantity,null, ['id' => "receive_quantity", 'step' => 'any', 'class' => 'form-control']) !!}
+					</td>
+					<td >
+						{!! Form::number("balance_quantity[$i]", $product->balance_quantity,null, ['id' => "balance_quantity", 'step' => 'any', 'class' => 'form-control']) !!}
+					</td>
+					<td></td>
+				</tr>
+				@setvar(++$i)
+			@endforeach
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>Grand Total=</td>
+					<td>{!! Form::number("grand_total", $product->grand_total, null, ['id' => "grand_total", 'step' => 'any', 'class' => 'form-control grand_total']) !!}</td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
 
-		<tr>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td>Grand Total=</td>
-			<td>{!! Form::number("grand_total", '0', ['id' => "grand_total", 'step' => 'any', 'class' => 'form-control grand_total']) !!}</td>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
-
-		</table>
-
+			</table>
+		@endif
 		<br><br>
 		<div class = 'form-group'>
 			<div class = "col-xs-2">

@@ -36,6 +36,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		resource('users', 'UserController');
 		resource('vendors', 'VendorController');
 		resource('purchases', 'PurchaseController');
+		resource('purchases/getVendorById', 'PurchaseController@getVendorById');
+		resource('purchases/purchased_inv_products', 'PurchaseController@getPurchasedInvProducts');
 
 		resource('collections', 'CollectionController');
 		resource('occasions', 'OccasionController');
