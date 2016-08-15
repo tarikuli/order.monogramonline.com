@@ -39,6 +39,11 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		resource('purchases/getVendorById', 'PurchaseController@getVendorById');
 		resource('purchases/purchased_inv_products', 'PurchaseController@getPurchasedInvProducts');
 
+		get('autocomplete',array('as'=>'autocomplete','uses'=>'PurchaseController@index'));
+		resource('purchases/searchajax', 'PurchaseController@autoComplete');
+
+		get('prints/packing/{id}', 'PrintController@packing');
+
 		resource('collections', 'CollectionController');
 		resource('occasions', 'OccasionController');
 

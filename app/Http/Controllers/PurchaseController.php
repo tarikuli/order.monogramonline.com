@@ -115,19 +115,16 @@ class PurchaseController extends Controller
 
 	public function update (Request $request, $id)
 	{
-		//
-// 		return $request->all();
-
-// 		$vendor = Vendor::find($id);
-// 		if ( !$vendor ) {
-// 			return view('errors.404');
-// 		}
-
 		$purchase = Purchase::where('po_number', $id)
 					->where('is_deleted', 0)
 					->get();
+
 		$purchase = $purchase[0];
-// 		$purchase = new Purchase();
+
+		if ( count($purchase) == 0 ) {
+			return view('errors.404');
+		}
+
 		$purchase->po_number = $request->get('po_number');
 		$purchase->po_date = trim($request->get('po_date'));
 		$purchase->vendor_id = trim($request->get('vendor_id'));
@@ -140,16 +137,16 @@ class PurchaseController extends Controller
 		// one purchase may have many products
 		$index = 0;
 		// index is used to grab the array of products with details.
-		$purchase_ids = $request->get('purchase_id');
-		$product_ids = $request->get('product_id');
-		$stock_nos = $request->get('stock_no');
-		$vendor_skus = $request->get('vendor_sku');
-		$quantitys = $request->get('quantity');
-		$prices = $request->get('price');
-		$sub_totals = $request->get('sub_total');
-		$receive_dates = $request->get('receive_date');
-		$receive_quantitys = $request->get('receive_quantity');
-		$balance_quantitys = $request->get('balance_quantity');
+		$purchase_ids = array_values(($request->get('purchase_id')));
+		$product_ids = array_values(($request->get('product_id')));
+		$stock_nos = array_values(($request->get('stock_no')));
+		$vendor_skus = array_values(($request->get('vendor_sku')));
+		$quantitys = array_values(($request->get('quantity')));
+		$prices = array_values(($request->get('price')));
+		$sub_totals = array_values(($request->get('sub_total')));
+		$receive_dates = array_values(($request->get('receive_date')));
+		$receive_quantitys = array_values(($request->get('receive_quantity')));
+		$balance_quantitys = array_values(($request->get('balance_quantity')));
 		//----------
 
 		foreach ( $purchase_ids as $purchase_id ) {
@@ -170,7 +167,11 @@ class PurchaseController extends Controller
 
 		session()->flash('success', 'Purchases is successfully updated.');
 
-		return redirect()->route('purchases.index');
+		return redirect()
+				->back()
+				->with('success', 'Purchases is successfully updated.');
+
+// 		return redirect()->route('purchases.index');
 	}
 
 	public function destroy ($id)
@@ -241,5 +242,29 @@ class PurchaseController extends Controller
 					'vendor_sku_name' => $purchasedInvProducts->vendor_sku_name,
 			]);
 		}
+	}
+
+	public function autoComplete(Request $request) {
+//dd($request->all());
+		$query = $request->get('serchTxt','');
+
+		$vendors=Vendor::where('is_deleted', 0)->where('vendor_name','LIKE','%'.$query.'%')->get()->take(5);
+
+// 		$vendors = Vendor::where('is_deleted', 0)
+// 							->where('vendor_name','LIKE','%'.$query.'%')
+// 							->lists('vendor_name', 'id')
+// 							->take(5);
+// 		->prepend('Select a vendor', 0);
+
+// 		dd($vendors);
+
+		$data=array();
+		foreach ($vendors as $key => $vendor) {
+			$data[]=array('value'=>$vendor->id." - ".$vendor->vendor_name, 'id'=>$vendor->id);
+		}
+		if(count($data))
+			return response()->json($data);
+		else
+			return response()->json(['value'=>'No Result Found','id'=>'']);
 	}
 }

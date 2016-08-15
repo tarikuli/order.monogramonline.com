@@ -8,6 +8,15 @@
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
       href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+
+	<link type = "text/css" rel = "stylesheet"  href = "/assets/css/jquery.ui.autocomplete.css">
+ 	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+	<script src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 </head>
 <body>
 	@include('includes.header_menu')
@@ -94,7 +103,7 @@
 		</tr>
 		<tr class="collection">
 			<td >
-				{!! Form::text("purchase_id[$i]", null, ['id' => "purchase_id", 'step' => 'any', 'class' => 'form-control']) !!}
+				{!! Form::text("purchase_id[$i]", null, ['id' => "purchase_id", 'step' => 'any', 'class' => 'form-control', 'readonly']) !!}
 			</td>
 			<td >
 				{!! Form::text("vendor_sku[$i]", null, ['id' => "vendor_sku", 'step' => 'any', 'class' => 'form-control']) !!}
@@ -155,10 +164,6 @@
 
 		{!! Form::close() !!}
 	</div>
-	<script src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
-	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 
 
 	<script type = "text/javascript">
@@ -177,14 +182,16 @@
 			var collection_text = $('<div />').append($(collection).eq(0).clone()).html();
 			var new_row = collection_text.replace(/\[.?]/g, "[]");
 			$(collection).last().after(new_row);
+			sumSubTotal();
 		});
 
 
-// 		$(document).on('click', 'a.remove-row', function (event)
-// 		{
-// 			event.preventDefault();
-// 			$(this).closest('div.collection').remove();
-// 		});
+		$(document).on('click', 'a#delete', function (event)
+		{
+			event.preventDefault();
+			$(this).closest('tr.collection').remove();
+			sumSubTotal();
+		});
 
 		$(document).on('change', 'input#quantity', function ()
 		{
@@ -274,7 +281,29 @@
 			 });
 		});
 
+		$(document).on('change', 'input#vendor_name', function ()
+		{
+		    route = '/purchases/searchajax';
+		     $("#vendor_name").autocomplete({
+		        source: function(request, response) {
+		        	token = $('input[name=_token]').val();
+					$.ajax({
+						url: route,
+						headers: {'X-CSRF-TOKEN': token},
+						type: 'POST',
+						dataType: 'json',
+						data: {serchTxt : request.term},
+						context: this,
+						success:function(data) {
+	// 						console.log( data );
+							response(data);
+					    }
+					 });
+		        },
+		        min_length: 3,
 
+		    });
+		});
 
 	</script>
 </body>
