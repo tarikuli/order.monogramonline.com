@@ -61,7 +61,7 @@
 						<tr data-id = "{{$station->id}}" id="{{ $station->station_name }}">
 							<td>{{ $count++ }}</td>
 							<td><input class = "form-control" name = "station_name" type = "text"
-							           value = "{{$station->station_name}}"></td>
+							           value = "{{$station->station_name}}" readonly="readonly"></td>
 							<td><input class = "form-control" name = "station_description" type = "text"
 							           value = "{{$station->station_description}}"></td>
 

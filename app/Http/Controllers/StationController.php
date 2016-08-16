@@ -530,7 +530,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 // 				Helper::jewelDebug($earliest_batch_creation_date);
 
 
-				$station = Station::where ( 'station_name', $station_name )->first ();
+				$station = Station::where ( 'station_name', $station_name )->first();
 
 				$summary ['station_id'] = $station->id;
 				$summary ['station_description'] = $station->station_description;
