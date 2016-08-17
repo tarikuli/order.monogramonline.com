@@ -1172,11 +1172,15 @@ class ItemController extends Controller
 
 		// Jewel Update to child_sku
 		foreach ( $items->groupBy('child_sku') as $sku => $sku_groups ) {
+// Helper::jewelDebug($sku_groups->first()->id);
+// Helper::jewelDebug($sku_groups->first()->route->toArray());
+			if(!$sku_groups->first()->route){
+				return ("Please create Batch for All Item in Order# <a href = '".url(sprintf('/orders/details/%s', $sku_groups->first()->order_id))."'>".sprintf('%s', $sku_groups->first()->order_id)."</a>");
+			}
 			$route = $sku_groups->first()->route;
 			$item_thumb = $sku_groups->first()->item_thumb;
 			$batch_stations = $route->stations->lists('custom_station_name', 'id')
 											  ->prepend('Select station to change', '0');
-
 			$count = 0;
 			foreach ($sku_groups as $key => $value){
 				$count = $count + $value->item_quantity;
