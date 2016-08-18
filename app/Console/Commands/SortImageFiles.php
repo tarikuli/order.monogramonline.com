@@ -94,10 +94,10 @@ class SortImageFiles extends Command
 					// Check search key exist in image file name.
 					if (strpos($imageFileName, $imageSrcKey) !== false) {
 						// If Exist Move to Soft or Hard Folder
-						$this->logger("info", $imageDirPath.'\\'.$imageFileName);
+						$this->logger("info", $imageDirPath.'/'.$imageFileName);
 	// 					$this->logger("warning", $this->destination_csv_dir.'\\'.$imageFileName);
-						if(file_exists ($imageDirPath.'\\'.$imageFileName)){
-							copy($imageDirPath.'\\'.$imageFileName, $this->destination_csv_dir.'\\'.$imageSrcKey.'\\'.$imageFileName);
+						if(file_exists ($imageDirPath.'/'.$imageFileName)){
+							copy($imageDirPath.'/'.$imageFileName, $this->destination_csv_dir.'/'.$imageSrcKey.'/'.$imageFileName);
 						}
 					}
 				}

@@ -80,10 +80,10 @@ class SortCsvFiles extends Command
 		foreach ($fileNames as  $fileNameIndex => $fileName){
 			foreach ($this->csvSearchArray as $csvSrckey => $csvSrcVal){
 				if (strpos($fileName, $csvSrckey) !== false) {
-					$this->logger("info", $fileName);
-					if(file_exists ($this->source_csv_dir.'\\'.$fileName)){
+					if(file_exists ($this->source_csv_dir.'/'.$fileName)){
 						#copy($source_csv_dir.'\\'.$fileName, $csvSrcVal.'\\'.$fileName);
-						rename($this->source_csv_dir.'\\'.$fileName, $csvSrcVal.'\\'.$fileName);
+						$this->logger("info", $fileName);
+						rename($this->source_csv_dir.'/'.$fileName, $csvSrcVal.'/'.$fileName);
 					}
 				}
 			}
@@ -115,7 +115,7 @@ class SortCsvFiles extends Command
 		if (is_dir($dir)){
 			$file_lists = array_values(array_diff(scandir($dir), array('..', '.')));
 			foreach ($file_lists as $val){
-				if (!is_dir($dir."\\".$val)){
+				if (!is_dir($dir.'/'.$val)){
 					$file_list[] = $val;
 				}
 			}
