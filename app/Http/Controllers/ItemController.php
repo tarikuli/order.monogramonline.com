@@ -125,6 +125,8 @@ class ItemController extends Controller
 
 	public function postBatch (Requests\ItemToBatchCreateRequest $request)
 	{
+// 		return $request->all();
+
 		$today = date('md', strtotime('now'));
 		$batches = $request->get('batches');
 
@@ -143,6 +145,7 @@ class ItemController extends Controller
 		$last_batch_number = $max_batch_number;
 		$current_group = -1;
 
+		set_time_limit(0);
 		foreach ( $batches as $preferredBatch ) {
 			list( $inGroup, $batch_route_id, $item_id ) = explode("|", $preferredBatch);
 			if ( $inGroup != $current_group ) {
@@ -162,6 +165,7 @@ class ItemController extends Controller
 		}
 
 		#return $acceptedGroups;
+		set_time_limit(0);
 		foreach ( $acceptedGroups as $groups ) {
 			foreach ( $groups as $itemGroup ) {
 				$item_id = $itemGroup[0];
@@ -207,7 +211,7 @@ class ItemController extends Controller
 			}
 		}
 
-		return redirect(url('items/grouped'));
+		return redirect(url('items/batch'));
 	}
 
 	public function getGroupedBatch (Request $request)
