@@ -12,7 +12,7 @@ class SortImageFiles extends Command
 
 	private $imageSearchArray = [];
 
-	private $destination_csv_dir = "";
+	private $source_image_dir = "";
     /**
      * The name and signature of the console command.
      *
@@ -45,20 +45,12 @@ class SortImageFiles extends Command
     public function handle()
     {
         // this line is mandatory settings supervisor_station
-
-    	// CSV search string
-//     	$imageSearchArray['pc1'] = 'C:\xampp\htdocs\destination_csv_dir\pc1';
-//     	$imageSearchArray['pc2'] = 'C:\xampp\htdocs\destination_csv_dir\pc2';
-//     	$imageSearchArray['pc1'] = 'C:\xampp\htdocs\destination_csv_dir\pc3';
-
 		// get the public path where to store the image
 		$this->save_to_path = public_path();
 		// Set Source file name
-// 		$destination_csv_dir = 'C:\xampp\htdocs\destination_csv_dir';
-// 		$settings = Setting::where('supervisor_station', 'csvSearch')->get();
 		$settings = Setting::all();
 		$settings = $settings->toArray();
-
+		// Put all Search Setting
 		foreach ($settings as  $fileNameIndex => $fileName){
 // 			$this->logger("info", $fileName['supervisor_station']);
 
@@ -66,8 +58,8 @@ class SortImageFiles extends Command
 				case "imageSearch":
 					$this->imageSearchArray[$fileName['default_shipping_rule']] = $fileName['default_route_id'];
 					break;
-				case "destination_image_dir":
-					$this->destination_csv_dir = $fileName['default_route_id'];
+				case "source_image_dir":
+					$this->source_image_dir = $fileName['default_route_id'];
 					break;
 			}
 
@@ -76,28 +68,37 @@ class SortImageFiles extends Command
 		// Get Unique search key from imageSearchArray
 		$imageUniqueSearchKeys = array_unique(array_keys($this->imageSearchArray ));
 
-		// Get file name from directory
-
-		foreach ($this->imageSearchArray as  $imageDirPath){
-
-// 			$this->logger("info", $imageSrcKey);
-// 			$this->logger("warning", $imageDirPath);
-
-			// Get files name from directory
-			$imageFileNames = $this->getFileName($imageDirPath);
-// 			$this->logger("error", $fileNames);
-			// Loop in image files
-			foreach ($imageFileNames as $imageFileName){
-				// V.V.V I note Destination move image file name will be same as  $imageSrcKey
-				foreach ($imageUniqueSearchKeys as $imageSrcKey)
-				{
-					// Check search key exist in image file name.
-					if (strpos($imageFileName, $imageSrcKey) !== false) {
-						// If Exist Move to Soft or Hard Folder
-						$this->logger("info", $imageDirPath.'/'.$imageFileName);
-	// 					$this->logger("warning", $this->destination_csv_dir.'\\'.$imageFileName);
-						if(file_exists ($imageDirPath.'/'.$imageFileName)){
-							copy($imageDirPath.'/'.$imageFileName, $this->destination_csv_dir.'/'.$imageSrcKey.'/'.$imageFileName);
+		// Get All  directory from
+		if(file_exists ($this->source_image_dir)){
+			$source_image_dir_list = $this->getFileName($this->source_image_dir);
+			// Loop in Each Dir for Execute Business Logic
+			foreach ($source_image_dir_list as $dir_name){
+				$file_list_in_dir = $this->getFileName($this->source_image_dir.'/'.$dir_name);
+// 				$this->logger("info", $file_list_in_dir);
+				if(count($file_list_in_dir) > 0){
+					// Search for Match key word in Current directory
+					foreach ($this->imageSearchArray as  $imageSrcKey => $imageSearch){
+// 						$this->logger("warning", $this->source_image_dir.'/'.$dir_name." -> ".$imageSrcKey." -> ".$file_list_in_dir[0]);
+						if (strpos($file_list_in_dir[0], $imageSrcKey) !== false) {
+// 							$this->logger("info", $imageSrcKey." ->	".$imageSearch." -> ".$file_list_in_dir[0]);
+// 							rename($this->source_image_dir.'/'.$dir_name, $imageSearch.'/');
+							$souece_dir = $this->source_image_dir."/".$dir_name;
+							$move_dir = $imageSearch."/".$dir_name;
+							$move_dir_done = $imageSearch."/../Done";
+							if($imageSrcKey == "soft"){
+// 								$this->logger("error", $souece_dir);
+// 								$this->logger("info", $move_dir_done);
+								shell_exec("cp -r \"$souece_dir\" \"$move_dir_done\"");
+								shell_exec("mv \"$souece_dir\" \"$move_dir\"");
+							}elseif($imageSrcKey == "hard"){
+// 								$this->logger("error", $souece_dir);
+// 								$this->logger("info", $move_dir_done);
+								shell_exec("cp -r \"$souece_dir\" \"$move_dir_done\"");
+								shell_exec("mv \"$souece_dir\" \"$move_dir\"");
+							}else{
+								shell_exec("mv \"$souece_dir\" \"$move_dir\"");
+							}
+							break;
 						}
 					}
 				}
