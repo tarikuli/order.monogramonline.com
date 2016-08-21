@@ -132,9 +132,13 @@
 									@endif
 								</td>
 								<td class = 'maxtdwidth'>
-								{{ $option->id  }}
-									<a href = "{{$option->product->first()->product_url}}"
-									   target = "_blank">{{ $option->id_catalog }}</a>
+								Option ID# {{ $option->id  }}<br>
+								{{-- <a href = "{{$option->product->first()->product_url}}"
+									   target = "_blank">{{ $option->id_catalog }}</a> --}}
+
+
+								<a href = "{{ url($option->product ? $option->product->product_url : "#") }}"
+						   				target = "_blank">{{$option->id_catalog}}</a>
 								</td>
 								<td class = 'maxtdwidth'>
 									<a href = "{{url(sprintf("products?search_for=%s&search_in=product_model&product_sales_category=all&product_master_category=&category=0", $option->parent_sku)) }}"

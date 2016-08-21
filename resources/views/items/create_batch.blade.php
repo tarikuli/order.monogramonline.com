@@ -101,6 +101,10 @@
 														<td>
 															<a href = "{{url("orders/details/$item->order_id")}}"
 															   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item, "order_table_id")}}</a>
+																<br>
+								   							<a href = "{{ url("orders/details/".$item->order_id) }}"
+															   target = "_blank">{{\Monogram\Helper::itemOrderNameFormatter($item)}}
+															</a>
 														</td>
 														<td>{{substr($item->order_date, 0, 10)}}</td>
 														<td>
@@ -201,9 +205,6 @@
 						{!! Form::checkbox('select-deselect', 1, false, ['id' => 'select-deselect']) !!} Select add /
 						                                                                                 Deselect all
 					</label>
-				</div>
-				<div class = "form-group pull-right">
-					{!! Form::submit('Create batch', ['class' => 'btn btn-success']) !!}
 				</div>
 			</div>
 			{!! Form::close() !!}

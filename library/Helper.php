@@ -995,6 +995,7 @@ APPEND;
 								 return $query->where('parameter_options.batch_route_id', '!=', 115)
 											  ->whereNotNull('parameter_options.batch_route_id');
 							 })
+							 ->take(1000)
 							 ->addSelect([
 								 DB::raw('items.id AS item_table_id'),
 								 'items.item_id',
