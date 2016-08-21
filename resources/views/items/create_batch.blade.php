@@ -206,6 +206,9 @@
 						                                                                                 Deselect all
 					</label>
 				</div>
+				<div class = "form-group pull-right">
+					{!! Form::submit('Create batch', ['class' => 'btn btn-success']) !!}
+				</div>
 			</div>
 			{!! Form::close() !!}
 		@else

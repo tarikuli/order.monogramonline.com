@@ -87,7 +87,7 @@ class PrintController extends Controller
 			if(!$request->exists('station')){
 				$station_name = $batch_number[1];
 			}
-
+			set_time_limit(0);
 			$module = $this->batch_printing_module($batch_num, $station_name);
 			$modules[] = $module->render();
 		}
@@ -130,13 +130,13 @@ class PrintController extends Controller
 
 	private function batch_printing_module ($batch_number, $station_name)
 	{
-		$item = Item::with('shipInfo', 'order.customer', 'lowest_order_date', 'route.stations_list', 'groupedItems', 'order', 'station_details', 'product')
+// 		$item = Item::with('shipInfo', 'order.customer', 'lowest_order_date', 'route.stations_list', 'groupedItems', 'order', 'station_details', 'product')
+		$item = Item::with('order.customer', 'lowest_order_date', 'route.stations_list', 'groupedItems', 'order', 'station_details', 'product')
 					->where('batch_number', '=', $batch_number)
 					->whereNull('tracking_number')
 					->groupBy('batch_number')
 					->latest('batch_creation_date')
 					->first();
-
 		/*if ( !count($item) ) {*/
 		if ( !$item ) {
 			return view('errors.404');

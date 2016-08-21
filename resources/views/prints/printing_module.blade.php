@@ -46,7 +46,7 @@
 						<th align = "center" style = "width:18mm;">SKU</th>
 						<th align = "center" style = "width:50mm;">Item name</th>
 						<th align = "center" style = "width:100mm;">Options</th>
-						<th align = "center" style = "width:8mm;">Shi -pped?</th>
+						<th align = "center" style = "width:8mm;">Shipped?</th>
 					</tr>
 					@setvar($count = 0)
 					@foreach($item->groupedItems as $row)
@@ -64,8 +64,10 @@
 								<td align = "left" rowspan = "2">{{$row->item_description}}</td>
 								<td align = "left"
 								    rowspan = "2">{!! \Monogram\Helper::jsonTransformer($row->item_option, "<br/>") !!}</td>
-								<td align = "left"
-								    rowspan = "2">{{ $row->shipInfo ? ($row->shipInfo->tracking_number ? "Yes" : "No" ): "No" }}</td>
+								<td align = "left" rowspan = "2">
+									{{ $row->tracking_number ? "Yes" : "No" }}
+								    {{-- $row->shipInfo ? ($row->shipInfo->tracking_number ? "Yes" : "No" ): "No" --}}
+								 </td>
 							</tr>
 							<tr>
 								<td colspan = "4" align = "left" valign = "top">
