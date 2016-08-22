@@ -1160,8 +1160,8 @@ class ItemController extends Controller
 		$items = Item::with('lowest_order_date', 'route.stations')
 					 ->searchCutOffOrderDate($current_station_name,$request->get('cutoff_date'))
 // 					 ->searchActiveByStation($request->get('station'))
-// 					 ->where('batch_number', '!=', '0')
-// 					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
+					 ->where('batch_number', '!=', '0')
+					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
 					 ->where('is_deleted', 0)
 					 ->orderBy('child_sku', 'ASC')
 					 ->paginate(2000);
