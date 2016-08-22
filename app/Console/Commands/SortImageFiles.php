@@ -46,7 +46,14 @@ class SortImageFiles extends Command
     {
         // this line is mandatory settings supervisor_station
 		// get the public path where to store the image
-		$this->save_to_path = public_path();
+    	$this->save_to_path = public_path('assets/exports/station_log/');
+    	if (file_exists($this->save_to_path."sort_imagefiles")){
+    		return false;
+    	}
+    	if (file_exists($this->save_to_path."sort_csvfiles")){
+    		return false;
+    	}
+		Helper::createLock("sort_imagefiles");
 		// Set Source file name
 		$settings = Setting::all();
 		$settings = $settings->toArray();
@@ -104,6 +111,7 @@ class SortImageFiles extends Command
 				}
 			}
 		}
+		Helper::deleteLock("sort_imagefiles");
     }
 
     private function logger ($type,$message)

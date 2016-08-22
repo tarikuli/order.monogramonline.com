@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Hamcrest\Arrays\IsArray;
 use App\Setting;
+use Monogram\Helper;
 
 class SortCsvFiles extends Command
 {
@@ -48,18 +49,20 @@ class SortCsvFiles extends Command
         // this line is mandatory settings supervisor_station
 
     	// CSV search string
-//     	$csvSearchArray['pc1'] = 'C:\xampp\htdocs\source_csv_dir\pc1';
-//     	$csvSearchArray['pc2'] = 'C:\xampp\htdocs\source_csv_dir\pc2';
-//     	$csvSearchArray['pc1'] = 'C:\xampp\htdocs\source_csv_dir\pc3';
-
 		// get the public path where to store the image
-		$this->save_to_path = public_path();
+    	$this->save_to_path = public_path('assets/exports/station_log/');
+    	if (file_exists($this->save_to_path."sort_csvfiles")){
+    		return false;
+    	}
+    	if (file_exists($this->save_to_path."sort_imagefiles")){
+    		return false;
+    	}
+		Helper::createLock("sort_csvfiles");
 		// Set Source file name
-// 		$source_csv_dir = 'C:\xampp\htdocs\source_csv_dir';
-// 		$settings = Setting::where('supervisor_station', 'csvSearch')->get();
 		$settings = Setting::all();
 		$settings = $settings->toArray();
 
+$this->logger ("info","Called");
 		foreach ($settings as  $fileNameIndex => $fileName){
 // 			$this->logger("info", $fileName['supervisor_station']);
 
@@ -88,7 +91,7 @@ class SortCsvFiles extends Command
 				}
 			}
 		}
-
+		Helper::deleteLock("sort_csvfiles");
     }
 
     private function logger ($type,$message)

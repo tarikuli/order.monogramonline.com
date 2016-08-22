@@ -29,5 +29,11 @@ class Kernel extends ConsoleKernel
 	{
 		$schedule->command('inspire')
 				 ->hourly();
+
+		$schedule->command('sort:csvfiles')
+				 ->everyFiveMinutes();
+
+		$schedule->command('sort:imagefiles')
+				->everyTenMinutes();
 	}
 }

@@ -1321,4 +1321,20 @@ APPEND;
 		// 		Log::info("---jewelDebug---");
 		Log::info($valueArray);
 	}
+
+	public static function createLock($fileName){
+		$lock_path = public_path('assets/exports/station_log/');
+		$myfile = fopen($lock_path.$fileName, "w") or die("Unable to open file!");
+		$txt = $fileName;
+		fwrite($myfile, $txt);
+		fclose($myfile);
+	}
+
+	public static function deleteLock($fileName){
+		$lock_path = public_path('assets/exports/station_log/');
+		if (file_exists($lock_path.$fileName)) {
+			unlink ($lock_path.$fileName);
+		}
+
+	}
 }
