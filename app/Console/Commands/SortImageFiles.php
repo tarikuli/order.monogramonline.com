@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Setting;
+use Monogram\Helper;
 
 class SortImageFiles extends Command
 {
