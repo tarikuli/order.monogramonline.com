@@ -88,7 +88,6 @@ class SortImageFiles extends Command
 // 						$this->logger("warning", $this->source_image_dir.'/'.$dir_name." -> ".$imageSrcKey." -> ".$file_list_in_dir[0]);
 						if (strpos($file_list_in_dir[0], $imageSrcKey) !== false) {
 // 							$this->logger("info", $imageSrcKey." ->	".$imageSearch." -> ".$file_list_in_dir[0]);
-// 							rename($this->source_image_dir.'/'.$dir_name, $imageSearch.'/');
 							$souece_dir = $this->source_image_dir."/".$dir_name;
 							$move_dir = $imageSearch."/".$dir_name;
 							$move_dir_done = $imageSearch."/../Done";
