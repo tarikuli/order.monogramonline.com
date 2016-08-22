@@ -54,7 +54,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('prints/batch_packing', 'PrintController@batch_packing_slip');
 		get('prints/email_packing', 'PrintController@sendShippingConfirm');
 
-		get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
+// 		get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
 
 		get('prints/email_order_status', 'PrintController@sendOrderConfirm');
 
@@ -205,6 +205,7 @@ Route::group([ 'middleware' => [ 'guest' ] ], function () {
 	post('login', 'AuthenticationController@postLogin');
 	post('hook', 'OrderController@hook');
 	get('trk_order_status', 'ItemController@getOrderStatus');
+	get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
 });
 
 // Redefinition of routes
