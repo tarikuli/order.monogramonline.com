@@ -1142,7 +1142,6 @@ class ItemController extends Controller
 
 	public function get_active_batch_by_sku (Request $request)
 	{
-
 		if (in_array ( $request->get('station'), Helper::$shippingStations )) {
 // 			return redirect(url('/summary'))
 // 				->withErrors(new MessageBag([
@@ -1156,15 +1155,17 @@ class ItemController extends Controller
 			]);
 		}
 
+		$current_station_name = $request->get('station');
+
 		$items = Item::with('lowest_order_date', 'route.stations')
-					 ->searchCutOffOrderDate($request->get('station'),$request->get('cutoff_date'))
+					 ->searchCutOffOrderDate($current_station_name,$request->get('cutoff_date'))
 // 					 ->searchActiveByStation($request->get('station'))
 // 					 ->where('batch_number', '!=', '0')
 // 					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
+					 ->where('is_deleted', 0)
 					 ->orderBy('child_sku', 'ASC')
 					 ->paginate(2000);
 
-		$current_station_name = $request->get('station');
 		$stations = Station::where('is_deleted', 0)
 						   ->whereNotIn( 'station_name', Helper::$shippingStations)
 						   ->latest()
