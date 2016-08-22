@@ -53,7 +53,7 @@ class DeliveryEmail extends Command
     		return false;
     	}
 		Helper::createLock("deliveryemail");
-		PrintController::sendShippingConfirmByScript();
+		PrintController::getRouter("prints/sendbyscript");
 		Helper::deleteLock("sort_csvfiles");
     }
 
