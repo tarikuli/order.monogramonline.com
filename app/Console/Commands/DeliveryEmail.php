@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Hamcrest\Arrays\IsArray;
 use App\Setting;
 use Monogram\Helper;
-use App\Http\Controllers\PrintController;
+// use App\Http\Controllers\PrintController;
 
 class DeliveryEmail extends Command
 {
@@ -53,7 +53,7 @@ class DeliveryEmail extends Command
     		return false;
     	}
 		Helper::createLock("deliveryemail");
-		PrintController::getRouter("prints/sendbyscript");
+// 		PrintController::getRouter("prints/sendbyscript");
 		Helper::deleteLock("sort_csvfiles");
     }
 

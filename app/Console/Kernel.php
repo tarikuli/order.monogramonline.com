@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
 		\App\Console\Commands\ImageCrawler::class,
 		\App\Console\Commands\SortCsvFiles::class,
 		\App\Console\Commands\SortImageFiles::class,
-		\App\Console\Commands\DeliveryEmail::deliveryemail,
+		\App\Console\Commands\DeliveryEmail::class,
 	];
 
 	/**
