@@ -3,12 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Hamcrest\Arrays\IsArray;
-use App\Setting;
-use Monogram\Helper;
-// use App\Http\Controllers\PrintController;
+use Symfony\Component\Console\Input\InputOption;
+use Illuminate\Http\Request;
 
-class DeliveryEmail extends Command
+class CallRoute extends Command
 {
 	// https://www.youtube.com/watch?v=mp-XZm7INl8
 	private $save_to_path = '';
@@ -18,7 +16,7 @@ class DeliveryEmail extends Command
      *
      * @var string
      */
-    protected $signature = 'deliveryemail';
+     protected $name = 'route:call';
 
     /**
      * The console command description.
@@ -37,55 +35,16 @@ class DeliveryEmail extends Command
         parent::__construct();
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
+    public function fire()
     {
-        // this line is mandatory settings supervisor_station
-
-    	// CSV search string
-		// get the public path where to store the image
-    	$this->save_to_path = public_path('assets/exports/station_log/');
-    	if (file_exists($this->save_to_path."deliveryemail")){
-    		return false;
-    	}
-		Helper::createLock("deliveryemail");
-// 		PrintController::getRouter("prints/sendbyscript");
-		Helper::deleteLock("sort_csvfiles");
+    	$request = Request::create($this->option('uri'), 'GET');
+    	$this->info(app()['Illuminate\Contracts\Http\Kernel']->handle($request));
     }
 
-    private function logger ($type,$message)
+    protected function getOptions()
     {
-    	if(is_array($message)){
-    		$messages = "";
-    		foreach ($message as $key => $val){
-    			$messages .=$key ." - ". $val."\n";
-    		}
-    		$message = $messages;
-    	}
-    	if ( $type == 'info' ) {
-    		$this->info($message);
-    	} elseif ( $type == 'error' ) {
-    		$this->error($message);
-    	} elseif ( $type == 'warning' ) {
-    		$this->warn($message);
-    	}
-    	\Log::info($message);
-    }
-
-    private function getFileName($dir){
-    	$file_list = [];
-		if (is_dir($dir)){
-			$file_lists = array_values(array_diff(scandir($dir), array('..', '.')));
-			foreach ($file_lists as $val){
-				if (!is_dir($dir.'/'.$val)){
-					$file_list[] = $val;
-				}
-			}
-		}
-		return $file_list;
+    	return [
+    			['uri', null, InputOption::VALUE_REQUIRED, 'The path of the route to be called', null],
+    	];
     }
 }
