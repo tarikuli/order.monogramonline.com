@@ -15,7 +15,7 @@
 
 			// Check
 			if (!store_name) {
-			    var url = "http://www.monogramonline.com.com/" + id + ".html";
+			    var url = "http://www.monogramonline.com/" + id + ".html";
 			}else{
 				var url = "http://www."+store_name+"/" + id + ".html";
 			}

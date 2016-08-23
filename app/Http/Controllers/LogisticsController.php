@@ -684,7 +684,7 @@ class LogisticsController extends Controller
 
 	public function get_file_contents (Request $request)
 	{
-		return $request->all();
+		#return $request->all();
 		return file_get_contents($request->get('url'));
 	}
 
