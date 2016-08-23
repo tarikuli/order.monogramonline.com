@@ -59,6 +59,7 @@ class SortImageFiles extends Command
 		$settings = Setting::all();
 		$settings = $settings->toArray();
 		// Put all Search Setting
+$this->logger ("info","Called sort:imagefiles");
 		foreach ($settings as  $fileNameIndex => $fileName){
 // 			$this->logger("info", $fileName['supervisor_station']);
 

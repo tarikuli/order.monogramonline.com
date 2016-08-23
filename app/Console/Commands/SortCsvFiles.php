@@ -62,7 +62,7 @@ class SortCsvFiles extends Command
 		$settings = Setting::all();
 		$settings = $settings->toArray();
 
-$this->logger ("info","Called");
+$this->logger ("info","Called sort:csvfiles");
 		foreach ($settings as  $fileNameIndex => $fileName){
 // 			$this->logger("info", $fileName['supervisor_station']);
 

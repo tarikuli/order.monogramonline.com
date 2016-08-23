@@ -885,7 +885,7 @@ class ItemController extends Controller
 		if ( !$items ) {
 			return view('errors.404');
 		}
-
+Helper::jewelDebug($items[0]);
 		// Get Batch Route Id from first Item, because all Items route id are same.
 		$route_id = $items[0]->batch_route_id;
 
