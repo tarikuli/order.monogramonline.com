@@ -95,10 +95,10 @@ $this->logger ("info","Called sort:imagefiles");
 							$move_dir = $imageSearch."/".$dir_name;
 							$move_dir_done = $imageSearch."/../Done";
 							if($imageSrcKey == "soft"){
-// 								$this->logger("error", $souece_dir);
-// 								$this->logger("info", $move_dir_done);
-								shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_done\"");
-								shell_exec("mv \"$souece_dir\" \"$move_dir\"");
+	$this->logger("error", $souece_dir_files);
+	$this->logger("info", $move_dir);
+								shell_exec("cp -r \"$souece_dir\" \"$move_dir_done\"");
+								shell_exec("cp \"$souece_dir\" \"$move_dir\"");
 							}elseif($imageSrcKey == "hard"){
 // 								$this->logger("error", $souece_dir);
 // 								$this->logger("info", $move_dir_done);
