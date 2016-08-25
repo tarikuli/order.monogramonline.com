@@ -91,19 +91,20 @@ $this->logger ("info","Called sort:imagefiles");
 						if (strpos($file_list_in_dir[0], $imageSrcKey) !== false) {
 // 							$this->logger("info", $imageSrcKey." ->	".$imageSearch." -> ".$file_list_in_dir[0]);
 							$souece_dir = $this->source_image_dir."/".$dir_name;
-							$souece_dir_files = $this->source_image_dir."/".$dir_name."/*";
 							$move_dir = $imageSearch."/".$dir_name;
 							$move_dir_done = $imageSearch."/../Done";
+							$souece_dir_files = $move_dir_done."/".$dir_name."/.";
+							$move_dir_files = $imageSearch;
 							if($imageSrcKey == "soft"){
-	$this->logger("error", $souece_dir_files);
-	$this->logger("info", $move_dir);
-								shell_exec("cp -r \"$souece_dir\" \"$move_dir_done\"");
-								shell_exec("cp \"$souece_dir\" \"$move_dir\"");
+// 	$this->logger("error", $souece_dir_files);
+// 	$this->logger("info", $move_dir_files);
+								shell_exec("mv -r \"$souece_dir\" \"$move_dir_done\"");
+								shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_files\"");
 							}elseif($imageSrcKey == "hard"){
 // 								$this->logger("error", $souece_dir);
 // 								$this->logger("info", $move_dir_done);
-								shell_exec("cp -r \"$souece_dir\" \"$move_dir_done\"");
-								shell_exec("mv \"$souece_dir\" \"$move_dir\"");
+								shell_exec("mv -r \"$souece_dir\" \"$move_dir_done\"");
+								shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_files\"");
 							}else{
 								shell_exec("mv \"$souece_dir\" \"$move_dir\"");
 							}
