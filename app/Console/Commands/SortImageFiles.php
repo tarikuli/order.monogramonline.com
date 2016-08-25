@@ -98,12 +98,12 @@ $this->logger ("info","Called sort:imagefiles");
 							if($imageSrcKey == "soft"){
 // 	$this->logger("error", $souece_dir_files);
 // 	$this->logger("info", $move_dir_files);
-								shell_exec("mv -r \"$souece_dir\" \"$move_dir_done\"");
+								shell_exec("mv \"$souece_dir\" \"$move_dir_done\"");
 								shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_files\"");
 							}elseif($imageSrcKey == "hard"){
 // 								$this->logger("error", $souece_dir);
 // 								$this->logger("info", $move_dir_done);
-								shell_exec("mv -r \"$souece_dir\" \"$move_dir_done\"");
+								shell_exec("mv \"$souece_dir\" \"$move_dir_done\"");
 								shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_files\"");
 							}else{
 								shell_exec("mv \"$souece_dir\" \"$move_dir\"");
