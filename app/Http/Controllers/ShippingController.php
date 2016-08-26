@@ -126,7 +126,11 @@ class ShippingController extends Controller
 		]);
 	}
 
-	public function addressValidation (Request $request)
+	public function
+
+
+
+	 aaAAaAaa(Request $request)
 	{
 		$address = new \Ups\Entity\Address();
 		$address->setAttentionName('Mohammad Tarikul');
