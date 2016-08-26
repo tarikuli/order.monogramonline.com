@@ -131,21 +131,47 @@ class ShippingController extends Controller
 		$address = new \Ups\Entity\Address();
 		$address->setAttentionName('Mohammad Tarikul');
 		$address->setBuildingName('GF');
-		$address->setAddressLine1('5111,');
-		$address->setAddressLine2(' Ireland Street,');
-		$address->setAddressLine3('Elmhurst');
+		$address->setAddressLine1('5111 Ireland Street');
+		$address->setAddressLine2('');
+		$address->setAddressLine3('');
 		$address->setStateProvinceCode('NY');
-		$address->setCity('New York');
+		$address->setCity('Elmhurst');
 		$address->setCountryCode('US');
 		$address->setPostalCode('11373');
 
-		$xav = new \Ups\AddressValidation('5D13FF2E01A54549', 'tarikul_i', 'Dtw123Dtw');
+		$xav = new \Ups\AddressValidation(env('UPS_ACCESS_KEY'), env('UPS_USER_ID'), env('UPS_PASSWORD'));
 		$xav->activateReturnObjectOnValidate(); //This is optional
 		try {
 			$response = $xav->validate($address, $requestOption = \Ups\AddressValidation::REQUEST_OPTION_ADDRESS_VALIDATION, $maxSuggestion = 15);
-			var_dump($response);
+
+			if ($response->isValid()) {
+				$validAddress = $response->getValidatedAddress();
+
+				//Show user validated address or update their address with the 'official' address
+				//Or do something else helpful...
+				echo "<pre>";
+				// Dump array with object-arrays
+				print_r($validAddress);
+				echo "</pre>";
+			}else{
+				echo "Not valide address";
+			}
+
+			if ($response->isAmbiguous()) {
+				$candidateAddresses = $response->getCandidateAddressList();
+				foreach($candidateAddresses as $address) {
+					//Present user with list of candidate addresses so they can pick the correct one
+					echo "<pre>";
+					// Dump array with object-arrays
+					print_r($address);
+					echo "</pre>";
+				}
+			}
+
+
 		} catch (Exception $e) {
 			var_dump($e);
 		}
 	}
+
 }
