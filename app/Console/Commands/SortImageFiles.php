@@ -48,12 +48,6 @@ class SortImageFiles extends Command
         // this line is mandatory settings supervisor_station
 		// get the public path where to store the image
     	$this->save_to_path = public_path('assets/exports/station_log/');
-    	if (file_exists($this->save_to_path."sort_imagefiles")){
-    		return false;
-    	}
-    	if (file_exists($this->save_to_path."sort_csvfiles")){
-    		return false;
-    	}
 		Helper::createLock("sort_imagefiles");
 		// Set Source file name
 		$settings = Setting::all();
@@ -84,11 +78,16 @@ $this->logger ("info","Called sort:imagefiles");
 			foreach ($source_image_dir_list as $dir_name){
 				$file_list_in_dir = $this->getFileName($this->source_image_dir.'/'.$dir_name);
 // 				$this->logger("info", $file_list_in_dir);
-				if(count($file_list_in_dir) > 0){
-					// Search for Match key word in Current directory
+// 				if(count($file_list_in_dir) > 0){
+					// Search for Match key word in Current directory 718-966-6500 / 1-1866-258-7379
 					foreach ($this->imageSearchArray as  $imageSrcKey => $imageSearch){
 // 						$this->logger("warning", $this->source_image_dir.'/'.$dir_name." -> ".$imageSrcKey." -> ".$file_list_in_dir[0]);
-						if (strpos($file_list_in_dir[0], $imageSrcKey) !== false) {
+						if(is_dir($this->source_image_dir.'/'.$dir_name)){
+							$searchFileName = $file_list_in_dir[0];
+						}else{
+							$searchFileName = $dir_name;
+						}
+						if (strpos($searchFileName, $imageSrcKey) !== false) {
 // 							$this->logger("info", $imageSrcKey." ->	".$imageSearch." -> ".$file_list_in_dir[0]);
 							$souece_dir = $this->source_image_dir."/".$dir_name;
 							$move_dir = $imageSearch."/".$dir_name;
@@ -101,17 +100,15 @@ $this->logger ("info","Called sort:imagefiles");
 								shell_exec("mv \"$souece_dir\" \"$move_dir_done\"");
 								shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_files\"");
 							}elseif($imageSrcKey == "hard"){
-// 								$this->logger("error", $souece_dir);
-// 								$this->logger("info", $move_dir_done);
 								shell_exec("mv \"$souece_dir\" \"$move_dir_done\"");
 								shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_files\"");
 							}else{
-								shell_exec("mv \"$souece_dir\" \"$move_dir\"");
+								shell_exec("mv \"$souece_dir\" \"$imageSearch\"");
 							}
 							break;
 						}
 					}
-				}
+// 				}
 			}
 		}
 		Helper::deleteLock("sort_imagefiles");
