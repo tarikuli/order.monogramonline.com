@@ -125,4 +125,27 @@ class ShippingController extends Controller
 				'error' => 'Can not Tracking # Updated',
 		]);
 	}
+
+	public function addressValidation (Request $request)
+	{
+		$address = new \Ups\Entity\Address();
+		$address->setAttentionName('Mohammad Tarikul');
+		$address->setBuildingName('GF');
+		$address->setAddressLine1('5111,');
+		$address->setAddressLine2(' Ireland Street,');
+		$address->setAddressLine3('Elmhurst');
+		$address->setStateProvinceCode('NY');
+		$address->setCity('New York');
+		$address->setCountryCode('US');
+		$address->setPostalCode('11373');
+
+		$xav = new \Ups\AddressValidation('5D13FF2E01A54549', 'tarikul_i', 'Dtw123Dtw');
+		$xav->activateReturnObjectOnValidate(); //This is optional
+		try {
+			$response = $xav->validate($address, $requestOption = \Ups\AddressValidation::REQUEST_OPTION_ADDRESS_VALIDATION, $maxSuggestion = 15);
+			var_dump($response);
+		} catch (Exception $e) {
+			var_dump($e);
+		}
+	}
 }
