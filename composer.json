@@ -17,7 +17,8 @@
         "league/csv": "^8.0",
         "yangqi/htmldom": "dev-master",
         "intervention/image": "^2.3",
-        "jonnyw/php-phantomjs": "4.*"
+        "jonnyw/php-phantomjs": "4.*",
+        "ptondereau/laravel-ups-api": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
