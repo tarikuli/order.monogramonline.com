@@ -406,6 +406,8 @@ class Helper
 		'No'          => 'No',
 		'Redo Sample' => 'Redo Sample',
 		'Complete'    => 'Complete',
+		'Sample Approve'    => 'Sample Approve',
+		'Graphic Complete'    => 'Graphic Complete',
 	];
 
 	public static $webImageStatus = [
