@@ -100,6 +100,23 @@ class ProductSpecificationController extends Controller
 		return redirect("/products_specifications/$id")->with('success', 'Spec sheet is updated successfully.');
 	}
 
+	public function copyProduct(Request $request, $categoty_id, $product_sku){
+
+		$production_category = ProductionCategory::find($categoty_id);
+		$proposed_sku = $this->generateSKU($production_category->production_category_code, null);
+
+
+		$specSheet = SpecificationSheet::where('product_sku', $product_sku)
+										->first();
+		$newSpecSheet = $specSheet->replicate();
+		$newSpecSheet->product_sku = trim($proposed_sku); // New product
+		$newSpecSheet->save();
+
+		session()->flush('proposed_sku');
+		return redirect('/products_specifications')->with('success', 'New SKU '.$proposed_sku.' Created.');
+	}
+
+
 	public function getSteps (Request $request, $id = 1)
 	{
 		/*

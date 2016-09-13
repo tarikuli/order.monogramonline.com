@@ -772,6 +772,8 @@
 			</div>
 		</div>
 		<div class = "form-group">
+		<a href = "{{ url("copy_products_specifications/".$spec->production_category_id."/".$spec->product_sku) }}" title = "Copy"
+						       class = "btn btn-link">Copy</a>
 			<div class = "col-md-2 pull-right">
 				{!! Form::submit('Update',['class'=>'btn btn-primary btn-block']) !!}
 			</div>

@@ -128,6 +128,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 		get('products_specifications/step/{id?}', 'ProductSpecificationController@getSteps');
 		post('products_specifications/step/{id}', 'ProductSpecificationController@postSteps');
+		get('copy_products_specifications/{categoty_id}/{product_sku}', 'ProductSpecificationController@copyProduct');
 		resource('products_specifications', 'ProductSpecificationController');
 
 		resource('orders', 'OrderController');
