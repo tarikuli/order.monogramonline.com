@@ -869,13 +869,13 @@ APPEND;
 		$final_weight = $add_weight + $product_weight;
 		$order_number = $item->order_id;
 		$customer = Customer::where('order_id', $order_number)
-							->first();
+							->first()->where('is_deleted',0);
 		$name = sprintf("%s %s", $customer->ship_first_name, $customer->ship_last_name);
 		if ( !trim($name) ) {
 			$name = sprintf("%s %s", $customer->bill_first_name, $customer->bill_last_name);
 		}
 		$last_name = $customer->ship_last_name;
-		$company = trim($customer->ship_company_name) ? $customer->ship_company_name : $customer->bill_company_name;
+		/**$company = trim($customer->ship_company_name) ? $customer->ship_company_name : $customer->bill_company_name;
 		$address_1 = trim($customer->ship_address_1) ? $customer->ship_address_1 : $customer->bill_address_1;
 		$address_2 = trim($customer->ship_address_2) ? $customer->ship_address_2 : $customer->bill_address_2;
 		$city = trim($customer->ship_city) ? $customer->ship_city : $customer->bill_city;
@@ -883,7 +883,17 @@ APPEND;
 		$postal_code = trim($customer->ship_zip) ? $customer->ship_zip : $customer->bill_zip;
 		$country = trim($customer->ship_country) ? $customer->ship_country : $customer->bill_country;
 		$email = trim($customer->ship_email) ? $customer->ship_email : $customer->bill_email;
-		$phone = trim($customer->ship_phone) ? $customer->ship_phone : $customer->bill_phone;
+		$phone = trim($customer->ship_phone) ? $customer->ship_phone : $customer->bill_phone;**/
+		/*Update by Jewel on 09-14-2016 */
+		$company = trim($customer->ship_company_name);
+		$address_1 = trim($customer->ship_address_1);
+		$address_2 = trim($customer->ship_address_2);
+		$city = trim($customer->ship_city);
+		$state_city = trim($customer->ship_state);
+		$postal_code = trim($customer->ship_zip);
+		$country = trim($customer->ship_country);
+		$email = trim($customer->ship_email);
+		$phone = trim($customer->ship_phone);
 		$item_id = $item->id;
 		#$unique_order_id = sprintf("%06s", $item->order->id);
 		$unique_order_id = $unique_order_id ?: static::generateShippingUniqueId($item->order);
