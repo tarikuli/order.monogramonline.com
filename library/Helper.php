@@ -869,7 +869,7 @@ APPEND;
 		$final_weight = $add_weight + $product_weight;
 		$order_number = $item->order_id;
 		$customer = Customer::where('order_id', $order_number)
-							->first()->where('is_deleted',0);
+							->orderBy('id', 'desc')->first();
 		$name = sprintf("%s %s", $customer->ship_first_name, $customer->ship_last_name);
 		if ( !trim($name) ) {
 			$name = sprintf("%s %s", $customer->bill_first_name, $customer->bill_last_name);
