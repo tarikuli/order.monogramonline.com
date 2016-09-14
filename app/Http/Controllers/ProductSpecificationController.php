@@ -91,7 +91,7 @@ class ProductSpecificationController extends Controller
 		if(trim($request->get('previous_sku'))){
 
 			$specSheet = SpecificationSheet::where('product_sku', $request->get('previous_sku'))
-											->first();
+											->orderBy('id', 'desc')->first()->toArray();
 			if ( !$specSheet ) {
 				return redirect()
 				->back()
@@ -99,12 +99,13 @@ class ProductSpecificationController extends Controller
 								'error' => 'Cannot find pull SKU '.$request->get('previous_sku').'<br>Please verify SKU.',
 						]);
 			}
+			unset($specSheet['id']);
+			unset($specSheet['product_sku']);
+			unset($specSheet['images']);
+			unset($specSheet['product_details_file']);
 
-			$newSpecSheet = $specSheet->replicate();
-			$newSpecSheet->product_sku = trim($request->get('product_sku'));
-			$newSpecSheet->save();
+			SpecificationSheet::where('id', $id)->update($specSheet);
 
-			session()->flush('proposed_sku');
 			return redirect()
 				->back()
 				->with('success', $request->get('product_sku'). ' SKU contain update from SKU '. $request->get('previous_sku'));
