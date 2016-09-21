@@ -35,7 +35,7 @@
 </head>
 <body>
 	@include('includes.header_menu')
-	<div class = "container">
+	<div class = "container" style="min-width: 1550px; margin-left: 10px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li><a href = "{{url('/items/grouped')}}">Batch list</a></li>
@@ -46,24 +46,8 @@
 			@if($items)
 				<div class = "col-xs-8">
 					<p>Batch: # <span>{{$batch_number}}</span></p>
-					<a href = "{{url('exports/batch/'.$batch_number)}}">Export batch</a>
+					<a href = "{{url('exports/batch/'.$batch_number.'/'.$current_batch_station->station_name)}}">Export batch</a>
 					<p>Batch creation date: <span>{{substr($items[0]->batch_creation_date, 0, 10)}}</span></p>
-					{{--<div class = "col-xs-12">
-						--}}{{--<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>--}}{{--
-						--}}{{--{!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
-						<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, []) !!}</p>
-						{!! Form::submit('Change status', ['id' => 'change-status',]) !!}
-						{!! Form::close() !!}--}}{{--
-					</div>--}}
-					{{--<div class = "col-xs-12">
-						<div class = "btn-group" role = "group" aria-label = "...">
-							--}}{{--<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>--}}{{--
-							--}}{{--<button type = "button" class = "btn btn-success" id = "done-all">Done all</button>--}}{{--
-						</div>
-						{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
-						{!! Form::hidden('action', null) !!}
-						{!! Form::close() !!}
-					</div>--}}
 
 					{!! Form::open(['method'=>'post', 'id' => 'action_changer']) !!}
 					{!! Form::hidden('action', null) !!}
@@ -73,36 +57,34 @@
 					<p>Template:
 						<a href = "{{url(sprintf("/templates/%d", $route->template->id))}}">{!! $route->template->template_name !!}</a>
 					</p>
-					<p>Route: {{$route['batch_code']}} / {{$route['batch_route_name']}} => {!! $stations !!}</p>
-					<p>Department: {{ $department_name }}</p>
 
+					<p>Route: <a href = "{{ url(sprintf("/batch_routes#%s", $route['batch_code'] )) }}"
+											   target = "_blank">{{$route['batch_code']}}</a> / {{$route['batch_route_name']}} => {!! $stations !!}</p>
+					<p>Department: {{ $department_name }}, <b>Last Update Date:</b> {{ $lastchangedate  }}, <b>Last Update by:</b> {{ $lastupdateby }}</p>
 					{!! Form::open(['url' =>  url(sprintf("/items/%d", $batch_number)), 'method' => 'put', 'id' => 'chabgeBatchStation']) !!}
 					{!! Form::hidden('current_station_name', $current_batch_station->station_name, ['id' => 'current_station_name']) !!}
 					{!! Form::close() !!}
 
 					<p>Current Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, array('id' => 'station')) !!}</p>
 
-					{{-- {!! Form::open(['url' => url(sprintf("batches/%d", $items[0]->batch_number)), 'method' => 'put', 'class' => 'form-horizontal']) !!}
-					<p>Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, []) !!}</p>
-					{!! Form::submit('Change station', ['id' => 'change-status',]) !!}
-					{!! Form::close() !!} --}}
 				</div>
 				<div class = "col-xs-4">
 					{!! \Monogram\Helper::getHtmlBarcode($batch_number) !!}
 					<br />
-					{{--@if($items->first())
-						<img src = "{{$items->first()->item_thumb}}" />
-						<br />
-					@endif--}}
-					<a href = "{{url('prints/batches?batch_number[]='.$batch_number)}}"
+					<a href = "{{url(sprintf("prints/batches?batch_number[]=%s&station=%s", $batch_number, $current_batch_station->station_name))}}"
 					   target = "_blank">Print batch</a>
+					/
+					<a href = "{{url(sprintf('prints/batch_packing?batch_number[]=%s&station=%s',$batch_number, $current_batch_station->station_name))}}"
+					   target = "_blank">Print packing slip</a>
+					   <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+					   {!! Form::button('Move to QCD Station', ['id' => 'back_to_qc_all', 'value' => $qdc_station, 'class' => 'btn btn-success']) !!}
 				</div>
 				<div class = "col-xs-12">
 					<table class = "table table-bordered" id = "batch-items-table">
 						<thead>
 						<tr>
 							<th>
-								<button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>
+								<!-- <button type = "button" class = "btn btn-danger" id = "reject-all">Reject all</button>  -->
 							</th>
 							<th>SL#</th>
 							<th>
@@ -110,50 +92,78 @@
 								<br />
 								Item barcode
 							</th>
-							{{--<th>Order</th>
-							<th>Order barcode</th>--}}
 							<th>Image</th>
 							<th>Date</th>
 							<th>Qty.</th>
 							<th>SKU</th>
 							<th>Item name</th>
 							<th>Options</th>
-							<th>
+							<th></th>
+							<!-- th>
 								<button type = "button" class = "btn btn-success" id = "done-all">Done all</button>
-							</th>
+							</th -->
 						</tr>
 						</thead>
 						<tbody>
 						@foreach($items as $item)
 							<tr data-id = "{{$item->id}}">
-								<td><a href = "#" class = "btn btn-danger reject">Reject</a></td>
-								<td>{{$count++}}</td>
-								{{--<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}</td>--}}
 								<td>
-									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
-									   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a> - {{$item->id}}
+									@if(!in_array ( $current_batch_station->station_name, \Monogram\Helper::$shippingStations ))
+										<a href = "#" class = "btn btn-danger reject">Reject</a>
+									@endif
+
+
+								</td>
+								<td>{{$count++}}</td>
+								<td>
+									Order# <a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
+									   target = "_blank">{{\Monogram\Helper::orderNameFormatter($item->order)}}</a>
 									<br />
-									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
+									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!}
+									<br />
+									Item# {{$item->id}}
+									<br />
+
+									@if(!in_array ( $current_batch_station->station_name, \Monogram\Helper::$shippingStations ))
+										<a href = "#" class = "move_to_shipping">Move 2 Shipping</a>
+									@else
+										<a href = "#" class = "back_to_qc">Back 2 QC</a>
+									@endif
+									<br/>
+
+
 								</td>
-								{{--<td>
-									<a href = "{{url('/orders/details/'.$item->order->order_id)}}">{{$item->order->short_order}}</a>
-								</td>
-								<td>{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->order->short_order)) !!}</td>--}}
-								<td><a href = "{{ $item->product->product_url }}" target = "_blank"><img
-												src = "{{$item->item_thumb}}" /></a>
+								<td>
+									<a href = "{{ $item->item_url }}" target = "_blank">
+									<img src = "{{$item->item_thumb}}" width="90" height="90" /></a>
 								</td>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
-								<td>{{$item->child_sku}}</td>
-								{{--<td>{{$item->item_description}}</td>--}}
-								<td class = "description">{{$item->item_description}}</td>
-								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
-								<td>{{--<a href = "#" class = "btn btn-danger reject">Reject</a> |--}}
+								<td>
+									<a href = "{{ url(sprintf("logistics/sku_show?store_id=%s&search_for=%s&search_in=child_sku", $item->store_id, $item->child_sku)) }}"
+									   target = "_blank">{{$item->child_sku}}</a>
+								</td>
+								<td align="left">
+									{{$item->item_description}}
+																		<br/>
 									@if($item->supervisor_message)
 										{{ $item->supervisor_message }}
 										<br />
 									@endif
+									@if($item->tracking_number)
+
+									<div style="color: red;">
+									Don't Make this Item again.<BR>
+										TRK# {{ $item->tracking_number }}
+									</div>
+									@endif
+								</td>
+								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '4', 'cols' => '20', /*"style" => "border: none; width: 100%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;"*/]) !!}</td>
+								<!-- td>
 									<a href = "#" class = "btn btn-success done">Done</a>
+								</td -->
+								<td>
+									<a href = "#" class = "btn btn-success complete">Complete</a>
 								</td>
 							</tr>
 						@endforeach
@@ -221,6 +231,12 @@
 			$("table#batch-items-table tfoot td#item-quantity-in-total").text("Total quantity: " + totalQuantity);
 
 			// By Jewel 04-25-2016
+			$("button#back_to_qc_all").on('click', function (event)
+			{
+				var value = $(this).val();
+				$("#station").val(value).trigger('change');
+			});
+
 			$("#station").on('change', function (event)
 			{
 				var value = $(this).val();
@@ -235,7 +251,8 @@
 
 				var token = $(form).find('input[name="_token"]').val();
 				var current_station_name = $(form).find('input[name="current_station_name"]').val();
-
+// alert(formUrl);
+// return false;
 				$.ajax({
 					method: 'PUT', url: formUrl, data: {
 						_token: token, station_name: value, current_station_name: current_station_name,
@@ -245,11 +262,45 @@
 						location.href = route;
 					}, error: function (xhr, textStatus, errorThrown)
 					{
+						//alert(errorThrown);
 						alert('Could not update product route');
 					}
 				});
 			});
 		});
+
+
+		$("a.move_to_shipping").on('click', function (event)
+		{
+			event.preventDefault();
+			var value = $(this).closest('tr').attr('data-id');
+			$("<input type='hidden' value='' />")
+					.attr("name", "item_id")
+					.attr("value", value)
+					.appendTo($("form#station-action"));
+			$("<input type='hidden' value='' />")
+					.attr("name", "action")
+					.attr("value", 'move_to_shipping')
+					.appendTo($("form#station-action"));
+			$("form#station-action").submit();
+		});
+
+		$("a.back_to_qc").on('click', function (event)
+				{
+					event.preventDefault();
+					var value = $(this).closest('tr').attr('data-id');
+					$("<input type='hidden' value='' />")
+							.attr("name", "item_id")
+							.attr("value", value)
+							.appendTo($("form#station-action"));
+					$("<input type='hidden' value='' />")
+							.attr("name", "action")
+							.attr("value", 'back_to_qc')
+							.appendTo($("form#station-action"));
+					$("form#station-action").submit();
+				});
+
+
 		$("a.reject").on('click', function (event)
 		{
 			event.preventDefault();
@@ -265,20 +316,8 @@
 					.appendTo($("form#station-action"));
 
 			$("#rejection-modal").modal('show');
-			/*var answer = confirm('Are you sure to reject?');
-			 if ( answer ) {
-			 var value = $(this).closest('tr').attr('data-id');
-			 $("<input type='hidden' value='' />")
-			 .attr("name", "item_id")
-			 .attr("value", value)
-			 .appendTo($("form#station-action"));
-			 $("<input type='hidden' value='' />")
-			 .attr("name", "action")
-			 .attr("value", 'reject')
-			 .appendTo($("form#station-action"));
-			 $("form#station-action").submit();
-			 }*/
 		});
+
 		$("button#reject-all").on('click', function (event)
 		{
 			event.preventDefault();
@@ -286,12 +325,6 @@
 			var value = 'reject'
 			$("input[name='action']").val(value);
 			$("#rejection-modal").modal('show');
-			/*var answer = confirm('Are you sure to reject this batch?');
-			 if ( answer ) {
-			 var value = 'reject'
-			 $("input[name='action']").val(value);
-			 $("form#action_changer").submit();
-			 }*/
 		});
 
 		$("#do-reject").on('click', function ()
@@ -317,8 +350,13 @@
 					.attr("name", "rejection_message")
 					.attr("value", rejection_message)
 					.appendTo($(form));
-
+			//console.log(form);
 			$(form).submit();
+		});
+
+
+		$("a.complete").on('click', function (event){
+			$(this).closest('tr').css("background-color", "#4E9563");
 		});
 
 		$("a.done").on('click', function (event)

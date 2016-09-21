@@ -39,10 +39,13 @@ class ExportController extends Controller
 								  ->get();
 
 		$table_columns = BatchRoute::getTableColumns();
+
 		$extra_columns = [
 			'stations',
 		];
 		$columns = array_merge($table_columns, $extra_columns);
+
+// dd($columns, $table_columns, $extra_columns);
 
 		$file_path = sprintf("%s/assets/exports/batch_routes/", public_path());
 		$file_name = sprintf("routes-%s-%s.csv", date("y-m-d", strtotime('now')), str_random(5));
@@ -59,6 +62,7 @@ class ExportController extends Controller
 				$route->batch_max_units,
 				$route->template ? $route->template->template_name : "N/A",
 				$route->batch_options,
+				$route->csv_extension,
 				count($route->stations_list) ? implode(",", $route->stations_list->lists('station_name')
 																				 ->toArray()) : "",
 			];

@@ -22,6 +22,16 @@ class Item extends Model
 					]);
 	}
 
+	private function tableColumns ()
+	{
+		$columns = $this->getConnection()
+					->getSchemaBuilder()
+					->getColumnListing($this->getTable());
+
+		return array_slice($columns, 0, -1);
+	}
+
+
 	public function parameter_options ()
 	{
 		return $this->hasMany('App\Option', 'store_id', 'store_id');
@@ -67,7 +77,10 @@ class Item extends Model
 
 	public function groupedItems ()
 	{
-		return $this->hasMany('App\Item', 'batch_number', 'batch_number');
+		// return $this->hasMany('App\Item', 'batch_number', 'batch_number');
+		return $this->hasMany('App\Item', 'batch_number', 'batch_number')
+					->whereNull('tracking_number')
+					->where('is_deleted', 0);
 	}
 
 	private function commaTrimmer ($string)
@@ -77,7 +90,8 @@ class Item extends Model
 
 	private function exploder ($string)
 	{
-		return explode(",", str_replace(" ", "", $this->commaTrimmer($string)));
+// 		return explode(",", str_replace(" ", "", $this->commaTrimmer($string)));
+		return explode(",", trim($string));
 	}
 
 	public function shipInfo ()
@@ -108,20 +122,43 @@ class Item extends Model
 			return;
 		}
 		$values = $this->exploder($search_for);
-		
-					
+
+
 		if ( $search_in == 'all' ) {
 			return;
 
 		} elseif ( $search_in == '5p_order' ) {
+
 			$order_ids = Order::where('id', 'REGEXP', implode("|", $values))
-			->lists('order_id')
-			->toArray();
-			if(empty($order_ids)){
+							  ->lists('order_id')
+							  ->toArray();
+
+			if ( empty( $order_ids ) ) {
 				return $query->where('order_id', "not_found");
 			}
+
 			return $query->where('order_id', $order_ids);
-			
+
+		} elseif ( $search_in == 'customer' ) {
+
+			$order_ids = Customer::where('ship_full_name', 'REGEXP', implode("|", $values))
+								  ->lists('order_id')
+								  ->toArray();
+			if ( count($order_ids) ) {
+				return $query->whereIn('order_id', $order_ids);
+			}
+			return;
+
+		} elseif ( $search_in == 'bill_email' ) {
+
+			$order_ids = Customer::where('bill_email', 'REGEXP', implode("|", $values))
+								  ->lists('order_id')
+								  ->toArray();
+			if ( count($order_ids) ) {
+				return $query->whereIn('order_id', $order_ids);
+			}
+			return;
+
 		} elseif ( $search_in == 'order' ) {
 
 			return $query->where('order_id', 'REGEXP', implode("|", $values));
@@ -151,6 +188,10 @@ class Item extends Model
 		} elseif ( $search_in == 'description' ) {
 
 			return $query->where('item_description', 'REGEXP', implode("|", $values));
+
+		} elseif ( $search_in == 'item_option' ) {
+// 			dd( "%".implode("|", $values)."%");
+			return $query->where('item_option', 'LIKE', "%".implode("|", $values)."%");
 
 		} elseif ( $search_in == 'item_code' ) {
 
@@ -239,9 +280,9 @@ class Item extends Model
 			return;
 		}
 		$trimmed_text = trim($option_text);
-		$underscored_text = str_replace(" ", "_", $trimmed_text);
-
-		return $query->where('item_option', 'LIKE', sprintf("%%%s%%", $underscored_text));
+// 		$underscored_text = str_replace(" ", "_", $trimmed_text);
+// 		return $query->where('item_option', 'LIKE', sprintf("%%%s%%", $underscored_text));
+		return $query->where('item_option', 'LIKE', sprintf("%%%s%%", $trimmed_text));
 	}
 
 	public function scopeSearchOrderIds ($query, $order_ids)
@@ -265,107 +306,49 @@ class Item extends Model
 
 		return $query->whereIn('order_id', $orders);
 	}
-	/*public function scopeSearchByOrderId ($query, $search_for, $search_in)
+
+	public function scopeSearchByStation ($query, $station_name)
 	{
-		if ( !$search_for ) {
+		if ( empty( $station_name ) ) {
 			return;
 		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
+
+		return $query->where('station_name', $station_name);
 	}
 
-	public function scopeSearchByOrderDate ($query, $search_for, $search_in)
+	public function scopeSearchBatchCreationDateBetween ($query, $start_date, $end_date)
 	{
-		if ( !$search_for ) {
+		if ( !$start_date ) {
 			return;
 		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order_date' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
+		$starting = sprintf("%s 00:00:00", $start_date);
+		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
+
+		return $query->where('batch_creation_date', '>=', $starting)
+					 ->where('batch_creation_date', '<=', $ending);
+
 	}
 
-	public function scopeSearchByStoreId ($query, $search_for, $search_in)
+	public static function getTableColumns ()
 	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
+		return (new static())->tableColumns();
 	}
 
-	public function scopeSearchByState ($query, $search_for, $search_in)
+	public function scopeSearchCutOffOrderDate ($query, $station, $end_date)
 	{
-		if ( !$search_for ) {
+// 		$start_date = "2016-06-03";
+		if ( !$station && !$end_date ) {
 			return;
 		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}
+		$start_date = "2016-06-03";
+		$starting = sprintf("%s 00:00:00", $start_date);
+		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
 
-	public function scopeSearchByDescription ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}
 
-	public function scopeSearchByItemId ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}
+		$order_ids = Helper::getItemsByStationAndDate($station, $end_date);
+		$order_ids = array_unique($order_ids->lists ( 'order_id' )->toArray ());
+// dd($order_ids);
+		return $query->whereIn('order_id',  $order_ids);
 
-	public function scopeSearchByBatch ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
 	}
-
-	public function scopeSearchByBatchCreationDate ($query, $search_for, $search_in)
-	{
-		if ( !$search_for ) {
-			return;
-		}
-		$values = $this->exploder($search_for);
-		if ( $search_in == 'order' ) {
-			$query->where('order_id', 'REGEXP', implode("|", $values));
-		} else {
-			return;
-		}
-	}*/
 }

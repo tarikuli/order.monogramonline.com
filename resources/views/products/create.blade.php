@@ -181,12 +181,6 @@
 						</div>
 					</div>
 					<div class = "form-group">
-						{!!Form::label('batch_route_id','Route: ',['class'=>'control-label col-xs-2'])!!}
-						<div class = "col-xs-5">
-							{!! Form::select('batch_route_id', $batch_routes, null, ['id' => 'batch_route_id','class'=>'form-control']) !!}
-						</div>
-					</div>
-					<div class = "form-group">
 						{!!Form::label('height','Height: ',['class'=>'control-label col-xs-2'])!!}
 						<div class = "col-xs-5">
 							{!! Form::number('height', null, ['id' => 'height','class'=>'form-control', 'step' => 'any']) !!}

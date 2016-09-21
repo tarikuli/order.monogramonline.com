@@ -17,7 +17,7 @@
 </head>
 <body>
 	@include('includes.header_menu')
-	<div class = "container">
+	<div class = "container" style="min-width: 1550px; margin-left: 10px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li><a href = "{{url('stations/supervisor')}}">Supervisor</a></li>
@@ -60,13 +60,14 @@
 		</div>
 		@if(count($items) > 0)
 			<h3 class = "page-header">
-				Items for supervision
+				Supervision Station Toatl ({{ $items->total() }} Issue found / {{$items->currentPage()}} of {{$items->lastPage()}} pages)
 			</h3>
 			<table class = "table table-bordered">
 				<tr>
-					<th>Order#</th>
+					{{-- <th>Store id</th> --}}
 					<th>Order date</th>
-					<th>Store id</th>
+					<th>Order#</th>
+					<th>Item#</th>
 					<th>SKU</th>
 					<th>Qty.</th>
 					<th>Release</th>
@@ -82,10 +83,11 @@
 				</tr>
 				@foreach($items as $item)
 					<tr data-id = "{{$item->id}}" class = "text-center">
-						<td><a href = "{{ url("orders/details/".$item->order_id) }}"
-						       class = "btn btn-link">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a></td>
+						{{-- <td>{{$item->store->store_name}}</td>  --}}
 						<td>{{substr($item->order->order_date, 0, 10)}}</td>
-						<td>{{$item->store->store_name}}</td>
+						<td><a href = "{{ url("orders/details/".$item->order_id) }}"
+						       class = "btn btn-link" target = "_blank" >{{\Monogram\Helper::orderNameFormatter($item->order)}}</a></td>
+						<td>{{$item->id}}</td>
 						<td>{{$item->item_code}}</td>
 						<td>{{$item->item_quantity}}</td>
 						<td>{!! $item->batch_number ? sprintf("<a href='%s/%d'>Release</a>", url('items/release'), $item->id) : "N/A" !!}</td>
@@ -115,7 +117,8 @@
 						{{-- Items status = order_item_status --}}
 						{{--<td>{!! Form::select('item_order_status_2', \Monogram\Helper::getItemOrderStatusArray(), $item->item_order_status_2, ['class' => 'item_order_status_2'])  !!}</td>--}}
 						{{-- order_status = status from order_table --}}
-						<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['class' => 'order_status'])  !!}</td>
+						<td>{{ \App\Status::where('is_deleted', 0)->lists('status_name','id')[$item->order->order_status] }}</td>
+						{{--<td>{!! Form::select('order_status', \App\Status::where('is_deleted', 0)->lists('status_name','id'), $item->order->order_status, ['class' => 'order_status'])  !!}</td>--}}
 					</tr>
 					<tr>
 						<td colspan = "14" class = "text-center">

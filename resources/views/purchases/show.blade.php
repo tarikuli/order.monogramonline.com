@@ -20,52 +20,71 @@
 		<div class = "col-xs-12">
 			<h4 class = "page-header">Purchase details</h4>
 			<table class = "table table-hover table-bordered">
-				<tr class = "success">
-					<td>Vendor name</td>
-					<td>{{$purchase->vendor_details->vendor_name}}</td>
+				<tr>
+					<td class = "success">Purchase Order # :</td>
+					<td>{{$purchase->po_number}}</td>
+					<td class = "success">PO Date:</td>
+					<td>{{$purchase->po_date}}</td>
+				</tr>
+
+				<tr>
+					<td class = "success">Vendor name</td>
+					<td colspan="3">{{$purchase->vendor_details->vendor_name}}</td>
 				</tr>
 				<tr>
-					<td>E-Mail</td>
-					<td>{{$purchase->vendor_details->email}}</td>
-				</tr>
-				<tr class = "success">
-					<td>Phone number</td>
-					<td>{{ $purchase->vendor_details->phone_number}}</td>
+					<td class = "success">E-Mail</td>
+					<td colspan="3">{{$purchase->vendor_details->email}}</td>
 				</tr>
 				<tr>
-					<td>LC Number</td>
-					<td>{{$purchase->lc_number}}</td>
+					<td class = "success">Phone number</td>
+					<td colspan="3">{{ $purchase->vendor_details->phone_number}}</td>
 				</tr>
-				<tr class = "success">
-					<td>Insurance number</td>
-					<td>{{$purchase->insurance_number}}</td>
+
+
+				<tr>
+					<td colspan="4">
+						@if($purchase->products)
+							<table class = "table table-bordered">
+								<tr class = "success">
+									<th>vendor_sku</th>
+									<th>product_id</th>
+									<th>stock_no</th>
+									<th>Sku_Name</th>
+									<th>quantity</th>
+									<th>price</th>
+									<th>sub_total</th>
+									<th>receive_date</th>
+									<th>receive_quantity</th>
+									<th>balance_quantity</th>
+								</tr>
+								@foreach($purchase->products as $product)
+									<tr >
+										<td>{{ $product->vendor_sku }}</td>
+										<td>{{ $product->product_id }}</td>
+										<td>{{ $product->stock_no }}</td>
+										<td>{{ $product->product_details->vendor_sku_name }}</td>
+										<td>{{ $product->quantity }}</td>
+										<td>{{ $product->price }}</td>
+										<td align="right">{{ number_format($product->sub_total, 2, '.', '') }}</td>
+										<td>{{ $product->receive_date }}</td>
+										<td>{{ $product->receive_quantity }}</td>
+										<td>{{ $product->balance_quantity }}</td>
+									</tr>
+								@endforeach
+									<tr>
+										<td colspan="6" align="right" class = "success"><b>Grand Total:</b></td>
+										<td align="right"><b>{{ number_format($purchase->grand_total, 2, '.', '') }}</b></td>
+										<td colspan="3"></td>
+									</tr>
+							</table>
+						@endif
+					</td>
 				</tr>
 			</table>
-			@if($purchase->products)
-				<table class = "table table-bordered">
-					<tr>
-						<th>Product name</th>
-						<th>Quantity</th>
-						<th>Price</th>
-						<th>Sub total</th>
-					</tr>
-					@foreach($purchase->products as $product)
-						<tr>
-							<td>{{ $product->product_details->product_name }}</td>
-							<td>{{ $product->quantity }}</td>
-							<td>{{ $product->price }}</td>
-							<td>{{ $product->sub_total }}</td>
-						</tr>
-					@endforeach
-				</table>
-			@endif
+
 		</div>
+		{{--
 		<div class = "col-xs-12" style = "margin-bottom: 30px;">
-			{{--<div class = "col-xs-offset-1 col-xs-10" style = "margin-bottom: 10px;">
-				<a href = "{{ url(sprintf("/purchases/%d/edit", $purchase->id)) }}" class = "btn btn-success btn-block">Edit
-				                                                                                                        this
-				                                                                                                        purchase</a>
-			</div>--}}
 			<div class = "col-xs-offset-1 col-xs-10" style = "margin-bottom: 10px;">
 				<a href = "{{ url(sprintf("/prints/purchase/%d", $purchase->id)) }}"
 				   class = "btn btn-success btn-block">
@@ -78,6 +97,7 @@
 				{!! Form::close() !!}
 			</div>
 		</div>
+		--}}
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript">

@@ -18,11 +18,16 @@
 				<h5 class = "page-header">Users Management</h5>
 				<ul>
 					<li><a href = "/users">Users</a></li>
-					<li><a href = "/users/create">Create user</a></li>
+					@if(auth()->user()->roles->first()->id == 1)
+						<li><a href = "/users/create">Create user</a></li>
+					@endif
 					<li><a href = "/customers">Customers</a></li>
 					<li><a href = "/customers/create">Create Customer</a></li>
 					<li><a href = "/vendors">Vendors</a></li>
 					<li><a href = "/vendors/create">Create vendor</a></li>
+					<li><a href = "/purchasedinvproducts"><strong>Purchase Inventory Products List</strong></a></li>
+					<li><a href = "/purchases">Purchases</a></li>
+					<li><a href = "/purchases/create">Add purchase</a></li>
 				</ul>
 			</div>
 			<div class = "col-xs-12">
@@ -32,6 +37,7 @@
 					<li><a href = "/logistics/sku_import">Export/Import options coded SKUs CSV file</a></li>
 					<li><a href = "/logs">Station logs</a></li>
 					<li><a href = "/logistics/create_child_sku">Create Child SKU</a></li>
+					<li><a href = "/email_templates">Email templates</a></li>
 				</ul>
 			</div>
 			<div class = "col-xs-12">
@@ -65,19 +71,19 @@
 					<li><a href = "/stations/supervisor">Supervisor</a></li>
 					<li><a href = "/rules">Shipping Rules</a></li>
 					<li><a href = "/shipping">Shipping list</a></li>
-					<li><a href = "/items/waiting_for_another_item"><em><strong>Waiting for another items</strong></em></a></li>
+					<li><a href = "/items/waiting_for_another_item">Waiting for another items</a></li>
 					<li><a href = "/summary">Stations summary</a></li>
 					<li><a href = "/export_station">Export station log</a></li>
 					<li><a href = "/rejection_reasons">Rejection reasons</a></li>
-					<li><a href = "/purchases">Purchases</a></li>
-					<li><a href = "/purchases/create">Add purchase</a></li>
 					<li><a href = "/stations/bulk">Bulk batch change</a></li>
 					<li><a href = "/items/active_batch_group">Active batch by SKU group</a></li>
 					<li><a href = "/products_specifications">Product specification sheet</a></li>
 				</ul>
 				<hr />
 				<ul>
-					<li><a href = "/orders/add">Add new order</a></li>
+					<li><a href = "/orders/manual"><em><strong>Add new order manually</strong></em></a></li>
+
+					{{--<li><a href = "/orders/add">Add new order</a></li>--}}
 					{{--<li><a href = "/products/create">Create Product</a></li>
 					<li><a href = "/stations/status">Station status</a></li>
 					<li><a href = "/stations/my_station">My station</a></li>--}}

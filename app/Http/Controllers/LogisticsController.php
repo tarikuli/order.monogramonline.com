@@ -65,6 +65,21 @@ class LogisticsController extends Controller
 
 	public function sku_converter_update (Request $request, $store_id)
 	{
+		$parameters = array_unique($request->get('parameters'));
+
+		if(count($request->get('parameters')) !== count($parameters)){
+			$duplicates =  array_unique( array_diff_assoc( $request->get('parameters'), array_unique( $request->get('parameters') ) ) );
+			$duplicates = implode(",",$duplicates);
+
+// 			dd($request->get('parameters'), $parameters,$duplicates);
+
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => "Can not insert duplicate kayes: ".$duplicates,
+			]);
+		}
+
 		#Parameter::where('store_id', $store_id)->delete();
 		if ( $request->has('parameters') ) {
 			/*foreach ( $request->get('parameters') as $parameter_value ) {
@@ -74,6 +89,7 @@ class LogisticsController extends Controller
 				$parameter->save();
 			}*/
 			$this->insert_parameters_into_table($request->get('parameters'), $store_id);
+			session()->flash('success', 'successfully Updated.');
 		}
 
 		return redirect(url(sprintf('logistics/sku_converter?store_id=%s', $store_id)));
@@ -91,42 +107,8 @@ class LogisticsController extends Controller
 				'store_id'        => $store_id,
 			];
 		}, array_filter($parameters));
+
 		Parameter::insert($rows);
-		/*$before_operation = [ ];
-		$after_operation = [ ];
-
-		// get the row ids before the update/insert
-		$before_operation = Parameter::where('store_id', $store_id)
-									 ->lists('id')
-									 ->toArray();
-
-		foreach ( $parameters as $parameter_value ) {
-			$trimmed_parameter_value = trim($parameter_value);
-			if ( empty( $trimmed_parameter_value ) ) {
-				continue;
-			}
-
-			$parameter = Parameter::where(DB::raw('BINARY `parameter_value`'), $trimmed_parameter_value)// binary for case sensitivity
-								  ->where('store_id', $store_id)
-								  ->first();
-			if ( !$parameter ) {
-				$parameter = new Parameter();
-				$parameter->store_id = $store_id;
-				$parameter->parameter_value = trim($parameter_value);
-				$parameter->save();
-			}
-			// gather the parameter ids while insert/update
-			$after_operation[] = $parameter->id;
-		}
-
-		#delete the other ids
-		$difference = array_diff($before_operation, $after_operation);
-		if ( count($difference) ) {
-			// if the difference is greater than 0
-			// delete those ids
-			Parameter::destroy(array_diff($before_operation, $after_operation));
-		}*/
-
 	}
 
 	public function get_sku_import ()
@@ -199,7 +181,9 @@ class LogisticsController extends Controller
 				$row[] = $option->graphic_sku;
 				$row[] = $option->allow_mixing ? "Yes" : "No";
 				$row[] = $option->route ? $option->route->batch_code : "";
-
+				$row[] = $option->stock_number;
+				$row[] = $option->bin_number;
+				$row[] = $option->production_time;
 				$json_array = json_decode($option->parameter_option, true);
 				$json_array_except = array_filter($json_array, function ($key) {
 					if ( $key == "SKU" ) {
@@ -210,6 +194,7 @@ class LogisticsController extends Controller
 				}, ARRAY_FILTER_USE_KEY);
 
 				$row = array_merge($row, $json_array_except);
+
 				$csv->insertOne($row);
 			}
 
@@ -298,11 +283,11 @@ class LogisticsController extends Controller
 	private function save_parameters ($reader, $store_id)
 	{
 		try {
-
 			$rows = $reader->setOffset(1)
 						   ->fetchAssoc(Helper::$column_names);
 			$batch_routes = BatchRoute::where('is_deleted', 0)
-									  ->lists('id', 'batch_code');
+										  ->lists('id', 'batch_code');
+
 			set_time_limit(0);
 			foreach ( $rows as $row ) {
 				$unique_row_value = Helper::generateUniqueRowId();
@@ -325,6 +310,7 @@ class LogisticsController extends Controller
 					$parameter_options[$column_name] = $row[$column_name];
 				}
 				$option->parameter_option = json_encode($parameter_options);
+
 				$option->save();
 			}
 		} catch ( \Exception $e ) {
@@ -351,9 +337,20 @@ class LogisticsController extends Controller
 	{
 		$store_id = $request->get('store_id');
 
+		if ( $request->get('unassigned') ) {
+			$unassigned = $request->get('unassigned');
+		} else {
+			$unassigned = 0;
+		}
+
 		$store = Store::where('store_id', $store_id)
 					  ->where('is_deleted', 0)
 					  ->first();
+
+		$stores = Store::where('is_deleted', 0)
+					   ->latest()
+					   ->get();
+
 		if ( !$store ) {
 			return redirect()
 				->back()
@@ -388,7 +385,7 @@ class LogisticsController extends Controller
 		/*$options = Option::whereIn('parameter_id', $relation_array)#->orderBy(DB::raw(sprintf('FIELD(parameter_id, %s)', implode(", ", $relation_array))))
 						 ->paginate(50 * count($parameters));*/
 		$options = Option::with('product', 'route.template')
-						 ->where('store_id', $store_id)
+						 ->where('store_id', $store_id)// Comment for view all store
 						 ->searchUnassigned($request->get('unassigned'))
 						 ->searchInParameterOption($store_id, $request->get('search_for'), $request->get('search_in'))
 						 ->paginate(100);
@@ -404,7 +401,8 @@ class LogisticsController extends Controller
 								  ->lists('batch_route_name', 'id')
 								  ->prepend('Select a route', 0);
 
-		return view('logistics.sku_converter_store_details', compact('batch_routes', 'searchable', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo'));
+		#return $parameters;
+		return view('logistics.sku_converter_store_details', compact('batch_routes', 'searchable', 'parameters', 'options', 'request', 'submit_url', 'store_id', 'returnTo', 'stores', 'unassigned'));
 
 	}
 
@@ -570,11 +568,13 @@ class LogisticsController extends Controller
 				->back()
 				->withErrors($validator);
 		}
+
 		$store_id = $request->get('store_id');
 		$unique_row_value = $request->get('unique_row_value');
 
 		$parameters = Parameter::where('store_id', $store_id)
 							   ->get();
+
 		if ( $parameters->count() == 0 ) {
 			return redirect()
 				->back()
@@ -675,24 +675,35 @@ class LogisticsController extends Controller
 	public function crawl (Request $request)
 	{
 		$id_catalog = $request->get('id_catalog');
+		$store_name = $request->get('store_name');
 
-		return view('logistics.crawl')->with('id_catalog', $id_catalog);
+		return view('logistics.crawl')
+			->with('id_catalog', $id_catalog)
+			->with('store_name', $store_name);
 	}
 
 	public function get_file_contents (Request $request)
 	{
+		#return $request->all();
 		return file_get_contents($request->get('url'));
 	}
 
 	public function create_child_sku (Request $request)
 	{
 		$id_catalog = trim($request->get('id_catalog', null));
+		$store_id = trim($request->get('store', null));
+
 		$stores = Store::where('is_deleted', 0)
 					   ->lists('store_name', 'id');
+
 		$crawled_data = null;
 		if ( $id_catalog ) {
+			$store_name = $stores->toArray();
+			$store_name = strtolower($store_name[$store_id]);
 			// generate the url
-			$url = url(sprintf("/crawl?id_catalog=%s", $id_catalog));
+			$url = url(sprintf("/crawl?id_catalog=%s&store_name=%s", $id_catalog, $store_name));
+			//$url = url(sprintf("/crawl?id_catalog=%s", $id_catalog));
+
 			// pass to the phantom class to get the data
 			$phantom = new Phantom($url);
 			// generate response

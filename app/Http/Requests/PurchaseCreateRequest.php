@@ -22,9 +22,10 @@ class PurchaseCreateRequest extends Request
 	public function rules ()
 	{
 		return [
-			'vendor_id'        => 'required|exists:vendors,id',
-			"lc_number"        => 'required',
-			'insurance_number' => 'required',
+			'po_number'		=> 'required',
+			'po_date'		=> 'required',
+			'vendor_id'		=> 'required',
+			'purchase_id'	=> 'required',
 		];
 	}
 }

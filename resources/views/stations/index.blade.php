@@ -52,6 +52,8 @@
 						<th>#</th>
 						<th>Station name</th>
 						<th>Station description</th>
+						<th>Status on the<br>
+						My Orders portal</th>
 						<th>Department</th>
 						<th>Action</th>
 					</tr>
@@ -59,14 +61,19 @@
 						<tr data-id = "{{$station->id}}" id="{{ $station->station_name }}">
 							<td>{{ $count++ }}</td>
 							<td><input class = "form-control" name = "station_name" type = "text"
-							           value = "{{$station->station_name}}"></td>
+							           value = "{{$station->station_name}}" readonly="readonly"></td>
 							<td><input class = "form-control" name = "station_description" type = "text"
 							           value = "{{$station->station_description}}"></td>
+
+							<td><input class = "form-control" name = "station_status" type = "text"
+							           value = "{{$station->station_status}}"></td>
+
+
 							<td>{!! Form::select('dept', $departments, $station->departments_list->count() ? $station->departments_list[0]->department_id : null, ['class' => 'form-control', 'disabled' => 'disabled']) !!}</td>
 							<td>
 								{{--<a href = "{{ url(sprintf("/stations/%d", $station->id)) }}" class = "btn btn-success">View</a>|--}}
-								<a href = "#" class = "update"><i class = "fa fa-pencil-square-o text-success"></i> </a>
-								| <a href = "#" class = "delete"><i class = "fa fa-times text-danger"></i></a>
+								<a href = "#" class = "update"><i class = "fa fa-pencil-square-o text-success"></i></a>
+								{{--| <a href = "#" class = "delete"><i class = "fa fa-times text-danger"></i></a>--}}
 							</td>
 						</tr>
 					@endforeach
@@ -81,6 +88,7 @@
 			{!! Form::open(['url' => url('/stations/id'), 'method' => 'put', 'id' => 'update-station']) !!}
 			{!! Form::hidden('station_name', null, ['id' => 'update_station_name']) !!}
 			{!! Form::hidden('station_description', null, ['id' => 'update_station_description']) !!}
+			{!! Form::hidden('station_status', null, ['id' => 'update_station_status']) !!}
 			{!! Form::close() !!}
 		@else
 			<div class = "col-xs-12">
@@ -150,9 +158,11 @@
 
 			var name = tr.find('input').eq(0).val();
 			var description = tr.find('input').eq(1).val();
+			var stationStatus = tr.find('input').eq(2).val();
 
 			$("input#update_station_name").val(name);
 			$("input#update_station_description").val(description);
+			$("input#update_station_status").val(stationStatus);
 			var form = $("form#update-station");
 			var url = form.attr('action');
 			form.attr('action', url.replace('id', id));

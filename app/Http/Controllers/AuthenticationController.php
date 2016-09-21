@@ -19,6 +19,11 @@ class AuthenticationController extends Controller
 
     public function postLogin (LoginRequest $request)
     {
+//     	$allow_ips = ["96.57.0.130"];
+//     	if (!in_array(getenv('REMOTE_ADDR'), $allow_ips)) {
+//     		abort(403);
+//     	}
+    	
         $email = $request->get('email');
         $password = $request->get('password');
         $remember = $request->has('remember') ? true : false;

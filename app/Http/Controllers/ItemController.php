@@ -5,11 +5,14 @@ use App\Department;
 use App\Item;
 use App\Option;
 use App\Order;
+use App\Note;
+use App\Status;
 use App\Parameter;
 use App\Product;
 use App\RejectionReason;
 use App\Setting;
 use App\Station;
+use App\Ship;
 use App\StationLog;
 use App\Template;
 use Illuminate\Http\Request;
@@ -18,6 +21,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\MessageBag;
 use Illuminate\Support\Collection;
 use DNS1D;
 use Illuminate\Support\Facades\Session;
@@ -25,6 +29,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use League\Csv\Writer;
 use Monogram\Helper;
+use Psy\Command\HelpCommand;
 
 class ItemController extends Controller
 {
@@ -44,42 +49,75 @@ class ItemController extends Controller
 					 ->search($request->get('search_for_second'), $request->get('search_in_second'))
 					 ->searchDate($request->get('start_date'), $request->get('end_date'))
 					 ->searchTrackingDate($request->get('tracking_date'))
+					 ->searchStatus($request->get('status'))
 					 ->latest()
-					 ->paginate(50);
-
-		// For debug
+					 ->paginate(25);
+ 	  // For debug
 		#return $items;
+// 		set_time_limit(0);
 
 		$unassignedProducts = Option::where(function ($query) {
 			return $query->whereNull('batch_route_id')
 						 ->orWhere('batch_route_id', Helper::getDefaultRouteId());
 		})->get();
 
+		$unassignedOrderCount = Item::whereIn('child_sku', $unassignedProducts->lists('child_sku')
+								  	->toArray())
+								  	->where('is_deleted', 0)
+								  	->whereNull('tracking_number')
+								  	->where('batch_number', '=', '0')
+									->count();
+
 		$unassignedProductCount = $unassignedProducts->count();
 
 		$unassigned = Helper::countPossibleBatches();
-// 		$unassigned = 0 ; $unassignedProductCount = 0;
+
+		$emptyStationsCount = count(Helper::getEmptyStation());
+
+
+		if($emptyStationsCount == 0){
+			$emptyStationsCount = "";
+		}else{
+			$emptyStationsCount = $emptyStationsCount." route have no stations assigned.";
+		}
+
+		// $unassigned = 0; $unassignedProductCount=0; $unassignedOrderCount = 0; $emptyStationsCount = 0;
+
 		$search_in = [
 			'all'                 => 'All',
 			'order'               => 'Order',
 			'5p_order'            => '5P-Order',
+			'customer'            => 'Customer',
+			'bill_email'          => 'Customer Bill Email',
 			'store_id'            => 'Store',
 			'state'               => 'State',
 			'description'         => 'Description',
+			'item_option'         => 'Option',
 			'item_code'           => 'SKU',
 			'batch'               => 'Batch',
 			'batch_creation_date' => 'Batch Creation date',
 			'tracking_number'     => 'Tracking number',
 		];
 
+		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
+
 		#return $items;
-		return view('items.index', compact('items', 'search_in', 'request', 'unassigned', 'unassignedProductCount'));
+		return view('items.index', compact('items', 'emptyStationsCount', 'search_in', 'request', 'unassigned', 'unassignedProductCount', 'unassignedOrderCount', 'statuses'));
 	}
 
 	public function getBatch ()
 	{
 		$count = 1;
 		$serial = 1;
+
+		$emptyStationsCount = count(Helper::getEmptyStation());
+		if ( $emptyStationsCount > 0 ) {
+			return redirect(url('/batch_routes'))
+			->withErrors(new MessageBag([
+					 'error' => 'In Routes some Route Station empty<br>Please assign correct Station in route.',
+			]));
+		}
+
 		$batch_routes = Helper::createAbleBatches(true);
 
 		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));
@@ -87,6 +125,8 @@ class ItemController extends Controller
 
 	public function postBatch (Requests\ItemToBatchCreateRequest $request)
 	{
+// 		return $request->all();
+
 		$today = date('md', strtotime('now'));
 		$batches = $request->get('batches');
 
@@ -99,11 +139,13 @@ class ItemController extends Controller
 					 ->where('batch_number', '!=', 0)
 					 ->latest('batch_number')// newly added line, because, just count will overlap the batch again.
 					 ->get();
+
 		$fixed_value = 10000;
 		$max_batch_number = count($items) ? $items->first()->batch_number : $fixed_value;
 		$last_batch_number = $max_batch_number;
 		$current_group = -1;
 
+		set_time_limit(0);
 		foreach ( $batches as $preferredBatch ) {
 			list( $inGroup, $batch_route_id, $item_id ) = explode("|", $preferredBatch);
 			if ( $inGroup != $current_group ) {
@@ -123,6 +165,7 @@ class ItemController extends Controller
 		}
 
 		#return $acceptedGroups;
+		set_time_limit(0);
 		foreach ( $acceptedGroups as $groups ) {
 			foreach ( $groups as $itemGroup ) {
 				$item_id = $itemGroup[0];
@@ -137,10 +180,18 @@ class ItemController extends Controller
 				$station_id = $batch->stations_list[0]->station_id;
 				$station_name = $batch->stations_list[0]->station_name;
 				$item->station_name = $station_name;
+				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->item_order_status = Helper::getBatchStatus();
 				$item->batch_creation_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->item_order_status_2 = 2;
 				$item->save();
+
+				// Add note history by order id
+				$note = new Note();
+				$note->note_text = "Batch# ".$batch_number ." created on:". $item->batch_creation_date." for Child_SKU: ".$item->child_sku;
+				$note->order_id = $item->order_id;
+				$note->user_id = Auth::user()->id;
+				$note->save();
 
 				/* add order status to order table*/
 				$order = Order::where('order_id', $item->order_id)
@@ -160,7 +211,7 @@ class ItemController extends Controller
 			}
 		}
 
-		return redirect(url('items/grouped'));
+		return redirect(url('items/batch'));
 	}
 
 	public function getGroupedBatch (Request $request)
@@ -169,15 +220,43 @@ class ItemController extends Controller
 			Session::put('station', $request->get('station'));
 		}
 
-		$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
-					 ->where('batch_number', '!=', '0')
-					 ->searchBatch($request->get('batch'))
-					 ->searchRoute($request->get('route'))
-					 ->searchStation(session('station', 'all'))
-					 ->searchStatus($request->get('status'))
-					 ->groupBy('batch_number')#->latest('batch_creation_date')
-					 ->latest('batch_number')
-					 ->paginate(50);
+		if ( $request->has('station') && $request->get('station') != 'all' ) {
+			Session::put('searching_in_station', $request->get('station'));
+		} else {
+			Session::forget('searching_in_station');
+		}
+
+		$station = Station::find(session('station', 'all'));
+		if(!$station){
+			$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
+						->where('is_deleted', 0)
+						->where('batch_number', '!=', '0')
+						->whereNull('tracking_number')
+						->searchBatch($request->get('batch'))
+						->searchRoute($request->get('route'))
+						->searchStation(session('station', 'all'))
+						->searchStatus($request->get('status'))
+						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
+						->groupBy('batch_number')
+						->latest('batch_number')
+						->paginate(50);
+		}else{
+// 			dd($station->station_name);
+			$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
+						->where('is_deleted', 0)
+						->where('batch_number', '!=', '0')
+						->whereNull('tracking_number')
+						->searchBatch($request->get('batch'))
+						->searchRoute($request->get('route'))
+						// 					 ->searchStation(session('station', 'all'))
+						->searchCutOffOrderDate($station->station_name, $request->get('cutoff_date'))
+						->searchStatus($request->get('status'))
+						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
+						->groupBy('batch_number')
+						->latest('batch_number')
+						->paginate(50);
+
+		}
 
 		$routes = BatchRoute::where('is_deleted', 0)
 							->orderBy('batch_route_name')
@@ -185,21 +264,19 @@ class ItemController extends Controller
 							->lists('batch_route_name', 'id')
 							->prepend('Select a route', 'all');
 
+		// Get Station List
 		$stations = Station::where('is_deleted', 0)
-						   ->latest()
+// 						   ->whereNotIn( 'station_name', Helper::$shippingStations)
+						   ->orderBy('station_description', 'asc')
 						   ->lists('station_description', 'id')
 						   ->prepend('Select a station', 'all');
 
-		// Get Station List
-		$stations = Station::where('is_deleted', 0)
-						   ->latest()
-						   ->lists('station_description', 'id')
-						   ->prepend('Select a station', 'all');
 		//  Get Station Name by Station Request parameter.
 		$station_name = Station::find($request->get('station'));
 		$current_station_by_url = $station_name['station_name'];
 
 		$rows = [ ];
+		$total_itemss = 0;
 		foreach ( $items as $item ) {
 			$row = [ ];
 			#$item_first_station = $item->groupedItems[0]->station_name;
@@ -233,9 +310,21 @@ class ItemController extends Controller
 			# Faster than array_unique
 			if ( in_array("active", $batch_statuses) ) {
 				$batch_status = Helper::getBatchStatus("active");
+				$tracking_numbers_array = $item->groupedItems->lists('tracking_number')
+															 ->toArray();
+				$filtered_tracking_number = array_filter($tracking_numbers_array);
+				if ( count($tracking_numbers_array) == count($filtered_tracking_number) ) {
+					Item::where('batch_number', $item->batch_number)
+						->update([
+							'item_order_status' => "complete",
+						]);
+					$batch_status = Helper::getBatchStatus("complete");
+				}
+
 			} elseif ( in_array("not started", $batch_statuses) ) {
 				$batch_status = Helper::getBatchStatus("not started");
 			} else {
+				// this will never reach here
 				$batch_status = Helper::getBatchStatus("complete");
 			}
 
@@ -279,8 +368,23 @@ class ItemController extends Controller
 			}
 			// Sum Total number of Item in batch
 			$current_station_item_count = array_sum($items_on_station);
+			$searched_station_name = null;
+			if ( session('searching_in_station') ) {
+				$x = Station::find(session('searching_in_station'));
+				if ( $x ) {
+					$searched_station_name = $x->station_name;
+				}
+			}
 
 			foreach ( $items_on_station as $station_name => $total_items ) {
+
+				if ( $searched_station_name && $station_name != $searched_station_name ) {
+					continue;
+				}
+// 				return $item;
+				$row['item_thumb'] = $item->item_thumb;
+				$row['child_sku'] = $item->child_sku;
+				$row['batch_number_c_box'] = $item->batch_number."tarikuli".$station_name;
 				$row['batch_number'] = $item->batch_number;
 				$row['batch_creation_date'] = substr($item->batch_creation_date, 0, 10);
 				$row['route_code'] = $item->route->batch_code;
@@ -295,17 +399,21 @@ class ItemController extends Controller
 				$row['batch_status'] = $batch_status;
 				$row['current_station_item_count'] = $current_station_item_count;
 				$rows[] = $row;
+				$total_itemss = $total_itemss + $total_items;
+
 			}
 
 		}
+// 		#return $total_itemss;
 		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
 
-		return view('routes.index', compact('rows', 'items', 'request', 'routes', 'stations', 'statuses'));
+		return view('routes.index', compact('rows', 'items', 'request', 'routes', 'stations', 'statuses', 'total_itemss'));
 	}
 
 	public function batch_details ($batch_number)
 	{
 		$items = Item::with('order', 'station_details', 'product')
+					 ->where('is_deleted', 0)
 					 ->where('batch_number', $batch_number)
 					 ->get();
 		if ( !count($items) ) {
@@ -331,13 +439,21 @@ class ItemController extends Controller
 
 	public function getBatchItems ($batch_number, $station_name)
 	{
+
 		if ( $station_name == Helper::getSupervisorStationName() ) {
-			return redirect()->back();
+			return redirect(url('/stations/supervisor'))
+			->withErrors(new MessageBag([
+					'error' => 'Batch# '.$batch_number.' required supervisor action. ',
+			]));
 		}
+
 		$items = Item::with('order')
+					 ->where('is_deleted', 0)
 					 ->where('batch_number', $batch_number)
 					 ->where('station_name', $station_name)
+					 ->WhereNull('tracking_number')
 					 ->get();
+
 		if ( !count($items) ) {
 			return redirect()->to('items/grouped');
 			#return view('errors.404');
@@ -352,7 +468,7 @@ class ItemController extends Controller
 
 		$dept_station = DB::table('department_station')
 						  ->where('station_id', Station::where('station_name', $station_name)
-													   ->first()->id)
+						  ->first()->id)
 						  ->first();
 
 		$department_id = $dept_station ? $dept_station->department_id : 0;
@@ -371,26 +487,84 @@ class ItemController extends Controller
 												->prepend('Select a reason', 0);
 		}
 
+		$order = Order::with('notes.user')
+						->where('is_deleted', 0)
+						->where('order_id', $items[0]->order_id)
+						->latest()
+						->first();
+ 		if(count($order->notes)>0){
+			$lastupdateby = $order->notes->last()->user->username;
+ 		}else{
+ 			$lastupdateby = "No Record Found";
+		}
+		// 15697
+		$lastchangedate = $items[0]->change_date;
 		$department = Department::find($department_id);
 		$department_name = $department ? $department->department_name : 'NO DEPARTMENT IS SET';
 		$stations = Helper::routeThroughStations($items[0]->batch_route_id, $station_name);
 
+		if(!strpos($stations, '-SHP')){
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'Batch# '.$batch_number." and Route# ".$route->batch_code." Need SHP Station.",
+			]);
+		}
+
+		// Put stations in an Array
+		$getShipingStations =  array_map(function ($elem) {
+			return $elem['station_name'];
+		}, $route->stations->toArray());
+
+			// Find Shipping Station from Route
+			$current_route_shp_station = null;
+			foreach(Helper::$shippingStations as $key=>$val){
+				if(in_array($val,$getShipingStations)){
+					$current_route_shp_station[] = $val;
+				}
+			}
+
+		//$qdc_station = substr($current_route_shp_station[0], 0, 1)."-QCD";
+		$qdc_station = explode("-",$current_route_shp_station[0]);
+		$qdc_station = $qdc_station[0]."-QCD";
+
+		if(!strpos($stations, $current_route_shp_station[0])){
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'Batch# '.$batch_number." and Route# ".$route->batch_code." Need QCD Station.",
+			]);
+		}
+
+		#return $qdc_station;
 		#return $items;
 		$count = 1;
 
-		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'rejection_reasons', 'statuses', 'route', 'stations', 'count', 'department_name', 'current_batch_station'));
+		return view('routes.show', compact('items', 'bar_code', 'batch_number', 'rejection_reasons', 'statuses', 'route', 'stations', 'count', 'department_name', 'current_batch_station', 'qdc_station', 'lastchangedate', 'lastupdateby'));
 	}
 
-	// By Jewel 
+	// By Jewel
 	public function changeBatchStation (Request $request, $batch_number)
 	{
 
 		if ( $request->has('station_name') && ( $request->ajax() ) ) {
 			// Get From Station Name
 			$current_station_name = $request->get('current_station_name');
-
+// Log::info("Jewel current_station_name ".$current_station_name);
 			// Get To Station Name
 			$toStationName = $request->get('station_name');
+// Log::info("Jewel toStationName ".$toStationName);
+
+			// Check next shipping station exist in array then Insert itemes in Shipping table
+			if ( in_array($current_station_name, Helper::$shippingStations) ) {
+// Log::info("Jewel Error 1: ".sprintf("/batches/%s/%s", $batch_number, $current_station_name));
+				return response()->json([
+						'error' => false,
+						'data'  => [
+								'route' => url(sprintf("/batches/%s/%s", $batch_number, $current_station_name)),
+						],
+				], 200);
+			}
 
 			// Get all Batch on in Same Station.
 			$items = Item::where('batch_number', $batch_number)
@@ -398,11 +572,21 @@ class ItemController extends Controller
 						 ->get();
 
 			foreach ( $items as $item ) {
+
 				$item->station_name = $toStationName;
+				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->save();
+
+				// Add note history by order id
+				$note = new Note();
+				$note->note_text = "Move to ".$toStationName." station form Batch View page.";
+				$note->order_id = $item->order_id;
+				$note->user_id = Auth::user()->id;
+				$note->save();
 			}
 
 			if ( in_array($toStationName, Helper::$shippingStations) ) {
+// Log::info("Jewel Writer in shipping ".$toStationName);
 				Helper::populateShippingData($items);
 			}
 			Helper::saveStationLog($items, $toStationName);
@@ -421,7 +605,6 @@ class ItemController extends Controller
 	{
 		$items = Item::where('batch_number', $batch_number)
 					 ->get();
-
 		if ( $request->has('status') ) {
 			$status = $request->get('status');
 			/*if ( !count($items) || !$status || !array_key_exists($status, $this->statuses) ) {
@@ -441,6 +624,7 @@ class ItemController extends Controller
 			$station_name = $station->station_name;
 			foreach ( $items as $item ) {
 				$item->station_name = $station_name;
+				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->save();
 			}
 		}
@@ -448,56 +632,71 @@ class ItemController extends Controller
 		return redirect()->back();
 	}
 
+	/**
+	 * Station change by Batch number and station next station name, Request come from batchs page by Done all
+	 * @param Request $request
+	 * @param string $batch_number
+	 * @param string $station_name
+	 * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\$this|Ambigous <\Illuminate\Routing\Redirector, \Illuminate\Http\RedirectResponse>
+	 */
+
 	public function postBatchItems (Request $request, $batch_number, $station_name)
 	{
+		return $request-all();
 		$action = $request->get('action');
 		switch ( $action ) {
 			case 'done':
+				// Get All Lines by Batch numbe and station name
 				$item = Item::where('batch_number', $batch_number)
 							->where('station_name', $station_name)
 							->first();
 
+				// If nothing to change return to request coming page
 				if ( count($item) == 0 ) {
 					return redirect()->back();
 				}
+
+                // Get next station name for move next station.
 				$next_station_name = Helper::getNextStationName($item->batch_route_id, $item->station_name);
+
+				// Check next shipping station exist in array then Insert itemes in Shipping table
 				if ( in_array($next_station_name, Helper::$shippingStations) ) {
 					$items = Item::where('batch_number', $batch_number)
 								 ->where('station_name', $station_name)
 								 ->get();
+					// Insert Items (Lines)
 					Helper::populateShippingData($items);
 				}
+
+				// previousItems for insert instation log
+				$previousItems = Item::where('batch_number', $batch_number)
+									 ->where('station_name', $station_name)
+									 ->get();
+
+				if ( $next_station_name ) {
+					Helper::saveStationLog($previousItems, $station_name);
+				}
+
+				// Set next station name in station_name for update
 				$updates = [
-					'station_name' => $next_station_name,
+						'station_name' => $next_station_name,
 				];
 
+				// Items satatus
 				if ( $next_station_name == '' ) {
 					$updates['item_order_status_2'] = 3;
 					$updates['item_order_status'] = 'complete';
 				} else {
 					$updates['item_order_status'] = 'active';
 				}
-				$previousItems = Item::where('batch_number', $batch_number)
-									 ->where('station_name', $station_name)
-									 ->get();
+
+				// Update current stations by batch and station name
 				$items = Item::where('batch_number', $batch_number)
 							 ->where('station_name', $station_name)
 							 ->update($updates);
-				if ( $next_station_name ) {
-					/*foreach ( $previousItems as $item ) {
-						$station_log = new StationLog();
-						$station_log->item_id = $item->id;
-						$station_log->batch_number = $item->batch_number;
-						$station_log->station_id = Station::where('station_name', $station_name)
-														  ->first()->id;
-						#$station_log->started_at = date('Y-m-d h:i:s', strtotime("now"));
-						$station_log->started_at = date('Y-m-d', strtotime("now"));
-						$station_log->user_id = Auth::user()->id;
-						$station_log->save();
-					}*/
 
-					Helper::saveStationLog($previousItems, $station_name);
-				}
+
+
 
 				break;
 			case 'reject':
@@ -522,6 +721,7 @@ class ItemController extends Controller
 								 'rejection_reason'  => $request->get('rejection_reason'),
 								 'rejection_message' => trim($request->get('rejection_message')),
 								 'previous_station'  => $station_name,
+						 		 'reached_shipping_station'  => 0,
 							 ]);
 
 				break;
@@ -532,32 +732,171 @@ class ItemController extends Controller
 		return redirect(url('items/grouped'));
 	}
 
-	public function export_batch (Request $request, $id)
+	public function export_bulk (Request $request)
+	{
+
+		$batch_numbers = $request->get('batch_number');
+
+		foreach ( $batch_numbers as $batch_number ) {
+
+			$batch_number = explode('tarikuli', $batch_number);
+			$batch_id = $batch_number[0];
+			$station = $batch_number[1];
+			echo "<br>".$batch_id." --------> ".$station;
+
+			$savepath = '/media/Ji-share/5p_batch_csv_export';
+			$this->export_batch ($batch_id, $station, $savepath);
+
+// 			// Get list of Items from Item Table by Batch Number
+// 			$items = Item::where('batch_number', $batch_id)
+// 			->where('station_name', $station)
+// 			->whereNull('tracking_number')
+// 			->get();
+
+// 			// If items not found belong to this Batch number then return to error page.
+// 			if ( !$items ) {
+// 				return view('errors.404');
+// 			}
+
+// 			// Get Batch Route Id from first Item, because all Items route id are same.
+// 			$route_id = $items[0]->batch_route_id;
+
+// 			// Get batch_route_id from templates table
+// 			$route = BatchRoute::find($route_id);
+// 			#return $route;
+// 			//echo "<pre>"; print_r($route); echo "</pre>";
+
+
+// 			$template_id = $route->export_template;
+// 			$csv_extension = $route->csv_extension;
+// 			// Get templates information by template Id from templates table.
+// 			$template = Template::with('exportable_options')
+// 								->find($template_id);
+
+// 			// Get all list of options name from template_options by options name.
+// 			$columns = $template->exportable_options->lists('option_name')
+// 								->toArray();
+
+
+// 			$file_path = sprintf("%s/assets/exports/batches/", public_path());
+// 			if(empty($csv_extension)){
+// 				$file_name = sprintf("%s.csv", $batch_id);
+// 			}else{
+// 				$file_name = sprintf("%s%s.csv", $batch_id, $csv_extension);
+// 			}
+// 			$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
+// 			$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
+// 			$csv->insertOne($columns);
+
+// 			set_time_limit(0);
+// 			foreach ( $items as $item ) {
+// 				$row = [ ];
+// 				#$row[] = explode("-", $item->order_id)[2];
+// 				$options = $item->item_option;
+
+// 				if(empty($options)){
+// 					return redirect(url('items/grouped?route=all&station=all&start_date=&end_date=&batch='.$batch_id.'+&status=all'))
+// 					->withErrors(new MessageBag([
+// 							'error' => 'Can not creatr CSV<br>Order# '.$item->order_id.' Batch# '.$batch_id.' option empty.',
+// 					]));
+// 				}
+
+// 				$decoded_options_s = json_decode($options, true);
+// 				$decoded_options = [];
+
+// 				if ( $decoded_options_s ) {
+// 					foreach ( $decoded_options_s as $key => $value ) {
+// 						$decoded_options[trim(str_replace("_", " ", $key))] = $value;
+// 					}
+// 				}else{
+// 					return redirect(url('items/grouped?route=all&station=all&start_date=&end_date=&batch='.$batch_id.'+&status=all'))
+// 					->withErrors(new MessageBag([
+// 							'error' => 'Can not creatr CSV<br>Order# '.$item->order_id.' Batch# '.$batch_id.' option empty.',
+// 					]));
+// 				}
+
+
+// 				foreach ( $template->exportable_options as $column ) {
+// 					$result = '';
+// 					if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
+// 						#$result = array_slice(explode("-", $item->order_id), -1, 1);
+// 						$exp = explode("-", $item->order_id); // explode the short order
+// 						$result = $exp[count($exp) - 1];
+// 						#$result = $item->order_id;
+// 					} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "sku" ) { // if the template value is sku
+// 						// get the graphic sku, and the result will be saving the graphic sku value
+// 						$result = $this->getGraphicSKU($item);
+// 						// this result will be inserted to the row array below
+// 					} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "po#" ) { // if string is po/batch number
+// 						$result = $item->batch_number;
+// 					} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "orderdate" ) {//if the string is order date
+// 						$result = substr($item->order->order_date, 0, 10);
+// 					} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "itemqty" ) {//if the string is item quantity = Item Qty
+// 						$result = intval($item->item_quantity);
+// 					} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "itemdescription" ) {//if the string is item quantity = Item Qty
+// 						$result = $item->item_description;
+// 					} else {
+// 						$keys = explode(",", $column->value);
+// 						$found = false;
+// 						$values = [ ];
+// 						foreach ( $keys as $key ) {
+// 							$trimmed_key = implode(" ", explode(" ", trim($key)));
+
+// 							if ( array_key_exists($trimmed_key, $decoded_options) ) {
+// 								$values[] = $decoded_options[$trimmed_key];
+// 								$found = true;
+// 							}
+// 						}
+// 						if ( $values ) {
+// 							$result = implode(",", $values);
+// 						}
+// 					}
+// 					$row[] = $result;
+// 				}
+
+// 				$csv->insertOne($row);
+// 			}
+		}
+
+		$message = sprintf("Batches: %s are released.", implode(", ", $batch_numbers));
+
+		return redirect()
+		->back()
+		->with('success', $message);
+
+	}
+
+	public function export_batch ($id, $station, $savepath = null)
 	{
 		if ( !$id || $id == 0 ) {
 			return view('errors.404');
 		}
 		$batch_id = intval($id);
 
+// 		dd($batch_id, $station);
+
 		// Get list of Items from Item Table by Batch Number
 		$items = Item::where('batch_number', $batch_id)
+					 ->where('station_name', $station)
+					 ->whereNull('tracking_number')
 					 ->get();
 
-		// If items not found belong to this Batch numbe then return to error page.
+		// If items not found belong to this Batch number then return to error page.
 		if ( !$items ) {
 			return view('errors.404');
 		}
-
+// Helper::jewelDebug($items[0]);
 		// Get Batch Route Id from first Item, because all Items route id are same.
 		$route_id = $items[0]->batch_route_id;
 
 		// Get batch_route_id from templates table
 		$route = BatchRoute::find($route_id);
-
+		#return $route;
 		//echo "<pre>"; print_r($route); echo "</pre>";
 
 
 		$template_id = $route->export_template;
+		$csv_extension = $route->csv_extension;
 		// Get templates information by template Id from templates table.
 		$template = Template::with('exportable_options')
 							->find($template_id);
@@ -566,26 +905,37 @@ class ItemController extends Controller
 		$columns = $template->exportable_options->lists('option_name')
 												->toArray();
 
-		// add graphic sku column immediately after the sku
-		// if there is no sku in template, then that'll be inserted at the end of the array
-		$key = array_search("sku", array_map("strtolower", $columns));
-		if ( $key !== false ) {
-			$place = $key + 1;
-			array_splice($columns, $place, 0, [ 'graphic_sku' ]);
-		}
+		// Jewel comment on 06292016
+// 		// add graphic sku column immediately after the sku
+// 		// if there is no sku in template, then that'll be inserted at the end of the array
+// 		$key = array_search("sku", array_map("strtolower", $columns));
+// 		if ( $key !== false ) {
+// 			$place = $key + 1;
+// 			array_splice($columns, $place, 0, [ 'graphic_sku' ]);
+// 		}
 
-		// change the sku to parent sku
-		// change the graphic sku to sku
-		foreach ( $columns as &$column ) {
-			if ( strtolower($column) == "sku" ) {
-				$column = "Parent SKU";
-			} elseif ( strtolower($column) == "graphic_sku" ) {
-				$column = "SKU";
-			}
-		}
+// 		// change the sku to parent sku
+// 		// change the graphic sku to sku
+// 		foreach ( $columns as &$column ) {
+// 			if ( strtolower($column) == "sku" ) {
+// 				$column = "Parent SKU";
+// 			} elseif ( strtolower($column) == "graphic_sku" ) {
+// 				$column = "SKU";
+// 			}
+// 		}
 
-		$file_path = sprintf("%s/assets/exports/batches/", public_path());
-		$file_name = sprintf("%s.csv", $batch_id);
+		if($savepath == null){
+			$file_path = sprintf("%s/assets/exports/batches/", public_path());
+		}else{
+			$file_path = sprintf("%s/", $savepath);
+		}
+// 		dd($file_path);
+
+		if(empty($csv_extension)){
+			$file_name = sprintf("%s.csv", $batch_id);
+		}else{
+			$file_name = sprintf("%s%s.csv", $batch_id, $csv_extension);
+		}
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
 		$csv->insertOne($columns);
@@ -595,7 +945,29 @@ class ItemController extends Controller
 			$row = [ ];
 			#$row[] = explode("-", $item->order_id)[2];
 			$options = $item->item_option;
-			$decoded_options = json_decode($options, true);
+
+			if(empty($options)){
+				return redirect(url('items/grouped?route=all&station=all&start_date=&end_date=&batch='.$batch_id.'+&status=all'))
+				->withErrors(new MessageBag([
+						'error' => 'Can not creatr CSV<br>Order# '.$item->order_id.' Batch# '.$batch_id.' option empty.',
+				]));
+			}
+
+			$decoded_options_s = json_decode($options, true);
+			$decoded_options = [];
+
+			if ( $decoded_options_s ) {
+				foreach ( $decoded_options_s as $key => $value ) {
+					$decoded_options[trim(str_replace("_", " ", $key))] = $value;
+				}
+			}else{
+				return redirect(url('items/grouped?route=all&station=all&start_date=&end_date=&batch='.$batch_id.'+&status=all'))
+					->withErrors(new MessageBag([
+							'error' => 'Can not creatr CSV<br>Order# '.$item->order_id.' Batch# '.$batch_id.' option empty.',
+					]));
+			}
+
+
 			foreach ( $template->exportable_options as $column ) {
 				$result = '';
 				if ( str_replace(" ", "", strtolower($column->option_name)) == "order#" ) { //if the value is order number
@@ -607,10 +979,12 @@ class ItemController extends Controller
 					// previous line is commented after the sku became parent sku
 					// and, graphic_sku became sku
 					//} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "parentsku" ) { // if the template value is sku
-					$result = $item->item_code;
+						// Jewel comment on 06292016
+						//$result = $item->item_code;
 					// as the sku exists, the next column is the graphic sku
 					// insert result to the row
-					$row[] = $result;
+						// Jewel comment on 06292016
+						//$row[] = $result;
 
 					// get the graphic sku, and the result will be saving the graphic sku value
 					$result = $this->getGraphicSKU($item);
@@ -622,12 +996,15 @@ class ItemController extends Controller
 					$result = substr($item->order->order_date, 0, 10);
 				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "itemqty" ) {//if the string is item quantity = Item Qty
 					$result = intval($item->item_quantity);
+				} elseif ( str_replace(" ", "", strtolower($column->option_name)) == "itemdescription" ) {//if the string is item quantity = Item Qty
+					$result = $item->item_description;
 				} else {
 					$keys = explode(",", $column->value);
 					$found = false;
 					$values = [ ];
 					foreach ( $keys as $key ) {
-						$trimmed_key = implode("_", explode(" ", trim($key)));
+						$trimmed_key = implode(" ", explode(" ", trim($key)));
+
 						if ( array_key_exists($trimmed_key, $decoded_options) ) {
 							$values[] = $decoded_options[$trimmed_key];
 							$found = true;
@@ -734,9 +1111,18 @@ class ItemController extends Controller
 				->back()
 				->withError([ 'error' => 'Not a valid batch id' ]);
 		}
+
+		// Add note history by order id
+		$note = new Note();
+		$note->note_text = "Release batch# ".$item->batch_number." from supervisor station";
+		$note->order_id = $item->order_id;
+		$note->user_id = Auth::user()->id;
+		$note->save();
+
 		$item->batch_number = 0;
 		$item->batch_route_id = null;
 		$item->station_name = null;
+		$item->change_date = null;
 		$item->item_order_status = null;
 		$item->batch_creation_date = null;
 		$item->tracking_number = null;
@@ -749,55 +1135,77 @@ class ItemController extends Controller
 		$item->supervisor_message = null;
 		$item->save();
 
+
+
 		return redirect()->back();
 	}
 
 	public function get_active_batch_by_sku (Request $request)
 	{
+		if (in_array ( $request->get('station'), Helper::$shippingStations )) {
+// 			return redirect(url('/summary'))
+// 				->withErrors(new MessageBag([
+// 						'error' => 'Can not move from shipping Station.',
+// 				]));
+
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'You can not search in Shipping Station',
+			]);
+		}
+
+		$current_station_name = $request->get('station');
+
 		$items = Item::with('lowest_order_date', 'route.stations')
-					 ->searchActiveByStation($request->get('station'))
+					 ->searchCutOffOrderDate($current_station_name,$request->get('cutoff_date'))
+// 					 ->searchActiveByStation($request->get('station'))
 					 ->where('batch_number', '!=', '0')
+					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
+					 ->where('is_deleted', 0)
+					 ->orderBy('child_sku', 'ASC')
 					 ->paginate(2000);
 
 		$stations = Station::where('is_deleted', 0)
+						   ->whereNotIn( 'station_name', Helper::$shippingStations)
 						   ->latest()
 						   ->get()
 						   ->lists('custom_station_name', 'station_name')
 						   ->prepend('Select a station', '');
 		$rows = [ ];
 		$total_count = 0;
-		/*foreach ( $items->groupBy('station_name') as $station_name => $items_on_station ) {
-			$groupBySKU = $items_on_station->groupBy('item_code');
-			foreach ( $groupBySKU as $sku => $sku_groups ) {
-				$count = $sku_groups->count();
-				$total_count += $count;
-				$rows[] = [
-					'station_name'   => $station_name,
-					'sku'            => $sku,
-					'item_name'      => $sku_groups->first() ? $sku_groups->first()->item_description : "-",
-					'min_order_date' => $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
-					'item_count'     => $count,
-					'action'         => url(sprintf('items/active_batch/sku/%s/%s', $sku, $station_name)),
-				];
-			}
-		}*/
-		#return $items->groupBy('item_code');
+
 		// Jewel Update to child_sku
 		foreach ( $items->groupBy('child_sku') as $sku => $sku_groups ) {
+// Helper::jewelDebug($sku_groups->first()->id);
+// Helper::jewelDebug($sku_groups->first()->route->toArray());
+			if(!$sku_groups->first()->route){
+				return ("Please create Batch for All Item in Order# <a href = '".url(sprintf('/orders/details/%s', $sku_groups->first()->order_id))."'>".sprintf('%s', $sku_groups->first()->order_id)."</a>");
+			}
 			$route = $sku_groups->first()->route;
+			$item_thumb = $sku_groups->first()->item_thumb;
 			$batch_stations = $route->stations->lists('custom_station_name', 'id')
 											  ->prepend('Select station to change', '0');
-			$count = $sku_groups->count();
-			$total_count += $count;
-			$rows[] = [
-				'sku'            => $sku,
-				'item_name'      => $sku_groups->first() ? $sku_groups->first()->item_description : "-",
-				'min_order_date' => $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
-				'item_count'     => $count,
-				'action'         => url(sprintf('items/active_batch/sku/%s', $sku)),
-				'route'          => sprintf("%s : %s", $route->batch_code, $route->batch_route_name),
-				'batch_stations' => $batch_stations,
-			];
+			$count = 0;
+			foreach ($sku_groups as $key => $value){
+				$count = $count + $value->item_quantity;
+			}
+
+			if($value->station_name == $request->get('station')){
+				$total_count += $count;
+						$rows[] = [
+							'sku'            		 	=> $sku,
+							'current_station_anchor' 	=> str_replace('/', '-', $sku),
+							'redriec_sku' 				=> str_replace('/', '!!!tarikuli!!!', $sku),
+							'item_thumb'	 			=> $item_thumb,
+							'item_name'      			=> $sku_groups->first() ? $sku_groups->first()->item_description : "-",
+							'min_order_date' 			=> $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
+							'item_count'     			=> $count,
+							'action'         			=> url(sprintf('items/active_batch/sku/%s', $sku)),
+							'route'          			=> sprintf("%s:%s", $route->batch_code, $route->batch_route_name),
+							'batch_stations' 			=> $batch_stations,
+						];
+			}
 		}
 
 		return view('routes.active_batch_by_sku')
@@ -805,6 +1213,7 @@ class ItemController extends Controller
 			->withRequest($request)
 			->with('stations', $stations)
 			->with('pagination', $items->render())
+			->with('current_station_name', $current_station_name)
 			->with('total_count', $total_count);
 	}
 
@@ -812,6 +1221,7 @@ class ItemController extends Controller
 	{
 		// SELECT id, order_id, COUNT( 1 ) AS counts FROM items GROUP BY order_id HAVING counts > 1
 		// get the
+		set_time_limit(0);
 		$rows = Item::with('order')
 					->where('batch_number', '!=', 0)
 					->groupBy('order_id')
@@ -821,11 +1231,38 @@ class ItemController extends Controller
 						DB::raw("COUNT(1) as row_count"),
 					]);
 
-		$items = $rows->filter(function ($row) {
-			return Helper::itemsMovedToShippingTable($row->order_id);
-		});
+		$items = $rows->filter(
+				function ($row) {
+					return Helper::itemsMovedToShippingTable($row->order_id);
+				}
+		);
 
-		return view('shipping.waiting_for_another_item')->with('items', $items);
+		$error_count = [];
+
+		foreach($items as $current){
+			$multiple_item_rows = \Monogram\Helper::getAllOrdersFromOrderId($current->order_id);
+
+			if($multiple_item_rows){
+				$findProblemOrder = $multiple_item_rows->toArray();
+				if(count($findProblemOrder) == 0){
+					$error_count[] = "Order#	".$current->order_id."	has waiting for another pic problem";
+
+					$getProblemWaiting = Ship::where('order_number', $current->order_id)
+												->whereNull('tracking_number');
+					$getProblemWaiting->delete();
+				}
+			}
+		}
+
+
+		if ( count($error_count)>0 ) {
+			return redirect()
+			->to(url('/shipping'))
+			->withErrors($error_count);
+		}
+
+		return view('shipping.waiting_for_another_item')
+			->with('items', $items);
 	}
 
 	public function partial_shipping (Request $request)
@@ -912,12 +1349,26 @@ class ItemController extends Controller
 
 	}
 
+	/**
+	 * Function for change active/ not start items by statuon by limit
+	 * @param Request $request
+	 * @param string $sku
+	 * @return \Illuminate\Http\$this|\Illuminate\Http\RedirectResponse
+	 */
+
 	public function changeStationBySKU (Request $request, $sku)
 	{
+		$sku = str_replace('!!!tarikuli!!!', '/', $sku);
+
 		$items_to_shift = intval($request->get('item_to_shift'));
+		$current_station_name = $request->get('current_station_name');
+
 		#$station_id = $request->get('station');
 		$station_id = $request->get('batch_stations');
+		// Check station exist
 		$station = Station::find($station_id);
+
+
 		if ( !$station ) {
 			return redirect()
 				->back()
@@ -925,13 +1376,26 @@ class ItemController extends Controller
 					'Not a valid station selected',
 				]);
 		}
+
+		if(in_array($station->station_name, Helper::$shippingStations)){
+
+			return redirect()
+					->back()
+					->withErrors(['You can not move to Shipping Station.']);
+		}
+
+		// Get one station Name
 		$station_name = $station->station_name;
 
+		// Get Items by condition.
 		$items = Item::where('batch_number', '!=', 0)
+					 ->whereNull('tracking_number')
 					 ->whereNotNull('station_name')
-					 ->Where('station_name', '!=', '')
-					 ->where('item_code', $sku)
+					 ->where('station_name', '!=', '')
+					 ->where('child_sku', $sku)
 					 ->get();
+
+	// Insert station activity in station log table.
 		foreach ( $items as $item ) {
 			$station_log = new StationLog();
 			$station_log->item_id = $item->id;
@@ -940,20 +1404,32 @@ class ItemController extends Controller
 			$station_log->started_at = date('Y-m-d', strtotime("now"));
 			$station_log->user_id = Auth::user()->id;
 			$station_log->save();
+
+			// Add note history by order id
+			$note = new Note();
+			$note->note_text = "Move to ".$station_name." station, Child_SKU: ".$sku." from Active batch by SKU group Page";
+			$note->order_id = $item->order_id;
+			$note->user_id = Auth::user()->id;
+			$note->save();
 		}
 
+		// Update numbe of Station assign from items_to_shift
 		Item::with('lowest_order_date', 'order')
 			->where('batch_number', '!=', 0)
-			->whereNotNull('station_name')
-			->Where('station_name', '!=', '')
-			->where('item_code', $sku)
+			->whereNull('tracking_number')
+// 			->whereNotNull('station_name')
+			->where('station_name', '=', $current_station_name)
+			->where('child_sku', $sku)
 			->limit($items_to_shift)
 			->update([
 				'station_name' => $station_name,
+				'change_date' => date('Y-m-d H:i:s', strtotime('now')),
 			]);
 
+		// After update station return to active_batch_group page
+		$sku = str_replace('/', '-', $sku);
 		return redirect()
-			->to(url('/items/active_batch_group'))
+			->to(url('/items/active_batch_group?station='.$current_station_name.'#'.$sku))
 			->with('success', 'Stations changed successfully.');
 	}
 
@@ -986,6 +1462,7 @@ class ItemController extends Controller
 					}
 					$updates = [
 						'station_name' => $next_station_name,
+						'change_date' => date('Y-m-d H:i:s', strtotime('now')),
 					];
 
 					if ( $next_station_name == '' ) {
@@ -1042,6 +1519,7 @@ class ItemController extends Controller
 					$rejected_item->rejection_reason = $request->get('rejection_reason');
 					$rejected_item->rejection_message = trim($request->get('rejection_message'));
 					$rejected_item->previous_station = $rejected_from_station;
+					$rejected_item->reached_shipping_station = 0;
 					$rejected_item->save();
 				}
 
@@ -1066,28 +1544,448 @@ class ItemController extends Controller
 		$batch_numbers = $request->get('batch_number');
 
 		$changes = [
-			'batch_number'             => 0,
-			'batch_route_id'           => null,
-			'station_name'             => null,
-			'item_order_status'        => null,
-			'batch_creation_date'      => null,
-			'tracking_number'          => null,
-			'item_order_status_2'      => null,
-			'previous_station'         => null,
-			'item_status'              => null,
-			'rejection_message'        => null,
-			'rejection_reason'         => null,
-			'supervisor_message'       => null,
-			'reached_shipping_station' => 0,
+				'batch_number'             => 0,
+				'batch_route_id'           => null,
+				'station_name'             => null,
+				'item_order_status'        => null,
+				'batch_creation_date'      => null,
+				'tracking_number'          => null,
+				'item_order_status_2'      => null,
+				'previous_station'         => null,
+				'item_status'              => null,
+				'rejection_message'        => null,
+				'rejection_reason'         => null,
+				'supervisor_message'       => null,
+				'reached_shipping_station' => 0,
 		];
 
-		Item::whereIn('batch_number', $batch_numbers)
-			->update($changes);
+		$batchNumbers = [];
+		foreach ( $batch_numbers as $batch_number ) {
 
-		$message = sprintf("Batches: %s are released.", implode(", ", $batch_numbers));
+			$batch_number = explode('tarikuli', $batch_number);
+			$batchNumbers[] = $batch_number[0];
+// 			$station[] = $batch_number[1];
+			$items = Item::where('batch_number', $batch_number[0])
+					  ->where('station_name', $batch_number[1])
+					  ->whereNull('tracking_number')
+					  ->get();
+
+			foreach ($items as $item){
+				// Add note history by order id
+				$note = new Note();
+				$note->note_text = "Releas Batch# ".$item->batch_number." SKU: ".$item->child_sku." from Batch list";
+				$note->order_id = $item->order_id;
+				$note->user_id = Auth::user()->id;
+				$note->save();
+
+				Item::where('order_id', $item->order_id)
+					->update($changes);
+			}
+
+		}
+
+		$message = sprintf("Batches: %s are released.", implode(", ", $batchNumbers));
 
 		return redirect()
 			->back()
 			->with('success', $message);
+	}
+
+	public function getBulkItemChange(){
+
+
+		return view ( 'items.bulk_item_change' );
+	}
+
+	public function postBulkItemChange (Request $request) {
+
+		$posted_batches = $request->get ( 'item_id' );
+
+
+		// remove newlines and spaces
+		$itemIds = explode ( "\n", $posted_batches ) ;
+		$errors = [];
+
+
+		foreach (array_filter($itemIds) as $key => $item_id){
+
+			$item = Item::with ( 'order' )
+						->where ( 'id', $item_id )
+						->first ();
+
+			/* Jewel */
+			//### Get next Shipping Station from Route
+			$batch_route_id = $item->batch_route_id;
+			// Get All station in Route
+			$route = BatchRoute::with('stations')
+								 ->find($batch_route_id);
+
+			// Put stations in an Array
+			$stations =  array_map(function ($elem) {
+				return $elem['station_name'];
+			}, $route->stations->toArray());
+
+// echo "<br>".$key ." =	".$item_id." route:	".$route->batch_code." Batch# ".$item->batch_number ;
+// echo "<pre>"; print_r($stations); echo "</pre>";
+
+			// Get Shipping Station from Array.
+			$current_route_shp_station = [];
+			foreach(Helper::$shippingStations as $key=>$val){
+				if(in_array($val,$stations)){
+					$current_route_shp_station[] = $val;
+				}
+			}
+			//### Get next Shipping Station from Route
+
+			//### Insert Item in Shipping Table
+// 			if (count($current_route_shp_station) <= 0) {
+// 				$item->station_name = 'R-SHP';
+// 				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+// 			}
+			try {
+				set_time_limit(0);
+				Helper::populateShippingData ( $item );
+
+// 				echo "<br>".$order_id = $item->order_id." reached_shipping_station =".$item->reached_shipping_station;
+// 				echo "<pre>"; print_r($current_route_shp_station); echo "</pre>";
+
+				if (count($current_route_shp_station)>0){
+					$item->station_name = $current_route_shp_station[0];
+					$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+				}
+// Log::error($item_id."	".$item->batch_number);
+
+				$item->item_order_status_2 = 99;
+				$item->item_order_status = "complete";
+				$item->save ();
+
+				// 			echo "<pre>"; print_r($item->toArray()); echo "</pre>";
+
+
+			} catch(Exception $e) {
+				Log::error('item_id:	'.$item_id.'	batches:	'.$item->batch_number.'	Station_name:	'.$item->station_name.'	In Route dont have correct Shipping station	'.$e->getMessage());
+				$errors [] = 'item_id:	'.$item_id.'	batches:	'.$item->batch_number.'	Station_name:	'.$item->station_name.'	In Route dont have correct Shipping station	'.$e->getMessage();
+			}
+		}
+
+		// redirect with errors if any error found
+		if (count ( $errors )) {
+			return redirect ()->back ()->withErrors ( $errors );
+		}
+
+// 		dd($itemIds);
+		return redirect ()->back ()->with ( 'success', sprintf ( "Total of: %d items moved to Shipping station", count($itemIds)) );
+
+	}
+
+	public function exportItemTable (Request $request)
+	{
+
+		$tableColumns = Item::getTableColumns();
+		$file_path = sprintf("%s/assets/exports/inventories/", public_path());
+		$file_name = sprintf("item_table-%s-%s.csv", date("y-m-d-h-i-s", strtotime('now')), str_random(5));
+		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
+
+		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'a+'), 'w');
+		$csv->insertOne($tableColumns);
+
+		set_time_limit(0);
+// 		$items = Item::where('is_deleted', 0)
+// 					->limit(10)
+// 					->get($tableColumns);
+// 			 Item::where('is_deleted', 0)->chunk(500, function($items) use($csv) {
+			 Item::chunk(500, function($items) use($csv) {
+			        foreach ($items as $item) {
+			            // Add a new row with data
+			        	$item_option = str_replace(',','',$item->item_option);
+			        	$item_option = str_replace('\\','',$item_option);
+			        	$item_option = str_replace('":"',' = ',$item_option);
+
+			        	$row = [
+			        			$item->id,
+			        			$item->order_id,
+			        			$item->store_id,
+			        			$item->item_code,
+			        			$item->child_sku,
+			        			$item->item_description,
+			        			$item->item_id,
+			        			$item_option,
+			        			$item->item_quantity,
+			        			$item->item_thumb,
+			        			$item->item_unit_price,
+			        			$item->item_url,
+			        			$item->item_taxable,
+			        			$item->tracking_number,
+			        			$item->batch_route_id,
+			        			$item->batch_creation_date,
+			        			$item->batch_number,
+			        			$item->station_name,
+			        			$item->change_date,
+			        			$item->previous_station,
+			        			$item->item_order_status,
+			        			$item->item_order_status_2,
+			        			$item->data_parse_type,
+			        			$item->item_status,
+			        			$item->rejection_reason,
+			        			$item->rejection_message,
+			        			$item->supervisor_message,
+			        			$item->reached_shipping_station,
+			        			$item->is_deleted,
+			        			$item->created_at
+
+			        	];
+
+			        	$csv->insertOne($row);
+			        }
+			    });
+
+		return response()->download($fully_specified_path);
+
+	}
+
+	public function getOrderStatus (Request $request)
+	{
+
+		$orderNumber = trim ( $request->get ( 'order' ) );
+		$email = trim ( $request->get ( 'email' ) );
+		$orderinfo = [];
+
+		if ((!empty ( $orderNumber ))) {
+			// Start coder for Valide Input
+			$rules = [
+					'order'  => 'required',
+					'email' => 'required|email',
+			];
+
+			$inputs = [
+					'order'         => $request->get('order'),
+					'email' => $request->get('email'),
+			];
+
+			$validator = Validator::make($inputs, $rules);
+
+			if ( $validator->fails() ) {
+				return redirect(url('/trk_order_status'))
+				->withErrors($validator);
+			}
+			// End coder for Valide Input
+
+			// ----------------
+			$orders = Order::with ('items', 'shipping', 'customer' )
+						->where('short_order','=', $orderNumber)
+// 						->where('bill_email','=', $email)
+						->limit(1)
+						->get();
+			foreach ($orders as $key => $order){
+
+				if(($order->customer->bill_email) != $email){
+					return redirect(url('/trk_order_status'))
+					->withErrors(new MessageBag([
+							'error' => 'Email:'.$email.' not found for Order# '.$orderNumber,
+					]));
+				}
+
+
+				//---- Insert for display front end.
+				$orderinfo['short_order'] 		= $order->short_order;
+				$orderinfo['ship_full_name'] 	= $order->customer->ship_full_name;
+				$orderinfo['ship_city_state'] 	= $order->customer->ship_city.', '.$order->customer->ship_state;
+				$orderinfo['items_subtotal'] 	= $order->item_count.' /'.$order->total;
+				$orderinfo['order_date'] 		= $order->order_date;
+				$orderinfo['shipping'] 			= $order->customer->shipping;
+				$orderinfo['tracking'] 			= $order->items->first()->tracking_number;
+
+				if(empty($order->items->first()->tracking_number)){
+					$station = Station::where ( 'is_deleted', 0 )
+										->where('station_name',$order->items->first()->station_name )
+										->limit(1)
+										->get();
+					if(count($station)> 0){
+// 						$station = $order->items->first()->station_name." > ".$station->first()->station_status;
+						$station = $station->first()->station_status;
+					}else{
+						$station = "New order received. In queue for production";
+					}
+				}else{
+					$station = "Shipped";
+				}
+
+				$orderinfo['status'] 			= $station;
+			}
+			//-----------------
+ 		}
+
+		return view ( 'items.trk_order_status' )->with ( 'request', $request )
+												->with ( 'orderinfo', $orderinfo );
+	}
+
+	public function delete_item_id ($order_id,$item_id)
+	{
+		$order_item_count = Item::where ( 'order_id', $order_id )
+			->whereNull('tracking_number')
+			->where( 'is_deleted', 0 )
+			->count();
+
+	if($order_item_count > 1){
+		Item::where ( 'id', $item_id )
+			->whereNull('tracking_number')
+			->update ( [
+			'is_deleted' => 1
+		] );
+	}else{
+// 		return  $order_item_count;
+		$message = "First Insert a Item then delete Item #". $item_id;
+		Helper::histort($message, $order_id);
+		return redirect()
+		->back()
+		->withErrors([$message]);
+	}
+
+		Helper::histort("Item #". $item_id." deleted." , $order_id);
+
+		return redirect()
+		->back()
+		->with('success', "Item #". $item_id." deleted.");
+	}
+
+
+// 	public function doctorCheckup (Request $request) {
+
+// 		$order_ids = $request->exists('order_id') ? array_filter($request->get('order_id')) : null;
+
+// 		// 		if ( !empty($order_ids) ) {
+// 		// 			// items/doctor?order_id[]=yhst-128796189915726-689763
+// 		// 			$orders = Order::with ( 'items', 'shipping' )
+// 		// 							->where('order_id',$order_ids)
+// 		// // 							->where('item_count','>',1)
+// 		// 							->limit(10)
+// 		// 							->get();
+// 		// 		}else{
+// 		// 			$orders = Order::with ( 'items', 'shipping' )
+// 		// // 							->where('item_count','>',5)
+// 		// 							->limit(10)
+// 		// 							->get();
+// 		// 		}
+
+// 		// Item::chunk(500, function($items) use($csv) {
+
+// 				$statuses = Status::where('is_deleted', 0)
+// 									->lists('status_name', 'id');
+
+
+
+// 		$ordersx = Order::with ( 'items', 'shipping' )->chunk(500, function($orders) use($statuses) {
+
+// 				foreach ($orders as $key => $order){
+// 					$checkShippingTable = [];
+// 					$checkItemTable = [];
+// 					// 			Helper::jewelDebug($order->order_id);
+
+// 		// 			echo "<br>Order_ID = <a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date;
+
+// 					set_time_limit(0);
+// 					foreach ($order->items as $item){
+// 						if(empty($item->batch_number)){
+// 							if($item->batch_number != 10000){
+// 								$checkItemTable[$item->id] = 1;
+// 								// 				echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number;
+
+// 								foreach ($order->shipping as $ship){
+// 									if($item->id == $ship->item_id){
+// 				// 						echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number."	---	".$ship->item_id;
+// 										$checkShippingTable[$ship->item_id]= 1;
+// 									}				}
+// 				// 					echo "<br>---------+++++++++--------------";
+// 							}
+// 						}
+// 					}
+
+// 		// 			echo "<br>---Total ".count($checkItemTable)." Item in Itmes Table checkItemTable---";
+// 		// 			Helper::jewelDebug($checkItemTable);
+
+// 		// 			echo "<br>---Total ".count($checkShippingTable)." Item in Shipping Table checkShippingTable---";
+// 		// 			Helper::jewelDebug($checkShippingTable);
+
+
+// 					$uniqueIds = array_diff($checkItemTable, $checkShippingTable);
+
+// 					if(count($uniqueIds)>0){
+
+// 						echo "<pre>Item Waiting for shipping Order_ID =	<a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date."	Order_Status:	".$statuses[$order->order_status]."</pre>";
+// 		// 				Helper::jewelDebug("---Total ".count($uniqueIds)." Item Waiting for shipping---		order_id	".$order->order_id."	order_date		".$order->order_date);
+
+// 					}
+// 		// 			Helper::jewelDebug($uniqueIds);
+
+// 					if(count($checkShippingTable) == ($order->item_count)){
+// 						// Full Item Shipped
+
+// 						// Update Order Status Update item Status to complete
+
+// 						// Update item Status to complete
+
+// 					}else{
+
+// 					}
+// 		// 			echo "<br>---------***********************--------------";
+// 				}
+// 		});
+// 		// 		return $order;
+
+// 	}
+
+	public function doctorCheckup (Request $request) {
+
+
+		$ordersx = Item::where('child_sku', 'LIKE', sprintf("%%%s%%", '-yes,iconfirm'))->chunk(1000, function($items) {
+
+				set_time_limit(0);
+				$i=1;
+				foreach ($items as $item){
+					Helper::jewelDebug($i++."		".$item->id."		".$item->child_sku);
+					$removed = str_replace("-yes,iconfirm","",$item->child_sku);
+// 					Helper::jewelDebug($removed);
+
+// 					Item::where('id', $item->id)
+// 					->update([
+// 						'child_sku' => $removed,
+// 					]);
+
+				}
+
+
+		});
+
+
+// 		$ordersx = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", '-yes,iconfirm'))
+// 						->where('batch_route_id','115')
+// 						->chunk(1000, function($options)  {
+// 			set_time_limit(0);
+// 			$i=1;
+// 			foreach ($options as $key => $option){
+// 				$checkShippingTable = [];
+// 				$checkItemTable = [];
+
+// // 				echo "<br>".$i++."		".$option->id."  ------------	".$option->child_sku;
+// // 				Helper::jewelDebug("DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$option->id);
+
+// 				$removed = str_replace("-yes,iconfirm","",$option->child_sku);
+
+// 				set_time_limit(0);
+
+// 				$optionForDeletes = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", $removed))
+// 										->where('batch_route_id','115')
+// 										->get();
+
+// 				foreach ($optionForDeletes as $optionForDelete ){
+// // 					Helper::jewelDebug($optionForDelete->id);
+// // 					echo "<br>".$option->id."  ------------	".$option->child_sku;
+// 					echo "<br>DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$optionForDelete->id.";";
+// // 					Helper::jewelDebug("DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$option->id);
+// 				}
+
+// 			}
+// 		});
+
 	}
 }

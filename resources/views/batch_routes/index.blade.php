@@ -17,17 +17,17 @@
 </head>
 <body style = "background:#ffffff ;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 12px;color: #000000;">
 	@include('includes.header_menu')
-	<div style = "margin-left: 250px;margin-right: 250px">
+	<div style = "min-width: 1550px; margin-left: 10px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li class = "active">Batch rotes</li>
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
-		<div class = "col-xs-12" style = "margin: 10px 0;">
+		<div class = "col-xs-12" >
 
 			<label style = "margin-left:330px">Manage WorkFlow Routes</label>
-			<p>Note: Must use a Shipping Station ('J-SHP', 'R-SHP', 'S-SHP', 'H-SHP') in each Route</p>
+			<p>Note: Must use a Shipping Station ('J-SHP', 'R-SHP', 'S-SHP', 'H-SHP', 'PK-SHP', 'ST-SHP', 'D-SHP') in each Route</p>
 			</table>
 
 		</div>
@@ -46,7 +46,7 @@
 				<div class = "clearfix"></div>
 				<div class = "tab-content" style = "margin-top: 20px;">
 					<div role = "tabpanel" class = "tab-pane fade" id = "tab-export-import">
-						<div class = "col-xs-6">
+						<div class = "col-xs-4">
 							{!! Form::open(['url' => url('imports/batch_route'), 'files' => true, 'id' => 'importer']) !!}
 							<div class = "form-group">
 								{!! Form::file('csv_file', ['required' => 'required', 'class' => 'form-control', 'accept' => '.csv']) !!}
@@ -56,7 +56,7 @@
 							</div>
 							{!! Form::close() !!}
 						</div>
-						<div class = "col-xs-6">
+						<div class = "col-xs-2">
 							<a class = "btn btn-info pull-right"
 							   href = "{{url('/exports/batch_routes')}}">Export Batch routes</a>
 						</div>
@@ -66,14 +66,15 @@
 							@if(count($batch_routes) > 0)
 								<table>
 									<tr>
-										<th style = "padding-bottom:10px"><b> </b></th>
-										<th style = "padding-bottom:10px"><b>Batch code</b></th>
-										<th style = "padding-bottom:10px"><b>Route name</b></th>
-										<th style = "padding-bottom:10px"><b>Max unit</b></th>
-										<th style = "padding-bottom:10px"><b>Stations</b></th>
-										<th style = "padding-bottom:10px"><b>Export template</b></th>
-										<th style = "padding-bottom:10px"><b>Options( Comma delimited )</b></th>
-										<th style = "padding-bottom:10px"><b>Action</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b> </b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Batch code</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Route name</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Max unit</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Stations</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Export<br>template</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>CSV<br>Extension</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Options<br>(Comma delimited)</b></th>
+										<th style = "padding-bottom:10px; text-align: center;"><b>Action</b></th>
 									</tr>
 
 									@foreach($batch_routes as $batch_route)
@@ -84,12 +85,14 @@
 														data-toggle = "tooltip"
 														data-placement = "top"
 														title = "Delete this item">
-													<i class = "fa fa-times text-danger"></i> </a></td>
+													<i class = "fa fa-times text-danger"></i> </a>
+											</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_code', $batch_route->batch_code, ['style'=>'width:100px;margin-right:10px;margin-left:5px','readonly'=>'readonly']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_route_name', $batch_route->batch_route_name, ['style'=>'width:250px;margin-right:10px']) !!}</td>
-											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_max_units', $batch_route->batch_max_units, ['style'=>'width:70px;margin-right:25px']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_max_units', $batch_route->batch_max_units, ['style'=>'width:50px;margin-right:25px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_stations', implode(",\n", array_map(function($station) { return $station['station_name']; }, $batch_route->stations_list->toArray())), ['style'=>'width:120px;height:80px;margin-right:10px;overflow-y: scroll;']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::select('s_export_template', $templates, $batch_route->export_template, ['style'=>'width:70px;margin-right:25px']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_csv_extension', $batch_route->csv_extension, ['style'=>'width:70px;margin-right:25px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_options', $batch_route->batch_options, ['style'=>'width:120px;height:80px;margin-left:25px;margin-right:70px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">
 												<a href = "#" class = "update" data-toggle = "tooltip"
@@ -115,6 +118,7 @@
 								{!! Form::hidden('batch_max_units', null, ['id' => 'update_batch_max_units']) !!}
 								{!! Form::hidden('batch_export_template', null, ['id' => 'update_batch_export_template']) !!}
 								{!! Form::hidden('batch_stations', null, ['id' => 'update_batch_stations']) !!}
+								{!! Form::hidden('csv_extension', null, ['id' => 'update_csv_extension']) !!}
 								{!! Form::hidden('batch_options', null, ['id' => 'update_batch_options']) !!}
 								{!! Form::close() !!}
 
@@ -196,6 +200,7 @@
 			var code = tr.find('input').eq(0).val();
 			var route = tr.find('input').eq(1).val();
 			var unit = tr.find('input').eq(2).val();
+			var csv_extension = tr.find('input').eq(3).val();
 			var stations = tr.find('textarea').eq(0).val();
 			var export_template = tr.find('select').eq(0).val();
 			var options = tr.find('textarea').eq(1).val();
@@ -205,6 +210,7 @@
 			$("input#update_batch_max_units").val(unit);
 			$("input#update_batch_stations").val(stations);
 			$("input#update_batch_export_template").val(export_template);
+			$("input#update_csv_extension").val(csv_extension);
 			$("input#update_batch_options").val(options);
 
 			var form = $("form#update-batch-routes");

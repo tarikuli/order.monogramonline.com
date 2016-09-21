@@ -127,10 +127,9 @@ class SpecificationSheet extends Model
 
 	public function scopeSearchMakeSample ($query, $make_sample = 'all')
 	{
-		if ( !$make_sample ) {
+		if ( !$make_sample || $make_sample == 'all' ) {
 			return;
 		}
-
 		$make_sample = trim($make_sample);
 
 		return $query->where('make_sample', $make_sample);

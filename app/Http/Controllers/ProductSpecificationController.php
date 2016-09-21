@@ -42,6 +42,11 @@ class ProductSpecificationController extends Controller
 			->with('request', $request);
 	}
 
+	public function create ()
+	{
+		return redirect(url("products_specifications/step/1"));
+	}
+
 	public function show ($id)
 	{
 		// redirect to edit page
@@ -82,17 +87,60 @@ class ProductSpecificationController extends Controller
 		if ( !$spec ) {
 			return app()->abort(404);
 		}
-		$updatedSpecSheet = $this->insertOrUpdateSpec($request, $spec);
-		if ( $updatedSpecSheet == false ) {
+
+		if(trim($request->get('previous_sku'))){
+
+			$specSheet = SpecificationSheet::where('product_sku', $request->get('previous_sku'))
+											->orderBy('id', 'desc')->first()->toArray();
+			if ( !$specSheet ) {
+				return redirect()
+				->back()
+						->withErrors([
+								'error' => 'Cannot find pull SKU '.$request->get('previous_sku').'<br>Please verify SKU.',
+						]);
+			}
+			unset($specSheet['id']);
+			unset($specSheet['product_sku']);
+			unset($specSheet['images']);
+			unset($specSheet['product_details_file']);
+
+			SpecificationSheet::where('id', $id)->update($specSheet);
+
 			return redirect()
 				->back()
-				->withErrors([
-					'error' => 'Product name cannot be empty.',
-				]);
-		}
-		session()->flush('proposed_sku');
+				->with('success', $request->get('product_sku'). ' SKU contain update from SKU '. $request->get('previous_sku'));
 
-		return redirect("/products_specifications/$id")->with('success', 'Spec sheet is updated successfully.');
+		}else{
+
+
+			$updatedSpecSheet = $this->insertOrUpdateSpec($request, $spec);
+			if ( $updatedSpecSheet == false ) {
+				return redirect()
+					->back()
+					->withErrors([
+						'error' => 'Product name cannot be empty.',
+					]);
+			}
+			session()->flush('proposed_sku');
+
+			return redirect("/products_specifications/$id")->with('success', 'Spec sheet is updated successfully.');
+		}
+	}
+
+	public function copyProduct(Request $request, $categoty_id, $product_sku){
+
+		$production_category = ProductionCategory::find($categoty_id);
+		$proposed_sku = $this->generateSKU($production_category->production_category_code, null);
+
+
+		$specSheet = SpecificationSheet::where('product_sku', $product_sku)
+										->first();
+		$newSpecSheet = $specSheet->replicate();
+		$newSpecSheet->product_sku = trim($proposed_sku); // New product
+		$newSpecSheet->save();
+
+		session()->flush('proposed_sku');
+		return redirect('/products_specifications')->with('success', 'New SKU '.$proposed_sku.' Created.');
 	}
 
 	public function getSteps (Request $request, $id = 1)

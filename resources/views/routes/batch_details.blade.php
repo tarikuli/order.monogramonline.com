@@ -34,7 +34,7 @@
 </head>
 <body>
 	@include('includes.header_menu')
-	<div class = "container">
+	<div class = "container" style="min-width: 1550px; margin-left: 10px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li><a href = "{{url('/items/grouped')}}">Batch list</a></li>
@@ -54,9 +54,12 @@
 				</div>
 				<div class = "col-xs-4">
 					{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $batch_number)) !!}
-					<br/>
+					<br />
 					<a href = "{{url('prints/batches?batch_number[]='.$batch_number)}}"
 					   target = "_blank">Print batch</a>
+					/
+					<a href = "{{url('prints/batch_packing?batch_number[]='.$batch_number)}}"
+					   target = "_blank">Print packing slip</a>
 				</div>
 				<div class = "col-xs-12">
 					<table class = "table table-bordered" id = "batch-items-table">
@@ -82,10 +85,13 @@
 							<tr data-id = "{{$item->id}}">
 								<td>{{$count++}}</td>
 								<td>
-									<a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
-									   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item->order)}}</a> - {{$item->id}}
-									<br/>
-									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $item->order->short_order, $item->id)) !!}
+									Order# <a href = "{{url(sprintf('/orders/details/%s', $item->order->order_id))}}"
+									   target = "_blank">{{\Monogram\Helper::orderNameFormatter($item->order)}}</a>
+									<br />
+									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!}
+									<br />
+									Item# {{$item->id}}
+									<br />
 								</td>
 								<td>
 									@if($item->station_details)
@@ -100,8 +106,26 @@
 												src = "{{$item->item_thumb}}" /></a>
 								<td>{{substr($item->order->order_date, 0, 10)}}</td>
 								<td>{{$item->item_quantity}}</td>
-								<td>{{$item->child_sku}}</td>
-								<td class = "description">{{$item->item_description}}</td>
+								<td>
+									<a href = "{{ url(sprintf("logistics/sku_show?store_id=%s&search_for=%s&search_in=child_sku", $item->store_id, $item->child_sku)) }}"
+									   target = "_blank">{{$item->child_sku}}</a>
+								</td>
+								<td align="left">
+									{{$item->item_description}}
+																		<br/>
+									@if($item->supervisor_message)
+										<div style="color: brown;">
+											{{ $item->supervisor_message }}
+											<br />
+										</div>
+									@endif
+									@if($item->tracking_number)
+										<div style="color: red;">
+										Don't Make this Item again.<br/>
+										TRK# <a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number )) }}" target = "_blank"> {{ $item->tracking_number }}</a>
+										</div>
+									@endif
+								</td>
 								<td>{!! Form::textarea('nothing', \Monogram\Helper::jsonTransformer($item->item_option), ['rows' => '3', 'cols' => '20',]) !!}</td>
 							</tr>
 						@endforeach

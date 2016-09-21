@@ -1,5 +1,4 @@
 <?php
-
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +19,17 @@ class Order extends Model
 	{
 		return $this->hasMany('App\Item', 'order_id', 'order_id')
 					->where('is_deleted', 0);
+	}
+
+	public function shipping ()
+	{
+		return $this->hasMany('App\Ship', 'order_number', 'order_id')
+					->where('is_deleted', 0);
+	}
+
+	public function store ()
+	{
+		return $this->belongsTo(Store::class, "store_id", "store_id");
 	}
 
 	public function order_sub_total ()
@@ -80,8 +90,22 @@ class Order extends Model
 		}
 		$replaced = str_replace(" ", "", $search_for);
 		$values = explode(",", trim($replaced, ","));
-		if ( $search_in == 'order' ) {
-			return $query->where('order_id', 'REGEXP', implode("|", $values));
+		if ( $search_in == 'store_order' ) {
+			$values = array_map(function ($value) {
+				return str_ireplace([
+					'M-',
+					'S-',
+				], "", $value);
+			}, $values);
+
+			return $query->where('short_order', 'REGEXP', implode("|", $values));
+		}
+		if ( $search_in == 'five_p_order' ) {
+			$values = array_map(function ($value) {
+				return intval($value);
+			}, $values);
+
+			return $query->where('id', 'REGEXP', implode("|", $values));
 		}
 
 		return;
@@ -92,7 +116,6 @@ class Order extends Model
 		if ( !$start_date ) {
 			return;
 		}
-
 		$starting = sprintf("%s 00:00:00", $start_date);
 		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
 

@@ -92,6 +92,9 @@
 						<div class = "col-md-4">
 							{!! Form::text('product_sku', $spec->product_sku, ['id' => 'product_sku', 'class' => "form-control", 'readonly' => 'readonly']) !!}
 						</div>
+						<div class = "col-md-4">
+							{!! Form::text('previous_sku', null, ['id' => 'previous_sku', 'class' => "form-control", 'placeholder' => 'Copy contain from Old SKU']) !!}
+						</div>
 					</div>
 					<div class = "form-group col-md-12">
 						{!! Form::label('product_description', 'Product description', ['class' => 'col-md-2 control-label']) !!}
@@ -772,6 +775,8 @@
 			</div>
 		</div>
 		<div class = "form-group">
+		<a href = "{{ url("copy_products_specifications/".$spec->production_category_id."/".$spec->product_sku) }}" title = "Copy to New SKU"
+						       class = "btn btn-link">Copy to New SKU</a>
 			<div class = "col-md-2 pull-right">
 				{!! Form::submit('Update',['class'=>'btn btn-primary btn-block']) !!}
 			</div>

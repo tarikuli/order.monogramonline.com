@@ -37,7 +37,7 @@
 				</tr>
 				@foreach($purchases as $purchase)
 					<tr data-id = "{{$purchase->id}}">
-						<td>{{ $count++ }}</td>
+						<td>{{ $count++ }})  <a href = "{{ url(sprintf("/purchases/%s/edit", $purchase->po_number)) }}"> {{ $purchase->po_number }}</a></td>
 						<td>{{ substr($purchase->created_at, 0, 10) }}</td>
 						<td>{{ substr($purchase->vendor_details->vendor_name , 0, 30) }}</td>
 						<td>{{ $purchase->products->count() }}</td>
@@ -45,9 +45,9 @@
 							<a href = "{{ url(sprintf("/purchases/%d", $purchase->id)) }}" data-toggle = "tooltip"
 							   data-placement = "top"
 							   title = "View this purchase"><i class = 'fa fa-eye text-primary'></i></a>
-							{{--| <a href = "{{ url(sprintf("/purchases/%d/edit", $purchase->id)) }}" data-toggle = "tooltip"
+							| <a href = "{{ url(sprintf("/purchases/%s/edit", $purchase->po_number)) }}" data-toggle = "tooltip"
 							     data-placement = "top"
-							     title = "View this purchase"><i class = 'fa fa-pencil-square-o text-success'></i></a>--}}
+							     title = "View this purchase"><i class = 'fa fa-pencil-square-o text-success'></i></a>
 							| <a href = "#" class = "delete" data-toggle = "tooltip" data-placement = "top"
 							     title = "Delete this purchase"><i class = 'fa fa-times text-danger'></i></a>
 							| <a href = "{{url(sprintf("/prints/purchase/%d", $purchase->id))}}" class = "print" data-toggle = "tooltip" data-placement = "top"

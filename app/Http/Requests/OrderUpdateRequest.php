@@ -35,8 +35,9 @@ class OrderUpdateRequest extends Request
 			"ship_country"      => "required",
 			"bill_country"      => "required",*/
 			"ship_phone"        => "required",
-			"bill_email"        => "required",
+			"bill_email"        => "required|email",
 			"shipping"          => "required",
+// 			"shipping_method" 	=> "required",
 		];
 	}
 }

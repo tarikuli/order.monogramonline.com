@@ -43,17 +43,19 @@
 						</td>
 					</tr>
 					<tr valign = "top">
-						<td><strong>Date:</strong></td>
-						<td>{{date("m/d/y", strtotime("now"))}}</td>
-						<td></td>
+						<td><strong>Order Date:</strong></td>
+						<td>{{date("m/d/y", strtotime($order->order_date) )}}</td>
+						<td>
+
+						</td>
 						<td><strong>Order #</strong></td>
 						<td>
 							<table width = "100%" cellpadding = "0" cellspacing = "0" border = "0">
 								<tr valign = "top">
 									<td align = "left"><strong>{{$order->short_order}}</strong></td>
 									<td align = "right">
-										{{--<img src = "{{\Monogram\Helper::getImageBarcodeSource($order->short_order)}}">--}}
-										{!! \Monogram\Helper::getHtmlBarcode($order->short_order) !!}
+										{!! \Monogram\Helper::getHtmlBarcode(\Monogram\Helper::orderNameFormatter($order)."-0") !!}
+										<br>Shipping# {{\Monogram\Helper::orderNameFormatter($order)."-0"}}
 									</td>
 								</tr>
 							</table>
@@ -62,8 +64,14 @@
 					<tr valign = "top">
 						<td><strong>Ship to:</strong></td>
 						<td>
+							@if($order->customer->ship_company_name)
+								{{$order->customer->ship_company_name}}<br>
+							@endif
 							{{$order->customer->ship_full_name}}<br>
 							{{$order->customer->ship_address_1}}<br>
+							@if($order->customer->ship_address_2)
+								{{$order->customer->ship_address_2}}<br>
+							@endif
 							{{$order->customer->ship_city}} {{$order->customer->ship_state}}  {{$order->customer->ship_zip}}
 							<br>
 							{{$order->customer->ship_country}}<br>
@@ -72,8 +80,14 @@
 						<td></td>
 						<td><strong>Bill To:</strong></td>
 						<td>
+							@if($order->customer->bill_company_name)
+								{{$order->customer->bill_company_name}}<br>
+							@endif
 							{{$order->customer->bill_full_name}}<br>
 							{{$order->customer->bill_address_1}}<br>
+							@if($order->customer->bill_address_2)
+							{{$order->customer->bill_address_2}}<br>
+							@endif
 							{{$order->customer->bill_city}} {{$order->customer->bill_state}}  {{$order->customer->bill_zip}}
 							<br>
 							{{$order->customer->bill_country}}<br>
@@ -84,8 +98,8 @@
 						<td><strong>Ship Via:</strong></td>
 						<td>{{$order->customer->shipping}}</td>
 						<td></td>
-						<td><strong>Comments:</strong></td>
-						<td>{{$order->order_comments}}</td>
+						<td></td>
+						<td></td>
 					</tr>
 
 
@@ -143,14 +157,27 @@
 										</td>
 										<td align = "left"></td>
 									</tr>
+
+									<tr>
+										<td colspan = "8" align = "left" valign = "top">
+											{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!} Item# {{ $item->id}}
+											@if($item->batch_number)
+												{!! \Monogram\Helper::getHtmlBarcode($order->items[0]->batch_number) !!} Barch# {{ $item->batch_number }}
+											@endif
+										</td>
+									</tr>
+
 								@endforeach
 								<tr valign = "top">
 									<td colspan = "9">
 										<hr size = "1">
 									</td>
 								</tr>
-
-
+								<tr valign = "top">
+									<td colspan = "9">
+										<strong>Comments: </strong><strong style="color: red;">{{$order->order_comments}}<strong>
+									</td>
+							    </tr>
 								<tr valign = "top">
 									<td align = "center" colspan = "9">
 										<table width = "100%" cellpadding = "5" cellspacing = "5" border = "1">

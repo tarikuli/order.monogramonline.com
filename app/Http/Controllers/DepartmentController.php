@@ -27,7 +27,7 @@ class DepartmentController extends Controller
 
 		return view('departments.index', compact('departments', 'count', 'stations'));
 	}
-	
+
 	public function create ()
 	{
 		$stations = Station::where('is_deleted', 0)
@@ -72,11 +72,11 @@ class DepartmentController extends Controller
 
 	public function destroy ($id)
 	{
-		$department = BatchRoute::find($id);
+		$department = Department::find($id);
 		$department->is_deleted = 1;
 		$department->save();
 
-		return redirect(url('department'));
+		return redirect(url('departments'));
 	}
 }
 

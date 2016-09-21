@@ -14,6 +14,9 @@ class Kernel extends ConsoleKernel
 	protected $commands = [
 		\App\Console\Commands\Inspire::class,
 		\App\Console\Commands\ImageCrawler::class,
+		\App\Console\Commands\SortCsvFiles::class,
+		\App\Console\Commands\SortImageFiles::class,
+		\App\Console\Commands\CallRoute::class,
 	];
 
 	/**
@@ -27,5 +30,11 @@ class Kernel extends ConsoleKernel
 	{
 		$schedule->command('inspire')
 				 ->hourly();
+
+		$schedule->command('sort:csvfiles')
+				 ->everyFiveMinutes();
+
+		$schedule->command('sort:imagefiles')
+				->everyTenMinutes();
 	}
 }

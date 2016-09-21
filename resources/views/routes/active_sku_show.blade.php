@@ -74,8 +74,6 @@
 								<br />
 								Item barcode
 							</th>
-							{{--<th>Order</th>
-							<th>Order barcode</th>--}}
 							<th>Image</th>
 							<th>Date</th>
 							<th>Qty.</th>
@@ -210,19 +208,6 @@
 					.appendTo($("form#station-action"));
 
 			$("#rejection-modal").modal('show');
-			/*var answer = confirm('Are you sure to reject?');
-			 if ( answer ) {
-			 var value = $(this).closest('tr').attr('data-id');
-			 $("<input type='hidden' value='' />")
-			 .attr("name", "item_id")
-			 .attr("value", value)
-			 .appendTo($("form#station-action"));
-			 $("<input type='hidden' value='' />")
-			 .attr("name", "action")
-			 .attr("value", 'reject')
-			 .appendTo($("form#station-action"));
-			 $("form#station-action").submit();
-			 }*/
 		});
 
 		$("button#reject-all").on('click', function (event)
@@ -232,12 +217,6 @@
 			var value = 'reject'
 			$("input[name='action']").val(value);
 			$("#rejection-modal").modal('show');
-			/*var answer = confirm('Are you sure to reject this batch?');
-			 if ( answer ) {
-			 var value = 'reject'
-			 $("input[name='action']").val(value);
-			 $("form#action_changer").submit();
-			 }*/
 		});
 
 		$("#do-reject").on('click', function ()

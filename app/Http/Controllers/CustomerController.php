@@ -23,6 +23,8 @@ class CustomerController extends Controller
 
 	public function create ()
 	{
+		return redirect()->back();
+
 		return view('customers.create');
 	}
 
@@ -45,6 +47,7 @@ class CustomerController extends Controller
 
 	public function edit ($id)
 	{
+		return redirect()->back();
 		$customer = Customer::find($id);
 		if ( !$customer ) {
 			return view('errors.404');

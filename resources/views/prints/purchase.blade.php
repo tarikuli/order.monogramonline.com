@@ -96,15 +96,11 @@
 								</td>
 							</tr>
 							<tr valign = "top">
-								<td></td>
-								<td></td>
 								<td align = "left"><strong>Name</strong></td>
 								<td align = "left"><strong>Code</strong></td>
 								<td align = "right"><strong>Qty</strong></td>
 								<td align = "right"><strong>Unit price</strong></td>
 								<td align = "right"><strong>Sub total</strong></td>
-								{{--<td align = "left"><strong>Options</strong></td>--}}
-								{{--<td align = "left"><strong>B/O</strong></td>--}}
 							</tr>
 							<tr height = "10" valign = "top">
 								<td colspan = "9">
@@ -114,25 +110,10 @@
 							@foreach($purchase->products as $row)
 								@setvar($product = $row->product_details)
 								<tr valign = "top">
-									<td>
-										<img src = "{{url("/assets/images/box.jpg")}}" border = "0">
-									</td>
-									<td>
-										<img height = "80" width = "80"
-										     src = "{{$product->product_thumb}}"
-										     border = "0" />
-									</td>
 									<td align = "left">
-										{{$product->product_name}}
-										{{--@if($item->shipInfo)
-											<br/>
-											Shipped on {{substr($item->shipInfo->transaction_datetime, 0, 10)}} by
-											{{$item->shipInfo->mail_class}}
-											<br/>
-											Trk# <a href="#">{{$item->shipInfo->tracking_number}}</a>
-										@endif--}}
+										{{$product->name}}
 									</td>
-									<td align = "left">{{$product->product_model}}</td>
+									<td align = "left">{{$product->code}}</td>
 									<td align = "right" style = "font-size:18px;">
 										<strong>{{sprintf("%d", $row->quantity)}}</strong>
 									</td>
@@ -142,8 +123,6 @@
 									<td align = "right" style = "font-size:18px;">
 										<strong>{{sprintf("%.2f", $row->sub_total)}}</strong>
 									</td>
-									{{--<td align = "left"></td>
-									<td align = "left"></td>--}}
 								</tr>
 							@endforeach
 							<tr valign = "top">
@@ -153,27 +132,6 @@
 							</tr>
 
 
-							<tr valign = "top">
-								<td align = "center" colspan = "9">
-									<table width = "100%" cellpadding = "5" cellspacing = "5" border = "1">
-										<tr valign = "top">
-											<td align = "center"><p style = "text-align: center;">
-													<strong>IMPORTANT PLEASE NOTE:&nbsp; </strong></p>
-												<p style = "text-align: center;">
-													Each item is shipped in a separate envelope.&nbsp;</p>
-												<p style = "text-align: center;">
-													If you have placed an order of more than one item(s) in the SAME ORDER,&nbsp;</p>
-												<p style = "text-align: center;">
-													You will receive each item in a separate package.&nbsp;</p>
-												<p style = "text-align: center;">
-													We thank you for your business and we hope you enjoy your new MonogramOnline.com product. &nbsp;</p>
-												<p style = "text-align: center;">
-													If for any unlikely&nbsp;reason you are not satisfied with your order please contact us through our website and we will make all efforts to make sure that you are satisfied with your purchase at MonogramOnline.com.</p>
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
 						</table>
 					</td>
 				</tr>

@@ -51,18 +51,20 @@
 				</tr>
 			</table>
 		</div>
-		<div class = "col-xs-12" style = "margin-bottom: 30px;">
-			<div class = "col-xs-offset-1 col-xs-10" style = "margin-bottom: 10px;">
-				<a href = "{{ url(sprintf("/users/%d/edit", $user->id)) }}" class = "btn btn-success btn-block">Edit
-				                                                                                                this
-				                                                                                                user</a>
+		@if(auth()->user()->roles->first()->id == 1)
+			<div class = "col-xs-12" style = "margin-bottom: 30px;">
+				<div class = "col-xs-offset-1 col-xs-10" style = "margin-bottom: 10px;">
+					<a href = "{{ url(sprintf("/users/%d/edit", $user->id)) }}" class = "btn btn-success btn-block">Edit
+					                                                                                                this
+					                                                                                                user</a>
+				</div>
+				<div class = "col-xs-offset-1 col-xs-10">
+					{!! Form::open(['url' => url(sprintf('/users/%d', $user->id)), 'method' => 'delete', 'id' => 'delete-user-form']) !!}
+					{!! Form::submit('Delete user', ['class'=> 'btn btn-danger btn-block', 'id' => 'delete-user-btn']) !!}
+					{!! Form::close() !!}
+				</div>
 			</div>
-			<div class = "col-xs-offset-1 col-xs-10">
-				{!! Form::open(['url' => url(sprintf('/users/%d', $user->id)), 'method' => 'delete', 'id' => 'delete-user-form']) !!}
-				{!! Form::submit('Delete user', ['class'=> 'btn btn-danger btn-block', 'id' => 'delete-user-btn']) !!}
-				{!! Form::close() !!}
-			</div>
-		</div>
+		@endif
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript">

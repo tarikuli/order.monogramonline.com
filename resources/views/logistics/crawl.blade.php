@@ -8,11 +8,18 @@
 		{
 			jQuery.ajaxSetup({async: false});
 			var id = '{{ $id_catalog }}';
-
+			var store_name = '{{ $store_name }}';
 
 			//for (var l = 0; l < ids.length; l++) {
 			var dt = [];
-			var url = "http://www.monogramonline.com/" + id + ".html";
+
+			// Check
+			if (!store_name) {
+			    var url = "http://www.monogramonline.com/" + id + ".html";
+			}else{
+				var url = "http://www."+store_name+"/" + id + ".html";
+			}
+
 			$.get("{{ url(sprintf("/get_file_contents")) }}", {url: url}, function (response)
 			{
 				var data = $(response).find('div.itemOptionWrap');
@@ -97,13 +104,27 @@
 					}
 				});
 				var js = {};
+				var price = getPrice(response);
 				js[id] = json;
+				js["price"] = price;
 				dt.push(js);
 				document.write(JSON.stringify(js));
 			});
 
 			//}
 		});
+
+		function getPrice (response)
+		{
+			var regex = /[+-]?\d+(\.\d+)?/g;
+			var nodeValue = $(response).find("#cycitemprice").text();
+			return nodeValue.match(regex).reduce(calculator);
+		}
+
+		function calculator (total, price)
+		{
+			return total + price;
+		}
 	</script>
 </body>
 </html>

@@ -70,10 +70,6 @@
 								<label for = "product_production_category">Search in production category</label>
 								{!! Form::select('product_production_category[]', $production_categories, $request->get('product_production_category') ?: 'all', ['id'=>'product_production_category', 'class' => 'form-control', 'multiple' => true]) !!}
 							</div>
-							<div class = "form-group col-xs-3">
-								<label for = "route">Search in route</label>
-								{!! Form::select('route[]', $searchInRoutes, $request->get('route') ?: 'all', ['id'=>'route', 'class' => 'form-control', 'multiple' => true]) !!}
-							</div>
 						</div>
 						<div class = "col-md-12">
 							<div class = "col-xs-3">

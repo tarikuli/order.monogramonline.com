@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\MessageBag;
 use League\Csv\Reader;
+use Monogram\Helper;
 
 class ImportController extends Controller
 {
@@ -146,6 +147,9 @@ class ImportController extends Controller
 				} elseif ( $column == 'batch_options' ) {
 					$batch_options = trim($row['batch_options']);
 					$batch_route->batch_options = $batch_options;
+				} elseif ( $column == 'csv_extension' ) {
+					$csv_extension = trim($row['csv_extension']);
+					$batch_route->csv_extension = $csv_extension;
 				}
 			}
 			$batch_route->save();
@@ -156,7 +160,7 @@ class ImportController extends Controller
 					$stationsFromTable = Station::whereIn("station_name", $stationsArray)
 												->orderBy(DB::raw(sprintf("FIELD ( station_name, '%s' )", implode("','", $stationsArray))))
 												->get();
-
+// Helper::jewelDebug($row['batch_route_name']); Helper::jewelDebug($stationsFromTable->toArray()); Helper::jewelDebug($stationsArray);
 					if ( $stationsFromTable->count() != count($stationsArray) ) {
 						$differences = array_diff($stationsArray, $stationsFromTable->lists('station_name')
 																					->toArray());

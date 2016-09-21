@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\BatchRoute;
+use App\Item;
 use App\Station;
 use App\Template;
 use Illuminate\Http\Request;
@@ -11,13 +12,14 @@ use App\Http\Controllers\Controller;
 
 class BatchRouteController extends Controller
 {
-	public function index ()
+	public function index (Request $request)
 	{
 		$count = 1;
 		$stations = Station::where('is_deleted', 0)
 						   ->lists('station_description', 'id');
 		$batch_routes = BatchRoute::with('stations_list')
 								  ->where('is_deleted', 0)
+								  ->searchEmptyStations($request->get('unassigned', 0))
 								  ->orderBy('batch_code')
 								  ->paginate(200);
 		$templates = Template::where('is_deleted', 0)
@@ -63,11 +65,13 @@ class BatchRouteController extends Controller
 
 	public function update (BatchRouteUpdateRequest $request, $id)
 	{
+		#return $request->all();
 		$batch_route = BatchRoute::find($id);
 		$batch_route->batch_code = $request->get('batch_code');
 		$batch_route->batch_route_name = $request->get('batch_route_name');
 		$batch_route->batch_max_units = $request->get('batch_max_units');
 		$batch_route->export_template = $request->get('batch_export_template');
+		$batch_route->csv_extension = $request->get('csv_extension');
 		$batch_route->batch_options = $request->get('batch_options');
 		$batch_route->save();
 
@@ -87,12 +91,25 @@ class BatchRouteController extends Controller
 		$url = sprintf("%s#%s", redirect()
 			->getUrlGenerator()
 			->previous(), $batch_route->batch_code);
+
 		return redirect($url);
 	}
 
 	public function destroy ($id)
 	{
 		$batch_route = BatchRoute::find($id);
+		if ( !$batch_route ) {
+			abort(404);
+		}
+		$items = Item::where('batch_route_id', $id)
+					 ->count();
+		if ( $items ) {
+			return redirect()
+				->back()
+				->withErrors([
+					'items_assigned' => sprintf("Cannot delete. items are assigned to route %s .", $batch_route->batch_code),
+				]);
+		}
 		$batch_route->is_deleted = 1;
 		$batch_route->save();
 

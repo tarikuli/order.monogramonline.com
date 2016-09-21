@@ -10,7 +10,7 @@ class PurchaseProduct extends Model
 
 	public function product_details ()
 	{
-		return $this->belongsTo('App\Product', 'product_id', 'id')
+		return $this->belongsTo('App\PurchasedInvProducts', 'product_id', 'id')
 					->where('is_deleted', 0);
 	}
 }

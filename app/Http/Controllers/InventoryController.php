@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Monogram\Helper;
+use App\Inventory;
+use App\PurchasedInvProducts;
 
 class InventoryController extends Controller
 {
@@ -49,7 +52,7 @@ class InventoryController extends Controller
 
 	public function index ()
 	{
-		return view('inventories.index')->with('inventory_indexes', $this->inventory_indexes);
+// 		return view('inventories.index')->with('inventory_indexes', $this->inventory_indexes);
 	}
 
 	public function create ()
@@ -80,5 +83,47 @@ class InventoryController extends Controller
 	public function destroy ($id)
 	{
 		//
+	}
+
+	public function getStockNoUnique(Request $request)
+	{
+		$inventory = Inventory::where('stock_no_unique', $request->data)->first();
+		$purchasedInvProducts = PurchasedInvProducts::where('stock_no', $request->data)->first();
+
+
+		if(($inventory->count() <= 0) && ($purchasedInvProducts->count() <= 0) ){
+			/**  Return Null Fields because not found **/
+			return response()->json([
+					'stock_name_discription' => '',
+					'sku_weight' => '',
+					're_order_qty' => '',
+					'min_reorder' => '',
+					'adjustment' => '',
+
+					'unit' =>'',
+					'unit_price' =>'',
+					'vendor_id' =>'',
+					'vendor_sku' =>'',
+					'vendor_sku_name' =>'',
+					'lead_time_days' =>'',
+			]);
+		}else{
+			/**  Return Null Fields because  found **/
+			return response()->json([
+					'stock_name_discription' => $inventory->stock_name_discription,
+					'sku_weight' => $inventory->sku_weight,
+					're_order_qty' => $inventory->re_order_qty,
+					'min_reorder' => $inventory->min_reorder,
+					'adjustment' => $inventory->adjustment,
+
+					'unit' =>	$purchasedInvProducts->unit,
+					'unit_price' => $purchasedInvProducts->unit_price,
+					'vendor_id' => $purchasedInvProducts->vendor_id,
+					'vendor_sku' => $purchasedInvProducts->vendor_sku,
+					'vendor_sku_name' => $purchasedInvProducts->vendor_sku_name,
+					'lead_time_days' => $purchasedInvProducts->lead_time_days,
+			]);
+		}
+
 	}
 }

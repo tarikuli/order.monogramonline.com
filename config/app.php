@@ -39,7 +39,7 @@ return [
 	|
 	*/
 
-	'timezone' => 'UTC',
+	'timezone' => 'America/New_York',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -177,6 +177,9 @@ return [
 
 		/*Image intervention */
 		Intervention\Image\ImageServiceProvider::class,
+
+		/*UPS*/
+		Ptondereau\LaravelUpsApi\UpsApiServiceProvider::class,
 	],
 
 	/*
@@ -231,9 +234,15 @@ return [
 		'DNS1D'     => Milon\Barcode\Facades\DNS1DFacade::class,
 		'DNS2D'     => Milon\Barcode\Facades\DNS2DFacade::class,
 		'Htmldom'   => Yangqi\Htmldom\Htmldom::class,
-		'Image'     => Intervention\Image\Facades\Image::class
+		'Image'     => Intervention\Image\Facades\Image::class,
 		#'XmlParser' => Orchestra\Parser\Xml\Facade::class,
-
+		'UPSAddressValidator' => Ptondereau\LaravelUpsApi\Facades\UpsAddressValidator::class,
+		'UPSLocator' => Ptondereau\LaravelUpsApi\Facades\UpsLocator::class,
+		'UPSQuantumView' => Ptondereau\LaravelUpsApi\Facades\UpsQuantumView::class,
+		'UPSRate' => Ptondereau\LaravelUpsApi\Facades\UpsRate::class,
+		'UPSTimeInTransit' => Ptondereau\LaravelUpsApi\Facades\UpsTimeInTransit::class,
+		'UPSTracking' => Ptondereau\LaravelUpsApi\Facades\UpsTracking::class,
+		'UPSTradeability' => Ptondereau\LaravelUpsApi\Facades\UpsTradeability::class,
 	],
 
 ];

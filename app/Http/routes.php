@@ -1,7 +1,5 @@
 <?php
-get('test/batch', function () {
-	return \Monogram\Helper::getChildSku(\App\Item::find(244));
-});
+get('test', 'HomeController@test');
 get('phantom', function (\Illuminate\Http\Request $request) {
 	$id = $request->get('id', 'pemoanwisicr');
 	$url = sprintf("http://monogramonline.monogramonline.com/crawl.php?id=%s", $id);
@@ -12,7 +10,6 @@ get('phantom', function (\Illuminate\Http\Request $request) {
 	$reader = new \Monogram\DOMReader($response);
 
 	return json_decode($reader->readCrawledData());
-
 });
 get('combination', 'HomeController@combination');
 get('update_items', 'HomeController@bulk_item_update');
@@ -28,6 +25,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('/', 'HomeController@index');
 		get('logout', 'AuthenticationController@getLogout');
 
+
 		post('imports/inventory', 'ImportController@importInventory');
 		post('imports/batch_route', 'ImportController@importBatchRoute');
 
@@ -38,6 +36,13 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		resource('users', 'UserController');
 		resource('vendors', 'VendorController');
 		resource('purchases', 'PurchaseController');
+		resource('purchases/getVendorById', 'PurchaseController@getVendorById');
+		resource('purchases/purchased_inv_products', 'PurchaseController@getPurchasedInvProducts');
+
+		get('autocomplete',array('as'=>'autocomplete','uses'=>'PurchaseController@index'));
+		resource('purchases/searchajax', 'PurchaseController@autoComplete');
+
+		get('prints/packing/{id}', 'PrintController@packing');
 
 		resource('collections', 'CollectionController');
 		resource('occasions', 'OccasionController');
@@ -47,15 +52,29 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('prints/purchase/{purchase_id}', 'PrintController@purchase');
 		get('prints/batches', 'PrintController@batches');
 		get('prints/batch_packing', 'PrintController@batch_packing_slip');
+		get('prints/email_packing', 'PrintController@sendShippingConfirm');
+
+// 		get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
+
+		get('prints/email_order_status', 'PrintController@sendOrderConfirm');
+
 		get('prints/sheets', 'PrintController@print_spec_sheet');
 
 		resource('logs', 'StationLogController');
 
 		resource('inventories', 'InventoryController');
+		post('inventories/getuniquestock','InventoryController@getStockNoUnique');
+
+		resource('purchasedinvproducts', 'PurchasedInvProductsController');
+
 		get('exports/inventory', 'ExportController@inventory');
 		get('exports/batch_routes', 'ExportController@batch_routes');
 
-		get('exports/batch/{id}', 'ItemController@export_batch');
+		get('exports/batch/{id}/{station}', 'ItemController@export_batch');
+		get('exports/batchbulk', 'ItemController@export_bulk');
+
+		post('orders/mailer', 'MailController@mailer');
+		post('orders/send_mail', 'MailController@send_mail');
 
 		post('products/change_mixing_status', 'ProductController@change_mixing_status');
 		get('products/unassigned', 'ProductController@unassigned');
@@ -70,6 +89,12 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('orders/details/{order_id}', 'OrderController@details');
 		get('orders/add', 'OrderController@getAddOrder');
 		post('orders/add', 'OrderController@postAddOrder');
+		get('orders/manual', 'OrderController@getManual');
+		post('orders/manual', 'OrderController@postManual');
+		get('orders/addmanual/{order_id}', 'OrderController@manualReOrder');
+
+		get('orders/ajax', 'OrderController@ajax');
+		get('orders/product_info', 'OrderController@product_info');
 		get('orders/list', 'OrderController@getList');
 		get('orders/search', 'OrderController@search');
 
@@ -80,23 +105,30 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('items/partial_shipping', 'ItemController@partial_shipping');
 		get('items/waiting_for_another_item', 'ItemController@waiting_for_another_item');
 		get('items/active_batch_group', 'ItemController@get_active_batch_by_sku');
-		/*get('items/active_batch/sku/{sku}/{station_name}', 'ItemController@get_sku_on_stations');*/
+		get('items/delete_item/{order_id}/{item_id}', 'ItemController@delete_item_id');
+
+
 		get('items/active_batch/sku/{sku}', 'ItemController@get_sku_on_stations');
 		put('batches/{batch_number}', 'ItemController@updateBatchItems');
 		get('items/batch', 'ItemController@getBatch');
 		get('batch_details/{batch_number}', 'ItemController@batch_details');
 		post('items/batch', 'ItemController@postBatch');
 
-		// Add changeBatchStation 
+		// Add changeBatchStation
 		put('items/{batch_number}', 'ItemController@changeBatchStation');
 
+		get('items/doctor', 'ItemController@doctorCheckup');
 		get('items/grouped', 'ItemController@getGroupedBatch');
 		get('items/release/{item_id}', 'ItemController@release');
 		get('items/release_batch', 'ItemController@releaseBatches');
+		get('items/bulk_item_change', 'ItemController@getBulkItemChange');
+		post('items/bulk_item_change', 'ItemController@postBulkItemChange');
+
 		resource('items', 'ItemController');
 
 		get('products_specifications/step/{id?}', 'ProductSpecificationController@getSteps');
 		post('products_specifications/step/{id}', 'ProductSpecificationController@postSteps');
+		get('copy_products_specifications/{categoty_id}/{product_sku}', 'ProductSpecificationController@copyProduct');
 		resource('products_specifications', 'ProductSpecificationController');
 
 		resource('orders', 'OrderController');
@@ -110,6 +142,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		put('logistics/edit_sku_converter', 'LogisticsController@update_sku_converter');
 		get('logistics/add_child_sku', 'LogisticsController@get_add_child_sku');
 		post('logistics/add_child_sku', 'LogisticsController@post_add_child_sku');
+
+		resource('email_templates', 'EmailTemplateController');
 
 		put('logistics/{store_id}/update', 'LogisticsController@sku_converter_update');
 		get('logistics/sku_import', 'LogisticsController@get_sku_import');
@@ -130,6 +164,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('stations/on_change_apply', 'StationController@on_change_apply');
 		get('stations/my_station', 'StationController@my_station');
 		get('summary', 'StationController@summary');
+		get('summary/export', 'ItemController@exportItemTable');
 
 		resource('departments', 'DepartmentController');
 
@@ -148,6 +183,10 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 			'except' => [ 'create' ],
 		]);
 
+
+		get('shipping_addressbalidation', 'ShippingController@addressValidation');
+		get('remove_shipping', 'ShippingController@removeTrackingNumber');
+		put('shipping_update', 'ShippingController@updateTrackingNumber');
 		resource('shipping', 'ShippingController');
 
 		get('rules/parameter', 'RuleController@parameter_option');
@@ -168,17 +207,25 @@ Route::group([ 'middleware' => [ 'guest' ] ], function () {
 	get('login', 'AuthenticationController@getLogin');
 	post('login', 'AuthenticationController@postLogin');
 	post('hook', 'OrderController@hook');
+	get('trk_order_status', 'ItemController@getOrderStatus');
+	get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
 });
 
 // Redefinition of routes
 get('home', function () {
 	return redirect(url('/'));
 });
+
 Route::group([ 'prefix' => 'auth' ], function () {
 	get('login', 'AuthenticationController@getLogin');
 	get('logout', 'AuthenticationController@getLogout');
 });
 
 Event::listen('illuminate.query', function ($q) {
-	#Log::info($q);
+	#Log::info($q); // join
 });
+
+//  `items`.`item_status` = statuses.id ( `statuses`.`status_name` ) = 6
+// item_order_status = complete
+// item_order_status_2 =2
+// Station Not Found App\Console\Commands

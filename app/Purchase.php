@@ -8,7 +8,7 @@ class Purchase extends Model
 {
 	public function products ()
 	{
-		return $this->hasMany('App\PurchaseProduct', 'purchase_id', 'id')
+		return $this->hasMany('App\PurchaseProduct', 'purchase_id', 'po_number')
 					->where('is_deleted', 0);
 	}
 

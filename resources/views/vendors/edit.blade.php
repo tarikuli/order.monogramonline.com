@@ -89,7 +89,7 @@
 		<div class = 'form-group'>
 			{!!Form::label('account_password','Account password :',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
 			<div class = "col-xs-5">
-				{!! Form::password('account_password', ['id' => 'account_password','class'=>'form-control']) !!}
+				{!! Form::text('account_password', $vendor->password, ['id' => 'account_password','class'=>'form-control']) !!}
 				<p class = "help-block" style = "color: red">If a value is given, will update</p>
 			</div>
 		</div>

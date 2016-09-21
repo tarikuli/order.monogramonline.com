@@ -53,6 +53,22 @@ class Product extends Model
 		return array_diff($columns, $remove_columns);
 	}
 
+	public function getDefaultColumnName ($columnName)
+	{
+		// solution comes from here
+		// https://laracasts.com/discuss/channels/eloquent/get-default-value?page=1
+		$query = 'SELECT COLUMN_DEFAULT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "' . $this->getTable() . '" AND COLUMN_NAME = "' . $columnName . '"';
+		// will return "two"
+		$result = DB::select($query);
+		$default = null;
+		if ( count($result) > 1 ) {
+			$default = array_pluck($result, 'COLUMN_DEFAULT')[1];
+		} else {
+			$default = array_pluck($result, 'COLUMN_DEFAULT')[0];
+		}
+
+		return $default;
+	}
 
 	public static function getTableColumns ()
 	{
@@ -64,10 +80,10 @@ class Product extends Model
 		return $this->hasMany('App\Image', 'product_id', 'id');
 	}
 
-	public function batch_route ()
-	{
-		return $this->hasOne('App\BatchRoute', 'id', 'batch_route_id');
-	}
+// 	public function batch_route ()
+// 	{
+// 		return $this->hasOne('App\BatchRoute', 'id', 'batch_route_id');
+// 	}
 
 	public function master_category ()
 	{
@@ -427,19 +443,19 @@ class Product extends Model
 		return $query->where('product_name', 'LIKE', sprintf("%%%s%%", $product_name));
 	}
 
-	public function scopeSearchRoute ($query, $route_ids)
-	{
+// 	public function scopeSearchRoute ($query, $route_ids)
+// 	{
 
-		if ( !$route_ids || !is_array($route_ids) ) {
-			return;
-		}
-		$stripped_values = $this->trimmer($route_ids, 0);
-		if ( count($stripped_values) == 0 ) {
-			return;
-		}
+// 		if ( !$route_ids || !is_array($route_ids) ) {
+// 			return;
+// 		}
+// 		$stripped_values = $this->trimmer($route_ids, 0);
+// 		if ( count($stripped_values) == 0 ) {
+// 			return;
+// 		}
 
-		return $query->whereIn('batch_route_id', $stripped_values);
-	}
+// 		return $query->whereIn('batch_route_id', $stripped_values);
+// 	}
 
 	public function scopeSearchMasterCategory ($query, $product_master_category_id)
 	{

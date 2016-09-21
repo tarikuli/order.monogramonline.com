@@ -46,26 +46,40 @@
 						<th align = "center" style = "width:18mm;">SKU</th>
 						<th align = "center" style = "width:50mm;">Item name</th>
 						<th align = "center" style = "width:100mm;">Options</th>
-						<th align = "center" style = "width:8mm;">Shi -pped?</th>
+						<th align = "center" style = "width:8mm;">Shipped?</th>
 					</tr>
+					@setvar($count = 0)
 					@foreach($item->groupedItems as $row)
-						<tr valign = "top">
+					{{-- {!! \Monogram\Helper::jewelDebug($row->toArray()) !!} --}}
+						@if(!$station_name || $row->station_name == $station_name)
 
-							<td align = "left">{{$row->order->short_order}}</td>
-							<td align = "left">{{substr($row->order->order_date, 0, 10)}}</td>
-							<td align = "center">{{$row->item_quantity}}</td>
-							<td align = "left">{{$row->item_code}}</td>
-							<td align = "left" rowspan = "2">{{$row->item_description}}</td>
-							<td align = "left"
-							    rowspan = "2">{!! \Monogram\Helper::jsonTransformer($row->item_option, "<br/>") !!}</td>
-							<td align = "left"
-							    rowspan = "2">{{ $row->shipInfo ? ($row->shipInfo->tracking_number ? "Yes" : "No" ): "No" }}</td>
-						</tr>
-						<tr>
-							<td colspan = "4" align = "left" valign = "top">
-								{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s-%s", $row->order->short_order, $row->id)) !!}
-							</td>
-						</tr>
+						@if(!$row->tracking_number)
+							@setvar(++$count)
+							<tr valign = "top">
+
+								<td align = "left">Order# {{$row->order->short_order}}</td>
+								<td align = "left">{{substr($row->order->order_date, 0, 10)}}</td>
+								<td align = "center">{{$row->item_quantity}}</td>
+								<td align = "left">{{$row->child_sku}}</td>
+								<td align = "left" rowspan = "2">{{$row->item_description}}</td>
+								<td align = "left"
+								    rowspan = "2">{!! \Monogram\Helper::jsonTransformer($row->item_option, "<br/>") !!}</td>
+								<td align = "left" rowspan = "2">
+									{{ $row->tracking_number ? "Yes" : "No" }}
+								    {{-- $row->shipInfo ? ($row->shipInfo->tracking_number ? "Yes" : "No" ): "No" --}}
+								 </td>
+							</tr>
+							<tr>
+								<td colspan = "4" align = "left" valign = "top">
+									{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $row->id)) !!}
+									<br/>
+									Item# {{ $row->id }}
+								</td>
+							</tr>
+						@endif
+
+
+						@endif
 					@endforeach
 					<tr valign = "top">
 						<td colspan = "10">
@@ -73,8 +87,9 @@
 						</td>
 					</tr>
 					<tr valign = "top">
-						<td colspan = "2" align = "right"><strong>Total</strong></td>
-						<td><strong>{{\Monogram\Helper::getItemCount($item->groupedItems)}}</strong></td>
+						<td colspan = "2" align = "right"><strong>Total: </strong></td>
+						{{--<td><strong>{{\Monogram\Helper::getItemCount($item->groupedItems)}}</strong></td>--}}
+						<td colspan = "5" align = "left"><strong>{{ $count }} /{{\Monogram\Helper::getItemCount($item->groupedItems)}} </strong></td>
 					</tr>
 				</table>
 			</td>

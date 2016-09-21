@@ -61,13 +61,15 @@
                     </span>
 				</div>
 			</div>
-			<div class = "form-group col-xs-2">
-				<label for = "" class = ""></label>
-				{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}
-			</div>
+				{!! Form::hidden('shipped', $request->get('shipped','0'), ['id'=>'shipped']) !!}
 			<div class = "form-group col-xs-2">
 				<label for = "" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+			</div>
+
+			<div class = "form-group col-xs-2">
+				<label for = "" class = ""></label>
+				{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}
 			</div>
 			{!! Form::close() !!}
 		</div>
@@ -86,7 +88,7 @@
 		@if(count($ships) > 0)
 			<table class = "table table-bordered">
 				<tr>
-					<th>Order number</th>
+					<th>Shipping<br/>Order<br/>number</th>
 					<th>Mail class</th>
 					<th>Batch</th>
 					<th>Item id</th>
@@ -122,6 +124,7 @@
 							   target = "_blank">{{ $ship->unique_order_id }}</a>
 						</td>
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->mail_class}}</td>
+					@if($ship->item)
 						<td>
 							@if($ship->item->batch_number)
 								<a href = "{{ url(sprintf("/batches/%d/%s", $ship->item->batch_number, $ship->item->station_name)) }}"
@@ -139,7 +142,32 @@
 						<td><img src = "{{ $ship->item->item_thumb }}" /></td>
 						<td>{{ $ship->item->item_description }}</td>
 						<td>{{ $ship->item->item_quantity }}</td>
-						<td>{{ $ship->item->tracking_number ?: "N/A" }}</td>
+						<td>
+							@if($ship->item->tracking_number)
+								{{ $ship->item->tracking_number }}
+								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&order_number=%s", $ship->item->tracking_number,$ship->order_number )) }}">Back to shipping</a>
+							@else
+								<br>
+								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
+								<a class = "update" href = "#" >Manual Tracking # Update</a>
+
+								{!! Form::open(['url' => url('/shipping_update'), 'method' => 'put', 'id' => 'shipping_update']) !!}
+								{!! Form::hidden('tracking_number_update', null, ['id' => 'tracking_number_update']) !!}
+								{!! Form::hidden('order_number_update', $ship->order_number, ['id' => 'order_number_update']) !!}
+								{!! Form::close() !!}
+							@endif
+
+
+
+						</td>
+					@else
+						<td colspan="7">
+							<div style="color: red;">
+								Contact with Shlomi, Some wrong operation happen here.
+							</div>
+						</td>
+					@endif
+
 						<td>{{$ship->length}}</td>
 						<td>{{$ship->height}}</td>
 						<td>{{$ship->width}}</td>
@@ -178,12 +206,20 @@
 							<td><img src = "{{ $ship->item->item_thumb }}" /></td>
 							<td>{{ $ship->item->item_description }}</td>
 							<td>{{ $ship->item->item_quantity }}</td>
-							<td>{{ $ship->item->tracking_number ?: "N/A" }}</td>
-							<td>{{$ship->length}}</td>
-							<td>{{$ship->height}}</td>
-							<td>{{$ship->width}}</td>
-							<td>{{$ship->billed_weight}}</td>
-							<td>{{$ship->actual_weight}}</td>
+							<td>
+								{{--
+								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
+								<a href = "{{ url(sprintf("/update_tracking?u_item_id=%s", $ship->item->id  )) }}">Tracking # Update</a>
+								--}}
+
+								{{ $ship->item->tracking_number ?: "N/A" }}
+
+							</td>
+							<td>{{ $ship->length}}</td>
+							<td>{{ $ship->height}}</td>
+							<td>{{ $ship->width}}</td>
+							<td>{{ $ship->billed_weight}}</td>
+							<td>{{ $ship->actual_weight}}</td>
 						</tr>
 					@endforeach
 
@@ -215,6 +251,28 @@
 			$('#start_date_picker').datetimepicker(options);
 			$('#end_date_picker').datetimepicker(options);
 		});
+
+
+		$("a.update").on('click', function (event)
+		{
+			event.preventDefault();
+			var tr = $(this).closest('tr');
+			var id = tr.attr('data-id');
+			var tracking_number_update = tr.find('input').eq(0).val();
+
+			tr.find("input#tracking_number_update").val(tracking_number_update);
+
+			var form = tr.find("form#shipping_update");
+			var url = form.attr('action');
+
+// 			console.log(form.attr('action', url.replace('id', id)));
+// 			return false;
+
+			form.attr('action', url.replace('id', id));
+			form.submit();
+			});
+
+
 	</script>
 </body>
 </html>
