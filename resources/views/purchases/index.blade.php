@@ -37,7 +37,7 @@
 				</tr>
 				@foreach($purchases as $purchase)
 					<tr data-id = "{{$purchase->id}}">
-						<td>{{ $count++ }}</td>
+						<td>{{ $count++ }})  <a href = "{{ url(sprintf("/purchases/%s/edit", $purchase->po_number)) }}"> {{ $purchase->po_number }}</a></td>
 						<td>{{ substr($purchase->created_at, 0, 10) }}</td>
 						<td>{{ substr($purchase->vendor_details->vendor_name , 0, 30) }}</td>
 						<td>{{ $purchase->products->count() }}</td>
