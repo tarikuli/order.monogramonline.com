@@ -145,6 +145,8 @@
 						<td>
 							@if($ship->item->tracking_number)
 								{{ $ship->item->tracking_number }}
+								{{ $ship->transaction_datetime }}
+								<br>
 								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&order_number=%s", $ship->item->tracking_number,$ship->order_number )) }}">Back to shipping</a>
 							@else
 								<br>

@@ -233,12 +233,11 @@ class Item extends Model
 			return;
 		}
 		// postmark_date transaction_datetime
-		$tracking = Ship::where('transaction_datetime', $tracking_date)
+		$tracking = Ship::where('transaction_datetime', 'LIKE', $tracking_date.'%')
 						->get([
 							'item_id',
 						])
 						->toArray();
-
 		return $query->whereIn('id', $tracking);
 	}
 
