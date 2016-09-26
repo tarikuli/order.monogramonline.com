@@ -232,7 +232,8 @@ class Item extends Model
 		if ( !$tracking_date ) {
 			return;
 		}
-		$tracking = Ship::where('postmark_date', $tracking_date)
+		// postmark_date transaction_datetime
+		$tracking = Ship::where('transaction_datetime', $tracking_date)
 						->get([
 							'item_id',
 						])

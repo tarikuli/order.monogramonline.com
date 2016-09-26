@@ -229,8 +229,8 @@ class Ship extends Model
 		}
 		$starting = $start_date;
 		$ending = $end_date;
-
-		return $query->where('postmark_date', '>=', $starting)
-					 ->where('postmark_date', '<=', $ending);
+		// postmark_date transaction_datetime
+		return $query->where('transaction_datetime', '>=', $starting)
+					 ->where('transaction_datetime', '<=', $ending);
 	}
 }
