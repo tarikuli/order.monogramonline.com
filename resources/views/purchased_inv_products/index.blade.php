@@ -35,6 +35,7 @@
 					<th>Unit Price</th>
 					<th>Vendor Id</th>
 					<th>Vendor Sku</th>
+					<th>Vendor Sku Name</th>
 					<th>Lead Time Days</th>
 					<th>Action</th>
 				</tr>
@@ -43,12 +44,15 @@
 						<td>{{ $count++ }}</td>
 						<td>{{ $purchasedInvProduct->stock_no }}</td>
 						<td>
-							{!! \App\Inventory::where('stock_no_unique', $purchasedInvProduct->stock_no)->take(1)->lists('stock_name_discription','id')->get($purchasedInvProduct->id)  !!}
+							@foreach($purchasedInvProduct->purchasedInvProduct_details as $inventory)
+								{{ $inventory->stock_name_discription }}
+							@endforeach
 						</td>
 						<td>{{ $purchasedInvProduct->unit }}</td>
 						<td>{{ $purchasedInvProduct->unit_price }}</td>
 						<td>{{ $purchasedInvProduct->vendor_id }}</td>
 						<td>{{ $purchasedInvProduct->vendor_sku }}</td>
+						<td>{{ $purchasedInvProduct->vendor_sku_name }}</td>
 						<td>{{ $purchasedInvProduct->lead_time_days }}</td>
 						<td>
 							{{-- <a href = "{{ url(sprintf("/purchasedinvproducts/%d", $purchasedInvProduct->id)) }}" data-toggle = "tooltip"
