@@ -100,7 +100,9 @@
 								<td> 
 									 {!! Form::number('min_reorder', $inventorie['min_reorder'] , ['style'=>'width:70px;margin-right:25px']) !!}
 								</td>
-								<td> {{ $inventorie['adjustment'] }} </td>
+								<td> 
+									 {!! Form::number('adjustment', $inventorie['adjustment'] , ['style'=>'width:70px;margin-right:25px']) !!}
+								</td>
 								<td> {{ $inventorie['qty_on_hand'] }} </td>																																
 								<td> {{ $inventorie['qty_alloc'] }} </td>
 								<td> {{ $inventorie['qty_exp'] }} </td>
@@ -109,9 +111,7 @@
 								<td> {{ $inventorie['wh_bin'] }} </td>
 								<td> {{ $inventorie['warehouse'] }} </td>
 								<td>  
-									
 									 {!! Form::button('Update', ['id' => 'inventorie_id', 'class' => 'btn btn-success']) !!}
-									 {!! Form::text('current_station_name', $inventorie['id'], ['id' => 'inventorie_id']) !!}
 									 {!! Form::close() !!}
 								</td>
 						

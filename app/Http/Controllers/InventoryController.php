@@ -69,6 +69,7 @@ class InventoryController extends Controller
 		$inventory = Inventory::find($inventorie_id);
 		$inventory->re_order_qty = $request->re_order_qty;
 		$inventory->min_reorder = $request->min_reorder;
+		$inventory->adjustment = $request->adjustment;
 		$inventory->save();
 		return redirect(url('inventories#'.$inventorie_id))
 		->with('success', sprintf("Update Success."));
