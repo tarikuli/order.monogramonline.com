@@ -139,7 +139,7 @@ class ShippingController extends Controller
 		$address->setCity('Elmhurst');
 		$address->setCountryCode('US');
 		$address->setPostalCode('11373');
-
+// shipmentDigest
 		$xav = new \Ups\AddressValidation(env('UPS_ACCESS_KEY'), env('UPS_USER_ID'), env('UPS_PASSWORD'));
 		$xav->activateReturnObjectOnValidate(); //This is optional
 		try {
@@ -174,5 +174,7 @@ class ShippingController extends Controller
 			var_dump($e);
 		}
 	}
+	
+	// $shipper->setShipperNumber('XX');
 
 }

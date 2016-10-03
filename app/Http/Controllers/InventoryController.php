@@ -52,9 +52,29 @@ class InventoryController extends Controller
 
 	public function index ()
 	{
-// 		return view('inventories.index')->with('inventory_indexes', $this->inventory_indexes);
+		$inventories = Inventory::where('is_deleted', 0)
+				->paginate(10);
+		
+		if ( !count($inventories) ) {
+			return view('errors.404');
+		}
+		
+		return view('inventories.index')
+				->with('inventories', $inventories)
+				->with('inventory_indexes', $this->inventory_indexes);
 	}
 
+	public function updateInventorie(Request $request, $inventorie_id)
+	{
+		$inventory = Inventory::find($inventorie_id);
+		$inventory->re_order_qty = $request->re_order_qty;
+		$inventory->min_reorder = $request->min_reorder;
+		$inventory->save();
+		return redirect(url('inventories#'.$inventorie_id))
+		->with('success', sprintf("Update Success."));
+		
+	}
+	
 	public function create ()
 	{
 		//

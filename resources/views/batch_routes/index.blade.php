@@ -92,7 +92,7 @@
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_batch_max_units', $batch_route->batch_max_units, ['style'=>'width:50px;margin-right:25px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_stations', implode(",\n", array_map(function($station) { return $station['station_name']; }, $batch_route->stations_list->toArray())), ['style'=>'width:120px;height:80px;margin-right:10px;overflow-y: scroll;']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::select('s_export_template', $templates, $batch_route->export_template, ['style'=>'width:70px;margin-right:25px']) !!}</td>
-											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_csv_extension', $batch_route->csv_extension, ['style'=>'width:70px;margin-right:25px']) !!}</td>
+											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::text('s_csv_extension', $batch_route->csv_extension, ['style'=>'width:150px;margin-right:25px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">{!! Form::textarea('s_batch_options', $batch_route->batch_options, ['style'=>'width:120px;height:80px;margin-left:25px;margin-right:70px']) !!}</td>
 											<td style = "vertical-align: top;padding-bottom:7px;">
 												<a href = "#" class = "update" data-toggle = "tooltip"
