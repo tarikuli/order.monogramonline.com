@@ -94,7 +94,7 @@
 								<td> {{ $inventorie['stock_name_discription'] }} </td>
 								<td> {{ $inventorie['sku_weight'] }} </td>
 								<td>
-								     {!! Form::open(['url' => url(sprintf("change_station_by_sku/%s", $inventorie['id']))]) !!} 
+								     {!! Form::open(['url' => url(sprintf("updateinventorie/%s", $inventorie['id']))]) !!} 
 									 {!! Form::number('re_order_qty', $inventorie['re_order_qty'] , ['style'=>'width:70px;margin-right:25px']) !!}
 								</td>
 								<td> 
