@@ -95,6 +95,7 @@
 							<th>ID</th>
 							<th>Parent SKU</th>
 							<th>Child SKU</th>
+							<th>Stock Number</th>
 							<th>Graphic SKU</th>
 							<th>Image</th>
 							@foreach($parameters as $parameter)
@@ -147,6 +148,7 @@
 								<td class = 'maxtdwidth'>
 									{{ $option->child_sku }}
 								</td>
+								<td class = 'maxtdwidth'> {{ $option->stock_number }} </td>
 								<td class = 'maxtdwidth'> {{ $option->graphic_sku }} </td>
 								<td>
 									@if($option->product && $option->product->product_thumb)

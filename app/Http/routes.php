@@ -64,7 +64,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 		resource('inventories', 'InventoryController');
 		post('inventories/getuniquestock','InventoryController@getStockNoUnique');
-		post('change_station_by_sku/{inventorie_id}', 'InventoryController@updateInventorie');
+		post('inventoriesupdate/{inventorie_id}', 'InventoryController@updateInventorie');
+		get('inventoriessyn', 'InventoryController@synStock');
 		
 		resource('purchasedinvproducts', 'PurchasedInvProductsController');
 

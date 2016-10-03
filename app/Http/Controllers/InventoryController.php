@@ -66,13 +66,20 @@ class InventoryController extends Controller
 
 	public function updateInventorie(Request $request, $inventorie_id)
 	{
+		
+		
 		$inventory = Inventory::find($inventorie_id);
 		$inventory->re_order_qty = $request->re_order_qty;
 		$inventory->min_reorder = $request->min_reorder;
 		$inventory->adjustment = $request->adjustment;
+// 		$inventory->qty_av = $qty_av;
 		$inventory->save();
+		
+		Helper::addInventoryByStockNumber($request->stock_no_unique);
+		
+		
 		return redirect(url('inventories#'.$inventorie_id))
-		->with('success', sprintf("Update Success."));
+						->with('success', sprintf("Update Success."));
 		
 	}
 	
@@ -147,4 +154,21 @@ class InventoryController extends Controller
 		}
 
 	}
+	
+	/**
+	 * Auto sync all stock by stock_number 
+	 * @param Request $request
+	 */
+	public function synStock(Request $request)
+	{
+		$stock_no_uniques = Inventory::where('is_deleted', 0)
+		 							->lists('stock_no_unique');
+
+		foreach ($stock_no_uniques as $stock_no_unique){
+			set_time_limit(0);
+			Helper::addInventoryByStockNumber($stock_no_unique);
+		}
+		echo "Auto update complete";		
+	}
+	
 }

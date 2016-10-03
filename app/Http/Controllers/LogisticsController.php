@@ -368,11 +368,13 @@ class LogisticsController extends Controller
 			'id_catalog',
 			'parent_sku',
 			'child_sku',
+			'stock_number',
 			'graphic_sku',
 		], [
 			'ID Catalog',
 			'Parent SKU',
 			'Child SKU',
+			'Stock Number',				
 			'Graphic SKU',
 		])))->merge($searchable);
 		$searchable->prepend('Select a field', "");

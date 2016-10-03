@@ -31,6 +31,7 @@ class Option extends Model
 			'id_catalog',
 			'parent_sku',
 			'child_sku',
+			'stock_number',				
 			'graphic_sku',
 		];
 		if ( in_array($search_in, $columns) ) {
@@ -40,6 +41,8 @@ class Option extends Model
 				return $this->scopeSearchInParentSku($query, $search_for);
 			} elseif ( $search_in == 'child_sku' ) {
 				return $this->scopeSearchInChildSku($query, $search_for);
+			} elseif ( $search_in == 'stock_number' ) {
+				return $this->scopeSearchInStockNumber($query, $search_for);								
 			} elseif ( $search_in == 'graphic_sku' ) {
 				return $this->scopeSearchInGraphicSku($query, $search_for);
 			}
@@ -85,6 +88,16 @@ class Option extends Model
 		return $query->where('child_sku', 'LIKE', sprintf("%%%s%%", $text));
 	}
 
+	public function scopeSearchInStockNumber ($query, $text)
+	{
+		$text = trim($text);
+		if ( empty( $text ) ) {
+			return;
+		}
+	
+		return $query->where('stock_number', 'LIKE', sprintf("%%%s%%", $text));
+	}
+	
 	public function scopeSearchInGraphicSku ($query, $text)
 	{
 		$text = trim($text);

@@ -16,6 +16,7 @@ use App\Setting;
 use App\Ship;
 use App\Station;
 use App\StationLog;
+use App\Inventory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -1348,5 +1349,47 @@ APPEND;
 			unlink ($lock_path.$fileName);
 		}
 
+	}
+	
+	/**
+	 * addInventoryByStockNumber
+	 * @param string
+	 * @return integer
+	 */
+	public static function addInventoryByStockNumber($stockNumber){
+		// get Adjust Quentity 
+// 		$adjustmentQuantity = DB::table('inventories')->where('stock_no_unique', $stockNumber)->sum('adjustment');
+		
+// 		$inventory = Inventory::find($inventorie_id);
+		$adjustmentQuantity = Inventory::where('stock_no_unique', $stockNumber)->first();
+		Helper::jewelDebug($adjustmentQuantity->adjustment);
+		
+		// get Purchase Quentity		
+		$purchaseQuantity = DB::table('purchased_products')->where('stock_no', $stockNumber)->sum('quantity');
+// 		Helper::jewelDebug($purchaseQuantity);
+		
+		// get Sale Quentity
+		$saleQuantity = DB::table('parameter_options')
+						->join('items', 'parameter_options.child_sku', '=', 'items.child_sku')
+						->join('orders', 'orders.order_id', '=', 'items.order_id')
+						->where('parameter_options.stock_number', $stockNumber)
+						->where('items.is_deleted', '=', '0')
+						->where('orders.is_deleted', '=', '0')
+						->whereNotIn('orders.order_status', [
+								3,
+								// On hold
+								8,
+								// cancelled
+						])
+						->sum('items.item_quantity');
+// 		Helper::jewelDebug($saleQuantity);
+		//dd($adjustmentQuantity, $purchaseQuantity, $saleQuantity, (($adjustmentQuantity+$purchaseQuantity)-$saleQuantity));
+		$adjustmentQuantity->total_purchase = $purchaseQuantity;
+		$adjustmentQuantity->total_sale = $saleQuantity;
+		$adjustmentQuantity->qty_av = (($adjustmentQuantity->adjustment+$purchaseQuantity)-$saleQuantity);
+		$adjustmentQuantity->save();
+// 		// Avalivel Quentity ( qty_av )
+// 		return (($adjustmentQuantity->adjustment+$purchaseQuantity)-$saleQuantity);
+		
 	}
 }
