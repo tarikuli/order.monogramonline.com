@@ -310,7 +310,24 @@
 			 });
 		});
 
+		// Check if empty
+		$(document).on('click', 'form :submit', function (){	
+			
+			$("input#vendor_sku").each(function() {
+				if($(this).val() == ""){
+						alert("vendor_sku field empty");
+					return false;
+				}
+			});
 
+			$("input#stock_no").each(function() {
+				if($(this).val() == ""){
+						alert("stock_no field empty");
+					return false;
+				}
+			});
+			
+		});		
 
 	</script>
 </body>

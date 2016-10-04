@@ -32,8 +32,10 @@ class PurchaseController extends Controller
 		$vendors = Vendor::where('is_deleted', 0)
 						 ->lists('vendor_name', 'id')
 						 ->prepend('Select a vendor', 0);
+		
+		$new_purchase_number = sprintf("%06d", Purchase::count() + 1);
 
-		return view('purchases.create', compact('vendors'));
+		return view('purchases.create', compact('vendors','new_purchase_number'));
 	}
 
 	public function store (Requests\PurchaseCreateRequest $request)
@@ -84,12 +86,14 @@ class PurchaseController extends Controller
 	{
 		$purchase = Purchase::with('products.product_details', 'vendor_details')
 							->find($id);
+		
 // 		$purchaseProduct = PurchaseProduct::where('purchase_id', $purchase->po_number)->get();
 // 		return $purchase;
 
 		if ( !$purchase ) {
 			return view('errors.404');
 		}
+		
 		return view('purchases.show', compact('purchase'));
 	}
 
@@ -150,21 +154,22 @@ class PurchaseController extends Controller
 		//----------
 
 		foreach ( $purchase_ids as $purchase_id ) {
-			$purchased_products = new PurchaseProduct();
-			$purchased_products->purchase_id 		= $request->get('po_number');
-			$purchased_products->product_id 		= $product_ids[$index];
-			$purchased_products->stock_no 			= $stock_nos[$index];
-			$purchased_products->vendor_sku 		= $vendor_skus[$index];
-			$purchased_products->quantity 			= $quantitys[$index];
-			$purchased_products->price 				= $prices[$index];
-			$purchased_products->sub_total 			= $sub_totals[$index];
-			$purchased_products->receive_date 		= $receive_dates[$index];
-			$purchased_products->receive_quantity 	= $receive_quantitys[$index];
-			$purchased_products->balance_quantity 	= $balance_quantitys[$index];
-			$purchased_products->save();
-			++$index;
+			if(!empty($vendor_skus[$index]) && !empty($quantitys[$index]) && !empty($sub_totals[$index])){
+				$purchased_products = new PurchaseProduct();
+				$purchased_products->purchase_id 		= $request->get('po_number');
+				$purchased_products->product_id 		= $product_ids[$index];
+				$purchased_products->stock_no 			= $stock_nos[$index];
+				$purchased_products->vendor_sku 		= $vendor_skus[$index];
+				$purchased_products->quantity 			= $quantitys[$index];
+				$purchased_products->price 				= $prices[$index];
+				$purchased_products->sub_total 			= $sub_totals[$index];
+				$purchased_products->receive_date 		= $receive_dates[$index];
+				$purchased_products->receive_quantity 	= $receive_quantitys[$index];
+				$purchased_products->balance_quantity 	= $balance_quantitys[$index];			
+				$purchased_products->save();
+				++$index;
+			}
 		}
-
 		session()->flash('success', 'Purchases is successfully updated.');
 
 		return redirect()

@@ -24,6 +24,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 	Route::group([ 'middleware' => 'user_has_access' ], function () {
 		get('/', 'HomeController@index');
 		get('logout', 'AuthenticationController@getLogout');
+		get('logistics/reset_sorting', 'LogisticsController@resetSort');
 
 
 		post('imports/inventory', 'ImportController@importInventory');

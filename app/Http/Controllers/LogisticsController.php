@@ -855,4 +855,16 @@ class LogisticsController extends Controller
 
 		return redirect()->to(url(sprintf("/logistics/sku_show?store_id=%s&search_for=%s&search_in=parent_sku", $store->store_id, $parent_sku)));
 	}
+	
+	public function resetSort (Request $request)
+	{
+		// Delete Auto sorting Log fiels
+		Helper::deleteLock("sort_csvfiles");
+// 		Helper::deleteLock("sort_imagefiles");
+		
+		return redirect()
+		->back()
+		->with('success', "Auto Reset Completed");
+		
+	}
 }

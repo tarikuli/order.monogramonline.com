@@ -33,7 +33,7 @@
 		<div class = 'form-group'>
 			{!!Form::label('po_number','Purchase Order # :',['class'=>'control-label col-xs-2'])!!}
 			<div class = 'col-xs-2'>
-				{!! Form::text('po_number', null, ['id' => 'po_number','class' => 'form-control', 'placeholder' => 'Purchase Order #']) !!}
+				{!! Form::text('po_number', $new_purchase_number, ['id' => 'po_number','class' => 'form-control', 'placeholder' => 'Purchase Order #']) !!}
 			</div>
 
 			{!!Form::label('po_date','PO Date:',['class'=>'control-label col-xs-2'])!!}
@@ -135,7 +135,9 @@
 			<td >
 				{!! Form::number("balance_quantity[$i]", null, ['id' => "balance_quantity", 'step' => 'any', 'class' => 'form-control']) !!}
 			</td>
-			<td></td>
+			<td>
+				<a href = "#" id = "delete" class = "delete" data-toggle = "tooltip" data-placement = "top" title = "Delete this purchase"><i class = 'fa fa-times text-danger'></i>Delete</a>
+			</td>
 		</tr>
 
 		<tr>
@@ -304,6 +306,27 @@
 
 		    });
 		});
+
+		
+		// Check if empty
+		$(document).on('click', 'form :submit', function (){	
+			
+			$("input#vendor_sku").each(function() {
+				if($(this).val() == ""){
+						alert("vendor_sku field empty");
+					return false;
+				}
+			});
+
+			$("input#stock_no").each(function() {
+				if($(this).val() == ""){
+						alert("stock_no field empty");
+					return false;
+				}
+			});
+			
+		});		
+
 
 	</script>
 </body>
