@@ -1386,7 +1386,8 @@ APPEND;
 		//dd($adjustmentQuantity, $purchaseQuantity, $saleQuantity, (($adjustmentQuantity+$purchaseQuantity)-$saleQuantity));
 		$adjustmentQuantity->total_purchase = $purchaseQuantity;
 		$adjustmentQuantity->total_sale = $saleQuantity;
-		$adjustmentQuantity->qty_av = (($adjustmentQuantity->adjustment+$purchaseQuantity)-$saleQuantity);
+		$adjustmentQuantity->qty_on_hand = (($adjustmentQuantity->adjustment+$purchaseQuantity)-$saleQuantity);
+		$adjustmentQuantity->qty_av = 0;
 		$adjustmentQuantity->save();
 // 		// Avalivel Quentity ( qty_av )
 // 		return (($adjustmentQuantity->adjustment+$purchaseQuantity)-$saleQuantity);

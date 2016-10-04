@@ -35,6 +35,6 @@ class Kernel extends ConsoleKernel
 				 ->everyFiveMinutes();
 
 		$schedule->command('sort:imagefiles')
-				->everyTenMinutes();
+				->everyThirtyMinutes();
 	}
 }
