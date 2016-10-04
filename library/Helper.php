@@ -1362,7 +1362,7 @@ APPEND;
 		
 // 		$inventory = Inventory::find($inventorie_id);
 		$adjustmentQuantity = Inventory::where('stock_no_unique', $stockNumber)->first();
-		Helper::jewelDebug($adjustmentQuantity->adjustment);
+// 		Helper::jewelDebug($adjustmentQuantity->adjustment);
 		
 		// get Purchase Quentity		
 		$purchaseQuantity = DB::table('purchased_products')->where('stock_no', $stockNumber)->sum('quantity');
