@@ -168,6 +168,7 @@ class InventoryController extends Controller
 			set_time_limit(0);
 			Helper::addInventoryByStockNumber($stock_no_unique);
 		}
+		
 		echo "Auto update complete";		
 	}
 	
