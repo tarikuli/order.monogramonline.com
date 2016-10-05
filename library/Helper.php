@@ -1431,7 +1431,7 @@ APPEND;
 								
 // 		Helper::jewelDebug($saleQuantity);
 		//dd($inventoryTbl, $purchaseQuantity, $saleQuantity, (($inventoryTbl+$purchaseQuantity)-$saleQuantity));
-		$qty_on_hand = (($inventoryTbl->adjustment + $purchaseQuantity)-$saleQuantity);
+		$qty_on_hand = (($inventoryTbl->adjustment + $purchaseQuantity+$receiveQuantity)-$saleQuantity);
 		$inventoryTbl->total_purchase = $purchaseQuantity;
 		$inventoryTbl->total_sale = $saleQuantity;
 		$inventoryTbl->qty_on_hand = $qty_on_hand;
