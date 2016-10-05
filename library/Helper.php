@@ -1365,13 +1365,18 @@ APPEND;
 				$stockNumber = $parameter_options->stock_number;
 			}else{
 				// TODO Add update function for update  stock_number = 0 by Child SKU. 
-				Helper::jewelDebug("Child SKU ".$searchByChildSku." Stock Number required.");
+				Log::info("Child SKU ".$searchByChildSku." Stock Number required.");
 				return false;
 			}
 		}
 		
 // 		$inventory = Inventory::find($inventorie_id);
 		$inventoryTbl = Inventory::where('stock_no_unique', $stockNumber)->first();
+		if(!$inventoryTbl){
+			// TODO Add update function for update  stock_number = 0 by Child SKU.
+			Log::info("Invenroty Stock Number ".$stockNumber." not found.");
+			return false;
+		}
 // 		Helper::jewelDebug($inventoryTbl->adjustment);
 		
 		// get Purchase Quentity		
@@ -1421,12 +1426,12 @@ APPEND;
 								5,
 								// Drop Ship																								
 						])
-						->get();
-// 						->sum('items.item_quantity');						
+// 						->get();
+						->sum('items.item_quantity');						
 								
 // 		Helper::jewelDebug($saleQuantity);
 		//dd($inventoryTbl, $purchaseQuantity, $saleQuantity, (($inventoryTbl+$purchaseQuantity)-$saleQuantity));
-		$qty_on_hand = (($inventoryTbl->adjustment+$purchaseQuantity)-$saleQuantity);
+		$qty_on_hand = (($inventoryTbl->adjustment + $purchaseQuantity)-$saleQuantity);
 		$inventoryTbl->total_purchase = $purchaseQuantity;
 		$inventoryTbl->total_sale = $saleQuantity;
 		$inventoryTbl->qty_on_hand = $qty_on_hand;
