@@ -1356,16 +1356,35 @@ APPEND;
 	 * @param string
 	 * @return integer
 	 */
-	public static function addInventoryByStockNumber($stockNumber){
-		// get Adjust Quentity 
-// 		$adjustmentQuantity = DB::table('inventories')->where('stock_no_unique', $stockNumber)->sum('adjustment');
+	public static function addInventoryByStockNumber($stockNumber, $searchByChildSku = null){
+
+		if($searchByChildSku!=null){
+			$parameter_options = Option::where('child_sku', $searchByChildSku)
+										->first();
+			if($parameter_options){
+				$stockNumber = $parameter_options->stock_number;
+			}else{
+				// TODO Add update function for update  stock_number = 0 by Child SKU. 
+				Helper::jewelDebug("Child SKU ".$searchByChildSku." Stock Number required.");
+				return false;
+			}
+		}
 		
 // 		$inventory = Inventory::find($inventorie_id);
-		$adjustmentQuantity = Inventory::where('stock_no_unique', $stockNumber)->first();
-// 		Helper::jewelDebug($adjustmentQuantity->adjustment);
+		$inventoryTbl = Inventory::where('stock_no_unique', $stockNumber)->first();
+// 		Helper::jewelDebug($inventoryTbl->adjustment);
 		
 		// get Purchase Quentity		
-		$purchaseQuantity = DB::table('purchased_products')->where('stock_no', $stockNumber)->sum('quantity');
+		$purchaseQuantity = DB::table('purchased_products')
+								->where('stock_no', $stockNumber)
+								->sum('quantity');
+		
+		// get Purchase Quentity
+		$receiveQuantity = DB::table('purchased_products')
+								->where('stock_no', $stockNumber)
+								->sum('receive_quantity');
+		
+		
 // 		Helper::jewelDebug($purchaseQuantity);
 		
 		// get Sale Quentity
@@ -1382,15 +1401,41 @@ APPEND;
 								// cancelled
 						])
 						->sum('items.item_quantity');
+
+		// get Sale Quentity
+		$qty_alloc = DB::table('parameter_options')
+						->join('items', 'parameter_options.child_sku', '=', 'items.child_sku')
+						->join('orders', 'orders.order_id', '=', 'items.order_id')
+						->where('parameter_options.stock_number', $stockNumber)
+						->where('items.is_deleted', '=', '0')
+						->where('orders.is_deleted', '=', '0')
+						->whereIn('orders.order_status', [
+								1,
+								// Credit Hold
+								2,
+								// Manual Redo
+								3,
+								// On-hold
+								4,
+								// TO BE PROCESSED
+								5,
+								// Drop Ship																								
+						])
+						->get();
+// 						->sum('items.item_quantity');						
+								
 // 		Helper::jewelDebug($saleQuantity);
-		//dd($adjustmentQuantity, $purchaseQuantity, $saleQuantity, (($adjustmentQuantity+$purchaseQuantity)-$saleQuantity));
-		$adjustmentQuantity->total_purchase = $purchaseQuantity;
-		$adjustmentQuantity->total_sale = $saleQuantity;
-		$adjustmentQuantity->qty_on_hand = (($adjustmentQuantity->adjustment+$purchaseQuantity)-$saleQuantity);
-		$adjustmentQuantity->qty_av = 0;
-		$adjustmentQuantity->save();
+		//dd($inventoryTbl, $purchaseQuantity, $saleQuantity, (($inventoryTbl+$purchaseQuantity)-$saleQuantity));
+		$qty_on_hand = (($inventoryTbl->adjustment+$purchaseQuantity)-$saleQuantity);
+		$inventoryTbl->total_purchase = $purchaseQuantity;
+		$inventoryTbl->total_sale = $saleQuantity;
+		$inventoryTbl->qty_on_hand = $qty_on_hand;
+		$inventoryTbl->qty_alloc = $qty_alloc;
+		$inventoryTbl->qty_exp = $purchaseQuantity-$receiveQuantity;
+		$inventoryTbl->qty_av = ($qty_on_hand - $qty_alloc);
+		$inventoryTbl->save();
 // 		// Avalivel Quentity ( qty_av )
-// 		return (($adjustmentQuantity->adjustment+$purchaseQuantity)-$saleQuantity);
+// 		return (($inventoryTbl->adjustment+$purchaseQuantity)-$saleQuantity);
 		
 	}
 }

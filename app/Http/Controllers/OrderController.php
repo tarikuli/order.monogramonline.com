@@ -241,6 +241,7 @@ class OrderController extends Controller
 			$item->item_option = json_encode($json);
 			$item->item_order_status_2 = $order->order_status;
 			$item->save();
+			Helper::addInventoryByStockNumber(null, $child_sku[$index]);
 			$index++;
 		}
 		$item_skus = $request->get('item_skus');
@@ -285,6 +286,7 @@ class OrderController extends Controller
 				$child_sku = Helper::getChildSku($item);
 				$item->child_sku = $child_sku;
 				$item->save();
+				Helper::addInventoryByStockNumber(null, $child_sku);
 			}
 		}
 		$order->item_count = $total_items;
@@ -631,6 +633,7 @@ class OrderController extends Controller
 				$child_sku = Helper::getChildSku($item);
 				$item->child_sku = $child_sku;
 				$item->save();
+				Helper::addInventoryByStockNumber(null, $child_sku);
 				$product = Product::where('id_catalog', $idCatalog)
 								  ->first();
 				if ( !$product ) {
@@ -743,6 +746,7 @@ class OrderController extends Controller
 			$child_sku = Helper::getChildSku($item);
 			$item->child_sku = $child_sku;
 			$item->save();
+			Helper::addInventoryByStockNumber(null, $child_sku);
 		}
 		if ( !$error ) {
 			$order = new Order();
@@ -987,6 +991,7 @@ class OrderController extends Controller
 			$item->data_parse_type = 'hook';
 			$item->child_sku = Helper::getChildSku($item);
 			$item->save();
+			Helper::addInventoryByStockNumber(null,$item->child_sku);
 			// -------------- Items table data insertion ended ---------------------- //
 			// -------------- Products table data insertion started ---------------------- //
 			#$product = Product::where('id_catalog', $item->item_id)->first();
@@ -1202,6 +1207,7 @@ class OrderController extends Controller
 			$item->data_parse_type = 'hook';
 			$item->child_sku = $item_from->child_sku;
 			$item->save();
+			Helper::addInventoryByStockNumber(null, $item_from->child_sku);
 		}
 
 

@@ -74,7 +74,7 @@ class InventoryController extends Controller
 		$inventory->adjustment = $request->adjustment;
 		$inventory->save();
 		
-		Helper::addInventoryByStockNumber($request->stock_no_unique);
+		Helper::addInventoryByStockNumber($request->stock_no_unique, null);
 		
 		return redirect(url('inventories#'.$inventorie_id))
 						->with('success', sprintf("Update Success."));
@@ -164,7 +164,7 @@ class InventoryController extends Controller
 
 		foreach ($stock_no_uniques as $stock_no_unique){
 			set_time_limit(0);
-			Helper::addInventoryByStockNumber($stock_no_unique);
+			Helper::addInventoryByStockNumber($stock_no_unique,null);
 		}
 		
 		echo "Auto update complete";		

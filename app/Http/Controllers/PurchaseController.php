@@ -63,7 +63,8 @@ class PurchaseController extends Controller
 		//----------
 
 		foreach ( $purchase_ids as $purchase_id ) {
-			$purchased_products = new PurchaseProduct();
+			if(!empty($vendor_skus[$index]) && !empty($quantitys[$index]) && !empty($sub_totals[$index])){			
+				$purchased_products = new PurchaseProduct();
 				$purchased_products->purchase_id 		= $request->get('po_number');
 				$purchased_products->product_id 		= $product_ids[$index];
 				$purchased_products->stock_no 			= $stock_nos[$index];
@@ -74,8 +75,10 @@ class PurchaseController extends Controller
 				$purchased_products->receive_date 		= $receive_dates[$index];
 				$purchased_products->receive_quantity 	= $receive_quantitys[$index];
 				$purchased_products->balance_quantity 	= $balance_quantitys[$index];
-			$purchased_products->save();
-			++$index;
+				$purchased_products->save();
+				Helper::addInventoryByStockNumber($stock_nos[$index], null);
+				++$index;
+			}
 		}
 		session()->flash('success', 'Purchase is added successfully.');
 
@@ -167,6 +170,7 @@ class PurchaseController extends Controller
 				$purchased_products->receive_quantity 	= $receive_quantitys[$index];
 				$purchased_products->balance_quantity 	= $balance_quantitys[$index];			
 				$purchased_products->save();
+				Helper::addInventoryByStockNumber($stock_nos[$index], null);
 				++$index;
 			}
 		}
