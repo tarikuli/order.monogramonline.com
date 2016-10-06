@@ -128,7 +128,7 @@
 						{!! Form::number("receive_quantity[$i]", $product->receive_quantity, ['id' => "receive_quantity", 'step' => 'any', 'class' => 'form-control']) !!}
 					</td>
 					<td >
-						{!! Form::number("balance_quantity[$i]", $product->balance_quantity, ['id' => "balance_quantity", 'step' => 'any', 'class' => 'form-control']) !!}
+						{!! Form::number("balance_quantity[$i]", $product->balance_quantity, ['id' => "balance_quantity", 'step' => 'any', 'class' => 'form-control', 'readonly']) !!}
 					</td>
 					<td>
 						<a href = "#" id = "delete" class = "delete" data-toggle = "tooltip" data-placement = "top" title = "Delete this purchase"><i class = 'fa fa-times text-danger'></i>Delete</a>
@@ -328,6 +328,19 @@
 			});
 			
 		});		
+
+		$(document).on('change', 'input#quantity', function (){
+			//	receive_quantity = $(this).closest('tr').find('input#receive_quantity').val();
+			// 	console.log(receive_quantity);
+			sumSubTotal();
+		});
+
+		$(document).on('change', 'input#receive_quantity', function (){
+			//	receive_quantity = $(this).closest('tr').find('input#receive_quantity').val();
+			// 	console.log(receive_quantity);
+			sumSubTotal();
+		});
+		
 
 	</script>
 </body>

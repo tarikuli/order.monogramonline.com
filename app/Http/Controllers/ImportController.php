@@ -57,6 +57,8 @@ class ImportController extends Controller
 
 			return redirect()->to('inventories');
 		} elseif ( $request->get('todo') == 'upload' ) {
+			// Trancket Table before update
+			Inventory::truncate();
 			$rows = $reader->setOffset(1)
 						   ->fetchAssoc($csv_columns);
 			set_time_limit(0);

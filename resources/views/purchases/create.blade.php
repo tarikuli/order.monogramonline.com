@@ -133,7 +133,7 @@
 				{!! Form::number("receive_quantity[$i]", null, ['id' => "receive_quantity", 'step' => 'any', 'class' => 'form-control']) !!}
 			</td>
 			<td >
-				{!! Form::number("balance_quantity[$i]", null, ['id' => "balance_quantity", 'step' => 'any', 'class' => 'form-control']) !!}
+				{!! Form::number("balance_quantity[$i]", null, ['id' => "balance_quantity", 'step' => 'any', 'class' => 'form-control', 'readonly']) !!}
 			</td>
 			<td>
 				<a href = "#" id = "delete" class = "delete" data-toggle = "tooltip" data-placement = "top" title = "Delete this purchase"><i class = 'fa fa-times text-danger'></i>Delete</a>
@@ -232,6 +232,14 @@
 				//console.log( gTotal );
 			});
 			$('#grand_total').val( gTotal );
+
+			// Calculate balance quantity
+			$("input#balance_quantity").each(function() {
+				qntity = getNumber($(this).closest('td').prev().prev().prev().prev().prev().find('input').val());
+				receive_quantity = getNumber($(this).closest('td').prev().find('input').val());
+				balance_quantity = qntity - receive_quantity;
+				$(this).val(balance_quantity);
+			});
 		}
 
 		$("#vendor_id").on('blur', function (event)
@@ -259,7 +267,7 @@
 
 		});
 
-		$(document).on('change', 'input#vendor_sku', function ()
+		$(document).on('blur', 'input#vendor_sku', function ()
 		{
 			vendor_id = $("#vendor_id").val();
 			vendor_sku = this.value;
@@ -274,7 +282,7 @@
 				data: {vendor_id : vendor_id, vendor_sku : vendor_sku},
 				context: this,
 				success:function(response) {
-					//console.log( response );
+// 					console.log( response );
 					$(this).closest('td').next().find('input').val(response.product_id);
 					$(this).closest('td').next().next().find('input').val(response.stock_no);
 					$(this).closest('td').next().next().next().find('input').val(response.vendor_sku_name);
@@ -326,6 +334,18 @@
 			});
 			
 		});		
+
+		$(document).on('change', 'input#quantity', function (){
+			//	receive_quantity = $(this).closest('tr').find('input#receive_quantity').val();
+			// 	console.log(receive_quantity);
+			sumSubTotal();
+		});
+
+		$(document).on('change', 'input#receive_quantity', function (){
+			//	receive_quantity = $(this).closest('tr').find('input#receive_quantity').val();
+			// 	console.log(receive_quantity);
+			sumSubTotal();
+		});
 
 
 	</script>

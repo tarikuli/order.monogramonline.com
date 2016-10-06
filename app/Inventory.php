@@ -40,25 +40,25 @@ class Inventory extends Model
 // 		1 => 'yes',
 // 	];
 
-// 	private function tableColumns ()
-// 	{
-// 		$columns = $this->getConnection()
-// 						->getSchemaBuilder()
-// 						->getColumnListing($this->getTable());
-// 		$remove_columns = [
-// 			'id',
-// 			'updated_at',
-// 			'created_at',
-// 			'is_deleted',
-// 		];
+	private function tableColumns ()
+	{
+		$columns = $this->getConnection()
+						->getSchemaBuilder()
+						->getColumnListing($this->getTable());
+		$remove_columns = [
+			'id',
+			'updated_at',
+			'created_at',
+			'is_deleted',
+		];
 
-// 		return array_diff($columns, $remove_columns);
-// 	}
+		return array_diff($columns, $remove_columns);
+	}
 
-// 	public static function getTableColumns ()
-// 	{
-// 		return (new static())->tableColumns();
-// 	}
+	public static function getTableColumns ()
+	{
+		return (new static())->tableColumns();
+	}
 
 
 // 	public function getSkuStatusAttribute ($index)

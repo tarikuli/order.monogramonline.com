@@ -23,7 +23,7 @@
 </head>
 <body>
 	@include('includes.header_menu')
-	<div class = "container">
+	<div class = "container" style="min-width: 1550px; margin-left: 10px;">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
 			<li><a href = "{{url('inventories')}}" class = "active">Inventories</a></li>
@@ -69,6 +69,7 @@
 			</div>
 		</div>
 		<div class = "col-xs-12">
+		<samp style="color: red;" >* Remember always keep backup (Export) your CSV file before upload. No duplicate value in <b>stock_no_unique</b> column</samp>
 			@if(count($inventories))
 				<table class = "table table-bordered" id = "batch-items-table">
 					<tr>

@@ -53,7 +53,9 @@ class InventoryController extends Controller
 	public function index ()
 	{
 		$inventories = Inventory::where('is_deleted', 0)
-				->paginate(10);
+// 				->searchCriteria($request->get('search_for_first'), $request->get('search_in_first'))
+// 				->searchCriteria($request->get('search_for_second'), $request->get('search_in_second'))
+				->paginate(100);
 		
 		if ( !count($inventories) ) {
 			return view('errors.404');
