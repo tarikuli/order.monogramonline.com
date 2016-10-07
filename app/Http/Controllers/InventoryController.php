@@ -12,6 +12,11 @@ use App\PurchasedInvProducts;
 
 class InventoryController extends Controller
 {
+	public static $search_in = [
+		'stock_no_unique' 			=> 'Stock No Unique',
+		'stock_name_discription'   	=> 'Stock Name Discription',
+	];
+	
 	private $inventory_indexes = [
 		"All",
 		"Local WH",
@@ -50,19 +55,20 @@ class InventoryController extends Controller
 		"7-Gift Boxes/Cleaner (6335)",
 	];
 
-	public function index ()
+	public function index (Request $request)
 	{
 		$inventories = Inventory::where('is_deleted', 0)
-// 				->searchCriteria($request->get('search_for_first'), $request->get('search_in_first'))
-// 				->searchCriteria($request->get('search_for_second'), $request->get('search_in_second'))
+				->searchCriteria($request->get('search_for_first'), $request->get('search_in_first'))
+				->searchCriteria($request->get('search_for_second'), $request->get('search_in_second'))
 				->paginate(100);
 		
 		if ( !count($inventories) ) {
 			return view('errors.404');
 		}
 		
-		return view('inventories.index')
+		return view('inventories.index', compact('request'))		
 				->with('inventories', $inventories)
+				->with('search_in', static::$search_in)
 				->with('inventory_indexes', $this->inventory_indexes);
 	}
 

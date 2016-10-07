@@ -68,6 +68,40 @@
 				</div>
 			</div>
 		</div>
+		
+		<div class = "col-xs-12">
+			{!! Form::open(['method' => 'get', 'url' => url('inventories'), 'id' => 'search-order']) !!}
+			
+			<div class = "form-group col-xs-3">
+				<label for = "search_for_first">Search for 1</label>
+				{!! Form::text('search_for_first', $request->get('search_for_first'), ['id'=>'search_for_first', 'class' => 'form-control', 'placeholder' => 'Comma delimited']) !!}
+			</div>
+			
+			<div class = "form-group col-xs-3">
+				<label for = "search_in_first">Search in 1</label>
+				{!! Form::select('search_in_first', $search_in, $request->get('search_in_first'), ['id'=>'search_in_first', 'class' => 'form-control']) !!}
+			</div>
+			<div class = "form-group col-xs-3">
+				<label for = "search_for_second">Search for 2</label>
+				{!! Form::text('search_for_second', $request->get('search_for_second'), ['id'=>'search_for_second', 'class' => 'form-control', 'placeholder' => 'Comma delimited']) !!}
+			</div>
+			<div class = "form-group col-xs-3">
+				<label for = "search_in_first">Search in 2</label>
+				{!! Form::select('search_in_second', $search_in, $request->get('search_in_second'), ['id'=>'search_in_second', 'class' => 'form-control']) !!}
+			</div>
+			<br />
+
+			<div class = "form-group col-xs-2">
+				<label for = "" class = ""></label>
+				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
+			</div>
+
+			<div class = "form-group col-xs-2">
+				<label for = "" class = ""></label>
+				{!! Form::button('Reset', ['id'=>'reset', 'type' => 'reset', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-warning form-control']) !!}
+			</div>
+			{!! Form::close() !!}
+		</div>
 		<div class = "col-xs-12">
 		<samp style="color: red;" >* Remember always keep backup (Export) your CSV file before upload. No duplicate value in <b>stock_no_unique</b> column</samp>
 			@if(count($inventories))
