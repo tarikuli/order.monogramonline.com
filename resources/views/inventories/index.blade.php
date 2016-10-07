@@ -102,6 +102,10 @@
 			</div>
 			{!! Form::close() !!}
 		</div>
+		<h3 class = "page-header">
+			Inventories list @if(count($inventories) > 0 ) ({{ $inventories->total() }} items found / {{$inventories->currentPage()}} of {{$inventories->lastPage()}} pages) @endif
+		</h3>
+		
 		<div class = "col-xs-12">
 		<samp style="color: red;" >* Remember always keep backup (Export) your CSV file before upload. No duplicate value in <b>stock_no_unique</b> column</samp>
 			@if(count($inventories))

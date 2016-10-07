@@ -66,7 +66,7 @@ class InventoryController extends Controller
 			return view('errors.404');
 		}
 		
-		return view('inventories.index', compact('request'))		
+		return view('inventories.index', compact('inventories','request'))		
 				->with('inventories', $inventories)
 				->with('search_in', static::$search_in)
 				->with('inventory_indexes', $this->inventory_indexes);
