@@ -5,6 +5,7 @@ use App\Option;
 use App\Parameter;
 use App\Product;
 use App\Store;
+use App\Inventory;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -450,7 +451,12 @@ class LogisticsController extends Controller
 								  ->orderBy('batch_route_name')
 								  ->lists('batch_route_name', 'id');
 
-		return view('logistics.edit_sku_converter', compact('options', 'parameters', 'returnTo', 'batch_routes'));
+		$stock_number = Inventory::where('is_deleted', 0)
+						->orderBy('stock_no_unique')
+						->lists('stock_no_unique', 'stock_no_unique')
+						->prepend('Select a Stock Number', 'Select a Stock Number');
+// dd($options);		
+		return view('logistics.edit_sku_converter', compact('options', 'parameters', 'returnTo', 'batch_routes', 'stock_number'));
 	}
 
 	public function get_add_child_sku (Request $request)
@@ -553,6 +559,7 @@ class LogisticsController extends Controller
 
 	public function update_sku_converter (Request $request)
 	{
+// dd($request->all(), $request->stock_number);
 		$rules = [
 			'store_id'         => 'required',
 			'unique_row_value' => 'required',
@@ -577,11 +584,11 @@ class LogisticsController extends Controller
 		$parameters = Parameter::where('store_id', $store_id)
 							   ->get();
 
-		if ( $parameters->count() == 0 ) {
+		if ( ($parameters->count() == 0) || ($request->stock_number == "Select a Stock Number") ) {
 			return redirect()
 				->back()
 				->withErrors([
-					'error' => 'Not a valid store selected',
+					'error' => 'Not a valid store selected <br>OR<br>Must Select valid Stock Number',
 				]);
 		}
 
@@ -597,12 +604,13 @@ class LogisticsController extends Controller
 		$graphic_sku = trim($request->get('graphic_sku'), '');
 		$child_sku = trim($request->get('child_sku'), '');
 		$id_catalog = trim($request->get('id_catalog'), '');
-		if ( empty( $child_sku ) ) {
+		$stock_number = trim($request->get('stock_number'), '');
+		if ( empty( $child_sku )  || empty($stock_number)) {
 			return redirect()
 				->back()
 				->withInput()
 				->withErrors([
-					'error' => 'Child SKU is required',
+					'error' => 'Child SKU or Stock Number is required',
 				]);
 		}
 
@@ -618,6 +626,7 @@ class LogisticsController extends Controller
 				  'allow_mixing'     => intval($request->get('allow_mixing', 1)),
 				  'batch_route_id'   => intval($request->get('batch_route_id', Helper::getDefaultRouteId())),
 				  'parameter_option' => json_encode($dataToStore),
+				  'stock_number' 	 => $stock_number
 			  ]);
 
 		$return_to = $request->get('return_to', '');

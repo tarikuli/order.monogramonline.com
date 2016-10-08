@@ -8,6 +8,9 @@
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    
+    <link rel="stylesheet" href="/assets/css/chosen.min.css">
+	
 	<style>
 		td {
 			width: 1px;
@@ -45,6 +48,8 @@
 			{!! Form::hidden("store_id", $options->store_id) !!}
 			{!! Form::hidden("unique_row_value", $options->unique_row_value) !!}
 			{!! Form::hidden("return_to", $returnTo) !!}
+			
+			
 			<div class = "form-group">
 				{!! Form::label('allow_mixing', "Batch route", ['class' => 'col-md-2 control-label']) !!}
 				<div class = "col-sm-10">
@@ -69,12 +74,21 @@
 					{!! Form::text('parent_sku', $options->parent_sku, ['class'=> 'form-control', 'id' => 'parent_sku']) !!}
 				</div>
 			</div>
+			
 			<div class = "form-group">
 				{!! Form::label('child_sku', "Child SKU", ['class' => 'col-md-2 control-label']) !!}
 				<div class = "col-sm-10">
 					{!! Form::text('child_sku', $options->child_sku, ['class'=> 'form-control', 'id' => 'child_sku']) !!}
 				</div>
 			</div>
+			
+			<div class = "form-group">
+				{!! Form::label('stock_number', "Stock Number", ['class' => 'col-md-2 control-label']) !!}
+				<div class = "col-sm-10">
+					{!! Form::select('stock_number', $stock_number, $options->stock_number, ['class'=> 'form-control chosen', 'id' => 'stock_number']) !!}
+				</div>
+			</div>
+			
 			<div class = "form-group">
 				{!! Form::label('graphic_sku', "Graphic SKU", ['class' => 'col-md-2 control-label']) !!}
 				<div class = "col-sm-10">
@@ -108,6 +122,7 @@
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script type = "text/javascript" src = "/assets/js/chosen.jquery.min.js"></script>
 	<script type = "text/javascript">
 		$(function ()
 		{
@@ -125,6 +140,8 @@
 			}
 			//return false;
 		});
+
+		$(".chosen").chosen();
 	</script>
 </body>
 </html>
