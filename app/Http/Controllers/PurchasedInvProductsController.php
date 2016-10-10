@@ -36,8 +36,13 @@ class PurchasedInvProductsController extends Controller
      */
     public function create()
     {
-        //
-    	return view('purchased_inv_products.create');
+        //.
+    	$stock_number = Inventory::where('is_deleted', 0)
+							    	->orderBy('stock_no_unique')
+							    	->lists('stock_no_unique', 'stock_no_unique')
+							    	->prepend('Select a Stock Number', 'Select a Stock Number');
+    	
+    	return view('purchased_inv_products.create', compact('stock_number'));
     }
 
     /**
@@ -48,11 +53,23 @@ class PurchasedInvProductsController extends Controller
      */
 	public function store (Requests\PurchasedInvProductsCreateRequest $request)
 	{
+// dd($request->all());
+
+		// Check if new_stock_number exist and push
+		if(!empty($request->stock_no)){
+			// Check new_stock_number exist in inventories Table
+			// Check new_stock_number exist in purchased_inv_products Table
+// 			Helper::insert_stock_number($request->stock_no);
+		}else{
+			$request->stock_number = $request->stock_number;
+		}
 
 		$inventorie = Inventory::where('is_deleted', 0)
 					->where('stock_no_unique', $request->get('stock_no'))
 					->get();
 
+		
+				
 		if($inventorie->count() <= 0 ){
 			/**  Add a new  stock_no_unique in inventories Table **/
 			$inventorie = new Inventory();

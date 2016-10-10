@@ -84,7 +84,7 @@ class Inventory extends Model
 		if ( empty( $stock_no_unique ) ) {
 			return;
 		}
-		return $query->where('stock_no_unique', "LIKE", sprintf("%%%s%%", stock_no_unique));
+		return $query->where('stock_no_unique', "LIKE", sprintf("%%%s%%", $stock_no_unique));
 	}
 	
 	public function scopeSearchStockNameDiscription ($query, $stock_name_discription)

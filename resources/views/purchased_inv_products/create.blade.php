@@ -6,6 +6,7 @@
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="/assets/css/chosen.min.css">
 </head>
 <body>
 	@include('includes.header_menu')
@@ -22,8 +23,11 @@
 		{!! Form::open(['url' => url('/purchasedinvproducts'), 'method' => 'post', 'files' => true,'class'=>'form-horizontal','role'=>'form']) !!}
 		<div class = 'form-group'>
 			{!!Form::label('stock_no','Stock No #:',['class'=>'control-label col-xs-offset-2 col-xs-2'])!!}
-			<div class = 'col-xs-5'>
+			<div class = 'col-xs-2'>
 				{!! Form::text('stock_no', null, ['id' => 'stock_no','class' => 'form-control']) !!}
+			</div>
+			<div class = 'col-xs-5'>
+				{!! Form::select('stock_number', $stock_number, null, ['class'=> 'form-control chosen', 'id' => 'stock_number']) !!}
 			</div>
 		</div>
 		<div class = 'form-group'>
@@ -107,11 +111,42 @@
 	</div>
 	<script src = "//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script type = "text/javascript" src = "/assets/js/chosen.jquery.min.js"></script>
 
 	<script type = "text/javascript">
-		$("#stock_no").on('blur', function (event)
+		$(".chosen").chosen();
+	
+		$("#stock_no").on('change', function (event)
 		{
-			stock_no= $("#stock_no").val();
+			var message = {
+					delete: 'Are you sure?\nAdd new Stock Number?',
+			};
+			
+			var action = confirm(message.delete);
+			if ( action ) {
+				
+				$(".chosen-single").closest("div").find("span").text("Select a Stock Number");
+			}
+			
+		});
+	
+// 		$("#stock_number").on('blur', function (event)
+// 		{
+// 		$(".chosen-single").find("span").on('change', function (event)
+// 		{	
+	
+	
+		$("#stock_number_chosen").on('click', function (event)
+		{			
+					
+			//stock_no= $("#stock_number").val();
+			stock_no= $(".chosen-single").closest("div").find("span").text();
+
+			if(stock_no === "Select a Stock Number"){
+				return false;
+			}
+// 			alert(stock_no);
+			
 			token = $('input[name=_token]').val();
 			//console.log(token);
 			route = '/inventories/getuniquestock';
