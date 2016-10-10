@@ -17,6 +17,7 @@ use App\Ship;
 use App\Station;
 use App\StationLog;
 use App\Inventory;
+use App\PurchasedInvProducts;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -1362,7 +1363,16 @@ APPEND;
 			$parameter_options = Option::where('child_sku', $searchByChildSku)
 										->first();
 			if($parameter_options){
+				// If Child SKU exist in parameter option table
 				$stockNumber = $parameter_options->stock_number;
+				
+				if(empty($stockNumber) || ($stockNumber == "Select a Stock Number")){
+					$parameter_options->stock_number = "Select a Stock Number";
+					$parameter_options->save();
+					Log::info("Option Child SKU ".$searchByChildSku." Stock Number required.");
+					return false;
+				}
+				
 			}else{
 				// TODO Add update function for update  stock_number = 0 by Child SKU. 
 				Log::info("Child SKU ".$searchByChildSku." Stock Number required.");
@@ -1442,5 +1452,55 @@ APPEND;
 // 		// Avalivel Quentity ( qty_av )
 // 		return (($inventoryTbl->adjustment+$purchaseQuantity)-$saleQuantity);
 		
+	}
+	
+	
+	public static function insert_stock_number($stockNumber){
+		
+		$inventoryTbl = Inventory::where('stock_no_unique', $stockNumber)->first();
+		// If not found
+		if(!$inventoryTbl){
+			// Insert new inventory record in inventory table
+			$inventoryTbl = new Inventory();
+			$inventoryTbl->stock_no_unique = $stockNumber;
+			$inventoryTbl->sku_weight = '0';
+			$inventoryTbl->re_order_qty = '0';
+			$inventoryTbl->min_reorder = '0';
+			$inventoryTbl->sku_weight = '0';
+			$inventoryTbl->sku_weight = '0';
+			$inventoryTbl->adjustment = '0';
+			$inventoryTbl->save();
+			Log::info("Invenroty Stock Number ".$stockNumber." not found.");
+		}else{
+			$inventoryTbl->is_deleted = '0';
+			$inventoryTbl->save();
+		}
+		
+		
+		$purchasedInvProducts = PurchasedInvProducts::where('stock_no', $stockNumber)->first();
+		
+		if(!$purchasedInvProducts){
+			/**  Add a new  stock_no_unique in inventories Table **/
+			$purchasedInvProducts = new PurchasedInvProducts();
+			$purchasedInvProducts->stock_no = $stockNumber;
+			$purchasedInvProducts->unit = "PCS";
+			$purchasedInvProducts->unit_price = '0';
+			$purchasedInvProducts->lead_time_days = '30';
+			$purchasedInvProducts->save();
+		}else{
+			$purchasedInvProducts->is_deleted = '0';
+			$purchasedInvProducts->save();
+		}
+		
+	}
+	
+	public static function parameterStockNumberUpdate($child_sku){
+		// again check if the child sku is present or not
+		$option = Option::where('child_sku', $child_sku)
+							->first();
+		if ( $option ) {
+			$option->stock_number = "Select a Stock Number";
+			$option->save();
+		}
 	}
 }

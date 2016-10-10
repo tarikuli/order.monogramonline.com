@@ -583,7 +583,15 @@ class LogisticsController extends Controller
 
 		$parameters = Parameter::where('store_id', $store_id)
 							   ->get();
-
+		
+		// Check if new_stock_number exist and push
+		if(!empty($request->new_stock_number)){
+			// Check new_stock_number exist in inventories Table
+			// Check new_stock_number exist in purchased_inv_products Table
+			Helper::insert_stock_number($request->new_stock_number);			
+			$request->stock_number = $request->new_stock_number; 
+		}
+		
 		if ( ($parameters->count() == 0) || ($request->stock_number == "Select a Stock Number") ) {
 			return redirect()
 				->back()
@@ -604,7 +612,8 @@ class LogisticsController extends Controller
 		$graphic_sku = trim($request->get('graphic_sku'), '');
 		$child_sku = trim($request->get('child_sku'), '');
 		$id_catalog = trim($request->get('id_catalog'), '');
-		$stock_number = trim($request->get('stock_number'), '');
+		$stock_number = trim($request->stock_number, '');
+		
 		if ( empty( $child_sku )  || empty($stock_number)) {
 			return redirect()
 				->back()

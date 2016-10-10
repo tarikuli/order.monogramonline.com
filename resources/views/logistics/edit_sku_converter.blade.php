@@ -84,9 +84,12 @@
 			
 			<div class = "form-group">
 				{!! Form::label('stock_number', "Stock Number", ['class' => 'col-md-2 control-label']) !!}
-				<div class = "col-sm-10">
-					{!! Form::select('stock_number', $stock_number, $options->stock_number, ['class'=> 'form-control chosen', 'id' => 'stock_number']) !!}
+				<div class = "col-sm-3">
+					{!! Form::text('new_stock_number', null, ['class'=> 'form-control', 'id' => 'new_stock_number', 'placeholder' => 'New Stock Number']) !!}
 				</div>
+				<div class = "col-sm-7">
+					{!! Form::select('stock_number', $stock_number, $options->stock_number, ['class'=> 'form-control chosen', 'id' => 'stock_number']) !!}
+				</div>					
 			</div>
 			
 			<div class = "form-group">
@@ -142,6 +145,19 @@
 		});
 
 		$(".chosen").chosen();
+
+		$("#new_stock_number").on('change', function (event)
+		{
+			var message = {
+					delete: 'Are you sure?\nAdd new Stock Number?',
+			};
+			var action = confirm(message.delete);
+			if ( action ) {
+				
+				$(".chosen-single").closest("div").find("span").text("Select a Stock Number");
+			}
+			
+		});
 	</script>
 </body>
 </html>
