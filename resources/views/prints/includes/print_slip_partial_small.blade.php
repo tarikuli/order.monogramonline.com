@@ -30,7 +30,7 @@
 						</td>
 						<td colspan = "1" align = "right" style = "padding-top:10px;">
 							<img src = "{{url(sprintf('/assets/images/%s.jpg', $order->store_id))}}"
-							     border = "0" style="height: 60%; width: 75%;">
+							     border = "0" style="height: 70%; width: 85%;">
 						</td>
 					</tr>
 					<tr valign = "top">

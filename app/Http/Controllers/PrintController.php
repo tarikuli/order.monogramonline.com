@@ -125,9 +125,42 @@ class PrintController extends Controller
 		$orders = $this->getOrderFromId($order_ids);
 		$modules = $this->getPackingModulesFromOrder($orders);
 
-		return view('prints.batch_printer_small')->with('modules', $modules);
+		return view('prints.batch_printer')->with('modules', $modules);
 	}
 
+	public function batch_packing_slip_small (Request $request)
+	{
+		// 		return $request->all();
+		$batches = $request->exists('batch_number') ? array_filter($request->get('batch_number')) : null;
+		if ( !$batches || !is_array($batches) ) {
+			#return view('errors.404');
+			return redirect()
+			->back()
+			->withErrors([ 'error' => 'No batch is selected to print' ]);
+		}
+		$station_name = $request->get('station', '');
+	
+		$order_ids = [];
+		foreach ( $batches as $batch_number ) {
+			$batch_number = explode('tarikuli', $batch_number);
+			$batch_num = $batch_number[0];
+			if(!$request->exists('station')){
+				$station_name = $batch_number[1];
+			}
+	
+			$order_id = Item::whereIn('batch_number', $batch_number)
+			->searchByStation($station_name)
+			->WhereNull('tracking_number')
+			->lists('order_id')
+			->toArray();
+			$order_ids = array_merge($order_id,$order_ids);
+		}
+		$orders = $this->getOrderFromId($order_ids);
+		$modules = $this->getSmallPackingModulesFromOrder($orders);
+	
+		return view('prints.batch_printer_small')->with('modules', $modules);
+	}
+	
 	private function batch_printing_module ($batch_number, $station_name)
 	{
 // 		$item = Item::with('shipInfo', 'order.customer', 'lowest_order_date', 'route.stations_list', 'groupedItems', 'order', 'station_details', 'product')
@@ -245,7 +278,7 @@ class PrintController extends Controller
 
 	}
 
-	private function getPackingModulesFromOrder ($params) // get each order row
+	private function getSmallPackingModulesFromOrder ($params) // get each order row
 	{
 		#dd($params instanceof Collection);
 		$orders = [ ];
@@ -257,6 +290,23 @@ class PrintController extends Controller
 		$modules = [ ];
 		foreach ( $orders as $order ) {
 			$modules[] = view('prints.includes.print_slip_partial_small', compact('order'))->render();
+		}
+	
+		return $modules;
+	}
+	
+	private function getPackingModulesFromOrder ($params) // get each order row
+	{
+		#dd($params instanceof Collection);
+		$orders = [ ];
+		if ( $params instanceof Collection ) {
+			$orders = $params; // is this a collection? if yes, then it's an array
+		} else {
+			$orders[] = $params; // if it is not a collection, then it's a single order
+		}
+		$modules = [ ];
+		foreach ( $orders as $order ) {
+			$modules[] = view('prints.includes.print_slip_partial', compact('order'))->render();
 		}
 
 		return $modules;

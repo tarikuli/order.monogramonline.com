@@ -145,6 +145,7 @@
 							{!! Form::button('Bulk Export', ['id' => 'export_batches', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Packing Slip', ['id' => 'packing_slip', 'class' => 'btn btn-link']) !!}
+							{!! Form::button('Small Packing Slip', ['id' => 'small_packing_slip', 'class' => 'btn btn-link']) !!}
 
 							@if(auth()->user()->roles->first()->id == 1)
 								{!! Form::button('Release Batch', ['id' => 'release_batch', 'class' => 'btn btn-link']) !!}
@@ -197,6 +198,12 @@
 		$("button#packing_slip").on('click', function (event)
 		{
 			var url = "{{ url('/prints/batch_packing') }}";
+			setFormUrlAndSubmit(url);
+		});
+
+		$("button#small_packing_slip").on('click', function (event)
+		{
+			var url = "{{ url('/prints/batch_packing_small') }}";
 			setFormUrlAndSubmit(url);
 		});
 

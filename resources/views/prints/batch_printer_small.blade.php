@@ -10,6 +10,8 @@
 			width: 102mm;
 			height: 150mm;
 			margin-top: 3mm;
+			margin-left: 0mm;
+			margin-right: 0mm;
 		}
 		@media print {
 			div.current-batch {

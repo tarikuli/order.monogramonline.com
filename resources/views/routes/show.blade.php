@@ -75,7 +75,9 @@
 					   target = "_blank">Print batch</a>
 					/
 					<a href = "{{url(sprintf('prints/batch_packing?batch_number[]=%s&station=%s',$batch_number, $current_batch_station->station_name))}}"
-					   target = "_blank">Print packing slip</a>
+					   target = "_blank">Print Packing Slip</a>
+					<a href = "{{url(sprintf('prints/batch_packing_small?batch_number[]=%s&station=%s',$batch_number, $current_batch_station->station_name))}}"
+					   target = "_blank">Print Small Packing Slip</a>					   
 					   <br/><br/><br/><br/><br/><br/><br/><br/><br/>
 					   {!! Form::button('Move to QCD Station', ['id' => 'back_to_qc_all', 'value' => $qdc_station, 'class' => 'btn btn-success']) !!}
 				</div>

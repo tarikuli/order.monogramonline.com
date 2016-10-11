@@ -43,7 +43,6 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('autocomplete',array('as'=>'autocomplete','uses'=>'PurchaseController@index'));
 		resource('purchases/searchajax', 'PurchaseController@autoComplete');
 
-		get('prints/packing/{id}', 'PrintController@packing');
 
 		resource('collections', 'CollectionController');
 		resource('occasions', 'OccasionController');
@@ -53,6 +52,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('prints/purchase/{purchase_id}', 'PrintController@purchase');
 		get('prints/batches', 'PrintController@batches');
 		get('prints/batch_packing', 'PrintController@batch_packing_slip');
+		get('prints/batch_packing_small', 'PrintController@batch_packing_slip_small');
 		get('prints/email_packing', 'PrintController@sendShippingConfirm');
 
 // 		get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
