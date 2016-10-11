@@ -191,8 +191,14 @@
 		$(document).on('click', 'a#delete', function (event)
 		{
 			event.preventDefault();
-			$(this).closest('tr.collection').remove();
-			sumSubTotal();
+			var n = $("tr.collection").length;
+// 			console.log(n);
+			if(n > 1){
+				$(this).closest('tr.collection').remove();
+				sumSubTotal();
+			}else{
+				alert("Can not delete all row.\nYou can update this row only.");
+			}
 		});
 
 		$(document).on('change', 'input#quantity', function ()

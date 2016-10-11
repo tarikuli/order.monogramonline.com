@@ -13,10 +13,13 @@
  	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
   	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  	<link rel="stylesheet" href="/assets/css/chosen.min.css">
 
 	<script src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+	<script type = "text/javascript" src = "/assets/js/chosen.jquery.min.js"></script>
+	
 </head>
 <body>
 	@include('includes.header_menu')
@@ -52,6 +55,7 @@
 			{!!Form::label('vendor_id','Vendor ID:',['class'=>'control-label col-xs-2'])!!}
 			<div class = 'col-xs-2'>
 				{!! Form::text('vendor_id', null, ['id' => 'vendor_id','class' => 'form-control', 'placeholder' => 'Vendor ID']) !!}
+				{!! Form::select('stock_number', $vendors, null, ['class'=> 'form-control stock_number', 'id' => 'stock_number']) !!}
 			</div>
 
 			{!!Form::label('vendor_name','Vendor Name:',['class'=>'control-label col-xs-2'])!!}
@@ -169,7 +173,8 @@
 
 
 	<script type = "text/javascript">
-
+		$(".stock_number").chosen();
+		
 		var options = {
 			format: "YYYY-MM-DD"
 		};
@@ -191,8 +196,13 @@
 		$(document).on('click', 'a#delete', function (event)
 		{
 			event.preventDefault();
-			$(this).closest('tr.collection').remove();
-			sumSubTotal();
+			var n = $("tr.collection").length;
+			if(n > 1){
+				$(this).closest('tr.collection').remove();
+				sumSubTotal();
+			}else{
+				alert("Can not delete all row.\nYou can update this row only.");
+			}
 		});
 
 		$(document).on('change', 'input#quantity', function ()
@@ -346,6 +356,14 @@
 			// 	console.log(receive_quantity);
 			sumSubTotal();
 		});
+
+
+		$(".stock_number").chosen().change(function (event) {
+			$('#vendor_id').val($(event.target).val());
+			$('#vendor_id').trigger("blur");
+			//console.log($(event.target).val());
+		});
+		
 
 
 	</script>
