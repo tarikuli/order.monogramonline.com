@@ -125,7 +125,7 @@ class PrintController extends Controller
 		$orders = $this->getOrderFromId($order_ids);
 		$modules = $this->getPackingModulesFromOrder($orders);
 
-		return view('prints.batch_printer')->with('modules', $modules);
+		return view('prints.batch_printer_small')->with('modules', $modules);
 	}
 
 	private function batch_printing_module ($batch_number, $station_name)
@@ -256,7 +256,7 @@ class PrintController extends Controller
 		}
 		$modules = [ ];
 		foreach ( $orders as $order ) {
-			$modules[] = view('prints.includes.print_slip_partial', compact('order'))->render();
+			$modules[] = view('prints.includes.print_slip_partial_small', compact('order'))->render();
 		}
 
 		return $modules;
