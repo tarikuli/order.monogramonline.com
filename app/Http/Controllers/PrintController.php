@@ -265,12 +265,14 @@ class PrintController extends Controller
 		if ( is_array($order_ids) ) {
 			$orders = Order::with('customer', 'items.shipInfo')
 						   ->whereIn('order_id', $order_ids)
+						   ->where('is_deleted', 0)
 						   ->get();
 
 			return $orders;
 		} else {
 			$order = Order::with('customer', 'items.shipInfo')
 						  ->where('order_id', $order_ids)
+						  ->where('is_deleted', 0)
 						  ->first();
 
 			return $order;
