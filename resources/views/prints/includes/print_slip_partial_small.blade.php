@@ -42,14 +42,17 @@
 					</tr>
 					<tr valign = "top">
 						<td><strong>Order Date:</strong></td>
-						<td>{{date("m/d/y", strtotime($order->order_date) )}}</td>
-						<td><strong>Order #</strong></td>
+						<td>
+							{{date("m/d/y", strtotime($order->order_date) )}}
+							<br>Shipping# {{\Monogram\Helper::orderNameFormatter($order)."-0"}} 
+						</td>
+						<td></td>
 						<td>
 							<table width = "100%" cellpadding = "0" cellspacing = "0" border = "0">
 								<tr valign = "top">
-									<td align = "left"><strong>{{$order->short_order}}</strong></td>
 									<td align = "right">
-										Shipping# {{\Monogram\Helper::orderNameFormatter($order)."-0"}}
+										{!! \Monogram\Helper::getHtmlBarcode(\Monogram\Helper::orderNameFormatter($order)."-0") !!}
+										
 									</td>
 								</tr>
 							</table>
