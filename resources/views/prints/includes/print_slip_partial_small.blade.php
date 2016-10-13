@@ -1,4 +1,4 @@
-<div class = "current-batch">
+<div class = "current-batch" style="width: 105mm;">
 	<table cellpadding = "0" cellspacing = "0" width = "100%" border = "0">
 		<tr valign = "top">
 			<td style = "width:100%;">
@@ -98,7 +98,7 @@
 
 					<tr valign = "top">
 						<td colspan = "5">
-							<table width = "100%" cellpadding = "2" cellspacing = "0" style="border-style: dotted;">
+							<table width = "100%" cellpadding = "2" cellspacing = "0" style="border:1px dotted black;" >
 								<tr valign = "top" style="border-style: dotted;">
 									<td align = "left"><strong>Name</strong></td>
 									<td align = "left"><strong>Code</strong></td>
@@ -106,8 +106,8 @@
 									<td align = "left"><strong>Options</strong></td>
 								</tr>
 								@foreach($order->items as $item)
-									<tr valign = "top">
-										<td align = "left" >
+									<tr valign = "top" >
+										<td align = "left" style="max-width: 15mm;" >
 											{{$item->item_description}}
 											@if($item->shipInfo)
 												<br />
@@ -117,8 +117,14 @@
 												Trk# <a href = "#">{{$item->shipInfo->tracking_number}}</a>
 											@endif
 										</td>
-										<td align = "left" >{{$item->item_code}}</td>
-										<td align = "right" style = "font-size:18px;">
+										<td align = "left" style="max-width: 8mm;" >
+											{{$item->item_code}}
+											
+											@if($item->batch_number)
+												<br/><br/>Barch#<br>{{ $item->batch_number }}
+											@endif
+										</td>
+										<td align = "right" style = "font-size:18px; max-width: 3mm;">
 											<strong>{{$item->item_quantity}}</strong>
 										</td>
 										<td align = "left" >
