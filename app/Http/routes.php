@@ -187,7 +187,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		]);
 
 
-		get('shipping_addressbalidation', 'ShippingController@addressValidation');
+		get('shipping_addressvalidation', 'ShippingController@addressValidation');
+		get('shipping_label_print', 'ShippingController@getShippingLable');
 		get('remove_shipping', 'ShippingController@removeTrackingNumber');
 		put('shipping_update', 'ShippingController@updateTrackingNumber');
 		resource('shipping', 'ShippingController');

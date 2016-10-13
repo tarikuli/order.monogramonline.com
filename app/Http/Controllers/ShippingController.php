@@ -127,6 +127,7 @@ class ShippingController extends Controller
 		]);
 	}
 
+// https://github.com/dkirsche/UPS	
 	public function addressValidation (Request $request)
 	{
 		$address = new \Ups\Entity\Address();
@@ -140,6 +141,7 @@ class ShippingController extends Controller
 		$address->setCountryCode('US');
 		$address->setPostalCode('11373');
 // shipmentDigest
+// Ptondereau\LaravelUpsApi\UpsApiServiceProvider
 		$xav = new \Ups\AddressValidation(env('UPS_ACCESS_KEY'), env('UPS_USER_ID'), env('UPS_PASSWORD'));
 		$xav->activateReturnObjectOnValidate(); //This is optional
 		try {
@@ -176,5 +178,158 @@ class ShippingController extends Controller
 	}
 	
 	// $shipper->setShipperNumber('XX');
+	
+	public function getShippingLable(Request $request){
+			
+		// Start shipment
+		$shipment = new \Ups\Entity\Shipment();
+		
+		// Set shipper
+		$shipper = $shipment->getShipper();
+		$shipper->setShipperNumber(env('SHIPPER_NUMBER'));
+		$shipper->setName('Deal to win');
+		$shipper->setAttentionName('Pablo');
+		$shipperAddress = $shipper->getAddress();
+		$shipperAddress->setAddressLine1('575 Underhill Blvd');
+		$shipperAddress->setPostalCode('11791');
+		$shipperAddress->setCity('Syosset');
+		$shipperAddress->setCountryCode('US');
+		$shipperAddress->setStateProvinceCode('NY');
+		$shipper->setAddress($shipperAddress);
+		$shipper->setEmailAddress('shlomi@monogramonline.com ');
+		$shipper->setPhoneNumber('718-609-1165');
+		$shipment->setShipper($shipper);
+		
+		// To address
+		$address = new \Ups\Entity\Address();
+		$address->setAddressLine1('51-11 Ireland Street');
+		$address->setPostalCode('11373');
+		$address->setCity('Elmhurst');
+		$address->setCountryCode('US');
+		$address->setStateProvinceCode('NY');
+		$shipTo = new \Ups\Entity\ShipTo();
+		$shipTo->setAddress($address);
+		$shipTo->setCompanyName('Personal Company');
+		$shipTo->setAttentionName('MOhammad Tarikul');
+		$shipTo->setEmailAddress('jewel@monogramonline.com');
+		$shipTo->setPhoneNumber('917-907-1711');
+		$shipment->setShipTo($shipTo);
+		
+		// From address
+		$address = new \Ups\Entity\Address();
+		$address->setAddressLine1('575 Underhill Blvd');
+		$address->setPostalCode('11791');
+		$address->setCity('Syosset');
+		$address->setCountryCode('US');
+		$address->setStateProvinceCode('NY');
+		$shipFrom = new \Ups\Entity\ShipFrom();
+		$shipFrom->setAddress($address);
+		$shipFrom->setName('Monogram-Online');
+		$shipFrom->setAttentionName($shipFrom->getName());
+		$shipFrom->setCompanyName($shipFrom->getName());
+		$shipFrom->setEmailAddress('tarikuli@yahoo.com');
+		$shipFrom->setPhoneNumber('917-907-1711');
+		$shipment->setShipFrom($shipFrom);
+		
+		// Sold to
+		$address = new \Ups\Entity\Address();
+		$address->setAddressLine1('12348 LAX AVE');
+		$address->setPostalCode('11356');
+		$address->setCity('COLLEGE POINT');
+		$address->setCountryCode('US');
+		$address->setStateProvinceCode('NY');
+		$soldTo = new \Ups\Entity\SoldTo;
+		$soldTo->setAddress($address);
+		$soldTo->setAttentionName('Israt Sharmin');
+		$soldTo->setCompanyName($soldTo->getAttentionName());
+		$soldTo->setEmailAddress('ntazmiri@gmail.com');
+		$soldTo->setPhoneNumber('917-421-0533');
+		$shipment->setSoldTo($soldTo);
+		
+		// Set service
+		$service = new \Ups\Entity\Service;
+		$service->setCode(\Ups\Entity\Service::S_GROUND);
+		$service->setDescription($service->getName());
+		$shipment->setService($service);
+		
+		// Mark as a return (if return)
+		$return = false;
+		if ($return) {
+			$returnService = new \Ups\Entity\ReturnService;
+			$returnService->setCode(\Ups\Entity\ReturnService::PRINT_RETURN_LABEL_PRL);
+			$shipment->setReturnService($returnService);
+		}
+		
+		// Set description
+		$shipment->setDescription('Gift Item');
+		
+		// Add Package
+		$package = new \Ups\Entity\Package();
+		$package->getPackagingType()->setCode(\Ups\Entity\PackagingType::PT_PACKAGE);
+		$package->getPackageWeight()->setWeight(5);
+		$unit = new \Ups\Entity\UnitOfMeasurement;
+		$unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_LBS);
+		$package->getPackageWeight()->setUnitOfMeasurement($unit);
+		
+		// Set dimensions
+		$dimensions = new \Ups\Entity\Dimensions();
+		$dimensions->setHeight(1);
+		$dimensions->setWidth(5);
+		$dimensions->setLength(5);
+		$unit = new \Ups\Entity\UnitOfMeasurement;
+		$unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_IN);
+		$dimensions->setUnitOfMeasurement($unit);
+		$package->setDimensions($dimensions);
+		
+		// Add descriptions because it is a package
+		$package->setDescription('Gift Item2');
+		
+		// Add this package
+		$shipment->addPackage($package);
+		
+$order_id = "1651651616";		
+$return_id = "XX00000";
+// 		// Set Reference Number BarCodeIndicator
+// 		$referenceNumber = new \Ups\Entity\ReferenceNumber;
+// 		if ($return) {
+// 			$referenceNumber->setCode(\Ups\Entity\ReferenceNumber::CODE_RETURN_AUTHORIZATION_NUMBER);
+// 			$referenceNumber->setValue($return_id);
+// 		} else {
+// 			$referenceNumber->setCode(\Ups\Entity\ReferenceNumber::CODE_INVOICE_NUMBER);
+// 			$referenceNumber->setValue($order_id);
+// // dd($referenceNumber);			
+// 		}
+// 		$shipment->setReferenceNumber($referenceNumber);
+
+// $shipment->Service->Code = '03';		
+		// Set payment information
+		$shipment->setPaymentInformation(new \Ups\Entity\PaymentInformation('prepaid', (object)array('AccountNumber' => env('SHIPPER_NUMBER'))));
+		
+		// Ask for negotiated rates (optional)
+		$rateInformation = new \Ups\Entity\RateInformation;
+		$rateInformation->setNegotiatedRatesIndicator(1);
+		$shipment->setRateInformation($rateInformation);
+		
+// dd($shipment);		
+		
+		// Get shipment info
+		try {
+			// $api = new \Ups\Shipping($accessKey, $userId, $password);
+			$api = new \Ups\Shipping(env('UPS_ACCESS_KEY'), env('UPS_USER_ID'), env('UPS_PASSWORD'));
+			$confirm = $api->confirm(\Ups\Shipping::REQ_VALIDATE, $shipment);
+// 			var_dump($confirm); // Confirm holds the digest you need to accept the result
+			if ($confirm) {
+				$accept = $api->accept($confirm->ShipmentDigest);
+				Helper::jewelDebug("Jewel---------------------------");
+				echo "<pre>";
+					var_dump((array) $accept); // Accept holds the label and additional information
+				echo "</pre>";
+			}
+		} catch (\Exception $e) {
+			echo "<pre>";
+			var_dump($e->getMessage());
+			echo "</pre>";
+		}
+	} 
 
 }
