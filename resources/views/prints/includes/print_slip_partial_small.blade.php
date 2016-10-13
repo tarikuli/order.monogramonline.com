@@ -52,7 +52,6 @@
 								<tr valign = "top">
 									<td align = "right">
 										{!! \Monogram\Helper::getHtmlBarcode(\Monogram\Helper::orderNameFormatter($order)."-0") !!}
-										
 									</td>
 								</tr>
 							</table>
@@ -98,37 +97,23 @@
 
 					<tr valign = "top">
 						<td colspan = "5">
-							<table width = "100%" cellpadding = "2" cellspacing = "0" style="border:1px dotted black;" >
+							<table width = "100%" cellpadding = "0" cellspacing = "1"  >
 								<tr valign = "top" style="border-style: dotted;">
-									<td align = "left"><strong>Name</strong></td>
-									<td align = "left"><strong>Code</strong></td>
-									<td align = "right"><strong>Qty</strong></td>
-									<td align = "left"><strong>Options</strong></td>
+									<td align = "justify"><strong>Discription</strong></td>
+									<td align = "right"><strong>QTY</strong></td>
 								</tr>
 								@foreach($order->items as $item)
-									<tr valign = "top" >
-										<td align = "left" style="max-width: 15mm;" >
-											{{$item->item_description}}
-											@if($item->shipInfo)
-												<br />
-												Shipped on {{substr($item->shipInfo->transaction_datetime, 0, 10)}} by
-												{{$item->shipInfo->mail_class}}
-												<br />
-												Trk# <a href = "#">{{$item->shipInfo->tracking_number}}</a>
-											@endif
-										</td>
-										<td align = "left" style="max-width: 8mm;" >
-											{{$item->item_code}}
-											
+									<tr valign = "top" style="outline: thin dotted" >
+										<td align = "left" style="max-width: 102mm;" >
 											@if($item->batch_number)
-												<br/><br/>Barch#<br>{{ $item->batch_number }}
+												Barch# {{ $item->batch_number }} <br>
 											@endif
+											SKU# {{$item->item_code}}<br>
+											Name: {{$item->item_description}}<br>
+											{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}
 										</td>
 										<td align = "right" style = "font-size:18px; max-width: 3mm;">
 											<strong>{{$item->item_quantity}}</strong>
-										</td>
-										<td align = "left" >
-											{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}
 										</td>
 									</tr>
 

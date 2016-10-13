@@ -12,10 +12,14 @@
 			margin-top: 3mm;
 			margin-left: 0mm;
 			margin-right: 0mm;
+			font-family: Verdana, Arial, Helvetica, sans-serif;
+			font-size: 10px;
 		}
 		@media print {
 			div.current-batch {
 				page-break-before: always;
+				font-family: Verdana, Arial, Helvetica, sans-serif;
+				font-size: 10px;
 			}
 		}
 	</style>
