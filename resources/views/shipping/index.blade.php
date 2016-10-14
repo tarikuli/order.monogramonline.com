@@ -152,7 +152,7 @@
 								<br>
 								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
 								<a class = "update" href = "#" >Manual Tracking # Update</a>
-
+								<br><a href = "{{ url(sprintf("/shipping_addressvalidation?order_id=%s",$ship->order_number )) }}">Print Shipping lable</a>
 								{!! Form::open(['url' => url('/shipping_update'), 'method' => 'put', 'id' => 'shipping_update']) !!}
 								{!! Form::hidden('tracking_number_update', null, ['id' => 'tracking_number_update']) !!}
 								{!! Form::hidden('order_number_update', $ship->order_number, ['id' => 'order_number_update']) !!}
@@ -177,7 +177,9 @@
 						<td>{{$ship->actual_weight}}</td>
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->package_shape}}</td>
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->tracking_type}}</td>
-						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->name}}</td>
+						<td rowspan = "{{ $count }}" style = "vertical-align: middle">
+							{{$ship->name}}
+						</td>
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->company}}</td>
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->address1}}</td>
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->address2}}</td>

@@ -112,7 +112,7 @@
 											Name: {{$item->item_description}}<br>
 											{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}
 										</td>
-										<td align = "right" style = "font-size:18px; max-width: 10mm; outline: thin dotted;">
+										<td align = "right" style = "font-size:18px; max-width: 10mm;">
 											<strong>{{$item->item_quantity}}</strong><br/>
 											<img height = "auto" width = "50"
 											     src = "{{$item->item_thumb}}"

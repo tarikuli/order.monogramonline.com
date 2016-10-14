@@ -448,6 +448,47 @@ class Helper
 						// Shipped
 	];
 
+// 	US United States
+// 	CA Canada
+// 	United States
+// 	ZA South Africa
+// 	DE Germany
+// 	UK United Kingdom
+// 	USA
+// 	MX Mexico
+// 	VI Virgin Islands (U.S.)
+// 	AU Australia
+// 	AF Afghanistan
+// 	KY Cayman Islands
+// 	NO Norway
+// 	mmmm
+// 	IL Israel
+// 	GH Ghana
+// 	NZ New Zealand
+// 	canada
+// 	MY Malaysia
+// 	IE Ireland
+// 	TN Tunisia
+// 	DK Denmark
+// 	UY Uruguay
+// 	JP Japan
+// 	SG Singapore
+// 	AE United Arab Emirates
+// 	GU Guam
+// 	IT Italy
+	
+	public static function getcountrycode ($country_name)
+	{
+		$country_code_null = substr($country_name, 2, 1);
+		if($country_code_null == " ") {
+			$country_code = substr($country_name, 0,2);
+			return $country_code;
+		}else {
+			return false;
+		}
+		
+	}
+	
 	public static function tracking_number_formatter ($shippingInfo, $new_line_formatter = '<br/>')
 	{
 		if ( !$shippingInfo ) {

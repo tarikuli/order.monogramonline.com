@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Item;
 use App\Ship;
+use App\Customer;
 use Illuminate\Http\Request;
 
 use App\Note;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Monogram\Helper;
 use Illuminate\Support\Facades\Auth;
+use Ups\Shipping;
 
 class ShippingController extends Controller
 {
@@ -49,6 +51,7 @@ class ShippingController extends Controller
 					 ->paginate(10);
 
 		$counter = Ship::where('is_deleted', 0)
+					   ->where('updated_at', 'LIKE', sprintf("%%%s%%", date("Y-m-d")))
 					   ->first([
 						   DB::raw('COUNT(*) - COUNT(tracking_number) AS unassigned_count'),
 						   DB::raw('COUNT(tracking_number) AS assigned_count'),
@@ -126,20 +129,43 @@ class ShippingController extends Controller
 				'error' => 'Can not Tracking # Updated',
 		]);
 	}
+	
+	
+// groupByUniqueOrderId	
 
 // https://github.com/dkirsche/UPS	
 	public function addressValidation (Request $request)
 	{
+		if(!$request->has('order_id')){
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'No Order Number found',
+			]);
+		}
+		
+		$customer = Customer::where('order_id', $request->order_id)
+							->where('is_deleted', 0)
+							->first();
+		
+		if(!Helper::getcountrycode($customer->ship_country)){
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'Order number '.$request->order_id.' invalive country code <b>'. $customer->ship_country.'</b><br>Please update correct cuntory code formate like<br><b>US United States</b><br><b>CA Canada</b><br><b>VI Virgin Islands (U.S.)</b>',
+			]);
+		}
+		
 		$address = new \Ups\Entity\Address();
-		$address->setAttentionName('Mohammad Tarikul');
-		$address->setBuildingName('GF');
-		$address->setAddressLine1('5111 Ireland Street');
-		$address->setAddressLine2('');
+		$address->setAttentionName($customer->ship_full_name);
+		$address->setBuildingName($customer->ship_company_name);
+		$address->setAddressLine1($customer->ship_address_1);
+		$address->setAddressLine2($customer->ship_address_2);
 		$address->setAddressLine3('');
-		$address->setStateProvinceCode('NY');
-		$address->setCity('Elmhurst');
-		$address->setCountryCode('US');
-		$address->setPostalCode('11373');
+		$address->setStateProvinceCode($customer->ship_state);
+		$address->setCity($customer->ship_city);
+		$address->setCountryCode(Helper::getcountrycode($customer->ship_country));
+		$address->setPostalCode($customer->ship_zip);
 // shipmentDigest
 // Ptondereau\LaravelUpsApi\UpsApiServiceProvider
 		$xav = new \Ups\AddressValidation(env('UPS_ACCESS_KEY'), env('UPS_USER_ID'), env('UPS_PASSWORD'));
@@ -154,8 +180,12 @@ class ShippingController extends Controller
 				//Or do something else helpful...
 				echo "<pre>";
 				// Dump array with object-arrays
+				echo "**********\n";
 				print_r($validAddress);
 				echo "</pre>";
+				
+				echo '<iframe width="640" height="480" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.it/maps?q='.$customer->ship_address_1.', '.$customer->ship_state.', '.$customer->ship_zip.'&output=embed"></iframe>';
+				$this->getShippingLable($customer);
 			}else{
 				echo "Not valide address";
 			}
@@ -165,12 +195,13 @@ class ShippingController extends Controller
 				foreach($candidateAddresses as $address) {
 					//Present user with list of candidate addresses so they can pick the correct one
 					echo "<pre>";
+					echo "isAmbiguous+++++++++++\n";
 					// Dump array with object-arrays
 					print_r($address);
 					echo "</pre>";
 				}
 			}
-
+			dd($request->all(),$customer, $address);
 
 		} catch (Exception $e) {
 			var_dump($e);
@@ -179,7 +210,8 @@ class ShippingController extends Controller
 	
 	// $shipper->setShipperNumber('XX');
 	
-	public function getShippingLable(Request $request){
+// 	public function getShippingLable(Request $request){
+    public function getShippingLable($customer){		
 			
 		// Start shipment
 		$shipment = new \Ups\Entity\Shipment();
@@ -199,52 +231,63 @@ class ShippingController extends Controller
 		$shipper->setEmailAddress('shlomi@monogramonline.com ');
 		$shipper->setPhoneNumber('718-609-1165');
 		$shipment->setShipper($shipper);
-		
+
+// $address->setAttentionName($customer->ship_full_name);
+// $address->setBuildingName($customer->ship_company_name);
+// $address->setAddressLine1($customer->ship_address_1);
+// $address->setAddressLine2($customer->ship_address_2);
+// $address->setAddressLine3('');
+// $address->setStateProvinceCode($customer->ship_state);
+// $address->setCity($customer->ship_city);
+// $address->setCountryCode(Helper::getcountrycode($customer->ship_country));
+// $address->setPostalCode($customer->ship_zip);		
 		// To address
 		$address = new \Ups\Entity\Address();
-		$address->setAddressLine1('51-11 Ireland Street');
-		$address->setPostalCode('11373');
-		$address->setCity('Elmhurst');
-		$address->setCountryCode('US');
-		$address->setStateProvinceCode('NY');
+		$address->setAddressLine1($customer->ship_address_1);
+		$address->setAddressLine2($customer->ship_address_2);
+		$address->setAddressLine3('');
+		$address->setPostalCode($customer->ship_zip);
+		$address->setCity($customer->ship_city);
+		$address->setCountryCode(Helper::getcountrycode($customer->ship_country));
+		$address->setStateProvinceCode($customer->ship_state);
 		$shipTo = new \Ups\Entity\ShipTo();
 		$shipTo->setAddress($address);
-		$shipTo->setCompanyName('Personal Company');
-		$shipTo->setAttentionName('MOhammad Tarikul');
-		$shipTo->setEmailAddress('jewel@monogramonline.com');
+		$shipTo->setCompanyName($customer->ship_full_name);
+		$shipTo->setAttentionName($customer->ship_full_name);
+		$shipTo->setEmailAddress($customer->ship_email);
 		$shipTo->setPhoneNumber('917-907-1711');
 		$shipment->setShipTo($shipTo);
 		
-		// From address
-		$address = new \Ups\Entity\Address();
-		$address->setAddressLine1('575 Underhill Blvd');
-		$address->setPostalCode('11791');
-		$address->setCity('Syosset');
-		$address->setCountryCode('US');
-		$address->setStateProvinceCode('NY');
-		$shipFrom = new \Ups\Entity\ShipFrom();
-		$shipFrom->setAddress($address);
-		$shipFrom->setName('Monogram-Online');
-		$shipFrom->setAttentionName($shipFrom->getName());
-		$shipFrom->setCompanyName($shipFrom->getName());
-		$shipFrom->setEmailAddress('tarikuli@yahoo.com');
-		$shipFrom->setPhoneNumber('917-907-1711');
-		$shipment->setShipFrom($shipFrom);
+// 		// From address
+// 		$address = new \Ups\Entity\Address();
+// 		$address->setAddressLine1('575 Underhill Blvd');
+// 		$address->setPostalCode('11791');
+// 		$address->setCity('Syosset');
+// 		$address->setCountryCode('US');
+// 		$address->setStateProvinceCode('NY');
+// 		$shipFrom = new \Ups\Entity\ShipFrom();
+// 		$shipFrom->setAddress($address);
+// 		$shipFrom->setName('Monogram-Online');
+// 		$shipFrom->setAttentionName($shipFrom->getName());
+// 		$shipFrom->setCompanyName($shipFrom->getName());
+// 		$shipFrom->setEmailAddress('tarikuli@yahoo.com');
+// 		$shipFrom->setPhoneNumber('917-907-1711');
+// 		$shipment->setShipFrom($shipFrom);
 		
-		// Sold to
-		$address = new \Ups\Entity\Address();
-		$address->setAddressLine1('12348 LAX AVE');
-		$address->setPostalCode('11356');
-		$address->setCity('COLLEGE POINT');
-		$address->setCountryCode('US');
-		$address->setStateProvinceCode('NY');
-		$soldTo = new \Ups\Entity\SoldTo;
-		$soldTo->setAddress($address);
-		$soldTo->setAttentionName('Israt Sharmin');
-		$soldTo->setCompanyName($soldTo->getAttentionName());
-		$soldTo->setEmailAddress('ntazmiri@gmail.com');
-		$soldTo->setPhoneNumber('917-421-0533');
-		$shipment->setSoldTo($soldTo);
+// 		// Sold to
+// 		$address = new \Ups\Entity\Address();
+// 		$address->setAddressLine1('12348 LAX AVE');
+// 		$address->setPostalCode('11356');
+// 		$address->setCity('COLLEGE POINT');
+// 		$address->setCountryCode('US');
+// 		$address->setStateProvinceCode('NY');
+// 		$soldTo = new \Ups\Entity\SoldTo;
+// 		$soldTo->setAddress($address);
+// 		$soldTo->setAttentionName('Israt Sharmin');
+// 		$soldTo->setCompanyName($soldTo->getAttentionName());
+// 		$soldTo->setEmailAddress('ntazmiri@gmail.com');
+// 		$soldTo->setPhoneNumber('917-421-0533');
+// 		$shipment->setSoldTo($soldTo);
 		
 		// Set service
 		$service = new \Ups\Entity\Service;
