@@ -103,8 +103,8 @@
 									<td align = "right"><strong>QTY</strong></td>
 								</tr>
 								@foreach($order->items as $item)
-									<tr valign = "top" style="outline: thin dotted" >
-										<td align = "left" style="max-width: 102mm;" >
+									<tr valign = "top">
+										<td align = "left" style="max-width: 90mm; outline: thin dotted;" >
 											@if($item->batch_number)
 												Barch# {{ $item->batch_number }} <br>
 											@endif
@@ -112,9 +112,9 @@
 											Name: {{$item->item_description}}<br>
 											{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}
 										</td>
-										<td align = "right" style = "font-size:18px; max-width: 3mm;">
+										<td align = "right" style = "font-size:18px; max-width: 10mm; outline: thin dotted;">
 											<strong>{{$item->item_quantity}}</strong><br/>
-											<img height = "8" width = "8"
+											<img height = "auto" width = "50"
 											     src = "{{$item->item_thumb}}"
 											     border = "0" />
 											
