@@ -311,7 +311,7 @@ $return_id = "XX00000";
 		$shipment->setRateInformation($rateInformation);
 		
 // dd($shipment);		
-		
+// GraphicImage		
 		// Get shipment info
 		try {
 			// $api = new \Ups\Shipping($accessKey, $userId, $password);
@@ -320,10 +320,14 @@ $return_id = "XX00000";
 // 			var_dump($confirm); // Confirm holds the digest you need to accept the result
 			if ($confirm) {
 				$accept = $api->accept($confirm->ShipmentDigest);
+				$result=$accept;
 				Helper::jewelDebug("Jewel---------------------------");
 				echo "<pre>";
 					var_dump((array) $accept); // Accept holds the label and additional information
 				echo "</pre>";
+// 				echo '<div> <img style="width: 150mm;  height: auto;" src="data:image/gif;base64,'. $result->PackageResults->LabelImage->GraphicImage. '"/></div>';
+				echo '<div style="height: 150mm;  width: auto;"> <img  height="100%" width="100%" src="data:image/gif;base64,'. $result->PackageResults->LabelImage->GraphicImage. '"/></div>';
+				
 			}
 		} catch (\Exception $e) {
 			echo "<pre>";

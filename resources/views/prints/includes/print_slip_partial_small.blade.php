@@ -1,4 +1,4 @@
-<div class = "current-batch" style="width: 105mm;">
+<div class = "current-batch" style="width: 100mm; height: 150">
 	<table cellpadding = "0" cellspacing = "0" width = "100%" border = "0">
 		<tr valign = "top">
 			<td style = "width:100%;">
@@ -113,7 +113,11 @@
 											{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}
 										</td>
 										<td align = "right" style = "font-size:18px; max-width: 3mm;">
-											<strong>{{$item->item_quantity}}</strong>
+											<strong>{{$item->item_quantity}}</strong><br/>
+											<img height = "8" width = "8"
+											     src = "{{$item->item_thumb}}"
+											     border = "0" />
+											
 										</td>
 									</tr>
 
