@@ -54,6 +54,9 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('prints/batch_packing', 'PrintController@batch_packing_slip');
 		get('prints/batch_packing_small', 'PrintController@batch_packing_slip_small');
 		get('prints/email_packing', 'PrintController@sendShippingConfirm');
+		
+		get('prints/shippinglable', 'PrintController@printShippingLableByOrderId');
+		
 
 // 		get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
 
@@ -194,6 +197,12 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		
 		put('shipping_update', 'ShippingController@updateTrackingNumber');
 		resource('shipping', 'ShippingController');
+		get('shippinglabel_print', 'ShippingController@getShippingLableByOrderId');
+		get('shipping_address_update', 'ShippingController@shippingAddressUpdate');
+// 		get('shipping_print', 'ShippingController@printShippingLableByOrderId');		
+		
+		
+		post('shippinglabel_print', 'ShippingController@postShippingLableByOrderId');
 
 		get('rules/parameter', 'RuleController@parameter_option');
 		get('rules/actions', 'RuleController@rule_action');
@@ -234,4 +243,4 @@ Event::listen('illuminate.query', function ($q) {
 //  `items`.`item_status` = statuses.id ( `statuses`.`status_name` ) = 6
 // item_order_status = complete
 // item_order_status_2 =2
-// Station Not Found App\Console\Commands
+// Small Packing Slip

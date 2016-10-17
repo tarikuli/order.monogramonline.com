@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\BatchRoute;
 use App\Item;
 use App\Order;
+use App\Customer;
 use App\Purchase;
 Use App\Ship;
 use App\SpecificationSheet;
@@ -491,6 +492,139 @@ class PrintController extends Controller
 		}
 
 		return $modules;
+	}
+	
+	
+	public function printShippingLableByOrderId(Request $request){
+	
+		if((!$request->has('order_number'))){
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'No Unique Order Id found',
+			]);
+		}
+	
+		$customer = Customer::where('order_id', $request->get('order_number'))
+		->where('is_deleted', 0)
+		->first();
+	
+		if(!Helper::getcountrycode($customer->ship_country)){
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'Order number '.$request->order_number.' invalive country code <b>'. $customer->ship_country.'</b><br>Please update correct cuntory code formate like<br><b>US United States</b><br><b>CA Canada</b><br><b>VI Virgin Islands (U.S.)</b>',
+			]);
+		}
+		// Start shipment
+		$shipment = new \Ups\Entity\Shipment();
+	
+		// Set shipper
+		$shipper = $shipment->getShipper();
+		$shipper->setShipperNumber(env('SHIPPER_NUMBER'));
+		$shipper->setName('Deal to win');
+		$shipper->setAttentionName('Pablo');
+		$shipperAddress = $shipper->getAddress();
+		$shipperAddress->setAddressLine1('575 Underhill Blvd');
+		$shipperAddress->setPostalCode('11791');
+		$shipperAddress->setCity('Syosset');
+		$shipperAddress->setCountryCode('US');
+		$shipperAddress->setStateProvinceCode('NY');
+		$shipper->setAddress($shipperAddress);
+		$shipper->setEmailAddress('shlomi@monogramonline.com ');
+		$shipper->setPhoneNumber('718-609-1165');
+		$shipment->setShipper($shipper);
+	
+		// To address
+		$address = new \Ups\Entity\Address();
+		$address->setAddressLine1($customer->ship_address_1);
+		$address->setAddressLine2($customer->ship_address_2);
+		$address->setAddressLine3('');
+		$address->setPostalCode($customer->ship_zip);
+		$address->setCity($customer->ship_city);
+		$address->setCountryCode(Helper::getcountrycode($customer->ship_country));
+		$address->setStateProvinceCode($customer->ship_state);
+		$shipTo = new \Ups\Entity\ShipTo();
+		$shipTo->setAddress($address);
+		$shipTo->setCompanyName($customer->ship_full_name);
+		$shipTo->setAttentionName($customer->ship_full_name);
+		$shipTo->setEmailAddress($customer->ship_email);
+		$shipTo->setPhoneNumber('917-907-1711');
+		$shipment->setShipTo($shipTo);
+	
+	
+		// Set service
+		$service = new \Ups\Entity\Service;
+		$service->setCode(\Ups\Entity\Service::S_GROUND);
+		$service->setDescription($service->getName());
+		$shipment->setService($service);
+	
+		// Mark as a return (if return)
+		$return = false;
+		if ($return) {
+			$returnService = new \Ups\Entity\ReturnService;
+			$returnService->setCode(\Ups\Entity\ReturnService::PRINT_RETURN_LABEL_PRL);
+			$shipment->setReturnService($returnService);
+		}
+	
+		// Set description
+		$shipment->setDescription($customer->order_id.' Gift Item');
+	
+		// Add Package
+		$package = new \Ups\Entity\Package();
+		$package->getPackagingType()->setCode(\Ups\Entity\PackagingType::PT_PACKAGE);
+		$package->getPackageWeight()->setWeight(5);
+		$unit = new \Ups\Entity\UnitOfMeasurement;
+		$unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_LBS);
+		$package->getPackageWeight()->setUnitOfMeasurement($unit);
+	
+		// Set dimensions
+		$dimensions = new \Ups\Entity\Dimensions();
+		$dimensions->setHeight(1);
+		$dimensions->setWidth(5);
+		$dimensions->setLength(5);
+		$unit = new \Ups\Entity\UnitOfMeasurement;
+		$unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_IN);
+		$dimensions->setUnitOfMeasurement($unit);
+		$package->setDimensions($dimensions);
+	
+		// Add descriptions because it is a package
+		$package->setDescription('Gift Item2');
+	
+		// Add this package
+		$shipment->addPackage($package);
+	
+		// Set payment information
+		$shipment->setPaymentInformation(new \Ups\Entity\PaymentInformation('prepaid', (object)array('AccountNumber' => env('SHIPPER_NUMBER'))));
+	
+		// Ask for negotiated rates (optional)
+		$rateInformation = new \Ups\Entity\RateInformation;
+		$rateInformation->setNegotiatedRatesIndicator(1);
+		$shipment->setRateInformation($rateInformation);
+	
+		try {
+			// $api = new \Ups\Shipping($accessKey, $userId, $password);
+			$api = new \Ups\Shipping(env('UPS_ACCESS_KEY'), env('UPS_USER_ID'), env('UPS_PASSWORD'));
+			$confirm = $api->confirm(\Ups\Shipping::REQ_VALIDATE, $shipment);
+			// 			var_dump($confirm); // Confirm holds the digest you need to accept the result
+			if ($confirm) {
+				$accept = $api->accept($confirm->ShipmentDigest);
+				$result=$accept;
+	
+				// 				echo "<pre>";
+				// 					var_dump((array) $accept); // Accept holds the label and additional information
+				// 				echo "</pre>";
+				// 	echo '<div> <img style="width: 150mm;  height: auto;" src="data:image/gif;base64,'. $result->PackageResults->LabelImage->GraphicImage. '"/></div>';
+// 				echo '<div style="height: 150mm;  width: auto;"> <img  height="100%" width="100%" src="data:image/gif;base64,'. $result->PackageResults->LabelImage->GraphicImage. '"/></div>';
+	
+				// 				$result->PackageResults->LabelImage->GraphicImage
+				return view('prints.ups_shipping_lable')->with('labelImage', $result->PackageResults->LabelImage->GraphicImage);
+			}
+		} catch (\Exception $e) {
+		echo "<pre>";
+				var_dump($e->getMessage());
+				echo "</pre>";
+		}
 	}
 
 }

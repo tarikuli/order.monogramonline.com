@@ -483,6 +483,9 @@ class Helper
 		if($country_code_null == " ") {
 			$country_code = substr($country_name, 0,2);
 			return $country_code;
+		}elseif (substr($country_name, 0,2) == "US"){
+			$country_code = substr($country_name, 0,2);
+			return $country_code;
 		}else {
 			return false;
 		}
