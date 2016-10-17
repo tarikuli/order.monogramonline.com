@@ -81,7 +81,9 @@
 					{!! Form::label('unique_order_id', 'Shipping Order #', ['class' => 'col-xs-2 control-label']) !!}
 					<div class = "col-md-4">
 						{!! Form::text('unique_order_id', $ship->unique_order_id, ['id' => 'unique_order_id', 'class' => "form-control", 'placeholder' => "Enter Shipping Order #"]) !!}
-						Order# {{ $ship->order_number }}
+						Order# 
+						<a href = "{{url(sprintf("orders/details/%s", $ship->order_number))}}"
+													   target = "_blank">{{ $ship->order_number }}</a>
 					</div>
 					
 					<div class = "col-md-1">
@@ -189,12 +191,14 @@
 			</div>	
 			
 			
-			
+			{{--
 			<div class = "col-xs-6 apply-margin-top-bottom">
 				<div class = "col-xs-offset-2 col-xs-4">
 					{!! Form::submit('Update Shipping Address',['class' => 'btn btn-primary btn-block']) !!}
 				</div>
 			</div>
+			
+			--}}
 			{!! Form::close() !!}
 		</div>
 @else
