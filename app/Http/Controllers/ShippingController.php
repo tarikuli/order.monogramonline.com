@@ -120,14 +120,6 @@ class ShippingController extends Controller
 		$ambiguousAdress = [];
 		$count = 1;
 		
-		if(!$request->has('unique_order_id')){
-			return redirect()
-			->back()
-			->withErrors([
-					'error' => 'No Unique Order Id found',
-			]);
-		}
-		
 		
 		$ship = Ship::where('is_deleted', 0)
 					->where('unique_order_id', $request->get('unique_order_id'))
