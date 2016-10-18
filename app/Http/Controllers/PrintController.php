@@ -497,6 +497,7 @@ class PrintController extends Controller
 	
 	public function printShippingLableByOrderId(Request $request){
 	
+		$return = false;
 		if((!$request->has('order_number'))){
 			return redirect()
 			->back()
@@ -506,8 +507,8 @@ class PrintController extends Controller
 		}
 	
 		$customer = Customer::where('order_id', $request->get('order_number'))
-		->where('is_deleted', 0)
-		->first();
+					->where('is_deleted', 0)
+					->first();
 	
 		if(!Helper::getcountrycode($customer->ship_country)){
 			return redirect()
@@ -523,7 +524,7 @@ class PrintController extends Controller
 		$shipper = $shipment->getShipper();
 		$shipper->setShipperNumber(env('SHIPPER_NUMBER'));
 		$shipper->setName('Deal to win');
-		$shipper->setAttentionName('Pablo');
+		$shipper->setAttentionName('Customer Service Dept');
 		$shipperAddress = $shipper->getAddress();
 		$shipperAddress->setAddressLine1('575 Underhill Blvd');
 		$shipperAddress->setPostalCode('11791');
@@ -531,8 +532,8 @@ class PrintController extends Controller
 		$shipperAddress->setCountryCode('US');
 		$shipperAddress->setStateProvinceCode('NY');
 		$shipper->setAddress($shipperAddress);
-		$shipper->setEmailAddress('shlomi@monogramonline.com ');
-		$shipper->setPhoneNumber('718-609-1165');
+		$shipper->setEmailAddress('cs@monogramonline.com ');
+		$shipper->setPhoneNumber('585-296-8810');
 		$shipment->setShipper($shipper);
 	
 		// To address
@@ -546,36 +547,48 @@ class PrintController extends Controller
 		$address->setStateProvinceCode($customer->ship_state);
 		$shipTo = new \Ups\Entity\ShipTo();
 		$shipTo->setAddress($address);
-		$shipTo->setCompanyName($customer->ship_full_name);
+		if($customer->ship_company_name){
+			$shipTo->setCompanyName($customer->ship_company_name);
+		}else{
+			$shipTo->setCompanyName('-');
+		}
 		$shipTo->setAttentionName($customer->ship_full_name);
 		$shipTo->setEmailAddress($customer->ship_email);
-		$shipTo->setPhoneNumber('917-907-1711');
+		$shipTo->setPhoneNumber($customer->ship_phone);
 		$shipment->setShipTo($shipTo);
-	
 	
 		// Set service
 		$service = new \Ups\Entity\Service;
-		$service->setCode(\Ups\Entity\Service::S_GROUND);
+// 		$service->setCode(\Ups\Entity\Service::S_GROUND);
+$service->setCode(\Ups\Entity\Service::S_EXPEDITED_MAIL_INNOVATIONS);
 		$service->setDescription($service->getName());
+		
 		$shipment->setService($service);
 	
 		// Mark as a return (if return)
-		$return = false;
 		if ($return) {
 			$returnService = new \Ups\Entity\ReturnService;
 			$returnService->setCode(\Ups\Entity\ReturnService::PRINT_RETURN_LABEL_PRL);
 			$shipment->setReturnService($returnService);
 		}
+
 	
 		// Set description
 		$shipment->setDescription($customer->order_id.' Gift Item');
+		
+$shipment->setShipmentUSPSEndorsement('2');
+$shipment->setCostCenter('00001');
+$short_order = explode("-", $customer->order_id);		
+$shipment->setPackageID($short_order[2]);
 	
 		// Add Package
 		$package = new \Ups\Entity\Package();
-		$package->getPackagingType()->setCode(\Ups\Entity\PackagingType::PT_PACKAGE);
+// 		$package->getPackagingType()->setCode(\Ups\Entity\PackagingType::PT_PACKAGE);
+$package->getPackagingType()->setCode(\Ups\Entity\PackagingType::PT_IRREGULARS);		
 		$package->getPackageWeight()->setWeight(5);
 		$unit = new \Ups\Entity\UnitOfMeasurement;
-		$unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_LBS);
+// 		$unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_LBS);
+$unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);		
 		$package->getPackageWeight()->setUnitOfMeasurement($unit);
 	
 		// Set dimensions
@@ -589,7 +602,7 @@ class PrintController extends Controller
 		$package->setDimensions($dimensions);
 	
 		// Add descriptions because it is a package
-		$package->setDescription('Gift Item2');
+		$package->setDescription('Box/Envelope');
 	
 		// Add this package
 		$shipment->addPackage($package);
@@ -609,22 +622,30 @@ class PrintController extends Controller
 			// 			var_dump($confirm); // Confirm holds the digest you need to accept the result
 			if ($confirm) {
 				$accept = $api->accept($confirm->ShipmentDigest);
-				$result=$accept;
 	
-				// 				echo "<pre>";
-				// 					var_dump((array) $accept); // Accept holds the label and additional information
-				// 				echo "</pre>";
-				// 	echo '<div> <img style="width: 150mm;  height: auto;" src="data:image/gif;base64,'. $result->PackageResults->LabelImage->GraphicImage. '"/></div>';
-// 				echo '<div style="height: 150mm;  width: auto;"> <img  height="100%" width="100%" src="data:image/gif;base64,'. $result->PackageResults->LabelImage->GraphicImage. '"/></div>';
-	
-				// 				$result->PackageResults->LabelImage->GraphicImage
-				return view('prints.ups_shipping_lable')->with('labelImage', $result->PackageResults->LabelImage->GraphicImage);
+// 				echo "<pre>";
+// 					$result=$accept;
+// 					var_dump((array) $accept); // Accept holds the label and additional information
+// 				echo "</pre>";
+				
+				$trackingInfo['full_xml_source'] = Helper::generate_valid_xml_from_array($accept);
+				$trackingInfo['order_number'] = $customer->order_id;
+				$trackingInfo['tracking_number'] = $accept->PackageResults->TrackingNumber;
+				$trackingInfo['shipping_id'] =  $accept->PackageResults->USPSPICNumber;
+				$trackingInfo['mail_class'] =  "UPS Expedited Mail Innovations";
+				Helper::updateTrackingNumber($trackingInfo);
+				
+// 				Helper::jewelDebug(Helper::generate_valid_xml_from_array($accept));
+				return view('prints.ups_shipping_lable')->with('labelImage', $accept->PackageResults->LabelImage->GraphicImage);
 			}
 		} catch (\Exception $e) {
-		echo "<pre>";
-				var_dump($e->getMessage());
-				echo "</pre>";
+				Helper::jewelDebug($e->getMessage());
 		}
+	}
+	
+	public function reprintShippinglabel(Request $request){
+		
+		return view('prints.ups_shipping_lable')->with('labelImage', $request->get('graphicImage'));
 	}
 
 }

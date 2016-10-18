@@ -21,6 +21,7 @@
 
 		<div class = "col-xs-12 text-right" style = "margin: 10px 0;">
 @if(count($ship) > 0)		
+
 			@if(count($errorMassage)>0)	
 				<div class = "col-xs-12">
 						<div class = "alert alert-warning text-center">
@@ -69,7 +70,7 @@
 			<div class = "form-group col-xs-12">
 				<div class = "col-md-6">
 					<a href = "{{ url(sprintf("/prints/shippinglable?order_number=%s", $ship->order_number)) }}"
-					   class = "btn btn-success btn-sm @if(count($ambiguousAdress)>0) disabled @endif"
+					   class = "btn btn-success btn-sm @if((count($ambiguousAdress)>0) || ($ship->tracking_number)) disabled @endif"
 					   style = "font-size: 12px;">
 					   Print Shipping Label
 					</a>
@@ -200,10 +201,24 @@
 			
 			--}}
 			{!! Form::close() !!}
+			
+			@if($graphicImage)	
+			<div class = "form-group col-xs-12">
+				{!! Form::open(['url' => url('/prints/shippinglabel_reprint'), 'method' => 'post']) !!}
+					<div class = "col-md-2">
+						<input type="submit" class="btn btn-primary btn-block" name="reprint" id="reprint" alt="Re Print" value="Re Print" />
+					</div>
+					<div class="current-batch" style="width:150mm; height: 100mm; border: none; ">
+						{!! Form::hidden('graphicImage', $graphicImage, ['id' => 'graphicImage']) !!} 
+						<img style="width:175mm; height: auto; overflow: hidden;"  src="data:image/gif;base64,{{ $graphicImage }} "/>
+					</div>	
+				{!! Form::close() !!}
+			</div>
+			@endif
 		</div>
 @else
 		<div class = "form-group col-xs-12">
-			{!! Form::open(['url' => url('/shippinglabel_print'), 'method' => 'get']) !!}
+			{!! Form::open(['url' => url('/shippinglabel_reprint'), 'method' => 'get']) !!}
 				{!! Form::label('unique_order_id', 'Shipping Order #', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
 					{!! Form::text('unique_order_id', null, ['id' => 'unique_order_id', 'class' => "form-control", 'placeholder' => "Enter Shipping Order #"]) !!}

@@ -56,7 +56,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('prints/email_packing', 'PrintController@sendShippingConfirm');
 		
 		get('prints/shippinglable', 'PrintController@printShippingLableByOrderId');
-		
+		post('prints/shippinglabel_reprint', 'PrintController@reprintShippinglabel');
 
 // 		get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
 

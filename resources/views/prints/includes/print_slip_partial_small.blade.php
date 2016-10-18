@@ -104,7 +104,7 @@
 								</tr>
 								@foreach($order->items as $item)
 									<tr valign = "top">
-										<td align = "left" style="max-width: 90mm; outline: thin dotted;" >
+										<td align = "left" style="max-width: 70mm; outline: thin dotted;" >
 											@if($item->batch_number)
 												Barch# {{ $item->batch_number }} <br>
 											@endif
@@ -112,9 +112,9 @@
 											Name: {{$item->item_description}}<br>
 											{!! \Monogram\Helper::jsonTransformer($item->item_option, "<br/>") !!}
 										</td>
-										<td align = "right" style = "font-size:18px; max-width: 10mm;">
+										<td align = "right" style = "font-size:38px; max-width: 10mm;">
 											<strong>{{$item->item_quantity}}</strong><br/>
-											<img height = "auto" width = "50"
+											<img style="width:35mm; height: auto; overflow: hidden;" 
 											     src = "{{$item->item_thumb}}"
 											     border = "0" />
 											

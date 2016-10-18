@@ -119,7 +119,7 @@ class ShippingController extends Controller
 		$errorMassage = [];
 		$ambiguousAdress = [];
 		$count = 1;
-		
+		$graphicImage = false;
 		
 		$ship = Ship::where('is_deleted', 0)
 					->where('unique_order_id', $request->get('unique_order_id'))
@@ -143,14 +143,21 @@ class ShippingController extends Controller
 				$ambiguousAdress = $validateStatus['ambiguousAdress'];
 			}
 			
-		}
+			if(substr($ship->shipping_id, 0, 5) == "92748"){
+				$xml = simplexml_load_string($ship->full_xml_source);
+				$json = json_encode($xml);
+				$array = json_decode($json,TRUE);
+				if($array['PackageResults']['LabelImage']['GraphicImage']){
+					$graphicImage = $array['PackageResults']['LabelImage']['GraphicImage'];
+				}
+			}
+			
 
-// dd($errorMassage,$ambiguousAdress, $count);
-		
-		return view('shipping.label_print', compact('ship', 'errorMassage', 'ambiguousAdress', 'count'));
-// 				->with('ship', $ship)
-// 				->with("errorMassage",$errorMassage)
-// 				->with("ambiguousAdress",$ambiguousAdress);
+// 			Helper::jewelDebug($array['PackageResults']['LabelImage']['GraphicImage']);
+// 			dd($json, $array);
+			
+		}
+		return view('shipping.label_print', compact('ship', 'errorMassage', 'ambiguousAdress', 'count', 'graphicImage'));
 	}
 
 	public function validateAddress($order_id){
@@ -262,7 +269,8 @@ class ShippingController extends Controller
 	{
 		$order_number = $request->get('order_number_update');
 		$tracking_number_update = $request->get('tracking_number_update');
-		if ( $order_number ) {
+		
+		if ( $order_number && $tracking_number_update) {
 
 			Ship::where('order_number', $order_number)
 			->update([
@@ -288,6 +296,7 @@ class ShippingController extends Controller
 // groupByUniqueOrderId	
 
 // https://github.com/dkirsche/UPS	
+// https://docs.rocketship.it/php/1-0/ups-mail-innovations.html
 	public function addressValidation (Request $request)
 	{
 		if(!$request->has('order_id')){
@@ -365,7 +374,14 @@ class ShippingController extends Controller
 	// $shipper->setShipperNumber('XX');
 	
     public function getShippingLable(Request $request){	
-
+// UPS Expedited Mail Innovations   M4 (service label)
+// Irregulars 
+// OZS 1 to < 16 (48)
+// Top will show forward service ( Endorsement )
+// Cost center 
+// Package ID
+// 92748 (Referance)
+// 
     	$customer = Customer::where('order_id', $order_id)
 			    	->where('is_deleted', 0)
 			    	->first();
@@ -494,7 +510,7 @@ class ShippingController extends Controller
     	// 			$referenceNumber->setCode(\Ups\Entity\ReferenceNumber::CODE_RETURN_AUTHORIZATION_NUMBER);
     	// 			$referenceNumber->setValue($return_id);
     	// 		} else {
-    	// 			$referenceNumber->setCode(\Ups\Entity\ReferenceNumber::CODE_INVOICE_NUMBER);
+    	// 			$referenceNumber->setCode(\Ups\Entity\ReferenceNumber::CODE_I																																																	NVOICE_NUMBER);
     		// 			$referenceNumber->setValue($order_id);
     		// // dd($referenceNumber);
     		// 		}

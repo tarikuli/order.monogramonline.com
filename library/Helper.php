@@ -1529,7 +1529,7 @@ APPEND;
 			$purchasedInvProducts->stock_no = $stockNumber;
 			$purchasedInvProducts->unit = "PCS";
 			$purchasedInvProducts->unit_price = '0';
-			$purchasedInvProducts->lead_time_days = '30';
+			$purchasedInvProducts->lead_time_days = '90';
 			$purchasedInvProducts->save();
 		}else{
 			$purchasedInvProducts->is_deleted = '0';
@@ -1546,5 +1546,56 @@ APPEND;
 			$option->stock_number = "Select a Stock Number";
 			$option->save();
 		}
+	}
+	
+	public static function updateTrackingNumber($trackingInfo){
+		if ( $trackingInfo['order_number'] ) {
+		
+			Ship::where('order_number', $trackingInfo['order_number'])
+			->update([
+				'tracking_number'      => $trackingInfo['tracking_number'],
+				'full_xml_source'      => $trackingInfo['full_xml_source'],
+				'shipping_id'     	   => $trackingInfo['shipping_id'],
+				'mail_class'     	   => $trackingInfo['mail_class'],
+				'postmark_date'        => date("Y-m-d"),
+				'transaction_datetime' => date("Y-m-d H:i:s") 
+			]);
+		
+		
+			// Add note history by order id
+			Helper::histort("UPS API Update Tracking# ".$trackingInfo['tracking_number'], $trackingInfo['order_number']);
+		
+			return redirect()
+			->back()
+			->with('success', "Tracking # successfully Updated");
+		}
+	}
+	
+	public static function generate_xml_from_array($array, $node_name) {
+		$xml = '';
+	
+		if (is_array($array) || is_object($array)) {
+			foreach ($array as $key=>$value) {
+				if (is_numeric($key)) {
+					$key = $node_name;
+				}
+	
+				$xml .= '<' . $key . '>' . "\n" . Helper::generate_xml_from_array($value, $node_name) . '</' . $key . '>' . "\n";
+			}
+		} else {
+			$xml = htmlspecialchars($array, ENT_QUOTES) . "\n";
+		}
+	
+		return $xml;
+	}
+	
+	public static function generate_valid_xml_from_array($array, $node_block='nodes', $node_name='node') {
+		$xml = '<?xml version="1.0" encoding="UTF-8" ?>' . "\n";
+	
+		$xml .= '<' . $node_block . '>' . "\n";
+		$xml .= Helper::generate_xml_from_array($array, $node_name);
+		$xml .= '</' . $node_block . '>' . "\n";
+	
+		return $xml;
 	}
 }
