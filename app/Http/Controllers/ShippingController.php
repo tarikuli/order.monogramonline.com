@@ -147,7 +147,7 @@ class ShippingController extends Controller
 				$errorMassage[] = $validateStatus['error'];
 			}
 			
-			if($validateStatus>48){
+			if($counterWeight > 48){
 				$errorMassage[] ='Can not Ship more than 48 ounces (3 pound) ';
 			}
 			
