@@ -70,7 +70,7 @@
 			<div class = "form-group col-xs-12">
 				<div class = "col-md-6">
 					<a href = "{{ url(sprintf("/prints/shippinglable?order_number=%s", $ship->order_number)) }}"
-					   class = "btn btn-success btn-sm @if((count($ambiguousAdress)>0) || ($ship->tracking_number)) disabled @endif"
+					   class = "btn btn-success btn-sm @if((count($errorMassage)>0) || ($ship->tracking_number)) disabled @endif"
 					   style = "font-size: 12px;">
 					   Print Shipping Label
 					</a>
@@ -82,7 +82,7 @@
 					{!! Form::label('unique_order_id', 'Shipping Order #', ['class' => 'col-xs-2 control-label']) !!}
 					<div class = "col-md-4">
 						{!! Form::text('unique_order_id', $ship->unique_order_id, ['id' => 'unique_order_id', 'class' => "form-control", 'placeholder' => "Enter Shipping Order #"]) !!}
-						Order# 
+						Update Address # 
 						<a href = "{{url(sprintf("orders/details/%s", $ship->order_number))}}"
 													   target = "_blank">{{ $ship->order_number }}</a>
 					</div>
@@ -114,6 +114,23 @@
 				{!! Form::label('tracking_number', 'Tracking #', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
 					{!! Form::text('tracking_number', $ship->tracking_number, ['id' => 'tracking_number', 'class' => "form-control", 'placeholder' => "Enter Tracking #"]) !!}
+				</div>
+				
+				<div class = "col-md-1">
+					@if(!$graphicImage)
+						<a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $ship->tracking_number)) }}"
+					   class = "btn btn-primary btn-sm @if((count($ambiguousAdress)>0) || (!$ship->tracking_number)) disabled @endif"
+					   style = "font-size: 12px;">
+					   View Delivery Status
+						</a>
+					@else
+						<a href = "{{ url(sprintf("https://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=%s", $ship->tracking_number)) }}"
+					   class = "btn btn-primary btn-sm @if((count($ambiguousAdress)>0) || (!$ship->tracking_number)) disabled @endif"
+					   style = "font-size: 12px;">
+					   View Delivery Status
+						</a>					
+						
+					@endif
 				</div>
 			</div>	
 			
@@ -188,6 +205,13 @@
 				{!! Form::label('phone', 'Phone', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
 					{!! Form::text('phone', $ship->phone, ['id' => 'phone', 'class' => "form-control", 'placeholder' => "Enter Phone"]) !!}
+				</div>
+			</div>	
+
+			<div class = "form-group col-xs-12">
+				{!! Form::label('counterWeight', 'Shipping Weight', ['class' => 'col-xs-2 control-label']) !!}
+				<div class = "col-md-4">
+					{!! Form::text('counterWeight', $counterWeight, ['id' => 'counterWeight', 'class' => "form-control", 'placeholder' => "Enter Weight"]) !!}
 				</div>
 			</div>	
 			

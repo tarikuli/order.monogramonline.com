@@ -120,16 +120,24 @@ class ShippingController extends Controller
 		$ambiguousAdress = [];
 		$count = 1;
 		$graphicImage = false;
+		$counterWeight = 0;
 		
 		$ship = Ship::where('is_deleted', 0)
 					->where('unique_order_id', $request->get('unique_order_id'))
 					->first();
 	
 		if(count($ship)>0){
-			$validateStatus = $this->validateAddress($ship->order_number);
-// dd($validateStatus);
 			
-// Helper::jewelDebug($validateStatus);
+			$counterWeight = Ship::where('is_deleted', 0)
+								->where('unique_order_id', $request->get('unique_order_id'))
+								->first([
+										DB::raw('COUNT(actual_weight) AS assigned_count'),
+								]);
+			$counterWeight = $counterWeight->assigned_count; 
+			
+			$validateStatus = $this->validateAddress($ship->order_number);
+			
+// Helper::jewelDebug($validateStatus); 
 			
 			if(!$validateStatus['validateAddress']){
 				$errorMassage[] ='Please call Customer Service Department for Update correct Shipping address.';
@@ -137,6 +145,10 @@ class ShippingController extends Controller
 			
 			if(!$validateStatus['error']){
 				$errorMassage[] = $validateStatus['error'];
+			}
+			
+			if($validateStatus>48){
+				$errorMassage[] ='Can not Ship more than 48 ounces (3 pound) ';
 			}
 			
 			if($validateStatus['isAmbiguous']){
@@ -157,7 +169,7 @@ class ShippingController extends Controller
 // 			dd($json, $array);
 			
 		}
-		return view('shipping.label_print', compact('ship', 'errorMassage', 'ambiguousAdress', 'count', 'graphicImage'));
+		return view('shipping.label_print', compact('ship', 'errorMassage', 'ambiguousAdress', 'count', 'graphicImage', 'counterWeight'));
 	}
 
 	public function validateAddress($order_id){
