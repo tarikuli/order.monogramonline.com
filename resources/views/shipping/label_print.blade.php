@@ -242,7 +242,7 @@
 		</div>
 @else
 		<div class = "form-group col-xs-12">
-			{!! Form::open(['url' => url('/shippinglabel_reprint'), 'method' => 'get']) !!}
+			{!! Form::open(['url' => url('/shippinglabel_print'), 'method' => 'get']) !!}
 				{!! Form::label('unique_order_id', 'Shipping Order #', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
 					{!! Form::text('unique_order_id', null, ['id' => 'unique_order_id', 'class' => "form-control", 'placeholder' => "Enter Shipping Order #"]) !!}

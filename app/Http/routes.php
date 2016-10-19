@@ -197,6 +197,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		
 		put('shipping_update', 'ShippingController@updateTrackingNumber');
 		resource('shipping', 'ShippingController');
+		
 		get('shippinglabel_print', 'ShippingController@getShippingLableByOrderId');
 		get('shipping_address_update', 'ShippingController@shippingAddressUpdate');
 // 		get('shipping_print', 'ShippingController@printShippingLableByOrderId');		
