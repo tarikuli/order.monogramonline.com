@@ -133,6 +133,7 @@ class ShippingController extends Controller
 								->first([
 										DB::raw('COUNT(actual_weight) AS assigned_count'),
 								]);
+								
 			$counterWeight = $counterWeight->assigned_count; 
 			
 			$validateStatus = $this->validateAddress($ship->order_number);

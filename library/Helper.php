@@ -1565,9 +1565,9 @@ APPEND;
 			// Add note history by order id
 			Helper::histort("UPS API Update Tracking# ".$trackingInfo['tracking_number'], $trackingInfo['order_number']);
 		
-			return redirect()
-			->back()
-			->with('success', "Tracking # successfully Updated");
+// 			return redirect()
+// 			->back()
+// 			->with('success', "Tracking # successfully Updated");
 		}
 	}
 	

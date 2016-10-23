@@ -77,12 +77,19 @@
 		<h3 class = "page-header">
 			Shipping list @if(count($ships) > 0 ) ({{ $ships->total() }} items found / {{$ships->currentPage()}} of {{$ships->lastPage()}} pages) @endif
 			<a href = "/items/waiting_for_another_item" style = "font-size: 12px;">Go to waiting for another items</a>
+			
 			<a href = "{{ url(sprintf("/shipping?shipped=0")) }}"
 			   class = "btn btn-primary btn-sm @if($shipped != 1) disabled @endif"
 			   style = "font-size: 12px;">{{ $tracking_number_not_assigned }} items yet not shipped</a>
+			
 			<a href = "{{ url(sprintf("/shipping?shipped=1")) }}"
 			   class = "btn btn-success btn-sm @if($shipped == 1) disabled @endif"
 			   style = "font-size: 12px;">{{ $tracking_number_assigned }} items are shipped</a>
+			   
+			<a href = "#"
+			   class = "btn btn-info btn-sm ups-btn @if($shipped != 1) disabled @endif"
+			   style = "font-size: 12px;">View USP Shipping</a>
+			   			 
 		</h3>
 
 		@if(count($ships) > 0)
@@ -154,7 +161,7 @@
 								<a class = "update" href = "#" >Manual Tracking # Update</a>
 								<br><a href = "{{ url(sprintf("/shippinglabel_print?unique_order_id=%s",$ship->unique_order_id )) }}">Print UPS Shipping lable</a>
 								{!! Form::open(['url' => url('/shipping_update'), 'method' => 'put', 'id' => 'shipping_update']) !!}
-								{!! Form::hidden('tracking_number_update', null, ['id' => 'tracking_number_update']) !!}
+								{!! Form::hidden('tracking_number_update', null, ['id' => 'tracking_number_update']) !!} 
 								{!! Form::hidden('order_number_update', $ship->order_number, ['id' => 'order_number_update']) !!}
 								{!! Form::close() !!}
 							@endif
@@ -274,9 +281,14 @@
 
 			form.attr('action', url.replace('id', id));
 			form.submit();
-			});
+		});
 
-
+		$(".ups-btn").on('click', function (event)
+		{
+			$('#search_for_first').val("UPS Expedited Mail Innovations");
+			$('#search_in_first').val("mail_class");
+			$("#search").click();
+		});
 	</script>
 </body>
 </html>

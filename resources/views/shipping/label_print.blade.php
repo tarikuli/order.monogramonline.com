@@ -70,7 +70,8 @@
 			<div class = "form-group col-xs-12">
 				<div class = "col-md-6">
 					<a href = "{{ url(sprintf("/prints/shippinglable?order_number=%s", $ship->order_number)) }}"
-					   class = "btn btn-success btn-sm @if((count($errorMassage)>0) || ($ship->tracking_number)) disabled @endif"
+					{{-- <a href = "#"  --}}
+					   class = "btn btn-success btn-sm printShippingLabel @if((count($errorMassage)>0) || ($ship->tracking_number)) disabled @endif"
 					   style = "font-size: 12px;">
 					   Print Shipping Label
 					</a>
@@ -267,7 +268,22 @@
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script type = "text/javascript">
-	
+		$(".printShippingLabel").on('click', function (event){
+			$('#unique_order_id').val("");
+			$('#mail_class').val("");
+			$('#tracking_number').val("");
+			$('#name').val("");
+			$('#company').val("");
+			$('#address1').val("");
+			$('#address2').val("");
+			$('#city').val("");
+			$('#state_city').val("");
+			$('#postal_code').val("");
+			$('#country').val("");
+			$('#email').val("");
+			$('#phone').val("");
+			$('#counterWeight').val("");
+		});
 	</script>		
 </body>
 </html>
