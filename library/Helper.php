@@ -1549,9 +1549,9 @@ APPEND;
 	}
 	
 	public static function updateTrackingNumber($trackingInfo){
-		if ( $trackingInfo['order_number'] ) {
+		if ( $trackingInfo['unique_order_id'] ) {
 		
-			Ship::where('order_number', $trackingInfo['order_number'])
+			Ship::where('unique_order_id', $trackingInfo['unique_order_id'])
 			->update([
 				'tracking_number'      => $trackingInfo['tracking_number'],
 				'full_xml_source'      => $trackingInfo['full_xml_source'],

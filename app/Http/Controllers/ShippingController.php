@@ -122,23 +122,43 @@ class ShippingController extends Controller
 		$graphicImage = false;
 		$counterWeight = 0;
 		
-		$ship = Ship::where('is_deleted', 0)
+		$ships = Ship::where('is_deleted', 0)
 					->where('unique_order_id', $request->get('unique_order_id'))
-					->first();
+					->get();
 	
-		if(count($ship)>0){
+
+	
+		if(count($ships)>0){
 			
-			$counterWeight = Ship::where('is_deleted', 0)
-								->where('unique_order_id', $request->get('unique_order_id'))
-								->first([
-										DB::raw('COUNT(actual_weight) AS assigned_count'),
-								]);
+			
+			$counterWeight = 0;
+			$customer = [];
+			foreach ( $ships as $ship ) {
+				$counterWeight += $ship->actual_weight;
+			}
+			
+			$customer['order_id'] = $ships[0]->order_number;
+			$customer['unique_order_id'] = $request->get('unique_order_id');
+			$customer['ship_full_name'] = $ships[0]->name;
+			$customer['ship_company_name'] = $ships[0]->company;
+			$customer['ship_address_1'] = $ships[0]->address1;
+			$customer['ship_address_2'] = $ships[0]->address2;
+			$customer['ship_state'] = $ships[0]->state_city;
+			$customer['ship_city'] = $ships[0]->city;
+			$customer['ship_country'] = $ships[0]->country;
+			$customer['ship_zip'] = $ships[0]->postal_code;
+		
+// 			$counterWeight = Ship::where('is_deleted', 0)
+// 								->where('unique_order_id', $request->get('unique_order_id'))
+// 								->first([
+// 										DB::raw('COUNT(actual_weight) AS assigned_count'),
+// 								]);
 								
-			$counterWeight = $counterWeight->assigned_count; 
+// 			$counterWeight = $counterWeight->assigned_count; 
 			
-			$validateStatus = $this->validateAddress($ship->order_number);
-			
-// Helper::jewelDebug($validateStatus); 
+// 			$validateStatus = $this->validateAddress($ships[0]->order_number);
+
+			$validateStatus = $this->validateAddress($customer);
 			
 			if(!$validateStatus['validateAddress']){
 				$errorMassage[] ='Please call Customer Service Department for Update correct Shipping address.';
@@ -156,8 +176,9 @@ class ShippingController extends Controller
 				$ambiguousAdress = $validateStatus['ambiguousAdress'];
 			}
 			
-			if(substr($ship->shipping_id, 0, 5) == "92748"){
-				$xml = simplexml_load_string($ship->full_xml_source);
+			// Check If it UPS mail innovation
+			if(substr($ships[0]->shipping_id, 0, 5) == "92748"){
+				$xml = simplexml_load_string($ships[0]->full_xml_source);
 				$json = json_encode($xml);
 				$array = json_decode($json,TRUE);
 				if($array['PackageResults']['LabelImage']['GraphicImage']){
@@ -168,44 +189,41 @@ class ShippingController extends Controller
 
 // 			Helper::jewelDebug($array['PackageResults']['LabelImage']['GraphicImage']);
 // 			dd($json, $array);
-			
+// 			dd($counterWeight, $ship, $customer, $validateStatus);
+// 			return view('shipping.label_print', compact('ship', 'errorMassage', 'ambiguousAdress', 'count', 'graphicImage', 'counterWeight'));
+		}else{
+			$ship =[];
 		}
+		
 		return view('shipping.label_print', compact('ship', 'errorMassage', 'ambiguousAdress', 'count', 'graphicImage', 'counterWeight'));
 	}
 
-	public function validateAddress($order_id){
+	public function validateAddress($customer){
 		
 		$validateStatus['validateAddress'] = true;
 		$validateStatus['isAmbiguous'] = false;
 		$validateStatus['ambiguousAdress'] = [];
 		$validateStatus['error'] = true;
 		
-		$customer = Customer::where('order_id', $order_id)
-							->where('is_deleted', 0)
-							->first();
+// 		$customer = Customer::where('order_id', $order_id)
+// 							->where('is_deleted', 0)
+// 							->first();
 		
-		if(!Helper::getcountrycode($customer->ship_country)){
-			
-			$validateStatus['error'] = 'Order number '.$order_id.' invalive country code <b>'. $customer->ship_country.'</b><br>Please update correct cuntory code formate like<br><b>US United States</b><br><b>CA Canada</b><br><b>VI Virgin Islands (U.S.)</b>';
-			
-// 			return redirect()
-// 			->back()
-// 			->withErrors([
-// 					'error' => 'Order number '.$order_id.' invalive country code <b>'. $customer->ship_country.'</b><br>Please update correct cuntory code formate like<br><b>US United States</b><br><b>CA Canada</b><br><b>VI Virgin Islands (U.S.)</b>',
-// 			]);
+		if(!Helper::getcountrycode($customer['ship_country'])){
+			$validateStatus['error'] = 'Order number '.$customer['order_id'].' invalive country code <b>'. $customer['ship_country'].'</b><br>Please update correct cuntory code formate like<br><b>US United States</b><br><b>CA Canada</b><br><b>VI Virgin Islands (U.S.)</b>';
+			return $validateStatus;
 		}
 		
 		$address = new \Ups\Entity\Address();
-		$address->setAttentionName($customer->ship_full_name);
-		$address->setBuildingName($customer->ship_company_name);
-		$address->setAddressLine1($customer->ship_address_1);
-// 		$address->setAddressLine1("51 Ireland");
-		$address->setAddressLine2($customer->ship_address_2);
+		$address->setAttentionName($customer['ship_full_name']);
+		$address->setBuildingName($customer['ship_company_name']);
+		$address->setAddressLine1($customer['ship_address_1']);
+		$address->setAddressLine2($customer['ship_address_2']);
 		$address->setAddressLine3('');
-		$address->setStateProvinceCode($customer->ship_state);
-		$address->setCity($customer->ship_city);
-		$address->setCountryCode(Helper::getcountrycode($customer->ship_country));
-		$address->setPostalCode($customer->ship_zip);
+		$address->setStateProvinceCode($customer['ship_state']);
+		$address->setCity($customer['ship_city']);
+		$address->setCountryCode(Helper::getcountrycode($customer['ship_country']));
+		$address->setPostalCode($customer['ship_zip']);
 		// shipmentDigest
 		// Ptondereau\LaravelUpsApi\UpsApiServiceProvider
 		$xav = new \Ups\AddressValidation(env('UPS_ACCESS_KEY'), env('UPS_USER_ID'), env('UPS_PASSWORD'));

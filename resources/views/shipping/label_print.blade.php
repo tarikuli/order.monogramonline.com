@@ -69,7 +69,32 @@
 				
 			<div class = "form-group col-xs-12">
 				<div class = "col-md-6">
-					<a href = "{{ url(sprintf("/prints/shippinglable?order_number=%s", $ship->order_number)) }}"
+					<a href = "{{ url(sprintf("/prints/shippinglable?
+						unique_order_id=%s
+						&order_number=%s
+						&ship_address_1=%s
+						&ship_address_2=%s
+						&ship_state=%s
+						&ship_city=%s
+						&ship_zip=%s
+						&ship_company_name=%s
+						&ship_full_name=%s
+						&ship_email=%s
+						&ship_phone=%s
+						&ship_country=%s", 
+						$ship->unique_order_id,
+						$ship->order_number,
+						$ship->address1,
+						$ship->address2,
+						$ship->state_city,
+						$ship->city,
+						$ship->postal_code,
+						$ship->company,
+						$ship->name,
+						$ship->email,
+						$ship->phone,
+						$ship->country
+						)) }}"
 					{{-- <a href = "#"  --}}
 					   class = "btn btn-success btn-sm printShippingLabel @if((count($errorMassage)>0) || ($ship->tracking_number)) disabled @endif"
 					   style = "font-size: 12px;">
@@ -283,6 +308,8 @@
 			$('#email').val("");
 			$('#phone').val("");
 			$('#counterWeight').val("");
+			$('#unique_order_id').focus();
+// 			$(".printShippingLabel").addClass("disabled");
 		});
 	</script>		
 </body>

@@ -496,9 +496,10 @@ class PrintController extends Controller
 	
 	
 	public function printShippingLableByOrderId(Request $request){
-	
+		$customer = $request->all();
+// dd($customer);	
 		$return = false;
-		if((!$request->has('order_number'))){
+		if((!$request->has('unique_order_id'))){
 			return redirect()
 			->back()
 			->withErrors([
@@ -506,17 +507,17 @@ class PrintController extends Controller
 			]);
 		}
 	
-		$customer = Customer::where('order_id', $request->get('order_number'))
-					->where('is_deleted', 0)
-					->first();
+// 		$customer = Customer::where('order_id', $request->get('order_number'))
+// 					->where('is_deleted', 0)
+// 					->first();
 	
-		if(!Helper::getcountrycode($customer->ship_country)){
-			return redirect()
-			->back()
-			->withErrors([
-					'error' => 'Order number '.$request->order_number.' invalive country code <b>'. $customer->ship_country.'</b><br>Please update correct cuntory code formate like<br><b>US United States</b><br><b>CA Canada</b><br><b>VI Virgin Islands (U.S.)</b>',
-			]);
-		}
+// 		if(!Helper::getcountrycode($customer->ship_country)){
+// 			return redirect()
+// 			->back()
+// 			->withErrors([
+// 					'error' => 'Order number '.$request->order_number.' invalive country code <b>'. $customer->ship_country.'</b><br>Please update correct cuntory code formate like<br><b>US United States</b><br><b>CA Canada</b><br><b>VI Virgin Islands (U.S.)</b>',
+// 			]);
+// 		}
 		// Start shipment
 		$shipment = new \Ups\Entity\Shipment();
 	
@@ -538,23 +539,23 @@ class PrintController extends Controller
 	
 		// To address
 		$address = new \Ups\Entity\Address();
-		$address->setAddressLine1($customer->ship_address_1);
-		$address->setAddressLine2($customer->ship_address_2);
+		$address->setAddressLine1($customer['ship_address_1']);
+		$address->setAddressLine2($customer['ship_address_2']);
 		$address->setAddressLine3('');
-		$address->setPostalCode($customer->ship_zip);
-		$address->setCity($customer->ship_city);
-		$address->setCountryCode(Helper::getcountrycode($customer->ship_country));
-		$address->setStateProvinceCode($customer->ship_state);
+		$address->setPostalCode($customer['ship_zip']);
+		$address->setCity($customer['ship_city']);
+		$address->setCountryCode(Helper::getcountrycode($customer['ship_country']));
+		$address->setStateProvinceCode($customer['ship_state']);
 		$shipTo = new \Ups\Entity\ShipTo();
 		$shipTo->setAddress($address);
-		if($customer->ship_company_name){
-			$shipTo->setCompanyName($customer->ship_company_name);
+		if($customer['ship_company_name']){
+			$shipTo->setCompanyName($customer['ship_company_name']);
 		}else{
 			$shipTo->setCompanyName('-');
 		}
-		$shipTo->setAttentionName($customer->ship_full_name);
-		$shipTo->setEmailAddress($customer->ship_email);
-		$shipTo->setPhoneNumber($customer->ship_phone);
+		$shipTo->setAttentionName($customer['ship_full_name']);
+		$shipTo->setEmailAddress($customer['ship_email']);
+		$shipTo->setPhoneNumber($customer['ship_phone']);
 		$shipment->setShipTo($shipTo);
 	
 		// Set service
@@ -574,13 +575,13 @@ $service->setCode(\Ups\Entity\Service::S_EXPEDITED_MAIL_INNOVATIONS);
 
 	
 		// Set description
-		$shipment->setDescription($customer->order_id.' Gift Item');
+		$shipment->setDescription($customer['unique_order_id'].' Gift Item');
 		
 $shipment->setShipmentUSPSEndorsement('2');
 $shipment->setCostCenter('00001');
-$short_order = explode("-", $customer->order_id);		
-$shipment->setPackageID($short_order[2]);
-	
+$short_order = explode("-", $customer['unique_order_id']);		
+$shipment->setPackageID($short_order[1]);
+
 		// Add Package
 		$package = new \Ups\Entity\Package();
 // 		$package->getPackagingType()->setCode(\Ups\Entity\PackagingType::PT_PACKAGE);
@@ -629,12 +630,13 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 // 				echo "</pre>";
 				
 				$trackingInfo['full_xml_source'] = Helper::generate_valid_xml_from_array($accept);
-				$trackingInfo['order_number'] = $customer->order_id;
+				$trackingInfo['unique_order_id'] = $customer['unique_order_id'];
+				$trackingInfo['order_number'] = $customer['order_number'];
 				$trackingInfo['tracking_number'] = $accept->PackageResults->TrackingNumber;
 				$trackingInfo['shipping_id'] =  $accept->PackageResults->USPSPICNumber;
 				$trackingInfo['mail_class'] =  "UPS Expedited Mail Innovations";
-				Helper::updateTrackingNumber($trackingInfo);
 				
+				Helper::updateTrackingNumber($trackingInfo);
 // 				Helper::jewelDebug(Helper::generate_valid_xml_from_array($accept));
 				return view('prints.ups_shipping_lable')->with('labelImage', $accept->PackageResults->LabelImage->GraphicImage);
 			}

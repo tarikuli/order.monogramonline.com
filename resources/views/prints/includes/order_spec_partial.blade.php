@@ -78,6 +78,7 @@
 						<td>
 							{{$order->customer->ship_full_name}}<br>
 							{{$order->customer->ship_address_1}}<br>
+							{{$order->customer->ship_address_2}}<br>
 							{{$order->customer->ship_city}} {{$order->customer->ship_state}}  {{$order->customer->ship_zip}}
 							<br>
 							{{$order->customer->ship_country}}<br>
@@ -88,6 +89,7 @@
 						<td>
 							{{$order->customer->bill_full_name}}<br>
 							{{$order->customer->bill_address_1}}<br>
+							{{$order->customer->bill_address_2}}<br>
 							{{$order->customer->bill_city}} {{$order->customer->bill_state}}  {{$order->customer->bill_zip}}
 							<br>
 							{{$order->customer->bill_country}}<br>
