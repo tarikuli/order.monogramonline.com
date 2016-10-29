@@ -165,8 +165,9 @@ class ItemController extends Controller
 		}
 
 		#return $acceptedGroups;
-		set_time_limit(0);
+		
 		foreach ( $acceptedGroups as $groups ) {
+			set_time_limit(0);
 			foreach ( $groups as $itemGroup ) {
 				$item_id = $itemGroup[0];
 				$batch_number = $itemGroup[1];
