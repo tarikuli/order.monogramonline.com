@@ -132,18 +132,26 @@ class ItemController extends Controller
 
 		$acceptedGroups = [ ];
 
-		/*$items = Item::where('batch_number', 'LIKE', sprintf("%s%%", $today))
-					 ->groupBy('batch_number')
-					 ->get();*/
-		$items = Item::groupBy('batch_number')
-					 ->where('batch_number', '!=', 0)
-					 ->latest('batch_number')// newly added line, because, just count will overlap the batch again.
-					 ->get();
+
+// 		$items = Item::groupBy('batch_number')
+// 					 ->where('batch_number', '!=', 0)
+// 					 ->where('is_deleted', 0)
+// 					 ->latest('batch_number')// newly added line, because, just count will overlap the batch again.
+// 					 ->get();
+
+		$items = Item::where('is_deleted', 0)
+					->where('batch_number', '!=', 0)
+					->first([
+							DB::raw('MAX(batch_number) AS last_batch_number'),
+					]);
+		
 
 		$fixed_value = 10000;
-		$max_batch_number = count($items) ? $items->first()->batch_number : $fixed_value;
-		$last_batch_number = $max_batch_number;
+// 		$max_batch_number = count($items) ? $items->first()->batch_number : $fixed_value;
+// 		$last_batch_number = $max_batch_number;
+		$last_batch_number = $items->last_batch_number;
 		$current_group = -1;
+		
 
 		set_time_limit(0);
 		foreach ( $batches as $preferredBatch ) {
