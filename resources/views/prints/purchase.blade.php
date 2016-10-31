@@ -96,8 +96,8 @@
 								</td>
 							</tr>
 							<tr valign = "top">
-								<td align = "left"><strong>Name</strong></td>
-								<td align = "left"><strong>Code</strong></td>
+								<td align = "left"><strong>Vendor Product Name</strong></td>
+								<td align = "left"><strong>Vendor Sku</strong></td>
 								<td align = "right"><strong>Qty</strong></td>
 								<td align = "right"><strong>Unit price</strong></td>
 								<td align = "right"><strong>Sub total</strong></td>
@@ -111,9 +111,9 @@
 								@setvar($product = $row->product_details)
 								<tr valign = "top">
 									<td align = "left">
-										{{$product->name}}
+										{{ $row->stock_no}}
 									</td>
-									<td align = "left">{{$product->code}}</td>
+									<td align = "left">{{ $row->vendor_sku}}</td>
 									<td align = "right" style = "font-size:18px;">
 										<strong>{{sprintf("%d", $row->quantity)}}</strong>
 									</td>

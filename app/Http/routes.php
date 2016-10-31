@@ -244,5 +244,5 @@ Event::listen('illuminate.query', function ($q) {
 //  `items`.`item_status` = statuses.id ( `statuses`.`status_name` ) = 6
 // item_order_status = complete
 // item_order_status_2 =2
-// Order Confirmation Email sent to chunk
+// /media/Ji-share/5p_batch_csv_export  chunk
 // UPDATE `shipping` SET `shipping_unique_id`= 'send' WHERE `shipping_unique_id` IS NULL AND `shipping_unique_id` IS NULL;
