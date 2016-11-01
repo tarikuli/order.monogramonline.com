@@ -111,6 +111,7 @@
 			@if(count($inventories))
 				<table class = "table table-bordered" id = "batch-items-table">
 					<tr>
+						<th>Image</th>
 						<th>stock_no_unique</th>
 						<th>stock_name_discription</th>
 						<th>sku_weight</th>
@@ -131,6 +132,7 @@
 					@foreach($inventories as $inventorie)
 						<tr data-sku = "{{ $inventorie['stock_no_unique'] }}" id = "{{ $inventorie['id'] }}">
 							
+								<td><img  border = "0" style="height: auto; width: 85%;" src = "{{ $inventorie['warehouse'] }}" /></td>
 								<td> {{ $inventorie['stock_no_unique'] }} </td>
 								<td> {{ $inventorie['stock_name_discription'] }} </td>
 								<td> {{ $inventorie['sku_weight'] }} </td>
