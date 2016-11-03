@@ -126,7 +126,7 @@
 						<th>qty_av</th>
 						<th>upc</th>
 						<th>wh_bin</th>
-						<th>warehouse</th>
+						{{-- <th>warehouse</th> --}}
 						<th>Action</th>
 					</tr>
 					@foreach($inventories as $inventorie)
@@ -154,7 +154,7 @@
 								<td> {{ $inventorie['qty_av'] }} </td>
 								<td> {{ $inventorie['upc'] }} </td>
 								<td> {{ $inventorie['wh_bin'] }} </td>
-								<td> {{ $inventorie['warehouse'] }} </td>
+								{{-- <td> {{ $inventorie['warehouse'] }} </td> --}}
 								<td>  
 									 {!! Form::hidden('stock_no_unique', $inventorie['stock_no_unique']) !!}
 									 

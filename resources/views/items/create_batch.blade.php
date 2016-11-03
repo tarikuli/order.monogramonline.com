@@ -70,69 +70,70 @@
 				@foreach($batch_routes as $batch_route)
 					@if($batch_route->itemGroups)
 						@if($batch_route->batch_max_units)
-							@setvar($mixed_groups = $batch_route->itemGroups->groupBy('allow_mixing'))
+							@setvar($mixed_groups = $batch_route->itemGroups->groupBy('allow_mixing')) {{-- Get mixed group array--}}
 							@foreach($mixed_groups as $group_key => $group_values) {{-- $group_key = 0/no mix, = 1 / mix --}}
 							@if($group_key == 0) {{-- Allow mixing is not permissible--}}
-							@foreach($group_values->groupBy('child_sku') as $row)
-								@foreach($row->chunk($batch_route->batch_max_units) as $chunkedRows)
-									@if($batch_route->stations_list->count())
-										<div class = "col-xs-12">
-											<table class = "table" style = "margin-top: 5px;">
-												<tr data-id = "{{$batch_route->id}}">
-													<td>{{ $count }}</td>
-													<td></td>
-													<td colspan="2" >
-														<div class = "checkbox">
-															<label>
-																{!! Form::checkbox('select-deselect', 1, false, ['class' => 'group-select']) !!} {{$batch_route->batch_code}} = {{ $batch_route->batch_route_name }}
-															</label>
-														</div>
-													</td>
-													<td colspan="3" >> Next station >>> {{$batch_route->stations_list[0]->station_name}} ( {{$batch_route->stations_list[0]->station_description}} )</td>
-													<td></td>
-												</tr>
-												@setvar($row_serial = 1)
-												@foreach($chunkedRows->sortBy('product_model') as $item)
-													<tr>
-														<td><img src = "{{$item->item_thumb}}" /></td>
-														<td>{{$serial++}}</td>
-														<td>{{$row_serial++}}</td>
-														<td>{!! Form::checkbox('batches[]', sprintf("%s|%s|%s", $count, $batch_route->id, /*$item->product_table_id, */$item->item_table_id) ,false, ['class' => 'checkable']) !!}</td>
-														<td>
-															<a href = "{{url("orders/details/$item->order_id")}}"
-															   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item, "order_table_id")}}</a>
-																<br>
-								   							<a href = "{{ url("orders/details/".$item->order_id) }}"
-															   target = "_blank">{{\Monogram\Helper::itemOrderNameFormatter($item)}}
-															</a>
+								{{-- 20161103 Jewel comment it @foreach($group_values->groupBy('child_sku') as $row) --}}
+								@foreach($group_values->groupBy('order_id') as $row)
+									@foreach($row->chunk($batch_route->batch_max_units) as $chunkedRows)
+										@if($batch_route->stations_list->count())
+											<div class = "col-xs-12">
+												<table class = "table" style = "margin-top: 5px;">
+													<tr data-id = "{{$batch_route->id}}">
+														<td>{{ $count }}</td>
+														<td></td>
+														<td colspan="2" >
+															<div class = "checkbox">
+																<label>
+																	{!! Form::checkbox('select-deselect', 1, false, ['class' => 'group-select']) !!} {{$batch_route->batch_code}} = {{ $batch_route->batch_route_name }}
+																</label>
+															</div>
 														</td>
-														<td>{{substr($item->order_date, 0, 10)}}</td>
-														<td>
-															<a href = "{{ url(sprintf("logistics/sku_show?store_id=%s&search_for=%s&search_in=child_sku", $item->store_id, $item->child_sku)) }}"
-															   target = "_blank">{{$item->child_sku}}</a>
-														</td>
-														<td>{{$item->item_quantity}}</td>
+														<td colspan="3" >> Next station >>> {{$batch_route->stations_list[0]->station_name}} ( {{$batch_route->stations_list[0]->station_description}} )</td>
+														<td></td>
 													</tr>
-												@endforeach
-												<tr>
-													<td></td>
-													<td></td>
-													<td></td>
-													<td></td>
-													<td></td>
-													<td></td>
-													<td></td>
-													<td>
-														<span class = "item_selected">0</span> of <span
-																class = "item_total">{{$batch_route->batch_max_units}}</span>
-													</td>
-												</tr>
-												@setvar(++$count)
-											</table>
-										</div>
-									@endif
+													@setvar($row_serial = 1)
+													@foreach($chunkedRows->sortBy('product_model') as $item)
+														<tr>
+															<td><img src = "{{$item->item_thumb}}" /></td>
+															<td>{{$serial++}}</td>
+															<td>{{$row_serial++}}</td>
+															<td>{!! Form::checkbox('batches[]', sprintf("%s|%s|%s", $count, $batch_route->id, /*$item->product_table_id, */$item->item_table_id) ,false, ['class' => 'checkable']) !!}</td>
+															<td>
+																<a href = "{{url("orders/details/$item->order_id")}}"
+																   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item, "order_table_id")}}</a>
+																	<br>
+									   							<a href = "{{ url("orders/details/".$item->order_id) }}"
+																   target = "_blank">{{\Monogram\Helper::itemOrderNameFormatter($item)}}
+																</a>
+															</td>
+															<td>{{substr($item->order_date, 0, 10)}}</td>
+															<td>
+																<a href = "{{ url(sprintf("logistics/sku_show?store_id=%s&search_for=%s&search_in=child_sku", $item->store_id, $item->child_sku)) }}"
+																   target = "_blank">{{$item->child_sku}}</a>
+															</td>
+															<td>{{$item->item_quantity}}</td>
+														</tr>
+													@endforeach
+													<tr>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td></td>
+														<td>
+															<span class = "item_selected">0</span> of <span
+																	class = "item_total">{{$batch_route->batch_max_units}}</span>
+														</td>
+													</tr>
+													@setvar(++$count)
+												</table>
+											</div>
+										@endif
+									@endforeach
 								@endforeach
-							@endforeach
 							@else
 								@foreach($group_values->chunk($batch_route->batch_max_units) as $chunkedRows)
 									@if($batch_route->stations_list->count())

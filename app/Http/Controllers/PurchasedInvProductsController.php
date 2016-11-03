@@ -24,8 +24,6 @@ class PurchasedInvProductsController extends Controller
 											    	->latest()
 											    	->paginate(50);
 
-    	return $purchasedInvProducts;
-
     	return view('purchased_inv_products.index', compact('purchasedInvProducts', 'count'));
     }
 
