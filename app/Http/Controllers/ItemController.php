@@ -155,9 +155,6 @@ class ItemController extends Controller
 
 		set_time_limit(0);
 		foreach ( $batches as $preferredBatch ) {
-
-dd($preferredBatch);
-			
 			list( $inGroup, $batch_route_id, $item_id ) = explode("|", $preferredBatch);
 			if ( $inGroup != $current_group ) {
 				#$max_batch_id++;
