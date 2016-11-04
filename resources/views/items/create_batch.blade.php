@@ -74,7 +74,7 @@
 							@foreach($mixed_groups as $group_key => $group_values) {{-- $group_key = 0/no mix, = 1 / mix --}}
 							@if($group_key == 0) {{-- Allow mixing is not permissible--}}
 								{{-- 20161103 Jewel comment it @foreach($group_values->groupBy('child_sku') as $row) --}}
-								@foreach($group_values->groupBy('order_id') as $row)
+								@foreach($group_values->groupBy('child_sku') as $row)
 									@foreach($row->chunk($batch_route->batch_max_units) as $chunkedRows)
 										@if($batch_route->stations_list->count())
 											<div class = "col-xs-12">
@@ -93,7 +93,7 @@
 														<td></td>
 													</tr>
 													@setvar($row_serial = 1)
-													@foreach($chunkedRows->sortBy('product_model') as $item)
+													@foreach($chunkedRows->sortBy('order_id') as $item)
 														<tr>
 															<td><img src = "{{$item->item_thumb}}" /></td>
 															<td>{{$serial++}}</td>
@@ -153,7 +153,7 @@
 													<td></td>
 												</tr>
 												@setvar($row_serial = 1)
-												@foreach($chunkedRows->sortBy('product_model') as $item)
+												@foreach($chunkedRows->sortBy('order_id') as $item)
 													<tr>
 														<td><img src = "{{$item->item_thumb}}" /></td>
 														<td>{{$serial++}}</td>
