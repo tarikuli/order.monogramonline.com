@@ -162,6 +162,10 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 
 		get('stations/bulk', 'StationController@getBulkChange');
 		post('stations/bulk', 'StationController@postBulkChange');
+		
+		get('stations/single', 'StationController@getSingleChange');
+		post('stations/single', 'StationController@postSingleChange');
+		
 		get('export_station', 'StationController@getExportStationLog');
 		post('export_station', 'StationController@postExportStationLog');
 		post('stations/change', 'StationController@change');

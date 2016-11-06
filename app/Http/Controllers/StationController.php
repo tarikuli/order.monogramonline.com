@@ -22,6 +22,9 @@ use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Validator;
 use League\Csv\Writer;
 use Monogram\Helper;
+use Illuminate\Support\Facades\Session;
+
+
 
 class StationController extends Controller {
 
@@ -549,8 +552,115 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 
 		return view ( 'stations.summary', compact ( 'summaries', 'total_lines', 'total_items' ))->withRequest($request);
 	}
+	
+	public function getSingleChange(Request $request) {
+		
+// 		if ( $request->has('station') ) {
+// 			Session::put('station', $request->get('station'));
+// 		}
+		
+// return $request->all();
+		
+		$stations = Station::where ( 'is_deleted', 0 )
+							->whereNotIn( 'station_name', Helper::$shippingStations)
+							->get ()
+							->lists ( 'custom_station_name', 'station_name' )
+							->prepend ( 'Select a station', 0 );
+	
+		// 	return $stations;
+		return view ( 'items.single_change' )->with ( 'stations', $stations );
+	}
+	
+	public function postSingleChange(Request $request) {
+		
+		if ( $request->has('station') ) {
+			Session::put('station', $request->get('station'));
+			$posted_station = trim ( $request->get ( 'station' ) );
+		}
+		
+		$station = Station::where ( 'is_deleted', 0 )->where ( 'station_name', '=', trim ( $request->get ( 'station' ) ) )->first ();
+		
+		if (! $station) {
+			return redirect ()->back ()->withInput ()->withErrors ( [
+					'error' => 'Selected station is not valid'
+			] );
+		}
+		
+		// station exists
+		// divide the given batches
+		$posted_batches = $request->get ( 'batches' );
+		// remove newlines and spaces
+		$posted_batches = trim ( preg_replace ( '/\s+/', ',', $posted_batches ) );
+		
+		$batches = array_map ( function ($batch) {
+			$integer_value_of_batch_number = intval ( $batch );
+			// safety check
+			// if the integer value of a batch number is 0,
+			// table having 0 as batch number has different meaning
+			// thus returns -1, table will never have any value -1;
+			return $integer_value_of_batch_number ?  : - 1;
+		}, explode ( ",", $posted_batches ) );
+// Helper::jewelDebug($batches);		
+		$errors = [ ];
+		// search the items
+		// if any item from a batch is splitted, then cannot be moved
+		// if the batch route don't have that station, then, cannot be moved.
+		$batches = array_filter ( $batches, function ($batch) use(&$errors, $station) {
+			if ($batch == - 1) {
+				return false;
+			}
+	
+			// Get all Items in a Batch
+			$items = Item::with ( 'route.stations_list' )
+							->where('is_deleted', 0)
+							->whereNull('tracking_number')
+							->where ( 'batch_number', $batch )
+							->get ();
+// return $items;
+		
+			$count = $items->groupBy ( 'station_name' )->count ();
+		
+			if ($count != 1) {
+				$errors [] = sprintf ( "Batch %s either has more than one stations assigned or not a valid batch number", $batch );
+		
+				return false;
+			}
+		
+			$first_item = $items->first ();
+		
+			$stations_in_route_ids = $first_item->route->stations_list->lists ( 'station_id' )->toArray ();
+		
+			if (! in_array ( $station->id, $stations_in_route_ids )) {
+				$errors [] = sprintf ( "Batch %s Route: %s doesn't have \"%s (%s) \" station in its route.", $batch, $first_item->route->batch_route_name, $station->station_description, $station->station_name );
+		
+				return false;
+			}
+		
+			return true;
+		} );
+// dd($batches);		
+		$items = Item::with ( 'order' )
+			->whereIn ( 'batch_number', $batches )
+			->where('is_deleted', 0)
+			->whereNull('tracking_number')
+			->get ();
+		
+		if ($items->count () == 0) {
+			return redirect ()->back ()->withInput ()->withErrors ( $errors );
+		}
+		$changed = $this->apply_station_change ( $items, $posted_station );
+	
+		// redirect with errors if any error found
+		if (count ( $errors )) {
+			return redirect ()->back ()->withErrors ( $errors );
+		}
+	
+		return redirect ()->back ()->with ( 'success', sprintf ( "Total of: %d items moved to station: %s", $changed, $posted_station ) );
+		
+	}
+	
 	public function getBulkChange() {
-		// https://www.neontsunami.com/posts/using-lists()-in-laravel-with-custom-attribute-accessors
+		
 		$stations = Station::where ( 'is_deleted', 0 )
 							->whereNotIn( 'station_name', Helper::$shippingStations)
 							->get ()
@@ -562,6 +672,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 	}
 
 	public function postBulkChange(Request $request) {
+// return $request->all();		
 		$posted_station = trim ( $request->get ( 'station' ) );
 		// check if station exists
 		$station = Station::where ( 'is_deleted', 0 )->where ( 'station_name', '=', $posted_station )->first ();
@@ -597,6 +708,8 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 
 			// Get all Items in a Batch
 			$items = Item::with ( 'route.stations_list' )
+							->where('is_deleted', 0)
+							->whereNull('tracking_number')
 							->where ( 'batch_number', $batch )
 							->get ();
 
@@ -621,7 +734,12 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			return true;
 		} );
 
-		$items = Item::with ( 'order' )->whereIn ( 'batch_number', $batches )->get ();
+		$items = Item::with ( 'order' )
+						->where('is_deleted', 0)
+						->whereNull('tracking_number')
+						->whereIn ( 'batch_number', $batches )
+						->get ();
+		
 		if ($items->count () == 0) {
 			return redirect ()->back ()->withInput ()->withErrors ( $errors );
 		}

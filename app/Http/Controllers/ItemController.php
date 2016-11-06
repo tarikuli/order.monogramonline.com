@@ -225,6 +225,7 @@ class ItemController extends Controller
 
 	public function getGroupedBatch (Request $request)
 	{
+// return $request->all();
 		if ( $request->has('station') ) {
 			Session::put('station', $request->get('station'));
 		}
