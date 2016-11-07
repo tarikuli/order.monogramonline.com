@@ -655,7 +655,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			return redirect ()->back ()->withErrors ( $errors );
 		}
 	
-		return redirect ()->back ()->with ( 'success', sprintf ( "Total of: %d items moved to station: %s", $changed, $posted_station ) );
+		return redirect ()->back ()->with ( 'success', sprintf ( "Batch# %s Total %d items moved to station: %s", $posted_batches, $changed, $posted_station ) );
 		
 	}
 	
