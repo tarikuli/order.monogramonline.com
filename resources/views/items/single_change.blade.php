@@ -45,6 +45,10 @@
 			<div class = "col-md-offset-2 col-md-2">
 				{!! Form::submit('Change station',['class'=>'btn btn-primary']) !!}
 			</div>
+			
+			<div class = "col-md-offset-2 col-md-2">
+				{!! Form::button('Clear',['id' => 'clear', 'class'=>'btn btn-danger']) !!}
+			</div>
 		</div>
 		{!! Form::close() !!}
 	</div>
@@ -56,6 +60,13 @@
 		$(".stations").chosen();
 			
 		$("#batches").focus();
+
+		$("#clear").on('click', function (event)
+		{
+			$("#batches").val("");
+			$("#batches").focus();
+		});
+		
 	</script>
 </body>
 </html>
