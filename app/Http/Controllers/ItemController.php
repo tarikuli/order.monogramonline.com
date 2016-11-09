@@ -599,7 +599,7 @@ class ItemController extends Controller
 // Log::info("Jewel Writer in shipping ".$toStationName);
 				Helper::populateShippingData($items);
 			}
-			Helper::saveStationLog($items, $toStationName);
+// 			Helper::saveStationLog($items, $toStationName);
 
 			return response()->json([
 				'error' => false,
@@ -684,7 +684,7 @@ class ItemController extends Controller
 									 ->get();
 
 				if ( $next_station_name ) {
-					Helper::saveStationLog($previousItems, $station_name);
+// 					Helper::saveStationLog($previousItems, $station_name);
 				}
 
 				// Set next station name in station_name for update
@@ -1152,6 +1152,7 @@ class ItemController extends Controller
 
 	public function get_active_batch_by_sku (Request $request)
 	{
+// dd($request->all());		
 		if (in_array ( $request->get('station'), Helper::$shippingStations )) {
 // 			return redirect(url('/summary'))
 // 				->withErrors(new MessageBag([
@@ -1222,7 +1223,7 @@ class ItemController extends Controller
 			->with('rows', $rows)
 			->withRequest($request)
 			->with('stations', $stations)
-			->with('pagination', $items->render())
+			->with('pagination', $items->appends(request()->all())->render())
 			->with('current_station_name', $current_station_name)
 			->with('total_count', $total_count);
 	}
@@ -1407,13 +1408,13 @@ class ItemController extends Controller
 
 	// Insert station activity in station log table.
 		foreach ( $items as $item ) {
-			$station_log = new StationLog();
-			$station_log->item_id = $item->id;
-			$station_log->batch_number = $item->batch_number;
-			$station_log->station_id = $station_id;
-			$station_log->started_at = date('Y-m-d', strtotime("now"));
-			$station_log->user_id = Auth::user()->id;
-			$station_log->save();
+// 			$station_log = new StationLog();
+// 			$station_log->item_id = $item->id;
+// 			$station_log->batch_number = $item->batch_number;
+// 			$station_log->station_id = $station_id;
+// 			$station_log->started_at = date('Y-m-d', strtotime("now"));
+// 			$station_log->user_id = Auth::user()->id;
+// 			$station_log->save();
 
 			// Add note history by order id
 			$note = new Note();
@@ -1488,19 +1489,19 @@ class ItemController extends Controller
 										->where('station_name', $current_item_station)
 										->where('item_code', $sku)
 										->update($updates);
-					if ( $next_station_name ) {
-						foreach ( $previousItems as $item ) {
-							$station_log = new StationLog();
-							$station_log->item_id = $item->id;
-							$station_log->batch_number = $item->batch_number;
-							$station_log->station_id = Station::where('station_name', $current_item_station)
-															  ->first()->id;
+// 					if ( $next_station_name ) {
+// 						foreach ( $previousItems as $item ) {
+// 							$station_log = new StationLog();
+// 							$station_log->item_id = $item->id;
+// 							$station_log->batch_number = $item->batch_number;
+// 							$station_log->station_id = Station::where('station_name', $current_item_station)
+// 															  ->first()->id;
 
-							$station_log->started_at = date('Y-m-d', strtotime("now"));
-							$station_log->user_id = Auth::user()->id;
-							$station_log->save();
-						}
-					}
+// 							$station_log->started_at = date('Y-m-d', strtotime("now"));
+// 							$station_log->user_id = Auth::user()->id;
+// 							$station_log->save();
+// 						}
+// 					}
 				}
 
 				return redirect()->to('/items/active_batch_group');

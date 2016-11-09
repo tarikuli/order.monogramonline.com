@@ -178,13 +178,13 @@ class StationController extends Controller {
 				$item->item_order_status_2 = 3;
 				$item->item_order_status = "complete";
 			} else {
-				$station_log = new StationLog ();
-				$station_log->item_id = $item->id;
-				$station_log->batch_number = $item->batch_number;
-				$station_log->station_id = Station::where ( 'station_name', $next_station_name )->first ()->id;
-				$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
-				$station_log->user_id = Auth::user ()->id;
-				$station_log->save ();
+// 				$station_log = new StationLog ();
+// 				$station_log->item_id = $item->id;
+// 				$station_log->batch_number = $item->batch_number;
+// 				$station_log->station_id = Station::where ( 'station_name', $next_station_name )->first ()->id;
+// 				$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
+// 				$station_log->user_id = Auth::user ()->id;
+// 				$station_log->save ();
 			}
 			$item->save ();
 			$note->note_text = "Click Single Done for Move to ".$next_station_name." Sation";
@@ -237,13 +237,13 @@ class StationController extends Controller {
 				$item->item_order_status_2 = 3;
 				$item->item_order_status = "complete";
 			} else {
-				$station_log = new StationLog ();
-				$station_log->item_id = $item->id;
-				$station_log->batch_number = $item->batch_number;
-				$station_log->station_id = Station::where ( 'station_name', $current_route_shp_station[0] )->first ()->id;
-				$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
-				$station_log->user_id = Auth::user ()->id;
-				$station_log->save ();
+// 				$station_log = new StationLog ();
+// 				$station_log->item_id = $item->id;
+// 				$station_log->batch_number = $item->batch_number;
+// 				$station_log->station_id = Station::where ( 'station_name', $current_route_shp_station[0] )->first ()->id;
+// 				$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
+// 				$station_log->user_id = Auth::user ()->id;
+// 				$station_log->save ();
 			}
 			$item->save ();
 			$note->note_text = "Click move_to_shipping for Move to ".$current_route_shp_station[0]." Sation";
@@ -315,13 +315,13 @@ class StationController extends Controller {
 						 ->whereNull('tracking_number')
 						 ->delete();
 
- 					$station_log = new StationLog ();
- 					$station_log->item_id = $item->id;
- 					$station_log->batch_number = $item->batch_number;
- 					$station_log->station_id = Station::where ( 'station_name', $current_route_shp_station[0] )->first ()->id;
- 					$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
- 					$station_log->user_id = Auth::user ()->id;
- 					$station_log->save ();
+//  					$station_log = new StationLog ();
+//  					$station_log->item_id = $item->id;
+//  					$station_log->batch_number = $item->batch_number;
+//  					$station_log->station_id = Station::where ( 'station_name', $current_route_shp_station[0] )->first ()->id;
+//  					$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
+//  					$station_log->user_id = Auth::user ()->id;
+//  					$station_log->save ();
 
  					$note->note_text = "Click back_to_qc for Move to ".$qdc_station." Sation";
 
@@ -761,13 +761,13 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			if (in_array ( $station_name, Helper::$shippingStations )) {
 				Helper::populateShippingData ( $item );
 			}
-			$station_log = new StationLog ();
-			$station_log->item_id = $item->id;
-			$station_log->batch_number = $item->batch_number;
-			$station_log->station_id = Station::where ( 'station_name', $station_name )->first ()->id;
-			$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
-			$station_log->user_id = Auth::user ()->id;
-			$station_log->save ();
+// 			$station_log = new StationLog ();
+// 			$station_log->item_id = $item->id;
+// 			$station_log->batch_number = $item->batch_number;
+// 			$station_log->station_id = Station::where ( 'station_name', $station_name )->first ()->id;
+// 			$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
+// 			$station_log->user_id = Auth::user ()->id;
+// 			$station_log->save ();
 		}
 
 		return $items->count ();

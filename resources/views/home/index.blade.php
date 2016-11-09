@@ -35,7 +35,7 @@
 				<ul>
 					<li><a href = "/logistics/sku_converter">Set store options to SKU conversion parameters</a></li>
 					<li><a href = "/logistics/sku_import">Export/Import options coded SKUs CSV file</a></li>
-					<li><a href = "/logs">Station logs</a></li>
+					{{-- <li><a href = "/logs">Station logs</a></li> --}}
 					<li><a href = "/logistics/create_child_sku">Create Child SKU</a></li>
 					<li><a href = "/email_templates">Email templates</a></li>
 					<li><a href = "/logistics/reset_sorting">Reset Sorting</a></li>

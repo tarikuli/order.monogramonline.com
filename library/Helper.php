@@ -1102,16 +1102,16 @@ APPEND;
 
 	public static function saveStationLog ($items, $new_station_name)
 	{
-		foreach ( $items as $item ) {
-			$station_log = new StationLog();
-			$station_log->item_id = $item->id;
-			$station_log->batch_number = $item->batch_number;
-			$station_log->station_id = Station::where('station_name', $new_station_name)
-											  ->first()->id;
-			$station_log->started_at = date('Y-m-d', strtotime("now"));
-			$station_log->user_id = Auth::user()->id;
-			$station_log->save();
-		}
+// 		foreach ( $items as $item ) {
+// 			$station_log = new StationLog();
+// 			$station_log->item_id = $item->id;
+// 			$station_log->batch_number = $item->batch_number;
+// 			$station_log->station_id = Station::where('station_name', $new_station_name)
+// 											  ->first()->id;
+// 			$station_log->started_at = date('Y-m-d', strtotime("now"));
+// 			$station_log->user_id = Auth::user()->id;
+// 			$station_log->save();
+// 		}
 	}
 
 	public static function getChildSku ($item)

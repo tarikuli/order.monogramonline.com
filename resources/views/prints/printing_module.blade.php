@@ -26,7 +26,7 @@
 					<tr valign = "middle">
 						<td align = "left">Current station</td>
 						<td colspan = "2"
-						    align = "left"> {{$current_station_name}};&nbsp;&nbsp;Current station since: {{\Monogram\Helper::getStationLog($batch_number, $current_station_name)}}</td>
+						    align = "left"> {{$current_station_name}};&nbsp;&nbsp;Current station since: {{-- {{\Monogram\Helper::getStationLog($batch_number, $current_station_name)}} --}}</td>
 					</tr>
 					<tr>
 						<td align = "left">Next station</td>
