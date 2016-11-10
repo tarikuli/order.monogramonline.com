@@ -46,6 +46,7 @@ class OrderController extends Controller
 
 	public function store (OrderCreateRequest $request)
 	{
+return $request->all();
 		$order = new Order();
 		$order->order_id = $request->get('order_id');
 		$order->short_order = $request->get('short_order');
@@ -173,7 +174,7 @@ class OrderController extends Controller
 
 	public function update (OrderUpdateRequest $request, $id)
 	{
-		#return $request->all();
+// 		return $request->all();
 		$customer = Customer::find($request->get('customer_id'));
 		$customer->ship_company_name = $request->get('ship_company_name');
 		$customer->bill_company_name = $request->get('bill_company_name');
@@ -688,7 +689,7 @@ class OrderController extends Controller
 
 		return true;
 	}
-
+	
 	public function getManual (Request $request)
 	{
 		$shipping_methods = Customer::groupBy('shipping')
@@ -724,6 +725,7 @@ class OrderController extends Controller
 			$item = new Item();
 			$item->order_id = $order_id;
 			$item->store_id = $request->get('store');
+//          UPDATE  `orders` SET  `store_id` =  'yhst-128796189915726' WHERE  `order_id` LIKE  '%WH%' AND  `store_id` IS NULL
 			$item->item_code = $item_skus[$item_id_catalog];
 			$item->item_id = $item_id_catalog;
 			$options = [ ];
@@ -755,7 +757,8 @@ class OrderController extends Controller
 			$order->item_count = count($request->get('item_id_catalog'));
 			$order->order_date = date('Y-m-d h:i:s', strtotime("now"));
 			$order->order_numeric_time = strtotime('Y-m-d h:i:s', strtotime("now"));
-			$order->store_id = $request->get('store');
+// 			$order->store_id = $request->get('store');
+			$order->store_id = "yhst-128796189915726";
 			$order->sub_total = floatval($request->get('subtotal', 0));
 			$order->coupon_id = $request->get('coupon_id', '');
 			$order->coupon_value = floatval($request->get('coupon_value', 0));
@@ -1147,11 +1150,12 @@ class OrderController extends Controller
 		$order->paypal_merchant_email = $order_from->last()->paypal_merchant_email;
 		$order->paypal_txid = $order_from->last()->paypal_txid;
 		$order->space_id = $order_from->last()->space_id;
+		$order->store_id =  $exploded[0]."-".$exploded[1];
 		$order->store_name = $order_from->last()->store_name;
 		$order->order_status = 4;
 		$order->save();
 		// -------------- Orders table data insertion ended ----------------------//
-		// -------------- Customers table data insertion started ----------------------//
+		// -------------- Customers table data insertion started -----------------//
 		$customer_from = Customer::where('order_id', $order_id)
 								->where('is_deleted', 0)
 								->get();
