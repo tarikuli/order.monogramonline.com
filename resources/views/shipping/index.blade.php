@@ -219,7 +219,7 @@
 							<td>{{ $ship->item->item_quantity }}</td>
 							<td>
 								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
-								<a href = "{{ url(sprintf("/update_tracking?u_item_id=%s", $ship->item->id  )) }}">Tracking # Update</a>
+								<a href = "{{ url(sprintf("/update_tracking?item_id=%s", $ship->item->id  )) }}">Tracking # Update</a>
 
 								{{ $ship->item->tracking_number ?: "N/A" }}
 
