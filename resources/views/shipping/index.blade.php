@@ -198,6 +198,7 @@
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->phone}}</td>
 					</tr>
 
+					{{--
 					@foreach($groupByUniqueOrderId->slice(1) as $ship)
 						<tr class = "text-center">
 							<td>
@@ -208,15 +209,23 @@
 									{{ $ship->item->batch_number }}
 								@endif
 							</td>
-							<td>{{ $ship->item->id }}</td>
+							<td>
+								{{ $ship->item->id }}
+							</td>
 							<td>
 								<a href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $ship->item->item_code)) }}"
 								   target = "_blank">{{ $ship->item->item_code }}
 								</a>
 							</td>
-							<td><img src = "{{ $ship->item->item_thumb }}" /></td>
-							<td>{{ $ship->item->item_description }}</td>
-							<td>{{ $ship->item->item_quantity }}</td>
+							<td>
+								<img src = "{{ $ship->item->item_thumb }}" />
+							</td>
+							<td>
+								{{ $ship->item->item_description }}
+							</td>
+							<td>
+								{{ $ship->item->item_quantity }}
+							</td>
 							<td>
 								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
 								<a href = "{{ url(sprintf("/update_tracking?item_id=%s", $ship->item->id  )) }}">Tracking # Update</a>
@@ -224,14 +233,24 @@
 								{{ $ship->item->tracking_number ?: "N/A" }}
 
 							</td>
-							<td>{{ $ship->length}}</td>
-							<td>{{ $ship->height}}</td>
-							<td>{{ $ship->width}}</td>
-							<td>{{ $ship->billed_weight}}</td>
-							<td>{{ $ship->actual_weight}}</td>
+							<td>
+								{{ $ship->length}}
+							</td>
+							<td>
+								{{ $ship->height}}
+							</td>
+							<td>
+								{{ $ship->width}}
+							</td>
+							<td>
+								{{ $ship->billed_weight}}
+							</td>
+							<td>
+								{{ $ship->actual_weight}}
+							</td>
 						</tr>
 					@endforeach
-
+					--}}
 				@endforeach
 			</table>
 
