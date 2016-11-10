@@ -1,5 +1,5 @@
 @setvar($shipped = intval($request->get('shipped', 0)))
-		<!doctype html>
+<!doctype html>
 <html lang = "en">
 <head>
 	<meta charset = "UTF-8">
@@ -218,10 +218,8 @@
 							<td>{{ $ship->item->item_description }}</td>
 							<td>{{ $ship->item->item_quantity }}</td>
 							<td>
-								{{--
 								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
 								<a href = "{{ url(sprintf("/update_tracking?u_item_id=%s", $ship->item->id  )) }}">Tracking # Update</a>
-								--}}
 
 								{{ $ship->item->tracking_number ?: "N/A" }}
 
