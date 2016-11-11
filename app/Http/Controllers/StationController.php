@@ -466,6 +466,7 @@ class StationController extends Controller {
 					->whereNull ( 'tracking_number' )
 // 					->searchBeforeOrderDate($request->get('date'))
 					->groupBy ( 'station_name' )
+					->orderBy('station_name')
 // 					->toSql();
 					->get ();
 
@@ -480,7 +481,7 @@ class StationController extends Controller {
 			$summary = [ ];
 
 			$station_name = $item->station_name;
-
+// Helper::jewelDebug($station_name);
 			// Get number of orders in a Station
 // 			$lines_count = Item::where ( 'station_name', $station_name )
 // 								->where('is_deleted', 0)
@@ -525,7 +526,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 				$earliest_batch_creation_date = Helper::getEarliest($lines_count->lists ( 'batch_creation_date' )->toArray ());
 
 // 				Helper::jewelDebug(($earliest_batch_creation_date));
-// 				Helper::jewelDebug($lines_count->lists ( 'batch_creation_date' )->toArray ());
+// 				Helper::jewelDebug($lines_count->lists ( 'order_id', 'item_id' )->toArray ());
 				// return $lines_count;
 
 

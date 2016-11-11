@@ -197,8 +197,8 @@
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->email}}</td>
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->phone}}</td>
 					</tr>
+{{-- \Monogram\Helper::jewelDebug($groupByUniqueOrderId->slice(1)) --}}					
 
-					{{--
 					@foreach($groupByUniqueOrderId->slice(1) as $ship)
 						<tr class = "text-center">
 							<td>
@@ -228,13 +228,14 @@
 							</td>
 							<td>
 								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
+								
 								<a href = "{{ url(sprintf("/update_tracking?item_id=%s", $ship->item->id  )) }}">Tracking # Update</a>
 
 								{{ $ship->item->tracking_number ?: "N/A" }}
 
 							</td>
 							<td>
-								{{ $ship->length}}
+								{{ $ship->length }}
 							</td>
 							<td>
 								{{ $ship->height}}
@@ -250,7 +251,7 @@
 							</td>
 						</tr>
 					@endforeach
-					--}}
+
 				@endforeach
 			</table>
 
