@@ -628,7 +628,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			return redirect ()->back ()->withErrors ( $errors );
 		}
 // 		return redirect ()->back ()->with('success', implode("<br>",$message));
-// 		return redirect ()->back ()->with('success', "Success");
+		return redirect ()->back ()->with('success', "Success");
 		
 	}
 	
