@@ -31,7 +31,7 @@
 		<div class = "form-group">
 			{!!Form::label('item_id','Item Line#',['class'=>'control-label col-xs-2'])!!}
 			<div class = "col-xs-5">
-				{!! Form::textarea('item_id', null, ['id' => 'item_id','class'=>'form-control']) !!}
+				{!! Form::text('item_id', null, ['id' => 'item_id','class'=>'form-control']) !!}
 			</div>
 		</div>
 		<div class = "form-group">

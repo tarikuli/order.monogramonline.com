@@ -86,6 +86,7 @@
 				<hr />
 				<ul>
 					<li><a href = "/orders/manual"><em><strong>Add new order manually</strong></em></a></li>
+					{{--
 					<li><a href = "/stations/status">Station status</a></li>
 					<li><a href = "/stations/my_station">My station</a></li>--}}
 				</ul>
