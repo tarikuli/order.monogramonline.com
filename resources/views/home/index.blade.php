@@ -79,15 +79,13 @@
 					<li><a href = "/rejection_reasons">Rejection reasons</a></li>
 					<li><a href = "/stations/bulk">Bulk batch change</a></li>
 					<li><a href = "/stations/single">Single batch change</a></li>
+					<li><a href = "/stations/itemstationchange">Move waiting Station by Item#</a></li>
 					<li><a href = "/items/active_batch_group">Active batch by SKU group</a></li>
 					<li><a href = "/products_specifications">Product specification sheet</a></li>
 				</ul>
 				<hr />
 				<ul>
 					<li><a href = "/orders/manual"><em><strong>Add new order manually</strong></em></a></li>
-
-					{{--<li><a href = "/orders/add">Add new order</a></li>--}}
-					{{--<li><a href = "/products/create">Create Product</a></li>
 					<li><a href = "/stations/status">Station status</a></li>
 					<li><a href = "/stations/my_station">My station</a></li>--}}
 				</ul>

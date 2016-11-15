@@ -554,13 +554,71 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 		return view ( 'stations.summary', compact ( 'summaries', 'total_lines', 'total_items' ))->withRequest($request);
 	}
 	
+	public function getItemStationChange(Request $request) {
+	
+		return view ( 'items.item_station_change' );
+	}
+	
+	public function postItemStationChange(Request $request) {
+		$message = [];
+		$errors = [];
+// 		return $request->all();
+		
+		// station exists
+		// divide the given batches
+		$posted_item_id = $request->get ( 'item_id' );
+		// remove newlines and spaces
+		$posted_item_id = trim ( preg_replace ( '/\s+/', ',', $posted_item_id ) );
+		
+		$item_ids = array_map ( function ($batch) {
+			$integer_value_of_batch_number = intval ( $batch );
+			// safety check
+			// if the integer value of a batch number is 0,
+			// table having 0 as batch number has different meaning
+			// thus returns -1, table will never have any value -1;
+			return $integer_value_of_batch_number ?  : - 1;
+		}, explode ( ",", $posted_item_id ) );
+		
+		
+		foreach ($item_ids as $item_id){
+			// Get all Items in a Batch
+			$item = Item::where('is_deleted', 0)
+							->where('batch_number', '!=', '0')
+							->whereNull('tracking_number')
+							->where ( 'id', $item_id )
+							->first ();
+// dd($item->toArra);
+			// If Item exist
+			if(count($item) > 0){
+			 	Item::where ( 'id', $item->id )
+						->update([
+							'station_name' => "WAP",
+						]);
+// 				$message[]= sprintf ( "Item# %s Batch# %s Order# %s moved to Waiting Station",  $item->id,  $item->batch_number,  $item->order_id );
+			}else{
+				$errors[] = sprintf ( "Item# %s Not moved to Waiting Station",  $item_id );
+			}
+
+		}
+
+			
+// 		dd($posted_item_id, $item_ids);
+		if (count ( $errors ) > 0) {
+			return redirect ()->back ()->withErrors ( $errors );
+		}
+// 		return redirect ()->back ()->with('success', implode("<br>",$message));
+		return redirect ()->back ()->with('success', "Success");
+		
+	}
+	
+	
 	public function getSingleChange(Request $request) {
 		
 // 		if ( $request->has('station') ) {
 // 			Session::put('station', $request->get('station'));
 // 		}
 		
-// return $request->all();
+// 		return $request->all();
 		
 		$stations = Station::where ( 'is_deleted', 0 )
 							->whereNotIn( 'station_name', Helper::$shippingStations)
@@ -579,7 +637,9 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			$posted_station = trim ( $request->get ( 'station' ) );
 		}
 		
-		$station = Station::where ( 'is_deleted', 0 )->where ( 'station_name', '=', trim ( $request->get ( 'station' ) ) )->first ();
+		$station = Station::where ( 'is_deleted', 0 )
+							->where ( 'station_name', '=', trim ( $request->get ( 'station' ) ) )
+							->first ();
 		
 		if (! $station) {
 			return redirect ()->back ()->withInput ()->withErrors ( [
@@ -610,7 +670,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			if ($batch == - 1) {
 				return false;
 			}
-	
+
 			// Get all Items in a Batch
 			$items = Item::with ( 'route.stations_list' )
 							->where('is_deleted', 0)

@@ -1948,14 +1948,14 @@ class ItemController extends Controller
 	public function doctorCheckup (Request $request) {
 
 
-		$ordersx = Item::where('child_sku', 'LIKE', sprintf("%%%s%%", '-yes,iconfirm'))->chunk(1000, function($items) {
+		$ordersx = Item::where('child_sku', 'LIKE', sprintf("%%%s%%", '-no,thankyou'))->chunk(1000, function($items) {
 
 				set_time_limit(0);
 				$i=1;
 				foreach ($items as $item){
 					Helper::jewelDebug($i++."		".$item->id."		".$item->child_sku);
-					$removed = str_replace("-yes,iconfirm","",$item->child_sku);
-// 					Helper::jewelDebug($removed);
+					$removed = str_replace("-no,thankyou","",$item->child_sku);
+					Helper::jewelDebug($removed);
 
 // 					Item::where('id', $item->id)
 // 					->update([
@@ -1968,7 +1968,7 @@ class ItemController extends Controller
 		});
 
 
-// 		$ordersx = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", '-yes,iconfirm'))
+// 		$ordersx = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", '-no,thankyou'))
 // 						->where('batch_route_id','115')
 // 						->chunk(1000, function($options)  {
 // 			set_time_limit(0);
@@ -1980,8 +1980,8 @@ class ItemController extends Controller
 // // 				echo "<br>".$i++."		".$option->id."  ------------	".$option->child_sku;
 // // 				Helper::jewelDebug("DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$option->id);
 
-// 				$removed = str_replace("-yes,iconfirm","",$option->child_sku);
-
+// 				$removed = str_replace("-no,thankyou","",$option->child_sku);
+				
 // 				set_time_limit(0);
 
 // 				$optionForDeletes = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", $removed))
