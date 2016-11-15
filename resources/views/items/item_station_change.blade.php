@@ -27,6 +27,14 @@
 		@include('includes.error_div')
 		@include('includes.success_div')
 
+		
+		@if(count($errors->all()) > 0)
+				<audio controls autoplay="autoplay" >
+			  <source src="/assets/sound/beeperror.wav" type="audio/ogg">
+				Your browser does not support the audio element.
+			</audio>
+		@endif
+        
 		{!! Form::open(['url' => url('stations/itemstationchange'), 'method' => 'post', 'class'=>'form-horizontal', 'role'=>'form']) !!}
 		<div class = "form-group">
 			{!!Form::label('item_id','Item Line#',['class'=>'control-label col-xs-2'])!!}

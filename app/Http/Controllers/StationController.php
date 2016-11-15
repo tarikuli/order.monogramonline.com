@@ -581,20 +581,41 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 		
 		
 		foreach ($item_ids as $item_id){
+			// reached_shipping_station
 			// Get all Items in a Batch
 			$item = Item::where('is_deleted', 0)
 							->where('batch_number', '!=', '0')
 							->whereNull('tracking_number')
 							->where ( 'id', $item_id )
 							->first ();
-// dd($item->toArra);
+// 							->get ();
+
 			// If Item exist
 			if(count($item) > 0){
+				
+// 				$items = Item::where('is_deleted', 0)
+// 							->where('batch_number', '!=', '0')
+// 							->whereNull('tracking_number')
+// 							->where ( 'order_id', $item->order_id )
+// 							->get ();
+				
+// 				$shipStationCount =0;
+// 				foreach($items as $itemm){
+					
+// 					if ( in_array($itemm->station_name, Helper::$shippingStations) ) {
+// 						$shipStationCount ++;
+// 					}else{
+						
+// 					}
+					
+// 					Helper::jewelDebug($itemm->station_name." ------- ".$itemm->id."	------	".$shipStationCount);
+// 				}
+				
+				
 			 	Item::where ( 'id', $item->id )
 						->update([
 							'station_name' => "WAP",
 						]);
-// 				$message[]= sprintf ( "Item# %s Batch# %s Order# %s moved to Waiting Station",  $item->id,  $item->batch_number,  $item->order_id );
 			}else{
 				$errors[] = sprintf ( "Item# %s Not moved to Waiting Station",  $item_id );
 			}
@@ -607,7 +628,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			return redirect ()->back ()->withErrors ( $errors );
 		}
 // 		return redirect ()->back ()->with('success', implode("<br>",$message));
-		return redirect ()->back ()->with('success', "Success");
+// 		return redirect ()->back ()->with('success', "Success");
 		
 	}
 	

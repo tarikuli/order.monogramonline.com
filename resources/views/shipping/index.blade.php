@@ -146,7 +146,7 @@
 							   target = "_blank">{{ $ship->item->item_code }}
 							</a>
 						</td>
-						<td><img src = "{{ $ship->item->item_thumb }}" /></td>
+						<td><img width="70" height="70"  src = "{{ $ship->item->item_thumb }}" /></td>
 						<td>{{ $ship->item->item_description }}</td>
 						<td>{{ $ship->item->item_quantity }}</td>
 						<td>
