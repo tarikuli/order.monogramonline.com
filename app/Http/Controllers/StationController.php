@@ -603,18 +603,21 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			if(count($item) > 0){
 				
 				$items = Item::with ( 'route.stations_list' )
-				->where('is_deleted', 0)
-							->where('batch_number', '!=', '0')
-							->whereNull('tracking_number')
-							->where ( 'order_id', $item->order_id )
-							->get ();
+								->where('is_deleted', 0)
+								->where('batch_number', '!=', '0')
+								->whereNull('tracking_number')
+								->where ( 'order_id', $item->order_id )
+								->get ();
 				
 				$inShipStation =0;
 				$notInShipStation =0;
+				$inWaitingStation =0;
 				foreach($items as $itemm){
 					
 					if ( in_array($itemm->station_name, Helper::$shippingStations) ) {
 						$inShipStation ++;
+					}elseif ( trim($itemm->station_name) == "WAP" ) {
+						$inWaitingStation ++;
 					}else{
 						$notInShipStation ++;
 					}
@@ -622,10 +625,18 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 				}
 
 				// If Orher Item All ready in Shipping Station except this Line Item
-				if($items->count() == ($inShipStation)){
-					return redirect ()->back ()->with('success', sprintf ( "Item# %s Order# %s All Item Already in Shiping Station",  $item_id, $itemm->order_id ));
+// 				if($items->count() == ($inShipStation)){
+// 					return redirect ()->back ()->with('success', sprintf ( "Item# %s Order# %s All Item Already in Shiping Station",  $item_id, $itemm->order_id ));
+// 				}else
+				if($items->count() == ($inWaitingStation)){
+					Helper::populateShippingData ($items);
+					Helper::jewelDebug("All Item in WAP station so move to Shipping Station");
+				}elseif($items->count() == ($inWaitingStation+1)){
+					Helper::populateShippingData ($items);
+					Helper::jewelDebug("3 item already in wap and this Item plus move to Shipping Station");
 				}elseif($items->count() == ($inShipStation+1)){
 					Helper::setShippingFlag ($item);
+					Helper::jewelDebug("3 item already in Shipping and this Item plus move to Shipping Station");
 // 					$stationsArray = [];
 					
 // 					foreach($itemm->route->stations_list as $stations){
@@ -650,13 +661,12 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 				 	Item::where ( 'id', $item_id )
 							->update([
 								'station_name' => "WAP",
+								'previous_station' => $item->station_name,
 					]);
-
+					Helper::jewelDebug("3 item already in Shipping and this Item plus move to Shipping Station");
 					Helper::histort("Used Move waiting Station ItemID #".$item_id,$item->order_id);
 // 					Helper::jewelDebug($itemm->station_name." ------- ".$item_id."---Total: ".$items->count()."---	".$inShipStation." -- ".$notInShipStation);
 				}
-				
-								
 
 			}else{
 				$errors[] = sprintf ( "Already Shipped Item# %s Not moved to Waiting Station",  $item_id );
