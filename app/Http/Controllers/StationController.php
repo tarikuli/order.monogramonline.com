@@ -1131,6 +1131,6 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 		}
 		
 // 		return view ( 'items.back_prev_station' );
-		return redirect ()->back ()->with ( 'error', "Nothing Change" );
+		return redirect ()->back ()->withErrors ( "No Item# ". $posted_item_id. " Found");
 	}
 }
