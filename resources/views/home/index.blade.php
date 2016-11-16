@@ -80,6 +80,8 @@
 					<li><a href = "/stations/bulk">Bulk batch change</a></li>
 					<li><a href = "/stations/single">Single batch change</a></li>
 					<li><a href = "/stations/itemstationchange">Move waiting Station by Item#</a></li>
+					<li><a href = "/stations/itemshippingstationchange">Move Shipping Station by Item#</a></li>
+					
 					<li><a href = "/items/active_batch_group">Active batch by SKU group</a></li>
 					<li><a href = "/products_specifications">Product specification sheet</a></li>
 				</ul>

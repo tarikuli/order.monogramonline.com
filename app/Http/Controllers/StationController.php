@@ -154,7 +154,8 @@ class StationController extends Controller {
 				->first ();
 
 		if (! $item) {
-			return view ( 'errors.404' );
+// 			return view ( 'errors.404' );
+			return redirect ()->back ()->withErrors ( sprintf ( "No Item# %s Found by",  $item_id ) );
 		}
 
 		$batch_route_id = $item->batch_route_id;
@@ -356,7 +357,8 @@ class StationController extends Controller {
 		}
 
 		if ($batch_item_count) {
-			return redirect ()->back ();
+// 			return redirect ()->back ();
+			return redirect ()->back ()->with('success', "Success");
 		} else {
 			return redirect ( url ( 'items/grouped' ) );
 		}
@@ -554,6 +556,12 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 		return view ( 'stations.summary', compact ( 'summaries', 'total_lines', 'total_items' ))->withRequest($request);
 	}
 	
+	
+	public function itemshippingstationchange(Request $request) {
+	
+		return view ( 'items.item_shipping_station_change' );
+	}
+	
 	public function getItemStationChange(Request $request) {
 	
 		return view ( 'items.item_station_change' );
@@ -581,6 +589,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 		
 		
 		foreach ($item_ids as $item_id){
+
 			// reached_shipping_station
 			// Get all Items in a Batch
 			$item = Item::where('is_deleted', 0)
@@ -593,31 +602,64 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			// If Item exist
 			if(count($item) > 0){
 				
-// 				$items = Item::where('is_deleted', 0)
-// 							->where('batch_number', '!=', '0')
-// 							->whereNull('tracking_number')
-// 							->where ( 'order_id', $item->order_id )
-// 							->get ();
+				$items = Item::with ( 'route.stations_list' )
+				->where('is_deleted', 0)
+							->where('batch_number', '!=', '0')
+							->whereNull('tracking_number')
+							->where ( 'order_id', $item->order_id )
+							->get ();
 				
-// 				$shipStationCount =0;
-// 				foreach($items as $itemm){
+				$inShipStation =0;
+				$notInShipStation =0;
+				foreach($items as $itemm){
 					
-// 					if ( in_array($itemm->station_name, Helper::$shippingStations) ) {
-// 						$shipStationCount ++;
-// 					}else{
-						
+					if ( in_array($itemm->station_name, Helper::$shippingStations) ) {
+						$inShipStation ++;
+					}else{
+						$notInShipStation ++;
+					}
+					
+				}
+
+				// If Orher Item All ready in Shipping Station except this Line Item
+				if($items->count() == ($inShipStation)){
+					return redirect ()->back ()->with('success', sprintf ( "Item# %s Order# %s All Item Already in Shiping Station",  $item_id, $itemm->order_id ));
+				}elseif($items->count() == ($inShipStation+1)){
+					Helper::setShippingFlag ($item);
+// 					$stationsArray = [];
+					
+// 					foreach($itemm->route->stations_list as $stations){
+// 						$stationsArray[] = $stations->station_name;
 // 					}
 					
-// 					Helper::jewelDebug($itemm->station_name." ------- ".$itemm->id."	------	".$shipStationCount);
-// 				}
+// 					$commonShipStatio = array_values(array_intersect(Helper::$shippingStations, $stationsArray));
+					
+// 					// Update Shipping Station in Item Table
+// 					if(($commonShipStatio[0])){
+// 					 	Item::where ( 'id', $item_id )
+// 								->update([
+// 									'station_name' => $commonShipStatio[0],
+// 						]);
+// 					}
+					
+// 					// get the item id from the shipping table
+// 					$items_exist_in_shipping = Ship::where('order_number', $itemm->order_id)
+// 													->lists('unique_order_id');
+// 					Helper::jewelDebug("**** ".$itemm->station_name." ------- ".$itemm->id."---Total: ".$items->count()."---	".$inShipStation." -- ".$notInShipStation);
+				}else{
+				 	Item::where ( 'id', $item_id )
+							->update([
+								'station_name' => "WAP",
+					]);
+
+					Helper::histort("Used Move waiting Station ItemID #".$item_id,$item->order_id);
+// 					Helper::jewelDebug($itemm->station_name." ------- ".$item_id."---Total: ".$items->count()."---	".$inShipStation." -- ".$notInShipStation);
+				}
 				
-				
-			 	Item::where ( 'id', $item->id )
-						->update([
-							'station_name' => "WAP",
-						]);
+								
+
 			}else{
-				$errors[] = sprintf ( "Item# %s Not moved to Waiting Station",  $item_id );
+				$errors[] = sprintf ( "Already Shipped Item# %s Not moved to Waiting Station",  $item_id );
 			}
 
 		}

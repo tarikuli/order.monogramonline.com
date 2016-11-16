@@ -169,6 +169,9 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('stations/itemstationchange', 'StationController@getItemStationChange');
 		post('stations/itemstationchange', 'StationController@postItemStationChange');
 		
+		get('stations/itemshippingstationchange', 'StationController@itemshippingstationchange');
+		post('stations/itemshippingstationchange', 'StationController@change');
+		
 		get('export_station', 'StationController@getExportStationLog');
 		post('export_station', 'StationController@postExportStationLog');
 		post('stations/change', 'StationController@change');
