@@ -629,13 +629,13 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 					return redirect ()->back ()->with('success', sprintf ( "Item# %s Order# %s All Item Already in Shiping Station put in shipping buskate.",  $item_id, $itemm->order_id ));
 				}elseif($items->count() == ($inWaitingStation)){
 					Helper::populateShippingData ($items);
-					Helper::jewelDebug("Wap: All Item in WAP station so move to Shipping Station");
+					Helper::jewelDebug("Wap: Order# ".$item->order_id ." Total: ".$items->count()." Items and in WAP ".$inWaitingStation." items in waiting station so all move to Shipping Station");
 				}elseif($items->count() == ($inWaitingStation+1)){
 					Helper::populateShippingData ($items);
-					Helper::jewelDebug("Wap: 3 item already in wap and this Item plus move to Shipping Station");
+					Helper::jewelDebug("Wap: Order# ".$item->order_id ." Total: ".$items->count()." Items and in WAP ".$inWaitingStation." items Plus ".$item_id." in waiting station so all move to Shipping Station");
 				}elseif($items->count() == ($inShipStation+1)){
 					Helper::setShippingFlag ($item);
-					Helper::jewelDebug("Wap: 3 item already in Shipping and this Item plus move to Shipping Station");
+					Helper::jewelDebug("Wap: Order# ".$item->order_id ." Total: ".$items->count()." Items and in Shipping ".$inShipStation." items Plus ".$item_id." in waiting station so all move to Shipping Station");
 // 					$stationsArray = [];
 					
 // 					foreach($itemm->route->stations_list as $stations){
@@ -661,8 +661,15 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 							->update([
 								'station_name' => "WAP",
 								'previous_station' => $item->station_name,
+								'reached_shipping_station' => 0
 					]);
-					Helper::jewelDebug("Wap: 3 item already in Shipping and this Item plus move to Shipping Station");
+					
+					if (in_array ( $item->station_name, Helper::$shippingStations )) {
+						Ship::where('item_id', $item_id)
+						->whereNull('tracking_number')
+						->delete();
+					}
+					Helper::jewelDebug("Wap: Used Move waiting Station ItemID #".$item_id." ".$item->order_id);
 					Helper::histort("Used Move waiting Station ItemID #".$item_id,$item->order_id);
 // 					Helper::jewelDebug($itemm->station_name." ------- ".$item_id."---Total: ".$items->count()."---	".$inShipStation." -- ".$notInShipStation);
 				}
@@ -1040,5 +1047,90 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 		}
 
 		return $arr;
+	}
+	
+	public function getBackPrevious(Request $request) {
+	
+		return view ( 'items.back_prev_station' );
+	}
+	
+	public function postBackPrevious(Request $request) {
+		
+		
+	
+		$posted_item_id = $request->get ( 'item_id' );
+		// remove newlines and spaces
+		$posted_item_id = trim ( preg_replace ( '/\s+/', ',', $posted_item_id ) );
+		
+		$item_ids = array_map ( function ($batch) {
+			$integer_value_of_batch_number = intval ( $batch );
+			// safety check
+			// if the integer value of a batch number is 0,
+			// table having 0 as batch number has different meaning
+			// thus returns -1, table will never have any value -1;
+			return $integer_value_of_batch_number ?  : - 1;
+		}, explode ( ",", $posted_item_id ) );
+		
+		
+		foreach ($item_ids as $item_id){
+			var_dump($item_id);
+			
+			$item = Item::where('is_deleted', 0)
+							->where('batch_number', '!=', '0')
+							->whereNull('tracking_number')
+// 							->whereNotIn( 'station_name', Helper::$shippingStations)
+							->where ( 'id', $item_id )
+							->first ();
+			
+			// If Item exist
+			if(count($item) > 0){
+				
+				if($item->previous_station != ""){
+					Item::where ( 'id', $item_id )
+							->update([
+							'station_name' => $item->previous_station,
+							'previous_station' => $item->station_name,
+							'reached_shipping_station' => 0
+							]);
+
+					if (in_array ( $item->station_name, Helper::$shippingStations )) {
+						Ship::where('item_id', $item_id)
+						->whereNull('tracking_number')
+						->delete();
+					}
+					
+					Helper::jewelDebug("Wap: Used Back to Previous Station ItemID #".$item_id." ".$item->order_id);
+					Helper::histort("Wap: Used Back to Previous Station ItemID #".$item_id,$item->order_id);
+					return redirect ()->back ()->with ( 'success', sprintf ( "Order# %s and Item# %d back to station: %s from station: %s", $item->order_id, $item_id, $item->previous_station, $item->station_name ) );
+								
+				}else{
+					
+					$qdc_station = explode("-",$item->station_name);
+					$qdc_station = $qdc_station[0]."-QCD";
+					
+					Item::where ( 'id', $item_id )
+						->update([
+						'station_name' => $qdc_station,
+						'previous_station' => $item->station_name,
+						'reached_shipping_station' => 0
+					]);
+						
+					if (in_array ( $item->station_name, Helper::$shippingStations )) {
+						Ship::where('item_id', $item_id)
+						->whereNull('tracking_number')
+						->delete();
+					}
+					
+					Helper::jewelDebug("Wap: Used Back to Previous Station ItemID #".$item_id." ".$item->order_id);
+					Helper::histort("Wap: Used Back to Previous Station ItemID #".$item_id,$item->order_id);
+					return redirect ()->back ()->with ( 'success', sprintf ( "Order# %s and Item# %d back to station: %s from station: %s", $item->order_id, $item_id, $item->previous_station, $qdc_station ) );
+					
+				}
+				
+			}
+		}
+		
+// 		return view ( 'items.back_prev_station' );
+		return redirect ()->back ()->with ( 'error', "Nothing Change" );
 	}
 }

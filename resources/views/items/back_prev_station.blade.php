@@ -3,7 +3,7 @@
 <html lang = "en">
 <head>
 	<meta charset = "UTF-8">
-	<title>Move waiting Station by Item#</title>
+	<title>Back to Previous Station by Item#</title>
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -22,8 +22,8 @@
 	<div class = "container">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
-			<li class = "active">Move Waiting For Another Station</li>
-			<li><a href = "{{url('/stations/back_to_previous_stat')}}">Item Back to Previous Station</a></li>
+			<li class = "active">Back to Previous Station by Item#</li>
+			<li><a href = "{{url('/stations/itemstationchange')}}">Move Waiting For Another Station</a></li>
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
@@ -36,16 +36,17 @@
 			</audio>
 		@endif
         
-		{!! Form::open(['url' => url('stations/itemstationchange'), 'method' => 'post', 'class'=>'form-horizontal', 'role'=>'form']) !!}
+		{!! Form::open(['url' => url('stations/back_to_previous_stat'), 'method' => 'post', 'class'=>'form-horizontal', 'role'=>'form']) !!}
 		<div class = "form-group">
 			{!!Form::label('item_id','Item Line#',['class'=>'control-label col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::text('item_id', null, ['id' => 'item_id','class'=>'form-control']) !!}
+				{!! Form::hidden('action', 'back_to_previous', ['id' => 'action','class'=>'form-control']) !!}
 			</div>
 		</div>
 		<div class = "form-group">
 			<div class = "col-md-offset-2 col-md-2">
-				{!! Form::submit('Move To Waiting',['class'=>'btn btn-primary']) !!}
+				{!! Form::submit('Back to Previous Station',['class'=>'btn btn-primary']) !!}
 			</div>
 			
 			<div class = "col-md-offset-2 col-md-2">
