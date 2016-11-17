@@ -637,7 +637,8 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 				
 				if($items->count() == ($inWaitingStation)){
 					Helper::jewelDebug("WAP: Order# ".$item->order_id." Total: ".$inWaitingStation." Item now ready for Ship");
-					return redirect ()->back ()->with('success', "Success Order# ".$item->order_id." Total: ".$inWaitingStation." Item now ready for Ship");
+					return redirect ()->back ()
+						->with('success', "Success Order# ".$item->order_id." Total: ".$inWaitingStation." Item now ready for Ship");
 				}
 // 				$items = Item::with ( 'route.stations_list' )
 // 								->where('is_deleted', 0)

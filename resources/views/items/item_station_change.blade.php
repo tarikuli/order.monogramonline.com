@@ -35,6 +35,7 @@
 				Your browser does not support the audio element.
 			</audio>
 		@endif
+		
         
 		{!! Form::open(['url' => url('stations/itemstationchange'), 'method' => 'post', 'class'=>'form-horizontal', 'role'=>'form']) !!}
 		<div class = "form-group">
