@@ -570,6 +570,9 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 	public function postItemStationChange(Request $request) {
 		$message = [];
 		$errors = [];
+		$success_wav = false;
+		$order_items_info = [];
+		$inWaitingStation =0;
 // 		return $request->all();
 		
 		// station exists
@@ -617,7 +620,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 				}
 				
 				
-				Helper::jewelDebug("Wap: Used Move waiting Station ItemID #".$item_id." ".$item->order_id);
+// 				Helper::jewelDebug("Wap: Used Move waiting Station ItemID #".$item_id." ".$item->order_id);
 				Helper::histort("Used Move waiting Station ItemID #".$item_id,$item->order_id);
 				
 				// Count again which are not ship yet and now in WAP station
@@ -633,12 +636,18 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 					if ( trim($itemm->station_name) == "WAP" ) {
 						$inWaitingStation ++;
 					}
+					$order_items_info[]= "Order# ".$itemm->order_id." Batch# ".$itemm->batch_number." Item# ".$itemm->id." Current Station ".$itemm->station_name;
 				}
-				
+// dd($inWaitingStation, $items->count() );				
 				if($items->count() == ($inWaitingStation)){
-					Helper::jewelDebug("WAP: Order# ".$item->order_id." Total: ".$inWaitingStation." Item now ready for Ship");
-					return redirect ()->back ()
-						->with('success', "Success Order# ".$item->order_id." Total: ".$inWaitingStation." Item now ready for Ship");
+					$success_wav = true;
+// 					Helper::jewelDebug("WAP: Order# ".$item->order_id." Total: ".$inWaitingStation." Item now ready for Ship");
+					
+// 					return view('items.item_station_change', compact('success_wav', 'order_items_info'))
+// 					->with('success', "Success Order# ".$item->order_id." Total: ".$inWaitingStation." Item now ready for Ship");
+				
+					$request->session()->flash('success', "Success Order# ".$item->order_id." Total: ".$inWaitingStation." Item now ready for Ship");
+					return view('items.item_station_change',  compact('success_wav', 'order_items_info'));
 				}
 // 				$items = Item::with ( 'route.stations_list' )
 // 								->where('is_deleted', 0)
@@ -717,8 +726,12 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 					return redirect ()->back ()->withErrors ( $errors );
 				}
 			}
-			Helper::jewelDebug( "WAP: move to WAP Station Item# ".$item_id);
-			return redirect ()->back ()->with('success', "Success move to WAP Station Item# ".$item_id);
+// 			Helper::jewelDebug( "WAP: move to WAP Station Item# ".$item_id);
+// 			return redirect ()->back ()->with('success', "Success move to WAP Station Item# ".$item_id);
+// 			$request->session()->flash('success', "Success move to WAP Station Item# ".$item_id." Out of ".$items->count()." waiting ". $inWaitingStation+1);
+			$request->session()->flash('success', "Success move to WAP Station Item# ".$item_id." Out of ".$items->count()." in waiting station ". $inWaitingStation);
+			return view('items.item_station_change',  compact('success_wav', 'order_items_info'));
+// 			->with('success', "Success move to WAP Station Item# ".$item_id);
 
 		}
 

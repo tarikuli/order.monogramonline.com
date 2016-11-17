@@ -36,6 +36,14 @@
 			</audio>
 		@endif
 		
+		@if(isset($success_wav))
+			@if($success_wav == true)
+				<audio controls autoplay="autoplay" >
+			  <source src="/assets/sound/success.wav" type="audio/ogg">
+				Your browser does not support the audio element.
+			</audio>
+			@endif
+		@endif
         
 		{!! Form::open(['url' => url('stations/itemstationchange'), 'method' => 'post', 'class'=>'form-horizontal', 'role'=>'form']) !!}
 		<div class = "form-group">
@@ -55,6 +63,12 @@
 		</div>
 		{!! Form::close() !!}
 	</div>
+	@if(isset($order_items_info))
+		@foreach($order_items_info as $order_item_info)
+			{{ $order_item_info }}<br>
+		@endforeach
+	@endif
+	
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
