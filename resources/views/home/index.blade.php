@@ -74,7 +74,7 @@
 					<li><a href = "/shipping">Shipping list</a></li>
 					<li><a href = "shippinglabel_print">Shipping Label Print</a></li>
 					<li><a href = "/items/waiting_for_another_item">Waiting for another items</a></li>
-					<li><a href = "/summary">Stations summary</a></li>
+					<li><a href = "/summary">Stations summary ( 1 min to Load)</a></li>
 					<li><a href = "/export_station">Export station log</a></li>
 					<li><a href = "/rejection_reasons">Rejection reasons</a></li>
 					<li><a href = "/stations/bulk">Bulk batch change</a></li>

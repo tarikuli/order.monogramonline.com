@@ -40,8 +40,8 @@
 					</div>
 			</div>
 
-			<div class = "form-group col-xs-2">
-				<label for = "" class = ""></label>
+			<div class = "form-group col-xs-3">
+				<label for = "search" class = "">1 minute required for load.</label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
 			</div>
 			{!! Form::close() !!}

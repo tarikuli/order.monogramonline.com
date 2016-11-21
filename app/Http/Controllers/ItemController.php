@@ -54,7 +54,7 @@ class ItemController extends Controller
 					 ->paginate(25);
  	  // For debug
 		#return $items;
-// 		set_time_limit(0);
+		set_time_limit(0);
 
 		$unassignedProducts = Option::where(function ($query) {
 			return $query->whereNull('batch_route_id')
