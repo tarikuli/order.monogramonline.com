@@ -170,7 +170,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('stations/itemstationchange', 'StationController@postItemStationChange');
 		
 		get('stations/itemshippingstationchange', 'StationController@itemshippingstationchange');
-		post('stations/itemshippingstationchange', 'StationController@change');
+		#post('stations/itemshippingstationchange', 'StationController@change');
+		post('stations/itemshippingstationchange', 'StationController@postItemShippingStationchange');
 		
 		get('stations/back_to_previous_stat', 'StationController@getBackPrevious');
 		post('stations/back_to_previous_stat', 'StationController@postBackPrevious');

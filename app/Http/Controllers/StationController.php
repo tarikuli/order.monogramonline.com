@@ -160,12 +160,14 @@ class StationController extends Controller {
 
 		$batch_route_id = $item->batch_route_id;
 		$current_station_name = $item->station_name;
-		$next_station_name = Helper::getNextStationName ( $batch_route_id, $current_station_name );
+		
 
 		$note = new Note();
 
 		if ($action == 'done') {
 
+			$next_station_name = Helper::getNextStationName ( $batch_route_id, $current_station_name );
+			
 			if (in_array ( $next_station_name, Helper::$shippingStations )) {
 				Helper::populateShippingData ( $item );
 			}
@@ -229,7 +231,8 @@ class StationController extends Controller {
 			}
 
 			$item->station_name = $current_route_shp_station[0];
-
+			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+			
 			Item::where ( 'batch_number', $item->batch_number )->update ( [
 					'item_order_status' => 'active'
 			] );
@@ -260,6 +263,7 @@ class StationController extends Controller {
 			}
 			$item->previous_station = $item->station_name;
 			$item->station_name = Helper::getSupervisorStationName ();
+			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 			$item->rejection_reason = $request->get ( 'rejection_reason' );
 			$item->rejection_message = trim ( $request->get ( 'rejection_message' ) );
 			$item->reached_shipping_station = 0;
@@ -306,6 +310,7 @@ class StationController extends Controller {
 								 ->whereNull('tracking_number')
 					->update([
 							'station_name'      => $qdc_station,
+							'change_date' => date('Y-m-d H:i:s', strtotime('now')),
 							'previous_station'  => $current_route_shp_station[0],
 							'reached_shipping_station'  => 0,
 							'item_order_status_2' => 2,
@@ -426,6 +431,7 @@ class StationController extends Controller {
 			}
 
 			$item->station_name = $station_name;
+			$item->previous_station = $item->station_name;
 			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 			$supervisor_message = trim ( $request->get ( 'supervisor_message' ) );
 			$item->supervisor_message = ! empty ( $supervisor_message ) ? $supervisor_message : null;
@@ -562,6 +568,59 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 		return view ( 'items.item_shipping_station_change' );
 	}
 	
+	public function postItemShippingStationchange(Request $request) {
+		$errors = [];
+// dd($request->all());
+		
+		$unique_order_ids = $request->get ( 'unique_order_id' );
+		$order_id = Helper::getOrderNumber($unique_order_ids);
+		
+		if($order_id){
+			
+			$items = Item::with ( 'route.stations_list' ) 							
+							->where('is_deleted', 0) 							
+							->whereNull('tracking_number') 							
+							->where ('order_id', $order_id ) 
+							->where('batch_number', '!=', '0')
+							->get ();
+			
+			foreach ($items as $item){
+				$stations_in_route_ids = $item->route->stations_list->lists ( 'station_name' )->toArray ();
+	
+				if(count($stations_in_route_ids)>0){
+					$common_shipping_station = array_values(array_intersect(Helper::$shippingStations,$stations_in_route_ids));
+				
+					if(count($common_shipping_station)>0){
+						if(!strpos($item->station_name, '-SHP')){
+							$item->previous_station = $item->station_name;
+							$item->station_name = $common_shipping_station[0];
+							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+							$item->save ();
+							Helper::populateShippingData ( $item );
+							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
+						}else{
+							$errors[] = sprintf ("Already in Shipping Station Item# ".$item->id." Batch# ".$item->batch_number." and Route ".$item->route->batch_code." -> ".$item->route->batch_route_name);
+						}
+					}else{
+						$errors[] = sprintf ("Batch# ".$item->batch_number." and Route ".$item->route->batch_route_name." -> ".$item->route->batch_route_name." Need SHP Station.");
+					}
+				}else{
+						$errors[] = sprintf ("Batch# ".$item->batch_number." and Route ".$item->route->batch_route_name." -> ".$item->route->batch_route_name." Need SHP Station.");
+				}
+			}
+			
+			if (count ( $errors ) > 0) {
+				return redirect ()->back ()->withErrors ( $errors );
+			}
+			
+			return redirect ()->back ()->with('success', "Success move to Shipping Station Order# ".$order_id);
+		}
+		
+		return redirect ()->back ()->withErrors ( "No Order#".$unique_order_ids." found, Scan correctly." );
+	}
+	
+	
+	
 	public function getItemStationChange(Request $request) {
 	
 		return view ( 'items.item_station_change' );
@@ -602,15 +661,16 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 							->first ();
 // 							->get ();
 
-			// If Item exist
+			// If Item exist change_date
 			if(count($item) > 0){
 				
 				
 				Item::where ( 'id', $item_id )
 				->update([
-				'station_name' => "WAP",
-				'previous_station' => $item->station_name,
-				'reached_shipping_station' => 0
+					'station_name' => "WAP",
+					'previous_station' => $item->station_name,
+					'reached_shipping_station' => 0,
+					'change_date' => date('Y-m-d H:i:s', strtotime('now'))
 				]);
 					
 				if (in_array ( $item->station_name, Helper::$shippingStations )) {
@@ -942,19 +1002,14 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 
 	private function apply_station_change($items, $station_name) {
 		foreach ( $items as $item ) {
+			$item->previous_station = $item->station_name;
 			$item->station_name = $station_name;
 			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 			$item->save ();
 			if (in_array ( $station_name, Helper::$shippingStations )) {
 				Helper::populateShippingData ( $item );
 			}
-// 			$station_log = new StationLog ();
-// 			$station_log->item_id = $item->id;
-// 			$station_log->batch_number = $item->batch_number;
-// 			$station_log->station_id = Station::where ( 'station_name', $station_name )->first ()->id;
-// 			$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
-// 			$station_log->user_id = Auth::user ()->id;
-// 			$station_log->save ();
+			Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$station_name, $item->order_id);
 		}
 
 		return $items->count ();
@@ -1146,7 +1201,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 						->delete();
 					}
 					
-					Helper::jewelDebug("Wap: Used Back to Previous Station ItemID #".$item_id." ".$item->order_id);
+// 					Helper::jewelDebug("Wap: Used Back to Previous Station ItemID #".$item_id." ".$item->order_id);
 					Helper::histort("Wap: Used Back to Previous Station ItemID #".$item_id,$item->order_id);
 					return redirect ()->back ()->with ( 'success', sprintf ( "Order# %s and Item# %d back to station: %s from station: %s", $item->order_id, $item_id, $item->previous_station, $item->station_name ) );
 								
@@ -1156,19 +1211,22 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 					$qdc_station = $qdc_station[0]."-QCD";
 					
 					Item::where ( 'id', $item_id )
+						->where('is_deleted', 0)
 						->update([
 						'station_name' => $qdc_station,
 						'previous_station' => $item->station_name,
-						'reached_shipping_station' => 0
+						'reached_shipping_station' => 0,
+						'change_date' => date('Y-m-d H:i:s', strtotime('now'))
 					]);
 						
 					if (in_array ( $item->station_name, Helper::$shippingStations )) {
 						Ship::where('item_id', $item_id)
-						->whereNull('tracking_number')
-						->delete();
+							->where('is_deleted', 0)
+							->whereNull('tracking_number')
+							->delete();
 					}
 					
-					Helper::jewelDebug("Wap: Used Back to Previous Station ItemID #".$item_id." ".$item->order_id);
+// 					Helper::jewelDebug("Wap: Used Back to Previous Station ItemID #".$item_id." ".$item->order_id);
 					Helper::histort("Wap: Used Back to Previous Station ItemID #".$item_id,$item->order_id);
 					return redirect ()->back ()->with ( 'success', sprintf ( "Order# %s and Item# %d back to station: %s from station: %s", $item->order_id, $item_id, $item->previous_station, $qdc_station ) );
 					

@@ -549,6 +549,20 @@ APPEND;
 		return sprintf("%06d", $order->$column_name);
 	}
 
+	public static function getOrderNumber ($unique_order_id)
+	{
+		$short_order = explode("-", $unique_order_id);
+
+		if(isset($short_order[0]) && isset($short_order[1])){	
+			if ( $short_order[0] == "M" ) {
+				return "yhst-128796189915726-".$short_order[1];
+			} elseif ( $short_order[0] == "S" ) {
+				return "yhst-132060549835833-".$short_order[1];
+			}
+		}
+		return false;
+	}
+	
 	public static function orderNameFormatter ($order)
 	{
 		if ( strpos($order->order_id, "yhst-128796189915726") !== false ) {
@@ -816,11 +830,13 @@ APPEND;
 		$order_id = $item->order_id;
 		// set reached_shipping_station to 1, as it reaches the shipping station
 		$item->reached_shipping_station = 1;
+		$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 		$item->save();
 		$items = Item::with('order')
 					 ->where('order_id', $order_id)
 					 ->where('is_deleted',0)
 					 ->get();
+		
 		$uniqueId = $items;
 		$reached_shipping_station_count = 0;
 		foreach ( $items as $current ) {

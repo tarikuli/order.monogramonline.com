@@ -3,7 +3,7 @@
 <html lang = "en">
 <head>
 	<meta charset = "UTF-8">
-	<title>Move to Shipping Station by Item#</title>
+	<title>Move to Shipping Station by Order Number</title>
 	<meta name = "viewport" content = "width=device-width, initial-scale=1">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -22,7 +22,7 @@
 	<div class = "container">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>
-			<li class = "active">Item Move to Station</li>
+			<li class = "active">Move to Shipping Station by Order Number</li>
 		</ol>
 		@include('includes.error_div')
 		@include('includes.success_div')
@@ -37,10 +37,9 @@
         
 		{!! Form::open(['url' => url('stations/itemshippingstationchange'), 'method' => 'post', 'class'=>'form-horizontal', 'role'=>'form']) !!}
 		<div class = "form-group">
-			{!!Form::label('item_id','Item Line#',['class'=>'control-label col-xs-2'])!!}
+			{!!Form::label('unique_order_id','Shipping Order#',['class'=>'control-label col-xs-2'])!!}
 			<div class = "col-xs-5">
-				{!! Form::text('item_id', null, ['id' => 'item_id','class'=>'form-control']) !!}
-				{!! Form::hidden('action', 'move_to_shipping', ['id' => 'action','class'=>'form-control']) !!}
+				{!! Form::text('unique_order_id', null, ['id' => 'unique_order_id','class'=>'form-control']) !!}
 			</div>
 		</div>
 		<div class = "form-group">
@@ -59,12 +58,12 @@
 
 	<script type = "text/javascript">
 			
-		$("#item_id").focus();
+		$("#unique_order_id").focus();
 
 		$("#clear").on('click', function (event)
 		{
-			$("#item_id").val("");
-			$("#item_id").focus();
+			$("#unique_order_id").val("");
+			$("#unique_order_id").focus();
 		});
 		
 	</script>
