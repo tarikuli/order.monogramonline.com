@@ -45,10 +45,11 @@ class SortImageFiles extends Command
      */
     public function handle()
     {
+    	return true;
         // this line is mandatory settings supervisor_station
 		// get the public path where to store the image
     	$this->save_to_path = public_path('assets/exports/station_log/');
-		Helper::createLock("sort_imagefiles");
+		#Helper::createLock("sort_imagefiles");
 		// Set Source file name
 		$settings = Setting::all();
 		$settings = $settings->toArray();
@@ -97,11 +98,11 @@ $this->logger ("info","Called sort:imagefiles");
 							if($imageSrcKey == "soft"){
 // 	$this->logger("error", $souece_dir_files);
 // 	$this->logger("info", $move_dir_files);
-								shell_exec("mv \"$souece_dir\" \"$move_dir_done\"");
-								shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_files\"");
+								#shell_exec("mv \"$souece_dir\" \"$move_dir_done\"");
+								#shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_files\"");
 							}elseif($imageSrcKey == "hard"){
-								shell_exec("mv \"$souece_dir\" \"$move_dir_done\"");
-								shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_files\"");
+								#shell_exec("mv \"$souece_dir\" \"$move_dir_done\"");
+								#shell_exec("cp -r \"$souece_dir_files\" \"$move_dir_files\"");
 							}else{
 								shell_exec("mv \"$souece_dir\" \"$imageSearch\"");
 							}

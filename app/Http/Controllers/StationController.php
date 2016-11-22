@@ -863,8 +863,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 							->whereNull('tracking_number')
 							->where ( 'batch_number', $batch )
 							->get ();
-// return $items;
-		
+	
 			$count = $items->groupBy ( 'station_name' )->count ();
 		
 			if ($count != 1) {
@@ -876,7 +875,15 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			$first_item = $items->first ();
 		
 			$stations_in_route_ids = $first_item->route->stations_list->lists ( 'station_id' )->toArray ();
-		
+			$stations_code_route = $first_item->route->stations_list->lists ( 'station_name' )->toArray ();
+
+			if(array_search($station->station_name, $stations_code_route) <= (array_search($first_item->station_name, $stations_code_route))){
+				$errors [] = sprintf ( "You moveing back station? You can't moving from here.<br>Batch %s Route: %s doesn't have \"%s (%s) \" station from %s Station in its route.", $batch, $first_item->route->batch_route_name, $station->station_description, $station->station_name, $first_item->station_name );
+				return false;
+			}
+// dd($items, $stations_code_route, $station->station_name, $first_item->station_name);			
+			
+			
 			if (! in_array ( $station->id, $stations_in_route_ids )) {
 				$errors [] = sprintf ( "Batch %s Route: %s doesn't have \"%s (%s) \" station in its route.", $batch, $first_item->route->batch_route_name, $station->station_description, $station->station_name );
 		
@@ -885,7 +892,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 		
 			return true;
 		} );
-// dd($batches);		
+	
 		$items = Item::with ( 'order' )
 			->whereIn ( 'batch_number', $batches )
 			->where('is_deleted', 0)
@@ -895,6 +902,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 		if ($items->count () == 0) {
 			return redirect ()->back ()->withInput ()->withErrors ( $errors );
 		}
+		
 		$changed = $this->apply_station_change ( $items, $posted_station );
 	
 		// redirect with errors if any error found
