@@ -402,7 +402,7 @@ class ItemController extends Controller
 				$row['lines'] = $total_items;
 				$row['current_station_name'] = $station_name;
 				$row['current_station_description'] = $current_station_description;
-				$row['current_station_since'] = substr($item->batch_creation_date, 0, 10);
+				$row['current_station_since'] = substr($item->change_date, 0, 10);
 				$row['next_station_name'] = $next_station_name;
 				$row['next_station_description'] = $next_station_description;
 				$row['min_order_date'] = substr($item->lowest_order_date->order_date, 0, 10);

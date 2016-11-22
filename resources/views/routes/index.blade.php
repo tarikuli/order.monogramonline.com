@@ -123,7 +123,7 @@
 								<span data-toggle = "tooltip" data-placement = "top"
 								      title = "{{ $row['current_station_description'] }}">{{ $row['current_station_name'] }}</span>
 							</td>
-							<td>{{ $row['batch_creation_date'] }}</td>
+							<td>{{ $row['current_station_since'] }}</td>
 							<td>
 							  <span data-toggle = "tooltip" data-placement = "top"
 							          title = "{{ $row['child_sku'] }}">
