@@ -20,6 +20,7 @@ use League\Csv\Writer;
 use Monogram\DOMReader;
 use Monogram\Helper;
 use Monogram\Phantom;
+use Illuminate\Support\Facades\Artisan;
 
 class LogisticsController extends Controller
 {
@@ -884,5 +885,16 @@ class LogisticsController extends Controller
 		->back()
 		->with('success', "Auto Reset Completed");
 		
+	}
+	
+	public function startSort (Request $request)
+	{
+// return $request->all();
+		Artisan::call("sort:csvfiles");
+		
+		return redirect()
+		->back()
+		->with('success', "CSV File's sorting");
+	
 	}
 }

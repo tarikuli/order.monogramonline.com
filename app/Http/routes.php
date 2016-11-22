@@ -25,7 +25,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('/', 'HomeController@index');
 		get('logout', 'AuthenticationController@getLogout');
 		get('logistics/reset_sorting', 'LogisticsController@resetSort');
-
+		get('logistics/start_sorting', 'LogisticsController@startSort');
+		
 
 		post('imports/inventory', 'ImportController@importInventory');
 		post('imports/batch_route', 'ImportController@importBatchRoute');
