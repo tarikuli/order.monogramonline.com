@@ -165,6 +165,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		post('stations/bulk', 'StationController@postBulkChange');
 		
 		get('stations/single', 'StationController@getSingleChange');
+		get('stations/moveawaysingle', 'StationController@moveAwaySingleChange');
 		post('stations/single', 'StationController@postSingleChange');
 
 		get('stations/itemstationchange', 'StationController@getItemStationChange');

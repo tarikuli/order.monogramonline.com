@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Validator;
 use League\Csv\Writer;
 use Monogram\Helper;
 use Illuminate\Support\Facades\Session;
-
+use Route;
 
 
 class StationController extends Controller {
@@ -800,12 +800,6 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 	
 	public function getSingleChange(Request $request) {
 		
-// 		if ( $request->has('station') ) {
-// 			Session::put('station', $request->get('station'));
-// 		}
-		
-// 		return $request->all();
-		
 		$stations = Station::where ( 'is_deleted', 0 )
 							->whereNotIn( 'station_name', Helper::$shippingStations)
 							->get ()
@@ -814,6 +808,95 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 	
 		// 	return $stations;
 		return view ( 'items.single_change' )->with ( 'stations', $stations );
+	}
+	
+	public function moveAwaySingleChange(Request $request) {
+
+		if ( $request->has('station') ) {
+			Session::put('station', $request->get('station'));
+			$posted_station = trim ( $request->get ( 'station' ) );
+		}
+	
+		$station = Station::where ( 'is_deleted', 0 )
+		->where ( 'station_name', '=', trim ( $request->get ( 'station' ) ) )
+		->first ();
+	
+		if (! $station) {
+			return redirect ()->back ()->withInput ()->withErrors ( [
+					'error' => 'Selected station is not valid'
+			] );
+		}
+	
+		// station exists
+		// divide the given batches
+		$posted_batches = $request->get ( 'batches' );
+		// remove newlines and spaces
+		$posted_batches = trim ( preg_replace ( '/\s+/', ',', $posted_batches ) );
+		$batches = array_map ( function ($batch) {
+			$integer_value_of_batch_number = intval ( $batch );
+			// safety check
+			// if the integer value of a batch number is 0,
+			// table having 0 as batch number has different meaning
+			// thus returns -1, table will never have any value -1;
+			return $integer_value_of_batch_number ?  : - 1;
+		}, explode ( ",", $posted_batches ) );
+		// Helper::jewelDebug($batches);
+		$errors = [ ];
+		// search the items
+		// if any item from a batch is splitted, then cannot be moved
+		// if the batch route don't have that station, then, cannot be moved.
+		$batches = array_filter ( $batches, function ($batch) use(&$errors, $station) {
+			if ($batch == - 1) {
+				return false;
+			}
+	
+			// Get all Items in a Batch
+			$items = Item::with ( 'route.stations_list' )
+			->where('is_deleted', 0)
+			->whereNull('tracking_number')
+			->where ( 'batch_number', $batch )
+			->get ();
+	
+			$count = $items->groupBy ( 'station_name' )->count ();
+	
+			if ($count != 1) {
+				$errors [] = sprintf ( "Batch %s either has more than one stations assigned or not a valid batch number", $batch );
+	
+				return false;
+			}
+	
+			$first_item = $items->first ();
+			$stations_in_route_ids = $first_item->route->stations_list->lists ( 'station_id' )->toArray ();
+				
+			if (! in_array ( $station->id, $stations_in_route_ids )) {
+				$errors [] = sprintf ( "Batch %s Route: %s doesn't have \"%s (%s) \" station in its route.", $batch, $first_item->route->batch_route_name, $station->station_description, $station->station_name );
+	
+				return false;
+			}
+	
+			return true;
+		} );
+	
+			$items = Item::with ( 'order' )
+			->whereIn ( 'batch_number', $batches )
+			->where('is_deleted', 0)
+			->whereNull('tracking_number')
+			->get ();
+// dd($request->all(), $batches, $items, $posted_station);	
+			if ($items->count () == 0) {
+				return redirect ()->back ()->withInput ()->withErrors ( $errors );
+			}
+
+			$changed = $this->apply_station_change ( $items, $posted_station );
+	
+			// redirect with errors if any error found
+			if (count ( $errors )) {
+				return redirect ()->back ()->withErrors ( $errors );
+			}
+	
+			return redirect(url('stations/single'))
+						->with ( 'success', sprintf ( "Batch# %s Total %d items moved to station: %s", $posted_batches, $changed, $posted_station ) );
+	
 	}
 	
 	public function postSingleChange(Request $request) {
@@ -876,9 +959,11 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 		
 			$stations_in_route_ids = $first_item->route->stations_list->lists ( 'station_id' )->toArray ();
 			$stations_code_route = $first_item->route->stations_list->lists ( 'station_name' )->toArray ();
-
 			if(array_search($station->station_name, $stations_code_route) <= (array_search($first_item->station_name, $stations_code_route))){
-				$errors [] = sprintf ( "You moveing back station? You can't moving from here.<br>Batch %s Route: %s doesn't have \"%s (%s) \" station from %s Station in its route.", $batch, $first_item->route->batch_route_name, $station->station_description, $station->station_name, $first_item->station_name );
+				// $errors [] = sprintf ( "You moveing back station? You can't moving from here.<br>Batch %s Route: %s doesn't have \"%s (%s) \" station from %s Station in its route.", $batch, $first_item->route->batch_route_name, $station->station_description, $station->station_name, $first_item->station_name );
+				$errors [] = sprintf ( "You moveing back station?<br>You can't moving from here.<br>Click 
+						<a href = ".url(sprintf('stations/moveawaysingle?batches=%d&station=%s&move=1',$batch, $station->station_name)).">here</a> 
+						for move any away.", $station->station_name, $first_item->station_name );
 				return false;
 			}
 // dd($items, $stations_code_route, $station->station_name, $first_item->station_name);			

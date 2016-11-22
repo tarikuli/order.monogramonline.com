@@ -583,6 +583,7 @@ class ItemController extends Controller
 
 			foreach ( $items as $item ) {
 
+				$item->previous_station = $item->station_name;
 				$item->station_name = $toStationName;
 				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->save();
