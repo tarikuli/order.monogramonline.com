@@ -696,7 +696,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 					if ( trim($itemm->station_name) == "WAP" ) {
 						$inWaitingStation ++;
 					}
-					$order_items_info[]= "Order# ".$itemm->order_id." Batch# ".$itemm->batch_number." Item# ".$itemm->id." Current Station ".$itemm->station_name;
+					$order_items_info[]= "Order# ".$itemm->order_id." Batch# ".$itemm->batch_number." Item# ".$itemm->id." Current Station :&nbsp;&nbsp;".$itemm->station_name."&nbsp;&nbsp; at :".$itemm->change_date;
 				}
 // dd($inWaitingStation, $items->count() );				
 				if($items->count() == ($inWaitingStation)){
