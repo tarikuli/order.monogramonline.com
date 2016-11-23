@@ -1860,7 +1860,59 @@ class ItemController extends Controller
 		->with('success', "Item #". $item_id." deleted.");
 	}
 
+//  Coder for delete shipping station 
+// 	public function doctorCheckup (Request $request) {
+		
 
+// 		Ship::with ( 'item' )
+// // 			->where('order_number', 'yhst-128796189915726-768962')
+// 			->whereNull('tracking_number')
+// 			->orderBy('id', 'ASC')
+// 			->chunk(500, function($items)  {
+// 			foreach ($items as $item){
+				
+				
+// 				$shp_station = explode("-",$item->item->station_name);
+// 				if(isset($shp_station[1])){
+// 					if(!strpos($shp_station[1], 'SHP')){
+// // 						Helper::jewelDebug($item->id."-- ".$item->item_id." -- ".$item->item->id." --".$item->item->station_name."  --- ". $shp_station[0]."-QCD");
+						
+// 						$item->delete();
+						
+// 						Item::where('id', $item->item->id)
+// 						->update([
+// 								'station_name'      => $shp_station[0]."-QCD",
+// 								'previous_station'  => $item->item->station_name,
+// 								'reached_shipping_station'  => 0,
+// 								'supervisor_message' => "20161123 ".$item->item->station_name,
+// 						]);
+// 					}else{
+// 						Helper::jewelDebug("No Shipping station	".$item->id." in ".$item->item->station_name);
+// 						$item->delete();
+						
+// 						Item::where('id', $item->item->id)
+// 						->update([
+// 						'reached_shipping_station'  => 0,
+// 						'supervisor_message' => "20161122_FIX ".$item->item->station_name,
+// 						]);
+// 					}
+// 				}else{
+// 					Helper::jewelDebug("No valid Shipping station ".$item->id." in ".$item->item->station_name);
+// 					$item->delete();
+					
+// 					Item::where('id', $item->item->id)
+// 					->update([
+// 					'reached_shipping_station'  => 0,
+// 					'supervisor_message' => "20161122_FIX ".$item->item->station_name,
+// 					]);
+// 				}
+
+// // 				echo "<br>".$qdc_station = $shp_station[0]."-QCD";
+// 			}
+// 		});
+// 		Helper::jewelDebug("Complete");
+// 	}
+	
 // 	public function doctorCheckup (Request $request) {
 
 // 		$order_ids = $request->exists('order_id') ? array_filter($request->get('order_id')) : null;
@@ -1946,58 +1998,58 @@ class ItemController extends Controller
 
 // 	}
 
-	public function doctorCheckup (Request $request) {
+// 	public function doctorCheckup (Request $request) {
 
 
-		$ordersx = Item::where('child_sku', 'LIKE', sprintf("%%%s%%", '-no,thankyou'))->chunk(1000, function($items) {
+// 		$ordersx = Item::where('child_sku', 'LIKE', sprintf("%%%s%%", '-no,thankyou'))->chunk(1000, function($items) {
 
-				set_time_limit(0);
-				$i=1;
-				foreach ($items as $item){
-					Helper::jewelDebug($i++."		".$item->id."		".$item->child_sku);
-					$removed = str_replace("-no,thankyou","",$item->child_sku);
-					Helper::jewelDebug($removed);
-
-// 					Item::where('id', $item->id)
-// 					->update([
-// 						'child_sku' => $removed,
-// 					]);
-
-				}
-
-
-		});
-
-
-// 		$ordersx = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", '-no,thankyou'))
-// 						->where('batch_route_id','115')
-// 						->chunk(1000, function($options)  {
-// 			set_time_limit(0);
-// 			$i=1;
-// 			foreach ($options as $key => $option){
-// 				$checkShippingTable = [];
-// 				$checkItemTable = [];
-
-// // 				echo "<br>".$i++."		".$option->id."  ------------	".$option->child_sku;
-// // 				Helper::jewelDebug("DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$option->id);
-
-// 				$removed = str_replace("-no,thankyou","",$option->child_sku);
-				
 // 				set_time_limit(0);
+// 				$i=1;
+// 				foreach ($items as $item){
+// 					Helper::jewelDebug($i++."		".$item->id."		".$item->child_sku);
+// 					$removed = str_replace("-no,thankyou","",$item->child_sku);
+// 					Helper::jewelDebug($removed);
 
-// 				$optionForDeletes = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", $removed))
-// 										->where('batch_route_id','115')
-// 										->get();
+// // 					Item::where('id', $item->id)
+// // 					->update([
+// // 						'child_sku' => $removed,
+// // 					]);
 
-// 				foreach ($optionForDeletes as $optionForDelete ){
-// // 					Helper::jewelDebug($optionForDelete->id);
-// // 					echo "<br>".$option->id."  ------------	".$option->child_sku;
-// 					echo "<br>DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$optionForDelete->id.";";
-// // 					Helper::jewelDebug("DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$option->id);
 // 				}
 
-// 			}
+
 // 		});
 
-	}
+
+// // 		$ordersx = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", '-no,thankyou'))
+// // 						->where('batch_route_id','115')
+// // 						->chunk(1000, function($options)  {
+// // 			set_time_limit(0);
+// // 			$i=1;
+// // 			foreach ($options as $key => $option){
+// // 				$checkShippingTable = [];
+// // 				$checkItemTable = [];
+
+// // // 				echo "<br>".$i++."		".$option->id."  ------------	".$option->child_sku;
+// // // 				Helper::jewelDebug("DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$option->id);
+
+// // 				$removed = str_replace("-no,thankyou","",$option->child_sku);
+				
+// // 				set_time_limit(0);
+
+// // 				$optionForDeletes = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", $removed))
+// // 										->where('batch_route_id','115')
+// // 										->get();
+
+// // 				foreach ($optionForDeletes as $optionForDelete ){
+// // // 					Helper::jewelDebug($optionForDelete->id);
+// // // 					echo "<br>".$option->id."  ------------	".$option->child_sku;
+// // 					echo "<br>DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$optionForDelete->id.";";
+// // // 					Helper::jewelDebug("DELETE FROM `parameter_options` WHERE `parameter_options`.`id` = ".$option->id);
+// // 				}
+
+// // 			}
+// // 		});
+
+// 	}
 }
