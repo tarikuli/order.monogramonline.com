@@ -961,9 +961,11 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			$stations_code_route = $first_item->route->stations_list->lists ( 'station_name' )->toArray ();
 			if(array_search($station->station_name, $stations_code_route) <= (array_search($first_item->station_name, $stations_code_route))){
 				// $errors [] = sprintf ( "You moveing back station? You can't moving from here.<br>Batch %s Route: %s doesn't have \"%s (%s) \" station from %s Station in its route.", $batch, $first_item->route->batch_route_name, $station->station_description, $station->station_name, $first_item->station_name );
-				$errors [] = sprintf ( "You moveing back station?<br>You can't moving from here.<br>Click 
+				$errors [] = sprintf ( "You are moving back from %s Station to %s Station!!!
+						<br>Click 
 						<a href = ".url(sprintf('stations/moveawaysingle?batches=%d&station=%s&move=1',$batch, $station->station_name)).">here</a> 
-						for move any away.", $station->station_name, $first_item->station_name );
+						for move anyaway.
+						<br>Batch# %d Last moved at %s", $station->station_name, $first_item->station_name, $batch, $first_item->change_date );
 				return false;
 			}
 // dd($items, $stations_code_route, $station->station_name, $first_item->station_name);			
