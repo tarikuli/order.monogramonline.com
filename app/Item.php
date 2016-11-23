@@ -324,8 +324,11 @@ class Item extends Model
 		$starting = sprintf("%s 00:00:00", $start_date);
 		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
 
-		return $query->where('batch_creation_date', '>=', $starting)
-					 ->where('batch_creation_date', '<=', $ending);
+// 		return $query->where('batch_creation_date', '>=', $starting)
+// 					 ->where('batch_creation_date', '<=', $ending);
+
+		return $query->where('change_date', '>=', $starting)
+					 ->where('change_date', '<=', $ending);
 
 	}
 

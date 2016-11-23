@@ -43,7 +43,7 @@
 				{!! Form::select('station', $stations, session('station', 'all'), ['id'=>'station', 'class' => 'form-control']) !!}
 			</div>
 			<div class = "form-group col-xs-3">
-				<label for = "start_date">Start date</label>
+				<label for = "start_date">Last Scan Start date</label>
 				<div class = 'input-group date' id = 'start_date_picker'>
 					{!! Form::text('start_date', $request->get('start_date'), ['id'=>'start_date', 'class' => 'form-control', 'placeholder' => 'Enter start date']) !!}
 					<span class = "input-group-addon">
@@ -52,7 +52,7 @@
 				</div>
 			</div>
 			<div class = "form-group col-xs-3">
-				<label for = "end_date">End date</label>
+				<label for = "end_date">Last Scan End date</label>
 				<div class = 'input-group date' id = 'end_date_picker'>
 					{!! Form::text('end_date', $request->get('end_date'), ['id'=>'end_date', 'class' => 'form-control', 'placeholder' => 'Enter end date']) !!}
 					<span class = "input-group-addon">
@@ -91,7 +91,7 @@
 						<th>Route</th>
 						<th>Lines</th>
 						<th>Current station</th>
-						<th>Current station since</th>
+						<th>Last Scan Date</th>
 						<th>Image</th>
 						<th style="width:250px;">Child SKU</th>
 						<th>Status</th>
