@@ -1042,19 +1042,19 @@ APPEND;
 		// 		->get([DB::raw('COUNT(*) AS countPossibleBatches')]);
 	}
 
-	public static function createAbleBatches ($paginate = false)
+	public static function createAbleBatches ($paginate = false, $start_date, $end_date)
 	{
 		return BatchRoute::with([
 			'stations_list',
-			'itemGroups' => function ($q) use ($paginate) {
+			'itemGroups' => function ($q) use ($paginate, $start_date, $end_date) {
 				$joining = $q->join('items', 'items.child_sku', '=', 'parameter_options.child_sku')
 							 ->join('orders', 'orders.order_id', '=', 'items.order_id')
 							 ->where('items.batch_number', '0')
 							 ->whereNull('items.tracking_number')
 							 ->where('items.is_deleted', 0)
 							 ->where('orders.is_deleted', 0)
-// 							 ->where('orders.order_date', '>=', $starting)
-// 							 ->where('orders.order_date', '<=', $ending)
+							 ->where('orders.order_date', '>=', $start_date)
+							 ->where('orders.order_date', '<=', $end_date)
 							 ->whereNotIn('orders.order_status', [ // don't create batch, if the following order statuses are there
 																   2,
 							 									   // Manual Redo

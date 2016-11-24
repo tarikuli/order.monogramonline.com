@@ -105,8 +105,10 @@ class ItemController extends Controller
 		return view('items.index', compact('items', 'emptyStationsCount', 'search_in', 'request', 'unassigned', 'unassignedProductCount', 'unassignedOrderCount', 'statuses'));
 	}
 
-	public function getBatch ()
+	public function getBatch (Request $request)
 	{
+
+		
 		$count = 1;
 		$serial = 1;
 
@@ -117,13 +119,24 @@ class ItemController extends Controller
 					 'error' => 'In Routes some Route Station empty<br>Please assign correct Station in route.',
 			]));
 		}
-
-// 		$starting = sprintf("%s 00:00:00", $start_date);
-// 		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
 		
-		$batch_routes = Helper::createAbleBatches(true, $starting, $ending);
+		if(!$request->start_date){
+			$start_date = "2016-06-01";
+		}else{
+			Helper::jewelDebug($request->start_date);
+			$start_date = $request->start_date;
+		}
+		
+		if(!$request->end_date){
+			$end_date = "2020-12-31";
+		}else {
+			$end_date = $request->end_date;
+		}
+		
+		$batch_routes = Helper::createAbleBatches(true, $start_date, $end_date);
+		#$batch_routes = Helper::createAbleBatches(true);
 
-		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));
+		return view('items.create_batch', compact('batch_routes', 'count', 'serial', 'request'));
 	}
 
 	public function postBatch (Requests\ItemToBatchCreateRequest $request)
@@ -1573,6 +1586,7 @@ class ItemController extends Controller
 				'rejection_reason'         => null,
 				'supervisor_message'       => null,
 				'reached_shipping_station' => 0,
+				'change_date' 			   => date('Y-m-d H:i:s', strtotime('now')),
 		];
 
 		$batchNumbers = [];
