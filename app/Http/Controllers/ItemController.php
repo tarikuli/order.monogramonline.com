@@ -118,7 +118,10 @@ class ItemController extends Controller
 			]));
 		}
 
-		$batch_routes = Helper::createAbleBatches(true);
+// 		$starting = sprintf("%s 00:00:00", $start_date);
+// 		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
+		
+		$batch_routes = Helper::createAbleBatches(true, $starting, $ending);
 
 		return view('items.create_batch', compact('batch_routes', 'count', 'serial'));
 	}
@@ -1553,6 +1556,7 @@ class ItemController extends Controller
 
 	public function releaseBatches (Request $request)
 	{
+// dd($request->all());		
 		$batch_numbers = $request->get('batch_number');
 
 		$changes = [
@@ -1573,12 +1577,13 @@ class ItemController extends Controller
 
 		$batchNumbers = [];
 		foreach ( $batch_numbers as $batch_number ) {
-
+			set_time_limit(0);
 			$batch_number = explode('tarikuli', $batch_number);
 			$batchNumbers[] = $batch_number[0];
 // 			$station[] = $batch_number[1];
 			$items = Item::where('batch_number', $batch_number[0])
 					  ->where('station_name', $batch_number[1])
+					  ->where('is_deleted', 0)
 					  ->whereNull('tracking_number')
 					  ->get();
 
@@ -1590,8 +1595,10 @@ class ItemController extends Controller
 				$note->user_id = Auth::user()->id;
 				$note->save();
 
-				Item::where('order_id', $item->order_id)
-					->update($changes);
+// 				Item::where('order_id', $item->order_id)
+// 					->update($changes);
+				Item::where('id', $item->id)
+						->update($changes);
 			}
 
 		}

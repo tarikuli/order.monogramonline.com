@@ -1053,6 +1053,8 @@ APPEND;
 							 ->whereNull('items.tracking_number')
 							 ->where('items.is_deleted', 0)
 							 ->where('orders.is_deleted', 0)
+// 							 ->where('orders.order_date', '>=', $starting)
+// 							 ->where('orders.order_date', '<=', $ending)
 							 ->whereNotIn('orders.order_status', [ // don't create batch, if the following order statuses are there
 																   2,
 							 									   // Manual Redo
