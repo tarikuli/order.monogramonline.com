@@ -253,7 +253,7 @@ class ItemController extends Controller
 
 		$station = Station::find(session('station', 'all'));
 		if(!$station){
-dd("XXXX", $request->all());			
+// dd("XXXX", $request->all());			
 			$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
 						->where('is_deleted', 0)
 						->where('batch_number', '!=', '0')
