@@ -28,6 +28,8 @@ use Route;
 
 class StationController extends Controller {
 
+	private $station_name = [];
+	
 	private $statuses = [
 			'not started' => 'Not started',
 			'active' => 'Active',
@@ -468,90 +470,71 @@ class StationController extends Controller {
 	 */
 	public function summary(Request $request) {
 
-		$items = Item::where ( 'station_name', '!=', '' )
-					->where('is_deleted', 0)
-// 					->whereNotIn( 'station_name', Helper::$shippingStations)
-					->whereNull ( 'tracking_number' )
-// 					->searchBeforeOrderDate($request->get('date'))
-					->groupBy ( 'station_name' )
-					->orderBy('station_name')
-// 					->toSql();
-					->get ();
-
-// 		return $items;
+		if(!$request->start_date){
+			$start_date = "2016-06-01";
+		}else{
+			$start_date = $request->start_date;
+		}
+		
+		if(!$request->end_date){
+			$end_date = "2020-12-31";
+		}else {
+			$end_date = $request->end_date;
+		}
+		
+		$items = Item::join('orders', 'items.order_id', '=', 'orders.order_id')
+							->where('orders.is_deleted', 0)
+							->whereNotIn('orders.order_status', Helper::$orderStatus)
+							->where('orders.order_date', '>=', $start_date)
+							->where('orders.order_date', '<=', $end_date)	
+							->where('items.is_deleted', 0)							
+							->where('items.batch_number', '!=', '0')
+							->whereNull('items.tracking_number')
+							->groupBy ( 'items.station_name' )
+							->orderBy('items.station_name')
+// 							->take(2)
+							->get ();
+		
+		
+		
 
 		$summaries = [ ];
 		$total_lines = 0;
 		$total_items = 0;
 
 		set_time_limit(0);
+
+		$stations = Station::all('id', 'station_name', 'station_description' )->toArray();
+		$stations_arrays = [];
+		foreach ( $stations as $stations_array ) {
+			$stations_arrays[$stations_array['station_name']] = $stations_array;
+		}
+		
 		foreach ( $items as $item ) {
 			$summary = [ ];
 
 			$station_name = $item->station_name;
-// Helper::jewelDebug($station_name);
-			// Get number of orders in a Station
-// 			$lines_count = Item::where ( 'station_name', $station_name )
-// 								->where('is_deleted', 0)
-// 								->whereNull ( 'tracking_number' )
-// 								->whereNotIn ( 'item_order_status_2', [2,3,6,7,8] )
-// 								->searchBeforeOrderDate($request->get('date'))
-// // 								->groupBy ( 'order_id' )
-// 								->get ();
-
-// if($request->get('cutoff_date')){
-// 	$end_date = $request->get('cutoff_date');
-// }else{
-// 	$end_date = date("Y-m-d");
-// }
-// $start_date = "2016-06-03";
-// $starting = sprintf("%s 00:00:00", $start_date);
-
-// $ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
-
-// $lines_count =  Item::join('orders', 'items.order_id', '=', 'orders.order_id')
-// 			->where( 'items.station_name', $station_name )
-// 			->where('items.batch_number', '!=', '0')
-// 			->whereNull('items.tracking_number')
-// 			->where('items.is_deleted', '=', '0')
-// 			->where('orders.is_deleted', '=', '0')
-// 			->whereNotIn('orders.order_status', Helper::$orderStatus)
-// 			->where('orders.order_date', '>=', $starting)
-// 			->where('orders.order_date', '<=', $ending)
-// 			->get ();
-
-			// ->toSql();
-			// echo "<pre>"; echo print_r($lines_count->count()); echo " -- ".$station_name."</pre>";
-$lines_count = Helper::getItemsByStationAndDate($station_name, $request->get('cutoff_date'));
-$order_ids = array_unique($lines_count->lists ( 'order_id' )->toArray ());
-
-
-$items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
-
+			#$lines_count = Helper::getItemsByStationAndDate($station_name, $request->get('cutoff_date'));
+			$lines_count = Helper::getItemsByStationAndDate($station_name, $start_date, $end_date);
+			$order_ids = array_unique($lines_count->lists ( 'order_id' )->toArray ());
+			$items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 
 
 			if (count($order_ids) > 0) {
 				$earliest_batch_creation_date = Helper::getEarliest($lines_count->lists ( 'batch_creation_date' )->toArray ());
-
-// 				Helper::jewelDebug(($earliest_batch_creation_date));
-// 				Helper::jewelDebug($lines_count->lists ( 'order_id', 'item_id' )->toArray ());
-				// return $lines_count;
-
-
 				$earliest_order_date = Helper::getEarliest($lines_count->lists ( 'order_date' )->toArray ());
-// 				Helper::jewelDebug($earliest_batch_creation_date);
 
-
-				$station = Station::where ( 'station_name', $station_name )->first();
-
-				$summary ['station_id'] = $station->id;
-				$summary ['station_description'] = $station->station_description;
+				$summary ['station_id'] = $stations_arrays[$station_name]['id']; //$station->id;
+				$summary ['station_description'] = $stations_arrays[$station_name]['station_description']." ( ".date('H:i:s', strtotime('now'))." )"; //$station->station_description;
 				$summary ['station_name'] = $station_name;
+				
+				
 				$summary ['lines_count'] = count($order_ids);
 				$summary ['items_count'] = $items_count;
 				$summary ['earliest_batch_creation_date'] = substr ( $earliest_batch_creation_date, 0, 10 );
 				$summary ['earliest_order_date'] = substr ( $earliest_order_date, 0, 10 );
-				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s&cutoff_date=%s", $station_name, $request->get('cutoff_date') ) );
+// 				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s&cutoff_date=%s", $station_name, $request->get('cutoff_date') ) );
+				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s&start_date=%s&end_date=%s", $station_name,  $start_date, $end_date ) );
 
 				$summaries [] = $summary;
 				$total_lines += count($order_ids);
@@ -559,7 +542,7 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 			}
 		}
 
-		return view ( 'stations.summary', compact ( 'summaries', 'total_lines', 'total_items' ))->withRequest($request);
+		return view ( 'stations.summary', compact ( 'summaries', 'total_lines', 'total_items', 'start_date', 'end_date' ))->withRequest($request);
 	}
 	
 	
@@ -570,7 +553,6 @@ $items_count = array_sum($lines_count->lists ( 'item_quantity' )->toArray ());
 	
 	public function postItemShippingStationchange(Request $request) {
 		$errors = [];
-// dd($request->all());
 		
 		$unique_order_ids = $request->get ( 'unique_order_id' );
 		$order_id = Helper::getOrderNumber($unique_order_ids);

@@ -28,24 +28,33 @@
 
 			<h3 class = "page-header">Not Started & Active (unshipped) Batches By Stations summary</h3>
 
+		<div class = "col-xs-12">
 			{!! Form::open(['method' => 'get', 'url' => url('summary'), 'id' => 'search-order']) !!}
 			<div class = "form-group col-xs-3">
-
-					<label for = "cutoff_date">CutOff date</label>
-					<div class = 'input-group date' id = 'cutoff_date_picker'>
-						{!! Form::text('cutoff_date', $request->get('cutoff_date', ''), ['id'=>'cutoff_date', 'class' => 'form-control', 'placeholder' => 'Enter cutOff date']) !!}
-						<span class = "input-group-addon">
-	                        <span class = "glyphicon glyphicon-calendar"></span>
-	                    </span>
-					</div>
+				<label for = "start_date">Order Start date</label>
+				<div class = 'input-group date' id = 'start_date_picker'>
+					{!! Form::text('start_date', $request->get('start_date'), ['id'=>'start_date', 'class' => 'form-control', 'placeholder' => 'Enter start date']) !!}
+					<span class = "input-group-addon">
+                        <span class = "glyphicon glyphicon-calendar"></span>
+                    </span>
+				</div>
 			</div>
-
+			<div class = "form-group col-xs-3">
+				<label for = "end_date">Order End date</label>
+				<div class = 'input-group date' id = 'end_date_picker'>
+					{!! Form::text('end_date', $request->get('end_date'), ['id'=>'end_date', 'class' => 'form-control', 'placeholder' => 'Enter end date']) !!}
+					<span class = "input-group-addon">
+                        <span class = "glyphicon glyphicon-calendar"></span>
+                    </span>
+				</div>
+			</div>
 			<div class = "form-group col-xs-3">
 				<label for = "search" class = "">1 minute required for load.</label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
 			</div>
 			{!! Form::close() !!}
-
+		</div>	
+			
 			@if(count($summaries) > 0)
 			<table class = "table table-bordered">
 				<tr>
@@ -59,8 +68,10 @@
 				@foreach($summaries as $summary)
 					<tr>
 						<td>
-						{{-- print_r($summary) --}}
+						{{-- print_r($summary) 
 							<a href = "{{url(sprintf("/items/grouped?station=%s&cutoff_date=%s", $summary['station_id'],$request->get('cutoff_date', '')))}}">{{$summary['station_name']}} - {{$summary['station_description']}}</a>
+						--}}	
+							<a href = "{{url(sprintf("/items/grouped?station=%s&start_date=%s&end_date=%s", $summary['station_id'],$start_date,$end_date))}}">{{$summary['station_name']}} - {{$summary['station_description']}}</a>
 						</td>
 						<td align="right">{{ number_format($summary['lines_count'],0) }}</td>
 						<td align="right">{{ number_format($summary['items_count'],0) }}</td>
@@ -97,7 +108,8 @@
 		};
 		$(function ()
 		{
-			$('#cutoff_date_picker').datetimepicker(options);
+			$('#start_date').datetimepicker(options);
+			$('#end_date').datetimepicker(options);
 		});
 	</script>
 

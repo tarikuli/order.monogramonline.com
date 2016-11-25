@@ -337,18 +337,19 @@ class Item extends Model
 		return (new static())->tableColumns();
 	}
 
-	public function scopeSearchCutOffOrderDate ($query, $station, $end_date)
+	public function scopeSearchCutOffOrderDate ($query, $station, $starting, $end_date)
 	{
 // 		$start_date = "2016-06-03";
-		if ( !$station && !$end_date ) {
+		if ( !$station && !$end_date && $starting ) {
 			return;
 		}
-		$start_date = "2016-06-03";
-		$starting = sprintf("%s 00:00:00", $start_date);
-		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
+		
+// 		$start_date = "2016-06-03";
+// 		$starting = sprintf("%s 00:00:00", $start_date);
+// 		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
 
 
-		$order_ids = Helper::getItemsByStationAndDate($station, $end_date);
+		$order_ids = Helper::getItemsByStationAndDate($station, $starting, $end_date);
 		$order_ids = array_unique($order_ids->lists ( 'order_id' )->toArray ());
 // dd($order_ids);
 		return $query->whereIn('order_id',  $order_ids);

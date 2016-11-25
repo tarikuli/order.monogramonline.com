@@ -1359,17 +1359,7 @@ APPEND;
 		return date( 'Y-m-d', $earliest_date);
 	}
 
-	public static function getItemsByStationAndDate($station_name, $cutoff_date){
-
-		if($cutoff_date){
-			$end_date = $cutoff_date;
-		}else{
-			$end_date = date("Y-m-d");
-		}
-		$start_date = "2016-06-03";
-		$starting = sprintf("%s 00:00:00", $start_date);
-
-		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
+	public static function getItemsByStationAndDate($station_name, $start_date, $end_date){
 
 		return Item::join('orders', 'items.order_id', '=', 'orders.order_id')
 					->where( 'items.station_name', $station_name )
@@ -1378,8 +1368,9 @@ APPEND;
 					->where('items.is_deleted', '=', '0')
 					->where('orders.is_deleted', '=', '0')
 					->whereNotIn('orders.order_status', Helper::$orderStatus)
-					->where('orders.order_date', '>=', $starting)
-					->where('orders.order_date', '<=', $ending)
+					->where('orders.order_date', '>=', $start_date)
+					->where('orders.order_date', '<=', $end_date)
+// 					->take(10)
 					->get ();
 
 	}

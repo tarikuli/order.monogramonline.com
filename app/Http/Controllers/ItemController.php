@@ -123,7 +123,6 @@ class ItemController extends Controller
 		if(!$request->start_date){
 			$start_date = "2016-06-01";
 		}else{
-			Helper::jewelDebug($request->start_date);
 			$start_date = $request->start_date;
 		}
 		
@@ -254,6 +253,7 @@ class ItemController extends Controller
 
 		$station = Station::find(session('station', 'all'));
 		if(!$station){
+dd("XXXX", $request->all());			
 			$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
 						->where('is_deleted', 0)
 						->where('batch_number', '!=', '0')
@@ -267,7 +267,7 @@ class ItemController extends Controller
 						->latest('batch_number')
 						->paginate(50);
 		}else{
-// 			dd($station->station_name);
+// dd("RRRR", $request->all(), $station);
 			$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
 						->where('is_deleted', 0)
 						->where('batch_number', '!=', '0')
@@ -275,7 +275,8 @@ class ItemController extends Controller
 						->searchBatch($request->get('batch'))
 						->searchRoute($request->get('route'))
 						// 					 ->searchStation(session('station', 'all'))
-						->searchCutOffOrderDate($station->station_name, $request->get('cutoff_date'))
+// 						->searchCutOffOrderDate($station->station_name, $request->get('cutoff_date'))
+						->searchCutOffOrderDate($station->station_name, $request->get('start_date'), $request->get('end_date'))
 						->searchStatus($request->get('status'))
 						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
 						->groupBy('batch_number')
@@ -1186,7 +1187,7 @@ class ItemController extends Controller
 		$current_station_name = $request->get('station');
 
 		$items = Item::with('lowest_order_date', 'route.stations')
-					 ->searchCutOffOrderDate($current_station_name,$request->get('cutoff_date'))
+					 ->searchCutOffOrderDate($current_station_name,$request->get('start_date'),$request->get('end_date'))
 // 					 ->searchActiveByStation($request->get('station'))
 					 ->where('batch_number', '!=', '0')
 					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
