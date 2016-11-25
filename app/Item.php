@@ -348,7 +348,15 @@ class Item extends Model
 // 		$starting = sprintf("%s 00:00:00", $start_date);
 // 		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
 
-
+// dd($query, $station, $starting, $end_date);
+		if(empty($starting)){
+			$starting = "2016-06-01";
+		}
+		
+		if(empty($end_date)){
+			$end_date = "2020-12-31";
+		}
+		
 		$order_ids = Helper::getItemsByStationAndDate($station, $starting, $end_date);
 		$order_ids = array_unique($order_ids->lists ( 'order_id' )->toArray ());
 // dd($order_ids);
