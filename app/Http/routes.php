@@ -1,16 +1,17 @@
 <?php
 get('test', 'HomeController@test');
-get('phantom', function (\Illuminate\Http\Request $request) {
-	$id = $request->get('id', 'pemoanwisicr');
-	$url = sprintf("http://monogramonline.monogramonline.com/crawl.php?id=%s", $id);
-	$phantom = new \Monogram\Phantom($url);
-	$response = $phantom->request()
-						->getResponse();
+// get('phantom', function (\Illuminate\Http\Request $request) {
+// 	$id = $request->get('id', 'pemoanwisicr');
+// 	$url = sprintf("http://monogramonline.monogramonline.com/crawl.php?id=%s", $id);
+// 	$phantom = new \Monogram\Phantom($url);
+// 	$response = $phantom->request()
+// 						->getResponse();
 
-	$reader = new \Monogram\DOMReader($response);
+// 	$reader = new \Monogram\DOMReader($response);
 
-	return json_decode($reader->readCrawledData());
-});
+// 	return json_decode($reader->readCrawledData());
+// });
+
 get('combination', 'HomeController@combination');
 get('update_items', 'HomeController@bulk_item_update');
 get('update_single_item', 'HomeController@update_single_item');
@@ -243,10 +244,10 @@ Route::group([ 'middleware' => [ 'guest' ] ], function () {
 	get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
 });
 
-// Redefinition of routes
-get('home', function () {
-	return redirect(url('/'));
-});
+// // Redefinition of routes
+// get('home', function () {
+// 	return redirect(url('/'));
+// });
 
 Route::group([ 'prefix' => 'auth' ], function () {
 	get('login', 'AuthenticationController@getLogin');
