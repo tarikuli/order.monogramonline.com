@@ -492,11 +492,12 @@ class StationController extends Controller {
 							->whereNull('items.tracking_number')
 							->groupBy ( 'items.station_name' )
 							->orderBy('items.station_name')
-// 							->take(2)
-							->get ();
+// 							->take(5)
+							->lists('items.station_name');
+// 							->get ();
 		
 		
-		
+// dd($items);		
 
 		$summaries = [ ];
 		$total_lines = 0;
@@ -510,10 +511,11 @@ class StationController extends Controller {
 			$stations_arrays[$stations_array['station_name']] = $stations_array;
 		}
 		
-		foreach ( $items as $item ) {
+		foreach ( $items as $station_name ) {
 			$summary = [ ];
 
-			$station_name = $item->station_name;
+// 			$station_name = $item->station_name;
+// 			$station_name = $item;
 			#$lines_count = Helper::getItemsByStationAndDate($station_name, $request->get('cutoff_date'));
 			$lines_count = Helper::getItemsByStationAndDate($station_name, $start_date, $end_date);
 			$order_ids = array_unique($lines_count->lists ( 'order_id' )->toArray ());
@@ -521,7 +523,8 @@ class StationController extends Controller {
 
 
 			if (count($order_ids) > 0) {
-				$earliest_batch_creation_date = Helper::getEarliest($lines_count->lists ( 'batch_creation_date' )->toArray ());
+				#$earliest_batch_creation_date = Helper::getEarliest($lines_count->lists ( 'batch_creation_date' )->toArray ());
+				$earliest_batch_creation_date = Helper::getEarliest($lines_count->lists ( 'change_date' )->toArray ());
 				$earliest_order_date = Helper::getEarliest($lines_count->lists ( 'order_date' )->toArray ());
 
 				$summary ['station_id'] = $stations_arrays[$station_name]['id']; //$station->id;
@@ -531,8 +534,8 @@ class StationController extends Controller {
 				
 				$summary ['lines_count'] = count($order_ids);
 				$summary ['items_count'] = $items_count;
-				$summary ['earliest_batch_creation_date'] = substr ( $earliest_batch_creation_date, 0, 10 );
 				$summary ['earliest_order_date'] = substr ( $earliest_order_date, 0, 10 );
+				$summary ['earliest_batch_creation_date'] = substr ( $earliest_batch_creation_date, 0, 10 );
 // 				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s&cutoff_date=%s", $station_name, $request->get('cutoff_date') ) );
 				$summary ['link'] = url ( sprintf ( "/items/active_batch_group?station=%s&start_date=%s&end_date=%s", $station_name,  $start_date, $end_date ) );
 

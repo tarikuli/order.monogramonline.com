@@ -9,6 +9,8 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<link type = "text/css" rel = "stylesheet"
+	      href = "https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+	<link type = "text/css" rel = "stylesheet"
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
 	<style>
 		td {
@@ -56,39 +58,53 @@
 		</div>	
 			
 			@if(count($summaries) > 0)
-			<table class = "table table-bordered">
+		<table id="summary_table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+				<th>Station</th>
+				<th>Descrption</th>
+				<th>#of lines</th>
+				<th>#of items</th>
+				<th>Earliest order date</th>
+				<th>Earliest Scan date</th>
+				<th>Active SKUs</th>
+            </tr>
+        </thead>
+        <tbody>
+			@foreach($summaries as $summary)
 				<tr>
-					<th>Station</th>
-					<th># of lines</th>
-					<th># of items</th>
-					<th>Earliest order date</th>
-					<th>Earliest batch creation date</th>
-					<th>Active SKUs</th>
+					<td>
+						<a href = "{{url(sprintf("/items/grouped?station=%s&start_date=%s&end_date=%s", $summary['station_id'],$start_date,$end_date))}}">{{$summary['station_name']}}</a>
+					</td>
+					<td>
+						{{$summary['station_description']}}
+					</td>
+					<td align="right">{{ number_format($summary['lines_count'],0) }}</td>
+					<td align="right">{{ number_format($summary['items_count'],0) }}</td>
+					<td>{{$summary['earliest_order_date']}}</td>
+					<td>{{$summary['earliest_batch_creation_date']}}</td>
+					<td><a href = "{{$summary['link']}}" target = "_blank">View active sku</a></td>
 				</tr>
-				@foreach($summaries as $summary)
-					<tr>
-						<td>
-						{{-- print_r($summary) 
-							<a href = "{{url(sprintf("/items/grouped?station=%s&cutoff_date=%s", $summary['station_id'],$request->get('cutoff_date', '')))}}">{{$summary['station_name']}} - {{$summary['station_description']}}</a>
-						--}}	
-							<a href = "{{url(sprintf("/items/grouped?station=%s&start_date=%s&end_date=%s", $summary['station_id'],$start_date,$end_date))}}">{{$summary['station_name']}} - {{$summary['station_description']}}</a>
-						</td>
-						<td align="right">{{ number_format($summary['lines_count'],0) }}</td>
-						<td align="right">{{ number_format($summary['items_count'],0) }}</td>
-						<td>{{$summary['earliest_order_date']}}</td>
-						<td>{{$summary['earliest_batch_creation_date']}}</td>
-						<td><a href = "{{$summary['link']}}" target = "_blank">View active sku</a></td>
-					</tr>
-				@endforeach
-				<tr>
-					<td align="right">Totals:</td>
-					<td align="right">{{ number_format($total_lines, 0) }}</td>
-					<td align="right">{{ number_format($total_items, 0) }}</td>
-					<td></td>
-					<td></td>
-				</tr>
-			</table>
+			@endforeach
+        </tbody>
+        
+        <tfoot>
+			<tr>
+				<td></td>
+				<td align="right">Totals:</td>
+				<td align="right">{{ number_format($total_lines, 0) }}</td>
+				<td align="right">{{ number_format($total_items, 0) }}</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+        </tfoot>
+    </table>
 			<a href = "{{url('summary/export')}}">Export Item Table</a>
+			
+			
+
+			
 		@else
 			<div class = "col-xs-12">
 				<div class = "alert alert-warning text-center">
@@ -97,11 +113,14 @@
 			</div>
 		@endif
 	</div>
-	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.12.3.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
-	<script type = "text/javascript"
-	        src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+	<script type = "text/javascript" src = "https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script type = "text/javascript" src = "https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	
+	
 	<script type = "text/javascript">
 		var options = {
 			format: "YYYY-MM-DD", maxDate: new Date()
@@ -111,6 +130,11 @@
 			$('#start_date').datetimepicker(options);
 			$('#end_date').datetimepicker(options);
 		});
+
+		$('#summary_table').DataTable({
+			"paging":   false,
+		});
+
 	</script>
 
 

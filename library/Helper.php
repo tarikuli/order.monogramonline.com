@@ -402,6 +402,8 @@ class Helper
 		'not started' => 'Not started',
 		'active'      => 'Active',
 		'complete'    => "Complete",
+		'shipped'    => "Shipped",
+		'not_shipped'    => "Not Shipped",
 	];
 
 	public static $specSheetSampleDataArray = [
@@ -1370,7 +1372,7 @@ APPEND;
 					->whereNotIn('orders.order_status', Helper::$orderStatus)
 					->where('orders.order_date', '>=', $start_date)
 					->where('orders.order_date', '<=', $end_date)
-// 					->take(10)
+// 					->take(1)
 					->get ();
 
 	}

@@ -138,7 +138,11 @@ class Item extends Model
 			}
 
 			return $query->where('order_id', $order_ids);
-
+		
+		} elseif ( $search_in == 'item_id' ) {
+		
+			return $query->where('id', 'REGEXP', implode("|", $values));
+		
 		} elseif ( $search_in == 'customer' ) {
 
 			$order_ids = Customer::where('ship_full_name', 'REGEXP', implode("|", $values))
@@ -271,6 +275,15 @@ class Item extends Model
 			return;
 		}
 
+		if($status == 'shipped'){
+			#return $query->where('item_order_status', '=', $status);
+			return $query->whereNotNull('tracking_number');
+		}
+		
+		if($status == 'not_shipped'){
+			return $query->whereNull('tracking_number');
+		}
+		
 		return $query->where('item_order_status', '=', $status);
 	}
 
