@@ -8,6 +8,7 @@
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link type = "text/css" rel = "stylesheet" href = "/assets/css/nprogress.css">
 </head>
 <body>
 	@include('includes.header_menu')
@@ -218,6 +219,7 @@
 
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script type = "text/javascript" src = "/assets/js/nprogress.js"></script>
 	<script type = "text/javascript">
 		$(".printShippingLabel").on('click', function (event){
 			$('#unique_order_id').val("");
@@ -239,7 +241,7 @@
 		});
 
 		$("#pull").on('click', function (event){
-
+			NProgress.start();
 			unique_order_id = $('#unique_order_id').val();
 			token = $('input[name=_token]').val();
 			//console.log(token);
@@ -269,7 +271,12 @@
 					$('#phone').val(response.phone);
 					$('#counterWeight').val(response.counterWeight);
 					$('#unique_order_id').focus();
-			    }
+					NProgress.done();
+			    }, error: function (xhr, status, error)
+				{
+					NProgress.done();
+					alert("Something wrong shipping_lbl_print");
+				}
 			 });
 			return false;
 			
