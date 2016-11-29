@@ -1947,10 +1947,10 @@ class ItemController extends Controller
 				->orderBy('id', 'ASC')
 				->chunk(5, function($ships)  {
 			$i=1;
-				set_time_limit(0);
+
 
 				foreach ($ships as $ship){
-
+					set_time_limit(0);
 					// Check If it UPS mail innovation
 					if(substr($ship->shipping_id, 0, 5) == "92748"){
 						$xml = simplexml_load_string($ship->full_xml_source);
@@ -1963,15 +1963,16 @@ class ItemController extends Controller
 							$myfile = fopen($lock_path.$ship->unique_order_id.".gif", "wb") or die("Unable to open file!");
 							fwrite($myfile, $graphicImage);
 							fclose($myfile);
-
-							Ship::where('id', $ship->id)
-								->update([
-								'full_xml_source' => null,
-								'return_address' => null
-							]);
+							Helper::jewelDebug($i++."----".$ship->order_number."  --   ".$ship->unique_order_id."     ".$ship->tracking_number);
 						}
 					}
-						Helper::jewelDebug($i++."----".$ship->order_number."  --   ".$ship->unique_order_id."     ".$ship->tracking_number);
+					Ship::where('id', $ship->id)
+					->update([
+					'full_xml_source' => null,
+					'return_address' => null
+					]);
+//	UPDATE `shipping` SET `full_xml_source` = '' WHERE  `mail_class` NOT LIKE  'UPS Expedited Mail Innovations'					
+//	UPDATE `shipping` SET `full_xml_source`= null WHERE  `mail_class` NOT LIKE  'UPS Expedited Mail Innovations'
 // 						break;
 					
 				}

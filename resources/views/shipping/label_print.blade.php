@@ -260,7 +260,8 @@
 					</div>
 					<div class="current-batch" style="width:150mm; height: 100mm; border: none; ">
 						{!! Form::hidden('graphicImage', $graphicImage, ['id' => 'graphicImage']) !!} 
-						<img style="width:175mm; height: auto; overflow: hidden;"  src="data:image/gif;base64,{{ $graphicImage }} "/>
+						{{-- <img style="width:175mm; height: auto; overflow: hidden;"  src="data:image/gif;base64,{{ $graphicImage }} "/> --}}
+						<img style="width:175mm; height: auto; overflow: hidden;"  src="{{ $graphicImage }}"/>
 					</div>	
 				{!! Form::close() !!}
 			</div>

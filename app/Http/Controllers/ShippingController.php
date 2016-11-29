@@ -253,6 +253,8 @@ class ShippingController extends Controller
 				if($array['PackageResults']['LabelImage']['GraphicImage']){
 					$graphicImage = $array['PackageResults']['LabelImage']['GraphicImage'];
 				}
+				// Grab Shipping label photo from
+				$graphicImage = "assets/images/shipping_label/".$request->get('unique_order_id').".gif";
 			}
 			
 
