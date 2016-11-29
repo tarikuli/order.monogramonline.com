@@ -215,11 +215,14 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		put('shipping_update', 'ShippingController@updateTrackingNumber');
 		resource('shipping', 'ShippingController');
 		
-		get('shippinglabel_print', 'ShippingController@getShippingLableByOrderId');
+		
+		get('shipping_lbl_print', 'ShippingController@getShippingAddressByOrderId');
+		post('shipping_lbl_print', 'ShippingController@postShippingAddressByOrderId');
+				
 		get('shipping_address_update', 'ShippingController@shippingAddressUpdate');
-// 		get('shipping_print', 'ShippingController@printShippingLableByOrderId');		
 		
 		
+		get('shippinglabel_print', 'ShippingController@getShippingLableByOrderId');
 		post('shippinglabel_print', 'ShippingController@postShippingLableByOrderId');
 
 		get('rules/parameter', 'RuleController@parameter_option');

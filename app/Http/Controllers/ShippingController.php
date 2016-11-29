@@ -113,8 +113,77 @@ class ShippingController extends Controller
 		->with('success', 'Stations changed successfully.');
 	}
 	
-	public function getShippingLableByOrderId (Request $request){
+	public function getShippingAddressByOrderId (Request $request){
+		$errorMassage = [];
+		$ambiguousAdress = [];
+		$count = 1;
+		$graphicImage = false;
+		$counterWeight = 0;
+		$ship = [];
+		
+		//return view('shipping.label_print_ajax');
+		return view('shipping.label_print_ajax', compact('ship', 'errorMassage', 'ambiguousAdress', 'count', 'graphicImage', 'counterWeight'));
+	}
+	
+	public function postShippingAddressByOrderId (Request $request){
+// 		Helper::jewelDebug($request->ajax());
+		if ( $request->has('unique_order_id') && ( $request->ajax() ) ) {
+			
+// 			Helper::jewelDebug($request->get('unique_order_id'));
+			
+			$ships = Ship::where('is_deleted', 0)
+							->where('unique_order_id', $request->get('unique_order_id'))
+							->get();
+			$counterWeight = 0;
+			if(count($ships)>0){
+				$customer = [];
+				foreach ( $ships as $ship ) {
+					$counterWeight += $ship->actual_weight;
+				}
+					
+				return response()->json([
+						'order_number' 		=> $ships[0]->order_number,
+						'unique_order_id' 	=> $ships[0]->unique_order_id,
+						'mail_class' 	=> $ships[0]->mail_class,
+						'tracking_number' 	=> $ships[0]->tracking_number,
+						'name' 				=> $ships[0]->name,
+						'company' 			=> $ships[0]->company,
+						'address1' 			=> $ships[0]->address1,
+						'address2' 			=> $ships[0]->address2,
+						'city' 				=> $ships[0]->city,
+						'state_city' 		=> $ships[0]->state_city,
+						'postal_code' 		=> $ships[0]->postal_code,
+						'country' 			=> $ships[0]->country,
+						'phone'				=> $ships[0]->phone,
+						'email'				=> $ships[0]->email,
+						'counterWeight' 	=> $counterWeight,
+				
+				]);
+			}else{
+				return response()->json([
+						'order_number' 		=> null,
+// 						'unique_order_id' 	=> $ships[0]->unique_order_id,
+						'mail_class' 		=> null,
+						'tracking_number' 	=> null,
+						'name' 				=> null,
+						'company' 			=> null,
+						'address1' 			=> null,
+						'address2' 			=> null,
+						'city' 				=> null,
+						'state_city' 		=> null,
+						'postal_code' 		=> null,
+						'country' 			=> null,
+						'phone'				=> null,
+						'email'				=> null,
+						'counterWeight' 	=> $counterWeight,
+				
+				]);
+			}
 
+			
+		}
+	}
+	public function getShippingLableByOrderId (Request $request){
 		
 		$errorMassage = [];
 		$ambiguousAdress = [];
