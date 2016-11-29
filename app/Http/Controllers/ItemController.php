@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Log;
 use League\Csv\Writer;
 use Monogram\Helper;
 use Psy\Command\HelpCommand;
+use App\Customer;
 
 class ItemController extends Controller
 {
@@ -1935,90 +1936,51 @@ class ItemController extends Controller
 // 		Helper::jewelDebug("Complete");
 // 	}
 	
-// 	public function doctorCheckup (Request $request) {
+	public function doctorCheckup (Request $request) {
+		$statuses = [];
+		$starting = "2016-01-01 00:00:00";
+		$ending = "2016-10-31 23:59:59";
+		
+		Ship::with ( 'item' )
+				->whereNotNull('tracking_number')
+// 				->whereNotNull('return_address')
+				->orderBy('id', 'ASC')
+				->chunk(5, function($ships)  {
+			$i=1;
+				set_time_limit(0);
 
-// 		$order_ids = $request->exists('order_id') ? array_filter($request->get('order_id')) : null;
+				foreach ($ships as $ship){
 
-// 		// 		if ( !empty($order_ids) ) {
-// 		// 			// items/doctor?order_id[]=yhst-128796189915726-689763
-// 		// 			$orders = Order::with ( 'items', 'shipping' )
-// 		// 							->where('order_id',$order_ids)
-// 		// // 							->where('item_count','>',1)
-// 		// 							->limit(10)
-// 		// 							->get();
-// 		// 		}else{
-// 		// 			$orders = Order::with ( 'items', 'shipping' )
-// 		// // 							->where('item_count','>',5)
-// 		// 							->limit(10)
-// 		// 							->get();
-// 		// 		}
+					// Check If it UPS mail innovation
+					if(substr($ship->shipping_id, 0, 5) == "92748"){
+						$xml = simplexml_load_string($ship->full_xml_source);
+						$json = json_encode($xml);
+						$array = json_decode($json,TRUE);
+						if($array['PackageResults']['LabelImage']['GraphicImage']){
+							$graphicImage = base64_decode($array['PackageResults']['LabelImage']['GraphicImage']);
+							
+							$lock_path = public_path('assets/images/shipping_label/');
+							$myfile = fopen($lock_path.$ship->unique_order_id.".gif", "wb") or die("Unable to open file!");
+							fwrite($myfile, $graphicImage);
+							fclose($myfile);
 
-// 		// Item::chunk(500, function($items) use($csv) {
+							Ship::where('id', $ship->id)
+								->update([
+								'full_xml_source' => null,
+								'return_address' => null
+							]);
+						}
+					}
+						Helper::jewelDebug($i++."----".$ship->order_number."  --   ".$ship->unique_order_id."     ".$ship->tracking_number);
+// 						break;
+					
+				}
+				
+// 			dd($ships);
+			
+		});
 
-// 				$statuses = Status::where('is_deleted', 0)
-// 									->lists('status_name', 'id');
-
-
-
-// 		$ordersx = Order::with ( 'items', 'shipping' )->chunk(500, function($orders) use($statuses) {
-
-// 				foreach ($orders as $key => $order){
-// 					$checkShippingTable = [];
-// 					$checkItemTable = [];
-// 					// 			Helper::jewelDebug($order->order_id);
-
-// 		// 			echo "<br>Order_ID = <a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date;
-
-// 					set_time_limit(0);
-// 					foreach ($order->items as $item){
-// 						if(empty($item->batch_number)){
-// 							if($item->batch_number != 10000){
-// 								$checkItemTable[$item->id] = 1;
-// 								// 				echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number;
-
-// 								foreach ($order->shipping as $ship){
-// 									if($item->id == $ship->item_id){
-// 				// 						echo "<br>".$order->order_id."	---	". $item->id."	----	".$item->tracking_number."	---	".$ship->item_id;
-// 										$checkShippingTable[$ship->item_id]= 1;
-// 									}				}
-// 				// 					echo "<br>---------+++++++++--------------";
-// 							}
-// 						}
-// 					}
-
-// 		// 			echo "<br>---Total ".count($checkItemTable)." Item in Itmes Table checkItemTable---";
-// 		// 			Helper::jewelDebug($checkItemTable);
-
-// 		// 			echo "<br>---Total ".count($checkShippingTable)." Item in Shipping Table checkShippingTable---";
-// 		// 			Helper::jewelDebug($checkShippingTable);
-
-
-// 					$uniqueIds = array_diff($checkItemTable, $checkShippingTable);
-
-// 					if(count($uniqueIds)>0){
-
-// 						echo "<pre>Item Waiting for shipping Order_ID =	<a href = /orders/details/".$order->order_id." target = '_blank'>".$order->order_id."</a>  order_date = ".$order->order_date."	Order_Status:	".$statuses[$order->order_status]."</pre>";
-// 		// 				Helper::jewelDebug("---Total ".count($uniqueIds)." Item Waiting for shipping---		order_id	".$order->order_id."	order_date		".$order->order_date);
-
-// 					}
-// 		// 			Helper::jewelDebug($uniqueIds);
-
-// 					if(count($checkShippingTable) == ($order->item_count)){
-// 						// Full Item Shipped
-
-// 						// Update Order Status Update item Status to complete
-
-// 						// Update item Status to complete
-
-// 					}else{
-
-// 					}
-// 		// 			echo "<br>---------***********************--------------";
-// 				}
-// 		});
-// 		// 		return $order;
-
-// 	}
+	}
 
 // 	public function doctorCheckup (Request $request) {
 
