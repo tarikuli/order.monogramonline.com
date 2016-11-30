@@ -1806,7 +1806,8 @@ class ItemController extends Controller
 			// End coder for Valide Input
 
 			// ----------------
-			$orders = Order::with ('items', 'shipping', 'customer' )
+// 			$orders = Order::with ('items', 'shipping', 'customer' )
+			$orders = Order::with ('items', 'customer' )
 // 						->where('short_order','like', $orderNumber)
 						->where('short_order', 'LIKE', sprintf("%%%s%%", $orderNumber))
 // 						->where('bill_email','=', $email)

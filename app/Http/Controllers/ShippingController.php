@@ -194,9 +194,7 @@ class ShippingController extends Controller
 		$ships = Ship::where('is_deleted', 0)
 					->where('unique_order_id', $request->get('unique_order_id'))
 					->get();
-	
 
-	
 		if(count($ships)>0){
 			
 			
@@ -265,7 +263,7 @@ class ShippingController extends Controller
 		}else{
 			$ship =[];
 		}
-		
+
 		return view('shipping.label_print', compact('ship', 'errorMassage', 'ambiguousAdress', 'count', 'graphicImage', 'counterWeight'));
 	}
 

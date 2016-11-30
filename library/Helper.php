@@ -970,20 +970,20 @@ APPEND;
 		$ship->package_shape = $package_shape;
 		$ship->tracking_type = $tracking_type;
 		$ship->post_value = $post_value;
-		$ship->name = $name;
-		$ship->last_name = $last_name;
-		$ship->company = $company;
-		$ship->address1 = $address_1;
-		$ship->address2 = $address_2;
-		$ship->city = $city;
-		$ship->state_city = $state_city;
-		$ship->postal_code = $postal_code;
-		$ship->actual_weight = $product_weight ?: 0;
-		$ship->billed_weight = $final_weight;
-		$ship->country = $country;
-		$ship->email = $email;
-		$ship->phone = $phone;
-		$ship->carrier = $carrier;
+// 		$ship->name = $name;
+// 		$ship->last_name = $last_name;
+// 		$ship->company = $company;
+// 		$ship->address1 = $address_1;
+// 		$ship->address2 = $address_2;
+// 		$ship->city = $city;
+// 		$ship->state_city = $state_city;
+// 		$ship->postal_code = $postal_code;
+// 		$ship->actual_weight = $product_weight ?: 0;
+// 		$ship->billed_weight = $final_weight;
+// 		$ship->country = $country;
+// 		$ship->email = $email;
+// 		$ship->phone = $phone;
+// 		$ship->carrier = $carrier;
 		$ship->save();
 	}
 
@@ -1585,7 +1585,6 @@ APPEND;
 	
 	public static function getTrackingUrl($trackingNumber) {
 		
-// 		9 = DHL
 		if(isset($trackingNumber[0])){
 			if($trackingNumber[0] == '9'){
 				//DHL

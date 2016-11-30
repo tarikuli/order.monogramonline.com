@@ -303,17 +303,17 @@ return $request->all();
 			Ship::where('order_number',$id)
 				->whereNull('tracking_number')
 				->update([
-					'name' => sprintf("%s %s", $request->get('ship_first_name'), $request->get('ship_last_name')),
-					'last_name' => $request->get('ship_last_name'),
-					'company' => $request->get('ship_company_name'),
-					'address1' => $request->get('ship_address_1'),
-					'address2' => $request->get('ship_address_2'),
-					'city' => $request->get('ship_city'),
-					'state_city' => $request->get('ship_state'),
-					'postal_code' => $request->get('ship_zip'),
-					'country' => $request->get('ship_country'),
-					'email' => $request->get('bill_email'),
-					'phone' => $request->get('ship_phone'),
+// 					'name' => sprintf("%s %s", $request->get('ship_first_name'), $request->get('ship_last_name')),
+// 					'last_name' => $request->get('ship_last_name'),
+// 					'company' => $request->get('ship_company_name'),
+// 					'address1' => $request->get('ship_address_1'),
+// 					'address2' => $request->get('ship_address_2'),
+// 					'city' => $request->get('ship_city'),
+// 					'state_city' => $request->get('ship_state'),
+// 					'postal_code' => $request->get('ship_zip'),
+// 					'country' => $request->get('ship_country'),
+// 					'email' => $request->get('bill_email'),
+// 					'phone' => $request->get('ship_phone'),
 					'mail_class' => $request->get('shipping_method'),
 				]);
 

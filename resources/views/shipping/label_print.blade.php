@@ -144,13 +144,13 @@
 				
 				<div class = "col-md-1">
 					@if(!$graphicImage)
-						<a href = "{{ \Monogram\Helper::getTrackingUrl($ship-->tracking_number) }}"
+						<a href = "{{ \Monogram\Helper::getTrackingUrl($ship->tracking_number) }}"
 					   class = "btn btn-primary btn-sm @if((count($ambiguousAdress)>0) || (!$ship->tracking_number)) disabled @endif"
 					   style = "font-size: 12px;">
 					   View Delivery Status
 						</a>
 					@else
-						<a href = "{{ \Monogram\Helper::getTrackingUrl($ship-->tracking_number) }}"
+						<a href = "{{ \Monogram\Helper::getTrackingUrl($ship->tracking_number) }}"
 					   class = "btn btn-primary btn-sm @if((count($ambiguousAdress)>0) || (!$ship->tracking_number)) disabled @endif"
 					   style = "font-size: 12px;">
 					   View Delivery Status
