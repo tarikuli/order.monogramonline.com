@@ -191,10 +191,11 @@ class ShippingController extends Controller
 		$graphicImage = false;
 		$counterWeight = 0;
 		
-		$ships = Ship::where('is_deleted', 0)
+		$ships = Ship::with('customer')
+					->where('is_deleted', 0)
 					->where('unique_order_id', $request->get('unique_order_id'))
 					->get();
-
+// dd($ships);
 		if(count($ships)>0){
 			
 			
@@ -204,16 +205,28 @@ class ShippingController extends Controller
 				$counterWeight += $ship->actual_weight;
 			}
 			
+// 			$customer['order_id'] = $ships[0]->order_number;
+// 			$customer['unique_order_id'] = $request->get('unique_order_id');
+// 			$customer['ship_full_name'] = $ships[0]->name;
+// 			$customer['ship_company_name'] = $ships[0]->company;
+// 			$customer['ship_address_1'] = $ships[0]->address1;
+// 			$customer['ship_address_2'] = $ships[0]->address2;
+// 			$customer['ship_state'] = $ships[0]->state_city;
+// 			$customer['ship_city'] = $ships[0]->city;
+// 			$customer['ship_country'] = $ships[0]->country;
+// 			$customer['ship_zip'] = $ships[0]->postal_code;
+			
 			$customer['order_id'] = $ships[0]->order_number;
 			$customer['unique_order_id'] = $request->get('unique_order_id');
-			$customer['ship_full_name'] = $ships[0]->name;
-			$customer['ship_company_name'] = $ships[0]->company;
-			$customer['ship_address_1'] = $ships[0]->address1;
-			$customer['ship_address_2'] = $ships[0]->address2;
-			$customer['ship_state'] = $ships[0]->state_city;
-			$customer['ship_city'] = $ships[0]->city;
-			$customer['ship_country'] = $ships[0]->country;
-			$customer['ship_zip'] = $ships[0]->postal_code;
+			$customer['ship_full_name'] = $ships[0]->customer->ship_full_name;
+			$customer['ship_company_name'] = $ships[0]->customer->ship_company_name;
+			$customer['ship_address_1'] = $ships[0]->customer->ship_address_1;
+			$customer['ship_address_2'] = $ships[0]->customer->ship_address_2;
+			$customer['ship_state'] = $ships[0]->customer->ship_state;
+			$customer['ship_city'] = $ships[0]->customer->ship_city;
+			$customer['ship_country'] = $ships[0]->customer->ship_country;
+			$customer['ship_zip'] = $ships[0]->customer->ship_zip;
+			
 		
 // 			$counterWeight = Ship::where('is_deleted', 0)
 // 								->where('unique_order_id', $request->get('unique_order_id'))

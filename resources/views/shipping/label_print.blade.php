@@ -164,21 +164,21 @@
 			<div class = "form-group col-xs-12">
 				{!! Form::label('name', 'Name', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
-					{!! Form::text('name', $ship->name, ['id' => 'name', 'class' => "form-control", 'placeholder' => "Enter Name"]) !!}
+					{!! Form::text('name', $ship->customer->ship_full_name, ['id' => 'name', 'class' => "form-control", 'placeholder' => "Enter Name"]) !!}
 				</div>
 			</div>	
 			
 			<div class = "form-group col-xs-12">
 				{!! Form::label('company', 'Company', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
-					{!! Form::text('company', $ship->company, ['id' => 'company', 'class' => "form-control", 'placeholder' => "Enter Company"]) !!}
+					{!! Form::text('company', $ship->customer->ship_company_name, ['id' => 'company', 'class' => "form-control", 'placeholder' => "Enter Company"]) !!}
 				</div>
 			</div>	
 			
 			<div class = "form-group col-xs-12">
 				{!! Form::label('address1', 'Address 1', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
-					{!! Form::text('address1', $ship->address1, ['id' => 'address1', 'class' => "form-control", 'placeholder' => "Enter Address 1"]) !!}
+					{!! Form::text('address1', $ship->customer->ship_address_1, ['id' => 'address1', 'class' => "form-control", 'placeholder' => "Enter Address 1"]) !!}
 				</div>
 			</div>	
 			
@@ -186,21 +186,21 @@
 			<div class = "form-group col-xs-12">
 				{!! Form::label('address2', 'Address 2', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
-					{!! Form::text('address2', $ship->address2, ['id' => 'address2', 'class' => "form-control", 'placeholder' => "Enter Address 2"]) !!}
+					{!! Form::text('address2', $ship->customer->ship_address_2, ['id' => 'address2', 'class' => "form-control", 'placeholder' => "Enter Address 2"]) !!}
 				</div>
 			</div>	
 			
 			<div class = "form-group col-xs-12">
 				{!! Form::label('city', 'City', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
-					{!! Form::text('city', $ship->city, ['id' => 'city', 'class' => "form-control", 'placeholder' => "Enter City"]) !!}
+					{!! Form::text('city', $ship->customer->ship_city, ['id' => 'city', 'class' => "form-control", 'placeholder' => "Enter City"]) !!}
 				</div>
 			</div>	
 			
 			<div class = "form-group col-xs-12">
 				{!! Form::label('state_city', 'State', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
-					{!! Form::text('state_city', $ship->state_city, ['id' => 'state_city', 'class' => "form-control", 'placeholder' => "Enter State"]) !!}
+					{!! Form::text('state_city', $ship->customer->ship_state, ['id' => 'state_city', 'class' => "form-control", 'placeholder' => "Enter State"]) !!}
 				</div>
 			</div>	
 			
@@ -208,14 +208,14 @@
 			<div class = "form-group col-xs-12">
 				{!! Form::label('postal_code', 'Postal code', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
-					{!! Form::text('postal_code', $ship->postal_code, ['id' => 'postal_code', 'class' => "form-control", 'placeholder' => "Enter Postal code"]) !!}
+					{!! Form::text('postal_code', $ship->customer->ship_zip, ['id' => 'postal_code', 'class' => "form-control", 'placeholder' => "Enter Postal code"]) !!}
 				</div>
 			</div>	
 			
 			<div class = "form-group col-xs-12">
 				{!! Form::label('country', 'Country', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
-					{!! Form::text('country', $ship->country, ['id' => 'country', 'class' => "form-control", 'placeholder' => "Enter Country"]) !!}
+					{!! Form::text('country', $ship->customer->ship_country, ['id' => 'country', 'class' => "form-control", 'placeholder' => "Enter Country"]) !!}
 				</div>
 			</div>																																		
 									

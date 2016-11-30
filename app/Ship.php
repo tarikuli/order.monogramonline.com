@@ -27,6 +27,12 @@ class Ship extends Model
 	{
 		return $this->belongsTo('App\Item', 'item_id', 'id');
 	}
+	
+	public function customer ()
+	{
+		return $this->belongsTo('App\Customer', 'order_number', 'order_id')
+		->where('is_deleted', 0);
+	}
 
 	public function scopeSearchTrackingNumberAssigned ($query, $is_assigned)
 	{
