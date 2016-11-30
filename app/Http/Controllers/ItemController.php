@@ -1807,10 +1807,19 @@ class ItemController extends Controller
 
 			// ----------------
 			$orders = Order::with ('items', 'shipping', 'customer' )
-						->where('short_order','=', $orderNumber)
+// 						->where('short_order','like', $orderNumber)
+						->where('short_order', 'LIKE', sprintf("%%%s%%", $orderNumber))
 // 						->where('bill_email','=', $email)
 						->limit(1)
 						->get();
+			
+			if($orders->count() == 0){
+				return redirect(url('/trk_order_status'))
+				->withErrors(new MessageBag([
+						'error' => 'Incorrect Order# '.$orderNumber.' or Email: '.$email.'<br>Please verify your Order# or email' ,
+				]));
+			}
+			
 			foreach ($orders as $key => $order){
 
 				if(($order->customer->bill_email) != $email){
@@ -1819,6 +1828,7 @@ class ItemController extends Controller
 							'error' => 'Email:'.$email.' not found for Order# '.$orderNumber,
 					]));
 				}
+
 
 
 				//---- Insert for display front end.
@@ -1842,9 +1852,11 @@ class ItemController extends Controller
 						$station = "New order received. In queue for production";
 					}
 				}else{
+// 					dd(Helper::getTrackingUrl($order->items->first()->tracking_number));
 					$station = "Shipped";
 				}
-
+		
+// 		dd($order);
 				$orderinfo['status'] 			= $station;
 			}
 			//-----------------
@@ -1942,10 +1954,11 @@ class ItemController extends Controller
 		$ending = "2016-10-31 23:59:59";
 		
 		Ship::with ( 'item' )
+				->where('mail_class','LIKE','UPS Expedited Mail Innovations')
 				->whereNotNull('tracking_number')
 // 				->whereNotNull('return_address')
 				->orderBy('id', 'ASC')
-				->chunk(5, function($ships)  {
+				->chunk(500, function($ships)  {
 			$i=1;
 
 

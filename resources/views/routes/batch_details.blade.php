@@ -122,7 +122,7 @@
 									@if($item->tracking_number)
 										<div style="color: red;">
 										Don't Make this Item again.<br/>
-										TRK# <a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number )) }}" target = "_blank"> {{ $item->tracking_number }}</a>
+										TRK# <a href = "{{ \Monogram\Helper::getTrackingUrl($item->tracking_number) }}" target = "_blank"> {{ $item->tracking_number }}</a>
 										</div>
 									@endif
 								</td>

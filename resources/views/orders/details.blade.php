@@ -322,7 +322,7 @@
 					<tr>
 						<td colspan = "8">
 							Shipped on {{date("m/d/y", strtotime($item->shipInfo->postmark_date ?: "now" ))}} by {{$item->shipInfo->tracking_type}} ,
-							<a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->shipInfo->tracking_number )) }}" target = "_blank"> Trk# {{ $item->shipInfo->tracking_number }}</a>
+							<a href = "{{ \Monogram\Helper::getTrackingUrl($item->shipInfo->tracking_number) }}" target = "_blank"> Trk# {{ $item->shipInfo->tracking_number }}</a>
 						</td>
 					</tr>
 				@endif

@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 use DNS1D;
 use Illuminate\Support\Facades\Log;
 use PhpParser\Node\Expr\Array_;
+use Symfony\Component\HttpKernel\EventListener\DebugHandlersListener;
 
 class Helper
 {
@@ -1581,6 +1582,27 @@ APPEND;
 // 			->with('success', "Tracking # successfully Updated");
 		}
 	}
+	
+	public static function getTrackingUrl($trackingNumber) {
+		
+// 		9 = DHL
+		if(isset($trackingNumber[0])){
+			if($trackingNumber[0] == '9'){
+				//DHL
+				return url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $trackingNumber));
+			}elseif($trackingNumber[0] == '8'){
+				// USPS
+				return url(sprintf("https://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=%s", $trackingNumber));
+			}elseif($trackingNumber[0] == 'L'){
+				// UPS
+				return url(sprintf("https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=%s", $trackingNumber));
+				
+			}else{
+				return '#';
+			}
+		}
+	}
+	
 	
 	public static function generate_xml_from_array($array, $node_name) {
 		$xml = '';

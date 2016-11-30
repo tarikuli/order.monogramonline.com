@@ -144,13 +144,13 @@
 				
 				<div class = "col-md-1">
 					@if(!$graphicImage)
-						<a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $ship->tracking_number)) }}"
+						<a href = "{{ \Monogram\Helper::getTrackingUrl($ship-->tracking_number) }}"
 					   class = "btn btn-primary btn-sm @if((count($ambiguousAdress)>0) || (!$ship->tracking_number)) disabled @endif"
 					   style = "font-size: 12px;">
 					   View Delivery Status
 						</a>
 					@else
-						<a href = "{{ url(sprintf("https://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=%s", $ship->tracking_number)) }}"
+						<a href = "{{ \Monogram\Helper::getTrackingUrl($ship-->tracking_number) }}"
 					   class = "btn btn-primary btn-sm @if((count($ambiguousAdress)>0) || (!$ship->tracking_number)) disabled @endif"
 					   style = "font-size: 12px;">
 					   View Delivery Status

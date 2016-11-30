@@ -134,7 +134,7 @@
 												Shipped on {{substr($item->shipInfo->transaction_datetime, 0, 10)}} by
 												{{$item->shipInfo->mail_class}}
 												<br />
-												Trk# <a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number)) }}" target = "_blank">{{$item->shipInfo->tracking_number}}</a>
+												Trk# <a href = "{{ \Monogram\Helper::getTrackingUrl($item->tracking_number) }}" target = "_blank">{{$item->shipInfo->tracking_number}}</a>
 											@endif
 										</td>
 										{{-- SKU --}}
@@ -154,7 +154,7 @@
 											 Item# {{ $item->id}}
 
 											@if($item->tracking_number)
-												<a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $item->tracking_number)) }}" target = "_blank"> {{ $item->tracking_number }} </a>
+												<a href = "{{ \Monogram\Helper::getTrackingUrl($item->tracking_number) }}" target = "_blank"> {{ $item->tracking_number }} </a>
 											@endif
 										</td>
 									</tr>

@@ -43,7 +43,7 @@
 				<tr>
 					<td>{!! Form::text('order', $request->get('order'), ['id'=>'order', 'class' => 'form-control', 'placeholder' => 'Order Number']) !!}</td>
 					<td>{!! Form::text('email', $request->get('email'), ['id'=>'email', 'class' => 'form-control', 'placeholder' => 'email']) !!}</td>
-					<td>{!! Form::submit('Search Order',['class' => 'btn btn-primary btn-block']) !!}</td>
+					<td>{!! Form::submit('Search Order',['id' => 'searchOrder', 'class' => 'btn btn-primary btn-block']) !!}</td>
 				</tr>
 			</table>
 
@@ -70,18 +70,24 @@
 						<td>Ship method (% shipped)</td>	<td>{{$orderinfo['shipping']}}</td>
 					</tr>
 					<tr>
-						<td>Tracking#</td>					<td><a href = "{{ url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $orderinfo['tracking'])) }}" target = "_blank">{{$orderinfo['tracking']}}</a></td>
+						<td>Tracking#</td>					<td><a href = "{{ \Monogram\Helper::getTrackingUrl($orderinfo['tracking']) }}" target = "_blank">{{$orderinfo['tracking']}}</a></td>
 					</tr>
 					<tr>
 						<td>Status</td>						<td>{{$orderinfo['status']}}</td>
 					</tr>
 				</table>
 				@else
-				<div class = "col-xs-12">
-					<div class = "alert alert-warning text-center">
-						<h3>No Record Found</h3>
+				
+				@if(count($errors->all()) == 0)	
+					<div class = "col-xs-12">
+						<div class = "alert alert-warning text-center">
+							<h3>
+								<div id="display_message" >Please write your Order Number and Email</div>
+							</h3>
+						</div>
 					</div>
-				</div>
+				@endif	
+
 			@endif
 		</div>
 	</div>
@@ -92,7 +98,9 @@
 	<script type = "text/javascript"
 	        src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 	<script type = "text/javascript">
+
 	function validateS()  {
+		
 		   var message = ('This Field Cannot be Empty:\n\n');
 		   flag = 0;
 		   emailStr = document.forms['trk_order_status'].elements["email"].value
