@@ -84,16 +84,16 @@
 						&ship_country=%s", 
 						$ship->unique_order_id,
 						$ship->order_number,
-						$ship->address1,
-						$ship->address2,
-						$ship->state_city,
-						$ship->city,
-						$ship->postal_code,
-						$ship->company,
-						$ship->name,
-						$ship->email,
-						$ship->phone,
-						$ship->country
+						$ship->customer->ship_address_1,
+						$ship->customer->ship_address_2,
+						$ship->customer->ship_state,
+						$ship->customer->ship_city,
+						$ship->customer->ship_zip,
+						$ship->customer->ship_company_name,
+						$ship->customer->ship_full_name,
+						$ship->customer->ship_email,
+						$ship->customer->ship_phone,
+						$ship->customer->ship_country
 						)) }}"
 					{{-- <a href = "#"  --}}
 					   class = "btn btn-success btn-sm printShippingLabel @if((count($errorMassage)>0) || ($ship->tracking_number)) disabled @endif"
@@ -223,14 +223,14 @@
 			<div class = "form-group col-xs-12">
 				{!! Form::label('email', 'Email', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
-					{!! Form::text('email', $ship->email, ['id' => 'email', 'class' => "form-control", 'placeholder' => "Enter Email"]) !!}
+					{!! Form::text('email', $ship->customer->ship_email, ['id' => 'email', 'class' => "form-control", 'placeholder' => "Enter Email"]) !!}
 				</div>
 			</div>	
 
 			<div class = "form-group col-xs-12">
 				{!! Form::label('phone', 'Phone', ['class' => 'col-xs-2 control-label']) !!}
 				<div class = "col-md-4">
-					{!! Form::text('phone', $ship->phone, ['id' => 'phone', 'class' => "form-control", 'placeholder' => "Enter Phone"]) !!}
+					{!! Form::text('phone', $ship->customer->ship_phone, ['id' => 'phone', 'class' => "form-control", 'placeholder' => "Enter Phone"]) !!}
 				</div>
 			</div>	
 

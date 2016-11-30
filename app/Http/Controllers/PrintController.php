@@ -629,7 +629,8 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 // 					var_dump((array) $accept); // Accept holds the label and additional information
 // 				echo "</pre>";
 				
-				$trackingInfo['full_xml_source'] = Helper::generate_valid_xml_from_array($accept);
+// 				$trackingInfo['full_xml_source'] = Helper::generate_valid_xml_from_array($accept);
+				Helper::saveUpsLabel(Helper::generate_valid_xml_from_array($accept),$customer['unique_order_id']);
 				$trackingInfo['unique_order_id'] = $customer['unique_order_id'];
 				$trackingInfo['order_number'] = $customer['order_number'];
 				$trackingInfo['tracking_number'] = $accept->PackageResults->TrackingNumber;

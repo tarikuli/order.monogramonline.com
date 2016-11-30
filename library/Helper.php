@@ -1560,13 +1560,29 @@ APPEND;
 		}
 	}
 	
+	public static function saveUpsLabel($full_xml_source, $unique_order_id){
+// 		#dd($full_xml_source);
+		$xml = simplexml_load_string($full_xml_source);
+		$json = json_encode($xml);
+		$array = json_decode($json,TRUE);
+		if($array['PackageResults']['LabelImage']['GraphicImage']){
+			$graphicImage = base64_decode($array['PackageResults']['LabelImage']['GraphicImage']);
+			$lock_path = public_path('assets/images/shipping_label/');
+			$myfile = fopen($lock_path.$unique_order_id.".gif", "wb") or die("Unable to open file!");
+			fwrite($myfile, $graphicImage);
+			fclose($myfile);
+// 			Helper::jewelDebug($i++."----".$ship->order_number."  --   ".$ship->unique_order_id."     ".$ship->tracking_number);
+		}
+	}
+	
+	
 	public static function updateTrackingNumber($trackingInfo){
 		if ( $trackingInfo['unique_order_id'] ) {
 		
 			Ship::where('unique_order_id', $trackingInfo['unique_order_id'])
 			->update([
 				'tracking_number'      => $trackingInfo['tracking_number'],
-				'full_xml_source'      => $trackingInfo['full_xml_source'],
+// 				'full_xml_source'      => $trackingInfo['full_xml_source'],
 				'shipping_id'     	   => $trackingInfo['shipping_id'],
 				'mail_class'     	   => $trackingInfo['mail_class'],
 				'postmark_date'        => date("Y-m-d"),

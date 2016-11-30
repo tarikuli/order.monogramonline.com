@@ -1967,18 +1967,19 @@ class ItemController extends Controller
 					set_time_limit(0);
 					// Check If it UPS mail innovation
 					if(substr($ship->shipping_id, 0, 5) == "92748"){
-						$xml = simplexml_load_string($ship->full_xml_source);
-						$json = json_encode($xml);
-						$array = json_decode($json,TRUE);
-						if($array['PackageResults']['LabelImage']['GraphicImage']){
-							$graphicImage = base64_decode($array['PackageResults']['LabelImage']['GraphicImage']);
-							
-							$lock_path = public_path('assets/images/shipping_label/');
-							$myfile = fopen($lock_path.$ship->unique_order_id.".gif", "wb") or die("Unable to open file!");
-							fwrite($myfile, $graphicImage);
-							fclose($myfile);
-							Helper::jewelDebug($i++."----".$ship->order_number."  --   ".$ship->unique_order_id."     ".$ship->tracking_number);
-						}
+						
+						Helper::saveUpsLabel($ship->full_xml_source, $ship->unique_order_id);
+// 						$xml = simplexml_load_string($ship->full_xml_source);
+// 						$json = json_encode($xml);
+// 						$array = json_decode($json,TRUE);
+// 						if($array['PackageResults']['LabelImage']['GraphicImage']){
+// 							$graphicImage = base64_decode($array['PackageResults']['LabelImage']['GraphicImage']);
+// 							$lock_path = public_path('assets/images/shipping_label/');
+// 							$myfile = fopen($lock_path.$ship->unique_order_id.".gif", "wb") or die("Unable to open file!");
+// 							fwrite($myfile, $graphicImage);
+// 							fclose($myfile);
+// 							Helper::jewelDebug($i++."----".$ship->order_number."  --   ".$ship->unique_order_id."     ".$ship->tracking_number);
+// 						}
 					}
 					Ship::where('id', $ship->id)
 					->update([
