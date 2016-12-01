@@ -1045,80 +1045,110 @@ APPEND;
 		// 		->get([DB::raw('COUNT(*) AS countPossibleBatches')]);
 	}
 
-	public static function createAbleBatches ($paginate = false, $start_date, $end_date)
+	public static function createAbleBatches ($paginate = false, $start_date, $end_date, $search_for, $search_in)
 	{
-		return BatchRoute::with([
-			'stations_list',
-			'itemGroups' => function ($q) use ($paginate, $start_date, $end_date) {
-				$joining = $q->join('items', 'items.child_sku', '=', 'parameter_options.child_sku')
-							 ->join('orders', 'orders.order_id', '=', 'items.order_id')
-							 ->where('items.batch_number', '0')
-							 ->whereNull('items.tracking_number')
-							 ->where('items.is_deleted', 0)
-							 ->where('orders.is_deleted', 0)
-							 ->where('orders.order_date', '>=', $start_date)
-							 ->where('orders.order_date', '<=', $end_date)
-							 ->whereNotIn('orders.order_status', [ // don't create batch, if the following order statuses are there
-																   2,
-							 									   // Manual Redo
-							 									   3,
-																   // On hold
-																   7,
-																   // returned
-																   8,
-																   // cancelled
-																   6,
-																   // Shipped
-							 ])
-							 ->where(function ($query) {
-								 return $query->where('parameter_options.batch_route_id', '!=', 115)
-											  ->whereNotNull('parameter_options.batch_route_id');
-							 })
-							 ->take(1500)
-							 ->addSelect([
-								 DB::raw('items.id AS item_table_id'),
-								 'items.item_id',
-								 'items.item_code',
-								 'items.order_id',
-								 'items.item_quantity',
-								 'items.item_thumb',
-								 DB::raw('orders.id as order_table_id'),
-								 'orders.order_id',
-								 'orders.order_date',
-							 ]);
-
-				return $paginate ? $joining->get() : $joining->paginate(10000);
-			},
-		])
-						 ->where('batch_routes.is_deleted', 0)
-						 ->where('batch_routes.batch_max_units', '>', 0)
-						 ->get();
-		/*
-		 * PREVIOUS QUERY
-		 return BatchRoute::with([
-			'stations_list',
-			'itemGroups' => function ($q) use ($paginate) {
-				$joining = $q->join('items', 'products.product_model', '=', 'items.item_code')
-							 ->where('items.is_deleted', 0)
-							 ->where('items.batch_number', '0')
-							 ->join('orders', 'orders.order_id', '=', 'items.order_id')
-							 ->where('orders.is_deleted', 0)
-							 ->addSelect([
-								 DB::raw('items.id AS item_table_id'),
-								 'items.item_id',
-								 'items.item_code',
-								 'items.order_id',
-								 'items.item_quantity',
-								 DB::raw('orders.id as order_table_id'),
-								 'orders.order_id',
-								 'orders.order_date',
-							 ]);//->paginate(50000);
-				return $paginate ? $joining->get() : $joining->paginate(10000);
-			},
-		])
-						 ->where('batch_routes.is_deleted', 0)
-						 ->where('batch_routes.batch_max_units', '>', 0)
-						 ->get();*/
+		if($search_in == "all"){
+			return BatchRoute::with([
+				'stations_list',
+				'itemGroups' => function ($q) use ($paginate, $start_date, $end_date) {
+					$joining = $q->join('items', 'items.child_sku', '=', 'parameter_options.child_sku')
+								 ->join('orders', 'orders.order_id', '=', 'items.order_id')
+								 ->where('items.batch_number', '0')
+								 ->whereNull('items.tracking_number')
+								 ->where('items.is_deleted', 0)
+								 ->where('orders.is_deleted', 0)
+								 ->where('orders.order_date', '>=', $start_date)
+								 ->where('orders.order_date', '<=', $end_date)
+								 ->whereNotIn('orders.order_status', [ // don't create batch, if the following order statuses are there
+																	   2,
+								 									   // Manual Redo
+								 									   3,
+																	   // On hold
+																	   7,
+																	   // returned
+																	   8,
+																	   // cancelled
+																	   6,
+																	   // Shipped
+								 ])
+								 ->where(function ($query) {
+									 return $query->where('parameter_options.batch_route_id', '!=', 115)
+												  ->whereNotNull('parameter_options.batch_route_id');
+								 })
+								 ->take(1500)
+								 ->addSelect([
+									 DB::raw('items.id AS item_table_id'),
+									 'items.item_id',
+									 'items.item_code',
+									 'items.order_id',
+									 'items.item_quantity',
+									 'items.item_thumb',
+									 DB::raw('orders.id as order_table_id'),
+									 'orders.order_id',
+									 'orders.order_date',
+								 ]);
+	
+					return $paginate ? $joining->get() : $joining->paginate(10000);
+				},
+			])
+							 ->where('batch_routes.is_deleted', 0)
+							 ->where('batch_routes.batch_max_units', '>', 0)
+							 ->get();
+		}else{
+// 			echo "CCCCCCCCCCCCCCC";
+			if ( !$search_for ) {
+				return;
+			}
+// dd($paginate, $start_date, $end_date,$search_for,$search_in);			
+			return  BatchRoute::with([
+					'stations_list',
+					'itemGroups' => function ($q) use ($paginate, $start_date, $end_date,$search_for,$search_in) {
+						$joining = $q->join('items', 'items.child_sku', '=', 'parameter_options.child_sku')
+						->join('orders', 'orders.order_id', '=', 'items.order_id')
+						->where('items.batch_number', '0')
+						->whereNull('items.tracking_number')
+						->where('items.is_deleted', 0)
+						->where('items.'.$search_in,  'LIKE', '%'.$search_for.'%')
+						->where('orders.is_deleted', 0)
+						->where('orders.order_date', '>=', $start_date)
+						->where('orders.order_date', '<=', $end_date)
+						->whereNotIn('orders.order_status', [ // don't create batch, if the following order statuses are there
+								2,
+								// Manual Redo
+								3,
+								// On hold
+								7,
+								// returned
+								8,
+								// cancelled
+								6,
+								// Shipped
+						])
+						->where(function ($query) {
+							return $query->where('parameter_options.batch_route_id', '!=', 115)
+							->whereNotNull('parameter_options.batch_route_id');
+						})
+						->take(5)
+						->addSelect([
+								DB::raw('items.id AS item_table_id'),
+								'items.item_id',
+								'items.item_code',
+								'items.order_id',
+								'items.item_quantity',
+								'items.item_thumb',
+								DB::raw('orders.id as order_table_id'),
+								'orders.order_id',
+								'orders.order_date',
+						]);
+			
+						return $paginate ? $joining->get() : $joining->paginate(10000);
+					},
+					])
+					->where('batch_routes.is_deleted', 0)
+					->where('batch_routes.batch_max_units', '>', 0)
+					->get();
+			
+		}
 	}
 
 	public static function saveStationLog ($items, $new_station_name)

@@ -109,7 +109,14 @@ class ItemController extends Controller
 
 	public function getBatch (Request $request)
 	{
-
+		
+		$search_in = [
+				'all'		=> 'All',
+				'order_id'  => 'Order',
+				'id'        => 'Item#',
+				'item_code' => 'SKU',
+				'child_sku' => 'Child SKU',
+		];
 		
 		$count = 1;
 		$serial = 1;
@@ -134,10 +141,15 @@ class ItemController extends Controller
 			$end_date = $request->end_date;
 		}
 		
-		$batch_routes = Helper::createAbleBatches(true, $start_date, $end_date);
+		$search_for_first = $request->search_for_first;
+		$search_in_first = $request->search_in_first;
+		
+		$batch_routes = Helper::createAbleBatches(true, $start_date, $end_date, $search_for_first, $search_in_first);
+		
+// 		dd($batch_routes);
 		#$batch_routes = Helper::createAbleBatches(true);
 
-		return view('items.create_batch', compact('batch_routes', 'count', 'serial', 'request'));
+		return view('items.create_batch', compact('batch_routes', 'count', 'serial', 'request','search_in'));
 	}
 
 	public function postBatch (Requests\ItemToBatchCreateRequest $request)
@@ -1951,13 +1963,13 @@ class ItemController extends Controller
 	
 	public function doctorCheckup (Request $request) {
 		$statuses = [];
-		$starting = "2016-01-01 00:00:00";
-		$ending = "2016-10-31 23:59:59";
+		$starting = "2016-11-30 00:00:00";
+		$ending = "2016-12-01 23:59:59";
 		
-		Ship::with ( 'item' )
-				->where('mail_class','LIKE','UPS Expedited Mail Innovations')
-				->whereNotNull('tracking_number')
-// 				->whereNotNull('return_address')
+		Ship::whereNotNull('tracking_number')
+				->where('transaction_datetime', '>=', $starting)
+				->where('transaction_datetime', '<=', $ending)
+				->groupBy('unique_order_id')
 				->orderBy('id', 'ASC')
 				->chunk(500, function($ships)  {
 			$i=1;
@@ -1966,9 +1978,8 @@ class ItemController extends Controller
 				foreach ($ships as $ship){
 					set_time_limit(0);
 					// Check If it UPS mail innovation
-					if(substr($ship->shipping_id, 0, 5) == "92748"){
+// 					if(substr($ship->shipping_id, 0, 5) == "92748"){
 						
-						Helper::saveUpsLabel($ship->full_xml_source, $ship->unique_order_id);
 // 						$xml = simplexml_load_string($ship->full_xml_source);
 // 						$json = json_encode($xml);
 // 						$array = json_decode($json,TRUE);
@@ -1978,18 +1989,31 @@ class ItemController extends Controller
 // 							$myfile = fopen($lock_path.$ship->unique_order_id.".gif", "wb") or die("Unable to open file!");
 // 							fwrite($myfile, $graphicImage);
 // 							fclose($myfile);
-// 							Helper::jewelDebug($i++."----".$ship->order_number."  --   ".$ship->unique_order_id."     ".$ship->tracking_number);
+
 // 						}
-					}
-					Ship::where('id', $ship->id)
-					->update([
-					'full_xml_source' => null,
-					'return_address' => null
-					]);
-//	UPDATE `shipping` SET `full_xml_source` = '' WHERE  `mail_class` NOT LIKE  'UPS Expedited Mail Innovations'					
-//	UPDATE `shipping` SET `full_xml_source`= null WHERE  `mail_class` NOT LIKE  'UPS Expedited Mail Innovations'
-// 						break;
+// 					}
+// 					Ship::where('id', $ship->id)
+// 					->update([
+// 					'full_xml_source' => null,
+// 					'return_address' => null
+// 					]);
 					
+					Order::where('order_id', $ship->order_number)
+					->update([
+						'order_status' => 6,
+					]);
+					
+					Item::where('order_id', $ship->order_number)
+					->update([
+						'tracking_number' => $ship->tracking_number,
+						'item_order_status_2' => 6,
+						'item_order_status' => "complete"
+					]);
+					Helper::jewelDebug($i++."	--	".$ship->id."	--	".$ship->order_number."  --   ".$ship->unique_order_id."     ".$ship->tracking_number. " transaction_datetime -- ".$ship->transaction_datetime);
+					
+					if($ship->order_number == "yhst-128796189915726-814826"){
+						dd($ship->order_number);
+					}
 				}
 				
 // 			dd($ships);

@@ -43,6 +43,15 @@
 		<div class = "col-xs-12">
 			{!! Form::open(['url' => url('items/batch'), 'method' => 'get']) !!}
 			<div class = "form-group col-xs-3">
+				<label for = "search_for_first">Search for 1</label>
+				{!! Form::text('search_for_first', $request->get('search_for_first'), ['id'=>'search_for_first', 'class' => 'form-control', 'placeholder' => 'Comma delimited']) !!}
+			</div>
+			<div class = "form-group col-xs-3">
+				<label for = "search_in_first">Search in 1</label>
+				{!! Form::select('search_in_first', $search_in, $request->get('search_in_first'), ['id'=>'search_in_first', 'class' => 'form-control']) !!}
+			</div>
+			
+			<div class = "form-group col-xs-3">
 				<label for = "start_date">Order Start date</label>
 				<div class = 'input-group date' id = 'start_date_picker'>
 					{!! Form::text('start_date', $request->get('start_date'), ['id'=>'start_date', 'class' => 'form-control', 'placeholder' => 'Enter start date']) !!}
@@ -88,7 +97,7 @@
 							<th>S.L#</th>
 							<th>Batch S.L#</th>
 							<th>Route</th>
-							<th>ID</th>
+							<th>Item ID<br>Ordr#</th>
 							<th>Order date</th>
 							<th>SKU</th>
 							<th>Quantity</th>
@@ -129,7 +138,7 @@
 															<td>{!! Form::checkbox('batches[]', sprintf("%s|%s|%s", $count, $batch_route->id, /*$item->product_table_id, */$item->item_table_id) ,false, ['class' => 'checkable']) !!}</td>
 															<td>
 																<a href = "{{url("orders/details/$item->order_id")}}"
-																   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item, "order_table_id")}}</a>
+																   target = "_blank">***{{\Monogram\Helper::orderIdFormatter($item, "item_table_id")}}</a>
 																	<br>
 									   							<a href = "{{ url("orders/details/".$item->order_id) }}"
 																   target = "_blank">{{\Monogram\Helper::itemOrderNameFormatter($item)}}
@@ -189,7 +198,7 @@
 														<td>{!! Form::checkbox('batches[]', sprintf("%s|%s|%s", $count, $batch_route->id, /*$item->product_table_id, */$item->item_table_id) ,false, ['class' => 'checkable']) !!}</td>
 														<td>
 															<a href = "{{url("orders/details/$item->order_id")}}"
-															   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item, "order_table_id")}}</a>
+															   target = "_blank">{{\Monogram\Helper::orderIdFormatter($item, "item_table_id")}}</a>
 																<br>
 								   							<a href = "{{ url("orders/details/".$item->order_id) }}"
 															   target = "_blank">{{\Monogram\Helper::itemOrderNameFormatter($item)}}
