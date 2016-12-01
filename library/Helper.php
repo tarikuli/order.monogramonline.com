@@ -1047,7 +1047,8 @@ APPEND;
 
 	public static function createAbleBatches ($paginate = false, $start_date, $end_date, $search_for, $search_in)
 	{
-		if($search_in == "all"){
+// 		dd($start_date, $end_date, $search_for, $search_in);
+		if(empty($search_in)){
 			return BatchRoute::with([
 				'stations_list',
 				'itemGroups' => function ($q) use ($paginate, $start_date, $end_date) {
@@ -1095,7 +1096,6 @@ APPEND;
 							 ->where('batch_routes.batch_max_units', '>', 0)
 							 ->get();
 		}else{
-// 			echo "CCCCCCCCCCCCCCC";
 			if ( !$search_for ) {
 				return;
 			}
@@ -1128,7 +1128,7 @@ APPEND;
 							return $query->where('parameter_options.batch_route_id', '!=', 115)
 							->whereNotNull('parameter_options.batch_route_id');
 						})
-						->take(5)
+						->take(1500)
 						->addSelect([
 								DB::raw('items.id AS item_table_id'),
 								'items.item_id',

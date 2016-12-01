@@ -111,7 +111,7 @@ class ItemController extends Controller
 	{
 		
 		$search_in = [
-				'all'		=> 'All',
+				''		=> 'All',
 				'order_id'  => 'Order',
 				'id'        => 'Item#',
 				'item_code' => 'SKU',
