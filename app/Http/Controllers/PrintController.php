@@ -396,7 +396,7 @@ class PrintController extends Controller
 					->groupBy('unique_order_id')
 					->orderBy('id', 'ASC')
 					->lists('order_number')
-					->take(100)
+					->take(1000)
 					->toArray();
 
 		foreach ($ships as $ship){
