@@ -388,40 +388,61 @@ class PrintController extends Controller
 	 */
 	public function sendShippingConfirmByScript (AppMailer $appMailer)
 	{
-
+		// 0,30 9-17 * * * /php /var/www/order.monogramonline.com/artisan route:call --uri=prints/sendbyscript
+			
 		$ships = Ship::whereNull('shipping_unique_id')
 					->whereNotNull('tracking_number')
+					->whereNull('shipping_unique_id')
+					->groupBy('unique_order_id')
+					->orderBy('id', 'ASC')
 					->lists('order_number')
-					->take(1500)
+					->take(100)
 					->toArray();
 
+		foreach ($ships as $ship){
+			Ship::where('order_number', 'LIKE', $ship)
+				->update([
+					'shipping_unique_id' => 'pro',
+				]);
+		}
+
+// dd($ships, array_keys($ships));		
 		$orders = $this->getOrderFromId($ships);
 
 		foreach ($orders as $order){
 			set_time_limit(0);
 			if ( !$order->customer->bill_email ) {
 				log::error('No Billing email address fount for order# '.$order->order_id);
+					Ship::where('order_number', 'LIKE', $order->order_id)
+					->update([
+						'shipping_unique_id' => 'No Email',
+					]);
 			}else{
 				// return $orders->customer->bill_email ;
 				$modules = $this->getDeliveryConfirmationEmailFromOrder($order);
 				// Send email. nortonzanini@gmail.com
 				$subject = "Your USPS-Priority Tracking Number From MonogramOnline.com (Order # ".$order->short_order.")";
+				
 				if($appMailer->sendDeliveryConfirmationEmail($modules, $order->customer->bill_email, $subject)){
 					Log::info( sprintf("Shipping Confirmation Email sent to %s Order# %s.", $order->customer->bill_email, $order->order_id) );
 
 					// Update numbe of Station assign from items_to_shift
 					Ship::where('order_number', 'LIKE', $order->order_id)
 						->update([
-						'shipping_unique_id' => 'send',
+							'shipping_unique_id' => 's',
 						]);
 					sleep(1);
 				}else{
-					log::error('No Billing email address fount for order# '.$order->order_id);
+					Ship::where('order_number', 'LIKE', $order->order_id)
+					->update([
+						'shipping_unique_id' => 'Not',
+					]);
+					log::error('No send email order# '.$order->order_id);
 				}
 			}
 		}
 
-		Helper::jewelDebug("Total ".count($orders)." email sent.");
+// 		Helper::jewelDebug("Total ".count($orders)." email sent.");
 	}
 
 

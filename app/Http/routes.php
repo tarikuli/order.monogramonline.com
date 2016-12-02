@@ -263,6 +263,6 @@ Event::listen('illuminate.query', function ($q) {
 
 //  `items`.`item_status` = statuses.id ( `statuses`.`status_name` ) = 6
 // \Monogram\Helper::getTrackingUrl($ship-->tracking_number) 
-// ->last_name item_order_status
+// shippingconfirm
 // /media/Ji-share/5p_batch_csv_export  chunk
 // UPDATE `shipping` SET `shipping_unique_id`= 'send' WHERE `shipping_unique_id` IS NULL AND `shipping_unique_id` IS NULL;
