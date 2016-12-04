@@ -136,12 +136,17 @@
 						<td>{{substr($item->order->order_date, 0, 10)}}<br>{{substr($item->order->order_date, 11, 18)}}</td>
 						<td>{!! \App\Status::where('is_deleted', 0)->lists('status_name','id')->get($item->order->order_status)  !!}</td>
 						<td>
-							{{$item->tracking_number ? ($item->tracking_number ?: "Not shipped") : "N/A"}}
+							@if($item->tracking_number)
+								<a href = "{{ \Monogram\Helper::getTrackingUrl($item->tracking_number) }}" target = "_blank">{{ $item->tracking_number }}</a>
+							@else
+								N/A
+							@endif
+							
 							{{-- {{$item->shipInfo ? ($item->shipInfo->tracking_number  ?: "Not shipped") : "N/A"}} --}}
 						</td>
 						{{--  <td>{{ $item->shipInfo ? $item->shipInfo->postmark_date : "N/A" }} --}}
-						<td><a href = "{{ url("customers/".$item->order->customer->id) }}" title = "This is customer id"
-						       class = "btn btn-link">{{ !empty($item->order->customer->ship_full_name) ? $item->order->customer->ship_full_name : $item->order->customer->bill_full_name }}</a>
+						<td>
+							{{ !empty($item->order->customer->ship_full_name) ? $item->order->customer->ship_full_name : $item->order->customer->bill_full_name }}
 						</td>
 						<td>{{$item->order->customer->ship_state}}</td>
 						<td class = "description">{{$item->item_description}}</td>

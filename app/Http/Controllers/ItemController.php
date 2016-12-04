@@ -31,6 +31,7 @@ use League\Csv\Writer;
 use Monogram\Helper;
 use Psy\Command\HelpCommand;
 use App\Customer;
+use Illuminate\Routing\Route;
 
 class ItemController extends Controller
 {
@@ -1199,10 +1200,15 @@ class ItemController extends Controller
 
 		$current_station_name = $request->get('station');
 
+		$routes_in_station = [];
+		$to_station2 = [];
+		
 		$items = Item::with('lowest_order_date', 'route.stations')
 					 ->searchCutOffOrderDate($current_station_name,$request->get('start_date'),$request->get('end_date'))
 // 					 ->searchActiveByStation($request->get('station'))
+// 					 ->searchRoute($routes_id)
 					 ->where('batch_number', '!=', '0')
+					 ->where('station_name',$current_station_name)
 					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
 					 ->where('is_deleted', 0)
 					 ->orderBy('child_sku', 'ASC')
@@ -1210,6 +1216,7 @@ class ItemController extends Controller
 
 		$stations = Station::where('is_deleted', 0)
 						   ->whereNotIn( 'station_name', Helper::$shippingStations)
+						   ->orderBy('station_name', 'ASC')
 						   ->latest()
 						   ->get()
 						   ->lists('custom_station_name', 'station_name')
@@ -1226,13 +1233,25 @@ class ItemController extends Controller
 			}
 			$route = $sku_groups->first()->route;
 			$item_thumb = $sku_groups->first()->item_thumb;
+			
 			$batch_stations = $route->stations->lists('custom_station_name', 'id')
 											  ->prepend('Select station to change', '0');
+			
 			$count = 0;
 			foreach ($sku_groups as $key => $value){
 				$count = $count + $value->item_quantity;
 			}
 
+			$routes_in_station[$route->batch_code] = $route->batch_route_name." => ".$route->batch_code;
+			
+			$to_station[$route->batch_code] = $batch_stations;
+			if($request->routes_in_station){
+				if($request->routes_in_station == $route->batch_code){
+					// $to_station[$route->batch_code] = $batch_stations;
+					$to_station2 = $to_station[$route->batch_code];
+				}
+			}
+			
 			if($value->station_name == $request->get('station')){
 				$total_count += $count;
 						$rows[] = [
@@ -1244,21 +1263,134 @@ class ItemController extends Controller
 							'min_order_date' 			=> $sku_groups->count() ? substr($sku_groups->first()->lowest_order_date->order_date, 0, 10) : "",
 							'item_count'     			=> $count,
 							'action'         			=> url(sprintf('items/active_batch/sku/%s', $sku)),
-							'route'          			=> sprintf("%s:%s", $route->batch_code, $route->batch_route_name),
+							'route'          			=> sprintf("%s => %s",$route->batch_route_name,  $route->batch_code),
 							'batch_stations' 			=> $batch_stations,
 						];
 			}
 		}
-
+		
+		 asort($routes_in_station);
+	 
+		 if(!$request->routes_in_station){
+		 	foreach ($routes_in_station as $routes_code => $routes_name){
+		 		$to_station2 = $to_station[$routes_code];
+		 		break;
+		 	}
+		 }
+		 
+// dd($stations, $routes_in_station,$to_station,$to_station2);		
 		return view('routes.active_batch_by_sku')
 			->with('rows', $rows)
 			->withRequest($request)
 			->with('stations', $stations)
+			->with('routes_in_station', $routes_in_station)
+			->with('to_station', $to_station2)
 			->with('pagination', $items->appends(request()->all())->render())
 			->with('current_station_name', $current_station_name)
 			->with('total_count', $total_count);
 	}
 
+	public function post_active_batch_by_sku (Request $request)
+	{
+
+// $sku_selected= array_flip($request->sku_selected);
+// dd($request->all(), $sku_selected);
+
+		$station = Station::where('is_deleted', 0)
+// 							->whereNotIn( 'station_name', Helper::$shippingStations)
+							->where('id', $request->to_station)
+							->take(1)
+							->lists('station_name');
+		
+		if(!isset($station[0])){
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'Please Select to Shipping station',
+			]);
+		}
+		
+		if($station[0] == 'WAP'){
+			$station[0] = "J-SHP";
+		}
+		
+		if (in_array ($station[0], Helper::$shippingStations )) {
+		
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'Can not Move in Shipping or WAP Station',
+			]);
+		}
+		
+		
+		if($request->station_route){
+			$routes = BatchRoute::where('is_deleted', 0)
+								->where('batch_code',$request->station_route)
+								->first();
+		}else{
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'Please Select Routes in Station',
+			]);
+		}
+		
+		$sku_selected= array_flip($request->sku_selected);
+		
+		foreach ($request->item_count_to as $key => $item_count_to){
+			# ----X----
+// 			Helper::jewelDebug($request->sku[$key]);
+			
+			if(isset($sku_selected[$request->sku[$key]])){
+				
+// 				Helper::jewelDebug($item_count_to." --- ".$request->item_count[$key]." --- ".$request->sku[$key]." --- ".$sku_selected[$request->sku[$key]]);
+				
+				if($item_count_to <= $request->item_count[$key]){
+					
+// 					Helper::jewelDebug($item_count_to." --- ".$request->item_count[$key]." --- ".$request->sku[$key]);
+					
+					// Update numbe of Station assign from items_to_shift
+					Item::with('lowest_order_date', 'order')
+							->where('batch_number', '!=', 0)
+							->whereNull('tracking_number')
+							->where('station_name', '=',$request->from_station) //  $current_station_name
+							->where('child_sku', $request->sku[$key])
+							->where('batch_route_id', $routes->id)
+							->limit($item_count_to)
+							->update([
+								'station_name' => $station[0],
+								'change_date' => date('Y-m-d H:i:s', strtotime('now')),
+							]);
+					
+					$items = Item::with('lowest_order_date', 'order')
+							->where('batch_number', '!=', 0)
+							->whereNull('tracking_number')
+							->where('station_name', $station[0])
+							->limit($item_count_to)
+							->where('child_sku', $request->sku[$key])
+							->where('batch_route_id', $routes->id)						
+							->get();
+				
+					// Insert station activity in station log table.
+					foreach ( $items as $item ) {
+						// Add note history by order id
+						Helper::jewelDebug("Bulk Item#".$item->id." Move to ".$station[0].", SKU: ".$request->sku[$key]." --- ".$item->order_id);
+						Helper::histort("Bulk Item# ".$item->id." Move to ".$station[0].", SKU: ".$request->sku[$key], $item->order_id);
+					}
+	// dd($ff, $items);
+					
+				}
+			}
+			
+		}
+		
+// 		dd($request->all(), $station[0]);
+		return redirect()
+				->back()
+				->with('success', sprintf("New shipping station %s moved.",$station[0]));
+			
+	}
 	public function waiting_for_another_item (Request $request)
 	{
 		// SELECT id, order_id, COUNT( 1 ) AS counts FROM items GROUP BY order_id HAVING counts > 1

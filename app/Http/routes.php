@@ -109,14 +109,18 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('batches/{batch_number}/{station_name}', 'ItemController@getBatchItems');
 		post('batches/{batch_number}/{station_name}', 'ItemController@postBatchItems');
 		post('change_station_by_sku/{sku}', 'ItemController@changeStationBySKU');
+		post('change_station_by_sku_bulk', 'ItemController@changeStationBySKUBulk');
+		
 		post('items/sku_station_done_reject', 'ItemController@rejectDoneFromSKUList');
 		post('items/partial_shipping', 'ItemController@partial_shipping');
 		get('items/waiting_for_another_item', 'ItemController@waiting_for_another_item');
-		get('items/active_batch_group', 'ItemController@get_active_batch_by_sku');
 		get('items/delete_item/{order_id}/{item_id}', 'ItemController@delete_item_id');
 
+		get('items/active_batch_group', 'ItemController@get_active_batch_by_sku');
+		post('items/active_batch_group', 'ItemController@post_active_batch_by_sku');
 
 		get('items/active_batch/sku/{sku}', 'ItemController@get_sku_on_stations');
+		
 		put('batches/{batch_number}', 'ItemController@updateBatchItems');
 		get('items/batch', 'ItemController@getBatch');
 		get('batch_details/{batch_number}', 'ItemController@batch_details');

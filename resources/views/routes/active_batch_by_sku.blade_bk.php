@@ -7,11 +7,9 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
 	<link type = "text/css" rel = "stylesheet"
+	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/css/bootstrap-select.min.css">
+	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-	<link type = "text/css" rel = "stylesheet"
-	      href = "https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
-	<link type = "text/css" rel = "stylesheet"
-	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
 </head>
 <body>
 	@include('includes.header_menu')
@@ -28,13 +26,17 @@
 				<label for = "route">Current Station</label>
 				{!! Form::select('station', $stations, $request->get('station', ''), ['id'=>'station', 'class' => 'form-control']) !!}
 			</div>
-			
 			<div class = "form-group col-xs-3">
 				<label for = "routes_in_station">Routes in Station</label>
 				{!! Form::select('routes_in_station', $routes_in_station, $request->get('routes_in_station', ''), ['id'=>'routes_in_station', 'class' => 'form-control']) !!}
 			</div>
 			
-				<div class = "form-group col-xs-1">
+			<div class = "form-group col-xs-3">
+				<label for = "to_station">To Station</label>
+				{!! Form::select('to_station', $to_station, $request->get('to_station', ''), ['id'=>'to_station', 'class' => 'form-control']) !!}
+			</div>
+			
+			<div style="visibility: hidden" >
 				<label for = "" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
 			</div>			
@@ -43,75 +45,54 @@
 		</div>
 		<div class = "col-xs-12">
 			@if(count($rows))
-			{!! Form::open(['method' => 'post', 'url' => url('items/active_batch_group'), 'id' => 'active_batch_group']) !!}
-			
-				<div class = "form-group col-xs-3">
-					<label for = "to_station">To Station</label>
-					
-					@if($request->get('routes_in_station') != null)
-						{!! Form::hidden('station_route', $request->get('routes_in_station', '')) !!}
-					@else
-						@foreach($routes_in_station as $key => $value)
-							{!! Form::hidden('station_route', $key) !!}
-							@break;
-						@endforeach
-					@endif
-					
-					{!! Form::hidden('from_station', $request->get('station', '')) !!}
-					{!! Form::select('to_station', $to_station, $request->get('to_station', ''), ['id'=>'to_station', 'class' => 'form-control']) !!}
-				</div>
-				
-				<div class = "form-group col-xs-4">
-					<label for = "update_all_sku">Make Sure you selece correct Routes and To Station</label>
-					{!! Form::submit('Update All', ['id' => 'update_all_sku', 'class' => 'btn btn-success']) !!}
-				</div>
-					
-				<table class = "table" id="active_batch_table" name="active_batch_table" >
-					<thead>
+				<table class = "table">
 					<tr>
+						<th>Select</th>
 						<th>Image</th>
 						<th>SKU</th>
 						<th>Name</th>
 						<th>Quantity</th>
 						<th>Min-Order date</th>
 						<th>Route</th>
-						<th>{!! Form::button('Select<br>Deselect all', ['id' => 'select_deselect', 'class' => 'btn btn-link']) !!}</th>
-						<th>#To</th>
+						<th># To</th>
+						<th>Assign station</th>
+						<th>Action</th>
 					</tr>
-					</thead>
-					 <tbody>
+					{!! Form::open(['url' => url('change_station_by_sku_bulk'), 'method' => 'post', 'id' => 'change_station_by_sku']) !!}
+					<div class = "form-group col-xs-1">
+						<label for = "update_all_sku">Update All</label>
+						{!! Form::button('Update All', ['id' => 'update_all_sku', 'class' => 'btn btn-success form-control']) !!}
+					</div>
 					@foreach($rows as $row)
 						<tr data-sku = "{{ $row['sku'] }}" id = "{{ $row['current_station_anchor'] }}">
 							<td>
 								<img src = "{{ $row['item_thumb'] }}"  height="42" width="42" />
 							</td>
+							<td>{{ $row['sku'] }}</td>
+							<td class = "description">{{ $row['item_name'] }}</td>
+							<td>{{ $row['item_count'] }}</td>
+							<td>{{ $row['min_order_date'] }}</td>
+							<td style = "min-width: 250px;">{{ $row['route'] }}</td>
+
 							<td>
-								{{ $row['sku'] }}
-								{!! Form::hidden('sku[]', $row['sku']) !!}
-							</td>
-							<td class = "description">
-								{{ $row['item_name'] }}
-							</td>
-							<td>
-								{{ $row['item_count'] }}
-								{!! Form::hidden('item_count[]', $row['item_count']) !!}
-							</td>
-							<td>
-								{{ $row['min_order_date'] }}
-							</td>
-							<td style = "min-width: 250px;">
-								{{ $row['route'] }}
+								<input type = "checkbox" name = "sku_number[]" class = "checkbox"
+								       value = "{{$row['sku']}}" />
 							</td>
 							<td>
-								<input type = "checkbox" name = "sku_selected[]" class = "checkbox" value = "{{$row['sku']}}" />
+									{!! Form::open(['url' => url(sprintf("change_station_by_sku/%s", $row['redriec_sku']))]) !!}
+									{!! Form::number('item_to_shift', $row['item_count'], ['class' => 'form-control', 'style' => 'min-width: 70px; max-width: 100px;']) !!}
 							</td>
 							<td>
-									{!! Form::number('item_count_to[]', $row['item_count'], ['class' => 'form-control', 'style' => 'min-width: 70px; max-width: 100px;']) !!}
+									{!! Form::select('batch_stations', $row['batch_stations'], null, ['id'=>'batch_stations', 'class' => 'form-control', 'style' => 'min-width: 190px;']) !!}
+							</td>
+							<td>
+									{!! Form::button('Update', ['id' => 'update_sku_station', 'class' => 'btn btn-success']) !!}
+									{!! Form::hidden('current_station_name', $current_station_name, ['id' => 'current_station_name']) !!}
+									{!! Form::close() !!}
 							</td>
 						</tr>
-					@endforeach	
-					</tbody>
-					<tfoot>					
+					@endforeach						
+					{!! Form::close() !!}						
 					<tr>
 						<td></td>
 						<td></td>
@@ -122,12 +103,10 @@
 						<td></td>
 						<td></td>
 					</tr>
-					</tfoot>
 				</table>
 				<div class="col-md-12 text-center">
 					{!! $pagination !!}
 				</div>
-				{!! Form::close() !!}
 			@else
 				<div class = "alert alert-warning">No data is available.</div>
 			@endif
@@ -136,16 +115,43 @@
 			{{--{!! $items->render() !!}--}}
 		</div>
 	</div>
-	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.12.3.js"></script>
+	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
-	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
-	<script type = "text/javascript" src = "https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-	<script type = "text/javascript" src = "https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
-		
 	<script type = "text/javascript">
-
+		$(function ()
+		{
+			$('[data-toggle="tooltip"]').tooltip();
+		});
 		
+// 		$("button#print_batches").on('click', function (event)
+// 		{
+// 			var url = "{{ url('/prints/batches') }}";
+// 			setFormUrlAndSubmit(url);
+// 		});
+// 		$("button#packing_slip").on('click', function (event)
+// 		{
+// 			var url = "{{ url('/prints/batch_packing') }}";
+// 			setFormUrlAndSubmit(url);
+// 		});
+
+// 		function setFormUrlAndSubmit (url)
+// 		{
+// 			var form = $("form#batch_list_form");
+// 			$(form).attr('action', url);
+// 			$(form).submit();
+// 		}
+		var state = false;
+
+		$("button#update_sku_station").on('click', function (){
+
+			event.preventDefault();
+			var selected = parseInt($(this).closest("tr").find("select#batch_stations").val());
+			if ( selected !== 0 ) {
+				$(this).closest("tr").find("form").submit();
+			}else if ( selected == 0 ) {
+				alert("Please Select station");
+			}
+		});
 
 		$("select#station").on('change', function (event)
 		{
@@ -168,33 +174,25 @@
 
 		$("input[name='item_to_shift']").on('keypress', function (event)
 		{
-// 			alert($("input[name='item_to_shift']").val())
-// 			return false;
-			
 			if ( event.keyCode == 13 ) {
 				return false;
 			}
 		});
 
-		var state = false;
-
-		$("button#select_deselect").on('click', function ()
-		{
-			state = !state;
-			$(".checkbox").prop('checked', state);
-		});
-		
-
 		$("button#update_all_sku").on('click', function (event)
 		{
-
-			
-		});
-
-		$('#active_batch_table').DataTable({
-			"paging":   false,
+			var url = "{{ url('/change_station_by_sku_bulk') }}";
+			setFormUrlAndSubmit(url);
 		});
 		
+		function setFormUrlAndSubmit (url)
+		{
+			var form = $("form#change_station_by_sku");
+// 			alert(url);
+// 			return false;
+			$(form).attr('action', url);
+			$(form).submit();
+		}
 	</script>
 </body>
 </html>
