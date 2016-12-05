@@ -698,6 +698,12 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 		$orders = $this->getOrderFromId($order_ids);
 		$modules = $this->getPackingModulesFromOrder($orders);
 		
+		if(count($modules)== 0){
+			return redirect()
+				->back()
+				->withErrors([ 'error' => 'No valide Order# found' ]);
+		}	
+		
 		return view('prints.batch_printer')->with('modules', $modules);
 
 	}
