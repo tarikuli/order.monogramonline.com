@@ -1937,7 +1937,7 @@ class ItemController extends Controller
 			];
 
 			$inputs = [
-					'order'         => $request->get('order'),
+					'order' => $request->get('order'),
 					'email' => $request->get('email'),
 			];
 
@@ -1966,6 +1966,13 @@ class ItemController extends Controller
 			}
 			
 			foreach ($orders as $key => $order){
+				
+				if(!isset($order->customer->bill_email)){
+					return redirect(url('/trk_order_status'))
+					->withErrors(new MessageBag([
+							'error' => 'Email:'.$email.' not found for Order# '.$orderNumber,
+					]));
+				}
 
 				if(($order->customer->bill_email) != $email){
 					return redirect(url('/trk_order_status'))

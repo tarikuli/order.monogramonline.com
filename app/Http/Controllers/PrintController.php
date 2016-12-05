@@ -123,6 +123,7 @@ class PrintController extends Controller
 							->toArray();
 			$order_ids = array_merge($order_id,$order_ids);
 		}
+
 		$orders = $this->getOrderFromId($order_ids);
 		$modules = $this->getPackingModulesFromOrder($orders);
 
@@ -670,6 +671,35 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 	public function reprintShippinglabel(Request $request){
 		
 		return view('prints.ups_shipping_lable')->with('labelImage', $request->get('graphicImage'));
+	}
+	
+	public function getPackingSlipPrintByOrderId(Request $request) {
+	
+		return view ( 'prints.packingSlipPrintByOrderId' );
+	}
+	
+	public function postPackingSlipPrintByOrderId(Request $request){
+		
+		$order_ids= [];
+		$unique_order_ids = $request->get ( 'unique_order_id' );
+		// remove newlines and spaces
+		$unique_order_ids = trim ( preg_replace ( '/\s+/', ',', $unique_order_ids ) );
+		
+		$unique_orderArray = explode ( ",", $unique_order_ids ) ;
+		
+		foreach ($unique_orderArray as $unique_order_id){
+			$order_id = Helper::getOrderNumber($unique_order_id);
+			if($order_id != false){
+				$order_ids[]= $order_id;
+			}
+		}
+		
+		$order_ids = array_unique($order_ids);
+		$orders = $this->getOrderFromId($order_ids);
+		$modules = $this->getPackingModulesFromOrder($orders);
+		
+		return view('prints.batch_printer')->with('modules', $modules);
+
 	}
 
 }

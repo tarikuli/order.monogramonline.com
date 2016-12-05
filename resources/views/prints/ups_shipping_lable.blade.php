@@ -13,7 +13,7 @@
 	    width:152mm; 
 	    overflow: hidden;
 	    background: #FFF; 
-	   font-size: 10px;
+	    font-size: 10px;
 	  }
   
 		@page {
