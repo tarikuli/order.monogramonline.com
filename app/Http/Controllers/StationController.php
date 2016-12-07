@@ -482,17 +482,17 @@ class StationController extends Controller {
 			$end_date = $request->end_date;
 		}
 		
-		$items = Item::join('orders', 'items.order_id', '=', 'orders.order_id')
+		$items = Item::rightJoin('orders', 'items.order_id', '=', 'orders.order_id')
 							->where('orders.is_deleted', 0)
 							->whereNotIn('orders.order_status', Helper::$orderStatus)
-							->where('orders.order_date', '>=', $start_date)
-							->where('orders.order_date', '<=', $end_date)	
+							->where('orders.order_date', '>=', sprintf("%s 00:00:00", $start_date))
+							->where('orders.order_date', '<=', sprintf("%s 23:59:59", $end_date))	
 							->where('items.is_deleted', 0)							
 							->where('items.batch_number', '!=', '0')
 							->whereNull('items.tracking_number')
 							->groupBy ( 'items.station_name' )
 							->orderBy('items.station_name')
-// 							->take(5)
+							->take(5)
 							->lists('items.station_name');
 // 							->get ();
 		

@@ -1401,8 +1401,8 @@ APPEND;
 					->where('items.is_deleted', '=', '0')
 					->where('orders.is_deleted', '=', '0')
 					->whereNotIn('orders.order_status', Helper::$orderStatus)
-					->where('orders.order_date', '>=', $start_date)
-					->where('orders.order_date', '<=', $end_date)
+					->where('orders.order_date', '>=', sprintf("%s 00:00:00", $start_date))
+					->where('orders.order_date', '<=', sprintf("%s 23:59:59", $end_date))
 // 					->take(1)
 					->get ();
 
@@ -1675,5 +1675,13 @@ APPEND;
 		$xml .= '</' . $node_block . '>' . "\n";
 	
 		return $xml;
+	}
+	
+	public static function getFileName($dir){
+		$file_list = [];
+		if (is_dir($dir)){
+			$file_list = array_values(array_diff(scandir($dir), array('..', '.')));
+		}
+		return $file_list;
 	}
 }

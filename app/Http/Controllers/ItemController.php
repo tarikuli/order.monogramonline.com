@@ -1186,11 +1186,6 @@ class ItemController extends Controller
 	{
 // dd($request->all());		
 		if (in_array ( $request->get('station'), Helper::$shippingStations )) {
-// 			return redirect(url('/summary'))
-// 				->withErrors(new MessageBag([
-// 						'error' => 'Can not move from shipping Station.',
-// 				]));
-
 			return redirect()
 			->back()
 			->withErrors([
@@ -1203,10 +1198,22 @@ class ItemController extends Controller
 		$routes_in_station = [];
 		$to_station2 = [];
 		
+		if(!$request->routes_in_station){
+			$routes_id = "all";
+		}else{
+			if($request->routes_in_station == "all"){
+				$routes_id = "all";
+			}else{
+				$routes_id = BatchRoute::where('batch_code',$request->routes_in_station)
+							->lists('id');
+				$routes_id= $routes_id[0];
+			}
+		}
+		
 		$items = Item::with('lowest_order_date', 'route.stations')
 					 ->searchCutOffOrderDate($current_station_name,$request->get('start_date'),$request->get('end_date'))
 // 					 ->searchActiveByStation($request->get('station'))
-// 					 ->searchRoute($routes_id)
+					 ->searchRoute($routes_id)
 					 ->where('batch_number', '!=', '0')
 					 ->where('station_name',$current_station_name)
 					 ->whereNull('tracking_number') // Make sure don't display whis alerady shipped
@@ -1272,12 +1279,13 @@ class ItemController extends Controller
 		 asort($routes_in_station);
 	 
 		 if(!$request->routes_in_station){
-		 	foreach ($routes_in_station as $routes_code => $routes_name){
-		 		$to_station2 = $to_station[$routes_code];
-		 		break;
-		 	}
+		 	$to_station2[''] = "Please Station Route";
+// 		 	foreach ($routes_in_station as $routes_code => $routes_name){
+// 		 		$to_station2 = $to_station[$routes_code];
+// 		 		break;
+// 		 	}
 		 }
-		 
+		 $routes_in_station['all'] = "all"; 		 
 // dd($stations, $routes_in_station,$to_station,$to_station2);		
 		return view('routes.active_batch_by_sku')
 			->with('rows', $rows)
@@ -1347,7 +1355,7 @@ class ItemController extends Controller
 // 				Helper::jewelDebug($item_count_to." --- ".$request->item_count[$key]." --- ".$request->sku[$key]." --- ".$sku_selected[$request->sku[$key]]);
 				
 				if($item_count_to <= $request->item_count[$key]){
-					
+					set_time_limit(0);
 // 					Helper::jewelDebug($item_count_to." --- ".$request->item_count[$key]." --- ".$request->sku[$key]);
 					
 					// Update numbe of Station assign from items_to_shift

@@ -40,6 +40,8 @@
 					<li><a href = "/email_templates">Email templates</a></li>
 					<li><a href = "/logistics/reset_sorting">Reset Sorting</a></li>
 					<li><a href = "/logistics/start_sorting">Start CSV Sorting</a></li>
+					<li><a href = "/prints/movePrintImageByBatch">Batch Move to Soft, Hard</a></li>
+					
 				</ul>
 			</div>
 			<div class = "col-xs-12">

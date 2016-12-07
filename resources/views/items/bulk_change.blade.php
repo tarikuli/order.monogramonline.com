@@ -11,6 +11,8 @@
 	      href = "/assets/css/bootstrap-horizon.css" />
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	 <link rel="stylesheet" href="/assets/css/chosen.min.css">
+	 
 	<style>
 		.parent-selector {
 			width: 200px;
@@ -32,7 +34,7 @@
 		<div class = "form-group">
 			{!!Form::label('station','Station',['class'=>'control-label col-xs-2'])!!}
 			<div class = "col-xs-5">
-				{!! Form::select('station', $stations, null, ['id' => 'station','class'=>'form-control']) !!}
+				{!! Form::select('station', $stations, null, ['id' => 'station','class'=>'form-control chosen']) !!}
 			</div>
 		</div>
 		<div class = "form-group">
@@ -50,7 +52,8 @@
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-
+	<script type = "text/javascript" src = "/assets/js/chosen.jquery.min.js"></script>
+	
 	<script type = "text/javascript">
 		$(document).on('change', "select.parent-selector", function (event)
 		{
@@ -101,6 +104,8 @@
 				}
 			});
 		}
+
+		$(".chosen").chosen();
 
 	</script>
 </body>

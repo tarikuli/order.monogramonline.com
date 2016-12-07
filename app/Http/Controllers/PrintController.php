@@ -9,6 +9,7 @@ use App\Customer;
 use App\Purchase;
 Use App\Ship;
 use App\SpecificationSheet;
+use App\Setting;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Monogram\AppMailer;
@@ -678,6 +679,7 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 		return view ( 'prints.packingSlipPrintByOrderId' );
 	}
 	
+	
 	public function postPackingSlipPrintByOrderId(Request $request){
 		
 		$order_ids= [];
@@ -708,4 +710,81 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 
 	}
 
+	public function getPrintImageByBatch(Request $request) {
+	
+		return view ( 'prints.printImageByBatch' );
+	}
+	
+	public function postPrintImageByBatch(Request $request){
+		
+		$order_ids= [];
+		$batch_numbers = $request->get ( 'batch_number' );
+		// remove newlines and spaces
+		$batch_numbers = trim ( preg_replace ( '/\s+/', ',', $batch_numbers ) );
+		
+		$unique_batchArray = array_unique(explode ( ",", $batch_numbers )) ;
+// 		array_unique($unique_orderArray);
+		
+		$imageSearchArray = [];
+		// Set Source file name
+		$settings = Setting::all()
+					->where('is_deleted', '0');
+		
+		$settings = $settings->toArray();
+		
+		// Put all Search Setting
+		foreach ($settings as  $fileNameIndex => $fileName){
+			// 			$this->logger("info", $fileName['supervisor_station']);
+		
+			switch ($fileName['supervisor_station']) {
+				case "imageSearch":
+					$imageSearchArray[$fileName['default_shipping_rule']] = $fileName['default_route_id'];
+					break;
+				case "source_image_dir":
+					$source_image_dir = $fileName['default_route_id'];
+					break;
+			}
+		
+		}
+
+	
+		// Get Unique search key from imageSearchArray
+		$imageUniqueSearchKeys = array_unique(array_keys($imageSearchArray ));
+		
+		// Get All  directory from
+		if(file_exists ($source_image_dir)){
+			
+			$source_image_dir_list = Helper::getFileName($source_image_dir);
+						
+			// Loop in Each Dir for Execute Business Logic
+			foreach ($source_image_dir_list as $file_name){
+				$file_copy_from = $source_image_dir.'/'.$file_name;
+				
+				foreach ($unique_batchArray as $batch_number){
+					if (strpos($file_name, $batch_number) !== false) {
+						Helper::jewelDebug($source_image_dir.'/'.$file_name);
+						if (strpos($file_name, "soft") !== false) {
+							$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/soft/";
+							$move_to_soft_dir= $move_to_soft_dir.$file_name;
+							Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+							shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+						}if (strpos($file_name, "hard") !== false) {
+							$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/hard/";
+							$move_to_soft_dir= $move_to_soft_dir.$file_name;
+							Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+							shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+						}
+					}
+				}
+				
+				
+			}
+		}
+		
+	
+		return redirect()
+		->back()
+		->with('success', "File moves");
+	
+	}
 }

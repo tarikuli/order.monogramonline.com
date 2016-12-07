@@ -60,6 +60,8 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('prints/packing_slip/bulk', 'PrintController@getPackingSlipPrintByOrderId');
 		post('prints/packing_slip/bulk', 'PrintController@postPackingSlipPrintByOrderId');
 		
+		get('prints/movePrintImageByBatch', 'PrintController@getPrintImageByBatch');
+		post('prints/movePrintImageByBatch', 'PrintController@postPrintImageByBatch');
 		
 		get('prints/shippinglable', 'PrintController@printShippingLableByOrderId');
 		post('prints/shippinglabel_reprint', 'PrintController@reprintShippinglabel');

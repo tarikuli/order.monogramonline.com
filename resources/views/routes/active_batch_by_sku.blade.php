@@ -12,6 +12,7 @@
 	      href = "https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="/assets/css/chosen.min.css">
 </head>
 <body>
 	@include('includes.header_menu')
@@ -30,15 +31,16 @@
 			</div>
 			
 			<div class = "form-group col-xs-3">
-				<label for = "routes_in_station">Routes in Station</label>
-				{!! Form::select('routes_in_station', $routes_in_station, $request->get('routes_in_station', ''), ['id'=>'routes_in_station', 'class' => 'form-control']) !!}
+				<label for = "routes_in_station">Station Routes</label>
+				{!! Form::select('routes_in_station', $routes_in_station, $request->get('routes_in_station', 'all'), ['id'=>'routes_in_station', 'class' => 'form-control']) !!}
 			</div>
 			
 				<div class = "form-group col-xs-1">
 				<label for = "" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
 			</div>			
-			
+				{!! Form::hidden('start_date', $request->get('start_date', '2016-06-01')) !!}
+				{!! Form::hidden('end_date', $request->get('end_date', '2020-12-31')) !!}
 			{!! Form::close() !!}
 		</div>
 		<div class = "col-xs-12">
@@ -47,7 +49,6 @@
 			
 				<div class = "form-group col-xs-3">
 					<label for = "to_station">To Station</label>
-					
 					@if($request->get('routes_in_station') != null)
 						{!! Form::hidden('station_route', $request->get('routes_in_station', '')) !!}
 					@else
@@ -58,7 +59,7 @@
 					@endif
 					
 					{!! Form::hidden('from_station', $request->get('station', '')) !!}
-					{!! Form::select('to_station', $to_station, $request->get('to_station', ''), ['id'=>'to_station', 'class' => 'form-control']) !!}
+					{!! Form::select('to_station', $to_station, $request->get('to_station', ''), ['id'=>'to_station', 'class' => 'form-control chosen']) !!}
 				</div>
 				
 				<div class = "form-group col-xs-4">
@@ -142,6 +143,7 @@
 	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 	<script type = "text/javascript" src = "https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 	<script type = "text/javascript" src = "https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<script type = "text/javascript" src = "/assets/js/chosen.jquery.min.js"></script>
 		
 	<script type = "text/javascript">
 
@@ -149,21 +151,21 @@
 
 		$("select#station").on('change', function (event)
 		{
-			event.preventDefault();
-			var selected = parseInt($(this).val());
-			if ( selected !== 0 ) {
-				$(this).closest('form').submit();
-			}
+// 			event.preventDefault();
+// 			var selected = parseInt($(this).val());
+// 			if ( selected !== 0 ) {
+// 				$(this).closest('form').submit();
+// 			}
 		});
 
-		$("select#routes_in_station").on('change', function (event)
-		{
-			event.preventDefault();
-			var selected = parseInt($(this).val());
-			if ( selected !== 0 ) {
-				$(this).closest('form').submit();
-			}
-		});
+// 		$("select#routes_in_station").on('change', function (event)
+// 		{
+// 			event.preventDefault();
+// 			var selected = parseInt($(this).val());
+// 			if ( selected !== 0 ) {
+// 				$(this).closest('form').submit();
+// 			}
+// 		});
 		
 
 		$("input[name='item_to_shift']").on('keypress', function (event)
@@ -194,7 +196,8 @@
 		$('#active_batch_table').DataTable({
 			"paging":   false,
 		});
-		
+
+		$(".chosen").chosen();
 	</script>
 </body>
 </html>
