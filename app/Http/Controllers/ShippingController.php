@@ -94,16 +94,16 @@ class ShippingController extends Controller
 					'ship_country' => $request->get('country'),																											
 				]);
 		
-		Ship::where('order_number', $request->get('order_number'))
-			->where('is_deleted', 0)
-			->whereNull('tracking_number')
-			->update([
-					'address1' => $request->get('address1'),
-					'city' => $request->get('city'),
-					'state_city' => $request->get('state_city'),
-					'postal_code' => $request->get('postal_code'),
-					'country' => $request->get('country'),
-			]);
+// 		Ship::where('order_number', $request->get('order_number'))
+// 			->where('is_deleted', 0)
+// 			->whereNull('tracking_number')
+// 			->update([
+// 					'address1' => $request->get('address1'),
+// 					'city' => $request->get('city'),
+// 					'state_city' => $request->get('state_city'),
+// 					'postal_code' => $request->get('postal_code'),
+// 					'country' => $request->get('country'),
+// 			]);
 			
 // 		return redirect()
 // 				->back()

@@ -318,6 +318,7 @@ class ItemController extends Controller
 
 		$rows = [ ];
 		$total_itemss = 0;
+		
 		foreach ( $items as $item ) {
 			$row = [ ];
 			#$item_first_station = $item->groupedItems[0]->station_name;
@@ -2204,6 +2205,30 @@ class ItemController extends Controller
 // 		});
 // 		Helper::jewelDebug("Complete");
 // 	}
+	
+	public function maintenance (Request $request) {
+		
+		$orders = Order::where('order_status','8')
+						->lists('order_id')
+						->toArray();
+		
+			
+		foreach ($orders as $order_id){
+			set_time_limit(0);
+// 			Helper::jewelDebug($order_id);
+			Helper::deleteByOrderId($order_id);
+		}
+		
+		Order::where('is_deleted', '1')->delete();
+		Item::where('is_deleted', '1')->delete();
+		Customer::where('is_deleted', '1')->delete();
+		Note::where('is_deleted', '1')->delete();
+		Ship::where('is_deleted', '1')->delete();
+		
+		dd($orders);
+		
+		
+	}
 	
 	public function doctorCheckup (Request $request) {
 		$statuses = [];

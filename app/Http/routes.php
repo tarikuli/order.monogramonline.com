@@ -139,6 +139,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		// Add changeBatchStation
 		put('items/{batch_number}', 'ItemController@changeBatchStation');
 
+		get('items/maintenance', 'ItemController@maintenance');
 		get('items/doctor', 'ItemController@doctorCheckup');
 		get('items/grouped', 'ItemController@getGroupedBatch');
 		get('items/release/{item_id}', 'ItemController@release');
