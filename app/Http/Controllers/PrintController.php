@@ -390,15 +390,20 @@ class PrintController extends Controller
 	 */
 	public function sendShippingConfirmByScript (AppMailer $appMailer)
 	{
-		// 0,30 9-17 * * * /php /var/www/order.monogramonline.com/artisan route:call --uri=prints/sendbyscript
-			
+		// 0,30 9-17 * * * /php /var/www/order.monogramonline.com/artisan route:call --uri=prints/sendbyscript >> /dev/null 2>&1
+	
+//	SELECT *  FROM  `shipping` WHERE  `tracking_number` IS NOT NULL AND  `shipping_unique_id` LIKE  'pro'
+							
+//	UPDATE `shipping` SET  `shipping_unique_id` = NULL WHERE  `tracking_number` IS NULL AND  `shipping_unique_id` LIKE  'pro'			
+//	UPDATE `shipping` SET  `shipping_unique_id` = 's' WHERE  `tracking_number` IS NOT NULL AND  `shipping_unique_id` LIKE  'pro';
+		
 		$ships = Ship::whereNull('shipping_unique_id')
 					->whereNotNull('tracking_number')
 					->whereNull('shipping_unique_id')
 					->groupBy('unique_order_id')
 					->orderBy('id', 'ASC')
 					->lists('order_number')
-					->take(1000)
+					->take(500)
 					->toArray();
 
 		foreach ($ships as $ship){
@@ -563,7 +568,11 @@ class PrintController extends Controller
 		// To address
 		$address = new \Ups\Entity\Address();
 		$address->setAddressLine1($customer['ship_address_1']);
-		$address->setAddressLine2($customer['ship_address_2']);
+		if(isset($customer['ship_address_2'])){
+			$address->setAddressLine2($customer['ship_address_2']);
+		}else{
+			$address->setAddressLine2('');
+		}
 		$address->setAddressLine3('');
 		$address->setPostalCode($customer['ship_zip']);
 		$address->setCity($customer['ship_city']);
