@@ -144,7 +144,7 @@ class ShippingController extends Controller
 				return response()->json([
 						'order_number' 		=> $ships[0]->order_number,
 						'unique_order_id' 	=> $ships[0]->unique_order_id,
-						'mail_class' 	=> $ships[0]->mail_class,
+						'mail_class' 		=> $ships[0]->mail_class,
 						'tracking_number' 	=> $ships[0]->tracking_number,
 						'name' 				=> $ships[0]->name,
 						'company' 			=> $ships[0]->company,

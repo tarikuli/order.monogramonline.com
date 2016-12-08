@@ -492,7 +492,7 @@ class StationController extends Controller {
 							->whereNull('items.tracking_number')
 							->groupBy ( 'items.station_name' )
 							->orderBy('items.station_name')
-// 							->take(5)
+							->take(5)
 							->lists('items.station_name');
 // 							->get ();
 		

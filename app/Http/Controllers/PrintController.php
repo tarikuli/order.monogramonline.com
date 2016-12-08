@@ -717,6 +717,18 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 	
 	public function postPrintImageByBatch(Request $request){
 		
+		//find ~ -name 'xx*'
+
+		$last_line = exec("find / -name 'xx*'", $retval);
+// 		Helper::jewelDebug($last_line);
+// 		Helper::jewelDebug($retval);
+
+		echo '<pre>';
+		echo '
+</pre>
+<hr />Return value: ' . print_r($retval);
+dd($request->all());		
+		//---------------------------------------
 		$order_ids= [];
 		$batch_numbers = $request->get ( 'batch_number' );
 		// remove newlines and spaces
@@ -761,6 +773,7 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 				$file_copy_from = $source_image_dir.'/'.$file_name;
 				
 				foreach ($unique_batchArray as $batch_number){
+					
 					if (strpos($file_name, $batch_number) !== false) {
 						Helper::jewelDebug($source_image_dir.'/'.$file_name);
 						if (strpos($file_name, "soft") !== false) {

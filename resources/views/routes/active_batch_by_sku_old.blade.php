@@ -26,28 +26,20 @@
 				<label for = "route">Current Station</label>
 				{!! Form::select('station', $stations, $request->get('station', ''), ['id'=>'station', 'class' => 'form-control']) !!}
 			</div>
-			<div class = "form-group col-xs-3">
-				<label for = "routes_in_station">Routes in Station</label>
-				{!! Form::select('routes_in_station', $routes_in_station, $request->get('routes_in_station', ''), ['id'=>'routes_in_station', 'class' => 'form-control']) !!}
-			</div>
 			
-			<div class = "form-group col-xs-3">
-				<label for = "to_station">To Station</label>
-				{!! Form::select('to_station', $to_station, $request->get('to_station', ''), ['id'=>'to_station', 'class' => 'form-control']) !!}
-			</div>
 			
-			<div style="visibility: hidden" >
-				<label for = "" class = ""></label>
+			<div class = "form-group col-xs-1">
+				<label for = "search" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 2px;', 'class' => 'btn btn-primary form-control']) !!}
 			</div>			
-			
+			{!! Form::hidden('start_date', $request->get('start_date', '2016-06-01')) !!}
+			{!! Form::hidden('end_date', $request->get('end_date', '2020-12-31')) !!}
 			{!! Form::close() !!}
 		</div>
 		<div class = "col-xs-12">
 			@if(count($rows))
 				<table class = "table">
 					<tr>
-						<th>Select</th>
 						<th>Image</th>
 						<th>SKU</th>
 						<th>Name</th>
@@ -58,11 +50,6 @@
 						<th>Assign station</th>
 						<th>Action</th>
 					</tr>
-					{!! Form::open(['url' => url('change_station_by_sku_bulk'), 'method' => 'post', 'id' => 'change_station_by_sku']) !!}
-					<div class = "form-group col-xs-1">
-						<label for = "update_all_sku">Update All</label>
-						{!! Form::button('Update All', ['id' => 'update_all_sku', 'class' => 'btn btn-success form-control']) !!}
-					</div>
 					@foreach($rows as $row)
 						<tr data-sku = "{{ $row['sku'] }}" id = "{{ $row['current_station_anchor'] }}">
 							<td>
@@ -74,10 +61,6 @@
 							<td>{{ $row['min_order_date'] }}</td>
 							<td style = "min-width: 250px;">{{ $row['route'] }}</td>
 
-							<td>
-								<input type = "checkbox" name = "sku_number[]" class = "checkbox"
-								       value = "{{$row['sku']}}" />
-							</td>
 							<td>
 									{!! Form::open(['url' => url(sprintf("change_station_by_sku/%s", $row['redriec_sku']))]) !!}
 									{!! Form::number('item_to_shift', $row['item_count'], ['class' => 'form-control', 'style' => 'min-width: 70px; max-width: 100px;']) !!}
@@ -92,7 +75,6 @@
 							</td>
 						</tr>
 					@endforeach						
-					{!! Form::close() !!}						
 					<tr>
 						<td></td>
 						<td></td>
@@ -143,7 +125,6 @@
 		var state = false;
 
 		$("button#update_sku_station").on('click', function (){
-
 			event.preventDefault();
 			var selected = parseInt($(this).closest("tr").find("select#batch_stations").val());
 			if ( selected !== 0 ) {

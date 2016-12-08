@@ -41,6 +41,7 @@
 			</div>			
 				{!! Form::hidden('start_date', $request->get('start_date', '2016-06-01')) !!}
 				{!! Form::hidden('end_date', $request->get('end_date', '2020-12-31')) !!}
+				<a href = "{{url(sprintf('items/active_batch_group_old?station=%s&start_date=%s&end_date=%s',$request->get('station', ''),$request->get('start_date', '2016-06-01'), $request->get('end_date', '2020-12-31')))}}"  target = "_blank">View Old Style</a>
 			{!! Form::close() !!}
 		</div>
 		<div class = "col-xs-12">
