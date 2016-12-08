@@ -2059,11 +2059,12 @@ class ItemController extends Controller
 // 			$orders = Order::with ('items', 'shipping', 'customer' )
 			$orders = Order::with ('items', 'customer' )
 // 						->where('short_order','like', $orderNumber)
-						->where('short_order', 'LIKE', sprintf("%%%s%%", $orderNumber))
+						//->where('short_order', 'LIKE', sprintf("%%%s%%", $orderNumber))
+						->where('short_order', 'LIKE', $orderNumber)
 // 						->where('bill_email','=', $email)
 						->limit(1)
 						->get();
-			
+
 			if($orders->count() == 0){
 				return redirect(url('/trk_order_status'))
 				->withErrors(new MessageBag([
@@ -2234,89 +2235,94 @@ class ItemController extends Controller
 		
 	}
 	
-	public function doctorCheckup (Request $request) {
-		$statuses = [];
-		$starting = "2016-11-30 00:00:00";
-		$ending = "2016-12-01 23:59:59";
+// 	public function doctorCheckup (Request $request) {
+// 		$statuses = [];
+// 		$starting = "2016-11-30 00:00:00";
+// 		$ending = "2016-12-01 23:59:59";
 		
-		Ship::whereNotNull('tracking_number')
-				->where('transaction_datetime', '>=', $starting)
-				->where('transaction_datetime', '<=', $ending)
-				->groupBy('unique_order_id')
-				->orderBy('id', 'ASC')
-				->chunk(500, function($ships)  {
-			$i=1;
+// 		Ship::whereNotNull('tracking_number')
+// 				->where('transaction_datetime', '>=', $starting)
+// 				->where('transaction_datetime', '<=', $ending)
+// 				->groupBy('unique_order_id')
+// 				->orderBy('id', 'ASC')
+// 				->chunk(500, function($ships)  {
+// 			$i=1;
 
 
-				foreach ($ships as $ship){
-					set_time_limit(0);
-					// Check If it UPS mail innovation
-// 					if(substr($ship->shipping_id, 0, 5) == "92748"){
+// 				foreach ($ships as $ship){
+// 					set_time_limit(0);
+// 					// Check If it UPS mail innovation
+// // 					if(substr($ship->shipping_id, 0, 5) == "92748"){
 						
-// 						$xml = simplexml_load_string($ship->full_xml_source);
-// 						$json = json_encode($xml);
-// 						$array = json_decode($json,TRUE);
-// 						if($array['PackageResults']['LabelImage']['GraphicImage']){
-// 							$graphicImage = base64_decode($array['PackageResults']['LabelImage']['GraphicImage']);
-// 							$lock_path = public_path('assets/images/shipping_label/');
-// 							$myfile = fopen($lock_path.$ship->unique_order_id.".gif", "wb") or die("Unable to open file!");
-// 							fwrite($myfile, $graphicImage);
-// 							fclose($myfile);
+// // 						$xml = simplexml_load_string($ship->full_xml_source);
+// // 						$json = json_encode($xml);
+// // 						$array = json_decode($json,TRUE);
+// // 						if($array['PackageResults']['LabelImage']['GraphicImage']){
+// // 							$graphicImage = base64_decode($array['PackageResults']['LabelImage']['GraphicImage']);
+// // 							$lock_path = public_path('assets/images/shipping_label/');
+// // 							$myfile = fopen($lock_path.$ship->unique_order_id.".gif", "wb") or die("Unable to open file!");
+// // 							fwrite($myfile, $graphicImage);
+// // 							fclose($myfile);
 
-// 						}
-// 					}
-// 					Ship::where('id', $ship->id)
+// // 						}
+// // 					}
+// // 					Ship::where('id', $ship->id)
+// // 					->update([
+// // 					'full_xml_source' => null,
+// // 					'return_address' => null
+// // 					]);
+					
+// 					Order::where('order_id', $ship->order_number)
 // 					->update([
-// 					'full_xml_source' => null,
-// 					'return_address' => null
+// 						'order_status' => 6,
 // 					]);
 					
-					Order::where('order_id', $ship->order_number)
-					->update([
-						'order_status' => 6,
-					]);
+// 					Item::where('order_id', $ship->order_number)
+// 					->update([
+// 						'tracking_number' => $ship->tracking_number,
+// 						'item_order_status_2' => 6,
+// 						'item_order_status' => "complete"
+// 					]);
+// 					Helper::jewelDebug($i++."	--	".$ship->id."	--	".$ship->order_number."  --   ".$ship->unique_order_id."     ".$ship->tracking_number. " transaction_datetime -- ".$ship->transaction_datetime);
 					
-					Item::where('order_id', $ship->order_number)
-					->update([
-						'tracking_number' => $ship->tracking_number,
-						'item_order_status_2' => 6,
-						'item_order_status' => "complete"
-					]);
-					Helper::jewelDebug($i++."	--	".$ship->id."	--	".$ship->order_number."  --   ".$ship->unique_order_id."     ".$ship->tracking_number. " transaction_datetime -- ".$ship->transaction_datetime);
-					
-					if($ship->order_number == "yhst-128796189915726-814826"){
-						dd($ship->order_number);
-					}
-				}
-				
-// 			dd($ships);
-			
-		});
-
-	}
-
-// 	public function doctorCheckup (Request $request) {
-
-
-// 		$ordersx = Item::where('child_sku', 'LIKE', sprintf("%%%s%%", '-no,thankyou'))->chunk(1000, function($items) {
-
-// 				set_time_limit(0);
-// 				$i=1;
-// 				foreach ($items as $item){
-// 					Helper::jewelDebug($i++."		".$item->id."		".$item->child_sku);
-// 					$removed = str_replace("-no,thankyou","",$item->child_sku);
-// 					Helper::jewelDebug($removed);
-
-// // 					Item::where('id', $item->id)
-// // 					->update([
-// // 						'child_sku' => $removed,
-// // 					]);
-
+// 					if($ship->order_number == "yhst-128796189915726-814826"){
+// 						dd($ship->order_number);
+// 					}
 // 				}
-
-
+				
+// // 			dd($ships);
+			
 // 		});
 
+// 	}
+
+	public function doctorCheckup (Request $request) {
+		$starting = "2016-11-01 00:00:00";
+		$ending = "2016-12-07 23:59:59";
+
+		$ordersx = Item::where('created_at', '>=', $starting)
+						->where('created_at', '<=', $ending)
+						->groupBy('order_id')
+						->orderBy('id', 'ASC')
+						->chunk(1000, function($items) {
+
+				set_time_limit(0);
+				$i=1;
+				foreach ($items as $item){
+// 					Helper::jewelDebug($i++."		".$item->id."		".$item->order_id);
+					$orders = Order::where('order_id',$item->order_id)
+									->lists('order_id')
+									->toArray();
+// 					Helper::jewelDebug($orders);
+					if(count($orders)== 0){
+						Helper::jewelDebug($i++."Test: ".$item->id."		".$item->order_id);
+					}
+
+				}
+// 				dd($items);
+			});
+
+		}
 
 // // 		$ordersx = Option::where('child_sku', 'LIKE', sprintf("%%%s%%", '-no,thankyou'))
 // // 						->where('batch_route_id','115')

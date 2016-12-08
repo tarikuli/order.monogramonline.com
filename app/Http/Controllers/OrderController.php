@@ -1193,7 +1193,7 @@ return $request->all();
 		$items = Item::where('order_id', $order_id)
 					   ->where('is_deleted', 0)
 					   ->get();
-
+		
 		foreach ( $items as $item_from ) {
 			$item = new Item();
 			$item->order_id = $order_id_new;
@@ -1223,7 +1223,7 @@ return $request->all();
 
 		return redirect()
 		->to(url('orders/details/'.$order_id_new))
-		->with('success', 'Stations changed successfully.');
+		->with('success', 'Manul re-order  success.');
 
 	}
 
