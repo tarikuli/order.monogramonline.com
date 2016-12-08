@@ -2220,9 +2220,13 @@ class ItemController extends Controller
 		}
 		
 		Order::where('is_deleted', '1')->delete();
+		set_time_limit(0);
 		Item::where('is_deleted', '1')->delete();
+		set_time_limit(0);
 		Customer::where('is_deleted', '1')->delete();
+		set_time_limit(0);
 		Note::where('is_deleted', '1')->delete();
+		set_time_limit(0);
 		Ship::where('is_deleted', '1')->delete();
 		
 		dd($orders);
