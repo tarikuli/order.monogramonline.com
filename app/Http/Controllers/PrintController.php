@@ -716,33 +716,23 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 	}
 	
 	public function postPrintImageByBatch(Request $request){
-		
-		//find ~ -name 'xx*'
-
-		$last_line = exec("find / -name 'xx*'", $retval);
-// 		Helper::jewelDebug($last_line);
-// 		Helper::jewelDebug($retval);
-
-		echo '<pre>';
-		echo '
-</pre>
-<hr />Return value: ' . print_r($retval);
-dd($request->all());		
-		//---------------------------------------
 		$order_ids= [];
-		$batch_numbers = $request->get ( 'batch_number' );
-		// remove newlines and spaces
-		$batch_numbers = trim ( preg_replace ( '/\s+/', ',', $batch_numbers ) );
+		$batchNumbersNotFound =[];
+		$batchFileNotFound = [];
+		$batchMoveGood = [];
 		
-		$unique_batchArray = array_unique(explode ( ",", $batch_numbers )) ;
-// 		array_unique($unique_orderArray);
+		$batchNumbers = $request->get ( 'batch_number' );
+		// remove newlines and spaces
+		$batchNumbers = trim ( preg_replace ( '/\s+/', ',', $batchNumbers ) );
+		$uniqueBatchArray = array_unique(explode ( ",", $batchNumbers )) ;
 		
 		$imageSearchArray = [];
+		$source_image_dir = "";
 		// Set Source file name
 		$settings = Setting::all()
-					->where('is_deleted', '0');
-		
-		$settings = $settings->toArray();
+								->where('is_deleted', '0')
+								->toArray();
+								
 		
 		// Put all Search Setting
 		foreach ($settings as  $fileNameIndex => $fileName){
@@ -758,46 +748,77 @@ dd($request->all());
 			}
 		
 		}
-
-	
-		// Get Unique search key from imageSearchArray
-		$imageUniqueSearchKeys = array_unique(array_keys($imageSearchArray ));
-		
+// dd($source_image_dir);
 		// Get All  directory from
 		if(file_exists ($source_image_dir)){
 			
-			$source_image_dir_list = Helper::getFileName($source_image_dir);
-						
-			// Loop in Each Dir for Execute Business Logic
-			foreach ($source_image_dir_list as $file_name){
-				$file_copy_from = $source_image_dir.'/'.$file_name;
-				
-				foreach ($unique_batchArray as $batch_number){
+			foreach ($uniqueBatchArray as $batchNumber){
+				$retval=[];
+				$last_line = exec("find ".$source_image_dir." -name '".$batchNumber."*'", $retval);
+// 				$last_line = exec("find /home/jewel/Documents/graphics_Done -name '".$batchNumber."*'", $retval);
+				// find /media/Ji-share/graphics_Done -name '30853*'
+				if(count($retval)== 0){
+					$batchNumbersNotFound[] = $batchNumber;
 					
-					if (strpos($file_name, $batch_number) !== false) {
-						Helper::jewelDebug($source_image_dir.'/'.$file_name);
-						if (strpos($file_name, "soft") !== false) {
-							$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/soft/";
-							$move_to_soft_dir= $move_to_soft_dir.$file_name;
-							Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
-							shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
-						}if (strpos($file_name, "hard") !== false) {
-							$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/hard/";
-							$move_to_soft_dir= $move_to_soft_dir.$file_name;
-							Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
-							shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+				}else{
+// 					Helper::jewelDebug($retval);
+					$file_count_in_directory = 0;
+					foreach ($retval as  $file_copy_from){
+						if(is_file($file_copy_from)){
+							$fileName = explode("/", $file_copy_from);
+							$getLast =count($fileName);
+							if(isset($fileName[$getLast-1])){
+								$file_name =$fileName[$getLast-1];
+								if (strpos($file_name, "soft") !== false) {
+									$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/soft/";
+									$move_to_soft_dir= $move_to_soft_dir.$file_name;
+// 									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+									$file_count_in_directory ++;
+								}if (strpos($file_name, "hard") !== false) {
+									$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/hard/";
+									$move_to_soft_dir= $move_to_soft_dir.$file_name;
+// 									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+									$file_count_in_directory ++;
+								}
+							}
+// 							Helper::jewelDebug($fileName);
+// 							Helper::jewelDebug(($getLast-1)." -- ".$fileName[$getLast-1]);
+							
 						}
 					}
+					
+					if($file_count_in_directory == 0){
+						$batchFileNotFound[] = $batchNumber;
+	// 					Helper::jewelDebug("Total file count = ".$file_count_in_directory);
+					}else{
+						$batchMoveGood[] = $batchNumber;
+					}
+					
+						
 				}
-				
-				
 			}
+		} else {
+			return redirect()
+						->back()
+						->withErrors([ 'error' => 'source_image_dir not found go to Setting Table' ]);
+			
 		}
 		
-	
-		return redirect()
-		->back()
-		->with('success', "File moves");
+// 		Helper::jewelDebug("No File found for Batch# ");
+// 		Helper::jewelDebug($batchNumbersNotFound);
+
+// 		Helper::jewelDebug("File Not found in Batch# ");
+// 		Helper::jewelDebug($batchFileNotFound);
+		
+		
+
+		return view('prints.printImageByBatch')
+				->with('success', "File moves")
+				->with('batchNumbersNotFound', $batchNumbersNotFound)
+				->with('batchFileNotFound', $batchFileNotFound)
+				->with('batchMoveGood', $batchMoveGood);
 	
 	}
 }

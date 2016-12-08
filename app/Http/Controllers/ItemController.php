@@ -1469,7 +1469,7 @@ class ItemController extends Controller
 					// Insert station activity in station log table.
 					foreach ( $items as $item ) {
 						// Add note history by order id
-						Helper::jewelDebug("Bulk Item#".$item->id." Move to ".$station[0].", SKU: ".$request->sku[$key]." --- ".$item->order_id);
+// 						Helper::jewelDebug("Bulk Item#".$item->id." Move to ".$station[0].", SKU: ".$request->sku[$key]." --- ".$item->order_id);
 						Helper::histort("Bulk Item# ".$item->id." Move to ".$station[0].", SKU: ".$request->sku[$key], $item->order_id);
 					}
 	// dd($ff, $items);
@@ -1881,7 +1881,7 @@ class ItemController extends Controller
 
 		return view ( 'items.bulk_item_change' );
 	}
-
+	//TODO Helper::populateShippingData ( $item ); fix
 	public function postBulkItemChange (Request $request) {
 
 		$posted_batches = $request->get ( 'item_id' );

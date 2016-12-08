@@ -28,6 +28,9 @@
 		@include('includes.success_div')
 
 		{!! Form::open(['url' => url('prints/movePrintImageByBatch'), 'method' => 'post', 'class'=>'form-horizontal', 'role'=>'form']) !!}
+		Directory and File naming rules<br>
+			<b>Batch Number</b>-<b>Printer Profile</b>-XXX-XXX<br>
+			<b>EX: </b>32449-soft-pen-sub
 		<div class = "form-group">
 			{!!Form::label('batch_number','Batch#',['class'=>'control-label col-xs-2'])!!}
 			<div class = "col-xs-5">
@@ -41,6 +44,40 @@
 			</div>
 		</div>
 		{!! Form::close() !!}
+		<table class = "table table-bordered">
+			<tr>
+			<td><b>Batch# Moved Good</b></td>
+			<td><b>Batch# Not Found</b></td>
+			<td><b>File Not found in Batch# </b></td>
+			</tr>
+			
+		<tr>
+			<td>
+				@if(isset($batchMoveGood))
+					@foreach($batchMoveGood as $batchNumber)
+						{{ $batchNumber }}<br>
+					@endforeach
+				@endif
+			</td>
+			<td>
+				@if(isset($batchNumbersNotFound))
+					@foreach($batchNumbersNotFound as $batchNumber)
+						{{ $batchNumber }}<br>
+					@endforeach
+				@endif
+			</td>
+			<td>
+				@if(isset($batchFileNotFound))
+					@foreach($batchFileNotFound as $batchNumber)
+						{{ $batchNumber }}<br>
+					@endforeach
+				@endif
+			</td>
+		</tr>
+		</table>
+
+		
+
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
