@@ -203,6 +203,7 @@ return $request->all();
 		$order = Order::where('order_id', $id)
 					  ->latest()
 					  ->first();
+		
 		$order->order_status = Status::where('status_code', $request->get('order_status'))
 									 ->first()->id;
 
@@ -242,8 +243,13 @@ return $request->all();
 			$item->item_option = json_encode($json);
 			$item->item_order_status_2 = $order->order_status;
 			$item->save();
-			Helper::addInventoryByStockNumber(null, $child_sku[$index]);
+			if($order->order_status == 8){
+				Helper::release ($item->id, "Order details");
+			}else{
+				Helper::addInventoryByStockNumber(null, $child_sku[$index]);
+			}
 			$index++;
+			
 		}
 		$item_skus = $request->get('item_skus');
 		if ( count($item_skus) ) {
@@ -299,25 +305,25 @@ return $request->all();
 						->whereNull('tracking_number')
 						->get();
 
-		if ( !empty($ships) ) {
-			Ship::where('order_number',$id)
-				->whereNull('tracking_number')
-				->update([
-// 					'name' => sprintf("%s %s", $request->get('ship_first_name'), $request->get('ship_last_name')),
-// 					'last_name' => $request->get('ship_last_name'),
-// 					'company' => $request->get('ship_company_name'),
-// 					'address1' => $request->get('ship_address_1'),
-// 					'address2' => $request->get('ship_address_2'),
-// 					'city' => $request->get('ship_city'),
-// 					'state_city' => $request->get('ship_state'),
-// 					'postal_code' => $request->get('ship_zip'),
-// 					'country' => $request->get('ship_country'),
-// 					'email' => $request->get('bill_email'),
-// 					'phone' => $request->get('ship_phone'),
-					'mail_class' => $request->get('shipping_method'),
-				]);
+// 		if ( !empty($ships) ) {
+// 			Ship::where('order_number',$id)
+// 				->whereNull('tracking_number')
+// 				->update([
+// // 					'name' => sprintf("%s %s", $request->get('ship_first_name'), $request->get('ship_last_name')),
+// // 					'last_name' => $request->get('ship_last_name'),
+// // 					'company' => $request->get('ship_company_name'),
+// // 					'address1' => $request->get('ship_address_1'),
+// // 					'address2' => $request->get('ship_address_2'),
+// // 					'city' => $request->get('ship_city'),
+// // 					'state_city' => $request->get('ship_state'),
+// // 					'postal_code' => $request->get('ship_zip'),
+// // 					'country' => $request->get('ship_country'),
+// // 					'email' => $request->get('bill_email'),
+// // 					'phone' => $request->get('ship_phone'),
+// 					'mail_class' => $request->get('shipping_method'),
+// 				]);
 
-		}
+// 		}
 
 		session()->flash('success', 'Order is successfully updated');
 		$note_text = trim($request->get('note'));

@@ -1692,4 +1692,35 @@ APPEND;
 		Ship::where('order_number', $order_id)->delete();
 		Item::where('order_id', $order_id)->delete();
 	}
+	
+	public static function release ($item_id, $from)
+	{
+		$item = Item::find($item_id);
+		if ( !$item ) {
+			return false;
+		}
+	
+		// Add note history by order id
+		$note = new Note();
+		$note->note_text = "Release batch# ".$item->batch_number." from ".$from;
+		$note->order_id = $item->order_id;
+		$note->user_id = Auth::user()->id;
+		$note->save();
+	
+		$item->batch_number = 0;
+		$item->batch_route_id = null;
+		$item->station_name = null;
+		$item->change_date = null;
+		$item->item_order_status = null;
+		$item->batch_creation_date = null;
+		$item->tracking_number = null;
+		$item->item_order_status_2 = null;
+		$item->previous_station = null;
+		$item->item_status = null;
+		$item->rejection_message = null;
+		$item->rejection_reason = null;
+		$item->reached_shipping_station = 0;
+		$item->supervisor_message = null;
+		$item->save();
+	}
 }
