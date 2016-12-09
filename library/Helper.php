@@ -1687,9 +1687,9 @@ APPEND;
 	
 	public static function deleteByOrderId($order_id){
 		Order::where('order_id', $order_id)->delete();
-		Item::where('order_id', $order_id)->delete();
 		Customer::where('order_id', $order_id)->delete();
 		Note::where('order_id', $order_id)->delete();
 		Ship::where('order_number', $order_id)->delete();
+		Item::where('order_id', $order_id)->delete();
 	}
 }

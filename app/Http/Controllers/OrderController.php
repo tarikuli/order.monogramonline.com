@@ -714,6 +714,9 @@ return $request->all();
 		$item_prices = $request->get('item_price', [ ]);
 		$grand_sub_total = 0.0;
 		$error = true;
+		
+		Helper::deleteByOrderId($order_id);
+		
 		foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
 			// for any reason, the id catalog is not available on item options
 			// the user input as the options they want
@@ -816,7 +819,7 @@ return $request->all();
 			## Jewel
 			return redirect()
 				->back()
-				->with('success', "Order is successfully saved");
+				->with('success', "Order# ".$order_id." is successfully saved");
 		} else {
 			return redirect()
 				->back()
@@ -1125,10 +1128,12 @@ return $request->all();
 		$short_order = sprintf("WH%d", ( 10000 + $manual_order_count ));
 		$order_id_new = sprintf("%s-%s-%s", $exploded[0],$exploded[1], $short_order);
 
+		Helper::deleteByOrderId($order_id_new);
 		// -------------- Orders table data insertion started ----------------------//
 		$order_from = Order::where('order_id', $order_id)
 						->where('is_deleted', 0)
 						->get();
+		
 		$order = new Order();
 		$order->order_id = $order_id_new;
 		$order->short_order = $short_order;

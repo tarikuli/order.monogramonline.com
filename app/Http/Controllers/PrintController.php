@@ -13,8 +13,8 @@ use App\Setting;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Monogram\AppMailer;
-
 use App\Http\Requests;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Monogram\Helper;
