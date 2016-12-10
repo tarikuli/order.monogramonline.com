@@ -706,7 +706,7 @@ return $request->all();
 
 		return view('orders.manual_order', compact('shipping_methods'))->with('stores', $stores);
 	}
-
+	
 	public function postManual (Requests\ManualOrderCreateRequest $request, AppMailer $appMailer)
 	{
 		#return $request->all();
@@ -721,7 +721,7 @@ return $request->all();
 		$grand_sub_total = 0.0;
 		$error = true;
 		
-// 		Helper::deleteByOrderId($order_id);
+		Helper::deleteByOrderId($order_id);
 		
 		foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
 			// for any reason, the id catalog is not available on item options
