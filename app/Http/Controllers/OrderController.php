@@ -1129,9 +1129,14 @@ return $request->all();
 
 		$exploded = explode("-", $order_id);
 
+// 		$manual_order_count = Order::where('short_order', "LIKE", sprintf("%%WH%%"))
+// 									->count();
+		
 		$manual_order_count = Order::where('short_order', "LIKE", sprintf("%%WH%%"))
-									->count();
-		$short_order = sprintf("WH%d", ( 10000 + $manual_order_count ));
+									->orderBy('id', 'desc')->first();
+// dd($manual_order_count);	
+	
+		$short_order = sprintf("WH%d", ( 10000 + $manual_order_count->id ));
 		$order_id_new = sprintf("%s-%s-%s", $exploded[0],$exploded[1], $short_order);
 
 		Helper::deleteByOrderId($order_id_new);
@@ -1139,6 +1144,8 @@ return $request->all();
 		$order_from = Order::where('order_id', $order_id)
 						->where('is_deleted', 0)
 						->get();
+		
+// dd($order_id,$order_id_new, $order_from);
 		
 		$order = new Order();
 		$order->order_id = $order_id_new;
