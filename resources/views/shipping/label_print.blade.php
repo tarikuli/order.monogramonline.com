@@ -116,6 +116,12 @@
 					<div class = "col-md-1">
 						<input type="submit" class="btn btn-primary btn-block" name="pull" id="pull" alt="Pull" value="Pull" />	
 					</div>
+					
+					<div class = "col-md-2">
+						{{ ($queryLog['after'] - $queryLog['before'])  }} Milliseconds
+					</div>
+					
+					
 				{!! Form::close() !!}
 			</div>
 			

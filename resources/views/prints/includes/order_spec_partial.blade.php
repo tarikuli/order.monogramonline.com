@@ -66,7 +66,7 @@
 					<tr>
 						<td colspan = "5" align = "left"><br/><br/>(Please allow an additional 3-5 days for the delivery time.)<br/><br/>
 						We would like to assure you that we are working diligently to fulfill your orders.<br/>
-						If you have any questions please contact our customer service team at 856-320-3210 M-F 9 am - 5 pm EST, or send us an email cs@monogramonline.com.<br/>
+						If you have any questions please visit our websit <b>Order Status</b> or send us an email cs@monogramonline.com.<br/>
 						<br/>
 						We appreciate your business,<br/>
 						MonogramOnline Team

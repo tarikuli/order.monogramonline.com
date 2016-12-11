@@ -273,7 +273,7 @@ Route::group([ 'prefix' => 'auth' ], function () {
 });
 
 Event::listen('illuminate.query', function ($q) {
-	#Log::info($q); // join
+	#Log::info($q);
 });
 
 //  `items`.`item_status` = statuses.id ( `statuses`.`status_name` ) = 6

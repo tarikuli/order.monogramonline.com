@@ -191,10 +191,12 @@ class ShippingController extends Controller
 		$graphicImage = false;
 		$counterWeight = 0;
 		
+		$queryLog["before"] = strtotime('now');
 		$ships = Ship::with('customer')
 					->where('is_deleted', 0)
 					->where('unique_order_id', $request->get('unique_order_id'))
 					->get();
+		$queryLog["after"] = strtotime('now');
 // dd($ships);
 		if(count($ships)>0){
 			
@@ -277,7 +279,7 @@ class ShippingController extends Controller
 			$ship =[];
 		}
 
-		return view('shipping.label_print', compact('ship', 'errorMassage', 'ambiguousAdress', 'count', 'graphicImage', 'counterWeight'));
+		return view('shipping.label_print', compact('ship', 'errorMassage', 'ambiguousAdress', 'count', 'graphicImage', 'counterWeight', 'queryLog'));
 	}
 
 	public function validateAddress($customer){
