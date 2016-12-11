@@ -710,9 +710,14 @@ return $request->all();
 	public function postManual (Requests\ManualOrderCreateRequest $request, AppMailer $appMailer)
 	{
 		#return $request->all();
-		$manual_order_count = Order::where('short_order', "LIKE", sprintf("%%WH%%"))
-								   ->count();
-		$short_order = sprintf("WH%d", ( 10000 + $manual_order_count ));
+// 		$manual_order_count = Order::where('short_order', "LIKE", sprintf("%%WH%%"))
+// 								   ->count();
+								   
+	    $manual_order_count = Order::where('short_order', "LIKE", sprintf("%%WH%%"))
+	   								->orderBy('id', 'desc')->first();
+								   
+								   
+		$short_order = sprintf("WH%d", ( 10000 + $manual_order_count->id ));
 		$order_id = sprintf("%s-%s", $request->get('store'), $short_order);
 		$item_skus = $request->get('item_skus');
 		$item_options = $request->get('item_options');
@@ -721,7 +726,7 @@ return $request->all();
 		$grand_sub_total = 0.0;
 		$error = true;
 		
-		Helper::deleteByOrderId($order_id);
+// 		Helper::deleteByOrderId($order_id);
 		
 		foreach ( $request->get('item_id_catalog') as $item_id_catalog ) {
 			// for any reason, the id catalog is not available on item options
@@ -1139,7 +1144,7 @@ return $request->all();
 		$short_order = sprintf("WH%d", ( 10000 + $manual_order_count->id ));
 		$order_id_new = sprintf("%s-%s-%s", $exploded[0],$exploded[1], $short_order);
 
-		Helper::deleteByOrderId($order_id_new);
+// 		Helper::deleteByOrderId($order_id_new);
 		// -------------- Orders table data insertion started ----------------------//
 		$order_from = Order::where('order_id', $order_id)
 						->where('is_deleted', 0)
