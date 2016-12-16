@@ -80,13 +80,13 @@
 		<div class = "col-xs-12">
 			@if(count($rows))
 				<h4 class = "page-header">
-					Total# {{ $items->total() }} Batches and {{ $itemsTotalQty }} Liens found out of {{$items->lastPage()}} pages / Page# {{$items->currentPage()}} Total {{ $total_itemss }} Lines found 
+					Total# {{ $items->total() }} Batches and {{ $itemsTotalQty }} Lines found out of {{$items->lastPage()}} pages / Page# {{$items->currentPage()}} Total {{ $total_itemss }} Lines found 
 				</h4>
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
-				<table id="summary_table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+				<table id="summary_table" class="table" cellspacing="0" width="100%">
 				<thead>
 					<tr>
-						<th style="width:10px;">
+						<th style="width:15px;">
 							<img src = "{{url('/assets/images/spacer.gif')}}"
 							     width = "50" height = "20" border = "0">
 						</th>
@@ -195,6 +195,9 @@
 		});
 	</script>
 	<script type = "text/javascript">
+// 		$('#summary_table').DataTable({
+// 			"paging":   false,
+// 		});
 		$(function ()
 		{
 			$('[data-toggle="tooltip"]').tooltip();
@@ -255,9 +258,7 @@
 			state = !state;
 			$(".checkbox").prop('checked', state);
 		});
-		$('#summary_table').DataTable({
-			"paging":   false,
-		});
+
 		$(".chosen_txt").chosen();
 
 	</script>

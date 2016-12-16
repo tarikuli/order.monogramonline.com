@@ -116,10 +116,12 @@ class PrintController extends Controller
 			if(!$request->exists('station')){
 				$station_name = $batch_number[1];
 			}
-
-			$order_id = Item::whereIn('batch_number', $batch_number)
-							->searchByStation($station_name)
+// Helper::jewelDebug($batch_number);
+// Helper::jewelDebug($station_name);
+			$order_id = Item::where('batch_number', $batch_number[0])
+							->searchByStation($batch_number[1])
 							->WhereNull('tracking_number')
+							->where('is_deleted', 0)
 							->lists('order_id')
 							->toArray();
 			$order_ids = array_merge($order_id,$order_ids);
@@ -127,7 +129,7 @@ class PrintController extends Controller
 
 		$orders = $this->getOrderFromId($order_ids);
 		$modules = $this->getPackingModulesFromOrder($orders);
-
+// dd($batches,$order_ids, $modules);
 		return view('prints.batch_printer')->with('modules', $modules);
 	}
 
