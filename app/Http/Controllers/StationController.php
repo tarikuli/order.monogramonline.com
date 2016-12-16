@@ -1000,10 +1000,10 @@ class StationController extends Controller {
 
 	public function postBulkChange(Request $request) {
 // return $request->all();	
-		$posted_station = trim ( $request->get ( 'station' ) );
+// 		$posted_station = trim ( $request->get ( 'station' ) );
 		// check if station exists
 		if($request->has('from_batch_list')){
-			$station = Station::where ( 'is_deleted', 0 )->where ( 'id', '=', $posted_station )->first ();
+			$station = Station::where ( 'is_deleted', 0 )->where ( 'id', '=', trim ( $request->get ( 'station_change' ) ) )->first ();
 			
 			if(!$request->has('batch_number')){
 				return redirect ()->back ()->withInput ()->withErrors ( [
@@ -1021,10 +1021,10 @@ class StationController extends Controller {
 			}
 // 			$posted_batches = substr($batches_string, 0, -4);
 			$posted_batches = $batches_string;
-			$posted_station = $station->station_name;
+			
 			
 		}else{
-			$station = Station::where ( 'is_deleted', 0 )->where ( 'station_name', '=', $posted_station )->first ();
+			$station = Station::where ( 'is_deleted', 0 )->where ( 'station_name', '=', trim ( $request->get ( 'station' ) ) )->first ();
 			$posted_batches = $request->get ( 'batches' );
 		}
 		
@@ -1033,6 +1033,7 @@ class StationController extends Controller {
 					'error' => 'Selected station is not valid'
 			] );
 		}
+		$posted_station = $station->station_name;
 		// station exists
 		// divide the given batches
 		// remove newlines and spaces

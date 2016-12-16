@@ -93,7 +93,6 @@ class PrintController extends Controller
 			$module = $this->batch_printing_module($batch_num, $station_name);
 			$modules[] = $module->render();
 		}
-		#dd($batches);
 		return view('prints.batch_printer')->with('modules', $modules);
 	}
 
