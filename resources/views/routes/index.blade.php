@@ -82,7 +82,6 @@
 				<h4 class = "page-header">
 					Total# {{ $items->total() }} Batches and {{ $itemsTotalQty }} Lines found out of {{$items->lastPage()}} pages / Page# {{$items->currentPage()}} Total {{ $total_itemss }} Lines found 
 				</h4>
-				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				<table id="summary_table" class="table" cellspacing="0" width="100%">
 				<thead>
 					<tr>
@@ -105,7 +104,7 @@
 				</thead>
 				 <tbody>
 					{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}
-					
+					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					@foreach($rows as $row)
 						<tr>
 							<td>
