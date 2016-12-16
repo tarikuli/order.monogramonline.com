@@ -672,12 +672,14 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 				
 				Helper::updateTrackingNumber($trackingInfo);
 // 				Helper::jewelDebug(Helper::generate_valid_xml_from_array($accept));
-				return view('prints.ups_shipping_lable')->with('labelImage', $accept->PackageResults->LabelImage->GraphicImage);
+				return view('prints.ups_shipping_lable2')
+					->with('labelImage', $accept->PackageResults->LabelImage->GraphicImage);
 			}
 		} catch (\Exception $e) {
 				Helper::jewelDebug($e->getMessage());
 		}
 	}
+
 	
 	public function reprintShippinglabel(Request $request){
 
