@@ -1019,7 +1019,9 @@ class StationController extends Controller {
 				$batches_string = $batches_string.$batch_number[0]."\r\n";
 				$current_stations[] = $batch_number[1];
 			}
-			$posted_batches = substr($batches_string, 0, -4);
+// 			$posted_batches = substr($batches_string, 0, -4);
+			$posted_batches = $batches_string;
+			$posted_station = $station->station_name;
 			
 		}else{
 			$station = Station::where ( 'is_deleted', 0 )->where ( 'station_name', '=', $posted_station )->first ();
@@ -1031,7 +1033,6 @@ class StationController extends Controller {
 					'error' => 'Selected station is not valid'
 			] );
 		}
-
 		// station exists
 		// divide the given batches
 		// remove newlines and spaces
@@ -1082,7 +1083,7 @@ class StationController extends Controller {
 			return true;
 		} );
 
-		
+
 		if($request->has('from_batch_list')){
 			$current_stations = array_unique($current_stations);
 			$items = Item::with ( 'order' )
