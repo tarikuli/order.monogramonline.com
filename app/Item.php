@@ -19,6 +19,7 @@ class Item extends Model
 						'short_order',
 						'store_id',
 						'order_status',
+						'coupon_id',
 					]);
 	}
 
@@ -175,7 +176,15 @@ class Item extends Model
 							  ->toArray();
 
 			return $query->whereIn('order_id', $order_ids);
-
+			
+		} elseif ( $search_in == 'coupon_id' ) {
+		
+			$order_ids = Order::where('coupon_id', 'LIKE', "%".implode("|", $values)."%")
+								->lists('order_id')
+								->toArray();
+		
+			return $query->whereIn('order_id', $order_ids);
+		
 		} elseif ( $search_in == 'store_id' ) {
 
 			return $query->where('store_id', 'REGEXP', implode("|", $values));

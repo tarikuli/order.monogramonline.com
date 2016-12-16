@@ -53,7 +53,7 @@ class ItemController extends Controller
 					 ->searchTrackingDate($request->get('tracking_date'))
 					 ->searchStatus($request->get('status'))
 					 ->latest()
-					 ->paginate(25);
+					 ->paginate(20);
  	  // For debug
 		#return $items;
 		set_time_limit(0);
@@ -89,8 +89,9 @@ class ItemController extends Controller
 			'all'                 => 'All',
 			'order'               => 'Order',
 			'5p_order'            => '5P-Order',
-			'item_id'            => 'Item#',
+			'item_id'             => 'Item#',
 			'customer'            => 'Customer',
+			'coupon_id'           => 'Coupon',
 			'bill_email'          => 'Customer Bill Email',
 			'store_id'            => 'Store',
 			'state'               => 'State',

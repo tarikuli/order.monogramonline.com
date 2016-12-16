@@ -134,7 +134,11 @@
 						</td>
 						<td><img src = "{{$item->item_thumb}}" width = "70" height = "70" /></td>
 						<td>{{substr($item->order->order_date, 0, 10)}}<br>{{substr($item->order->order_date, 11, 18)}}</td>
-						<td>{!! \App\Status::where('is_deleted', 0)->lists('status_name','id')->get($item->order->order_status)  !!}</td>
+						<td>
+							{!! \App\Status::where('is_deleted', 0)->lists('status_name','id')->get($item->order->order_status)  !!}<br>
+							{{ $item->order->coupon_id }}
+							
+						</td>
 						<td>
 							@if($item->tracking_number)
 								<a href = "{{ \Monogram\Helper::getTrackingUrl($item->tracking_number) }}" target = "_blank">{{ $item->tracking_number }}</a>
