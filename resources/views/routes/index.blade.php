@@ -11,7 +11,10 @@
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<link type = "text/css" rel = "stylesheet"
+	      href = "https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+	<link type = "text/css" rel = "stylesheet"
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+	<link rel="stylesheet" href="/assets/css/chosen.min.css">
 	<style>
 		table {
 			table-layout: fixed;
@@ -36,11 +39,11 @@
 			{!! Form::open(['method' => 'get']) !!}
 			<div class = "form-group col-xs-3">
 				<label for = "route">Route</label>
-				{!! Form::select('route', $routes, $request->get('route'), ['id'=>'route', 'class' => 'form-control']) !!}
+				{!! Form::select('route', $routes, $request->get('route'), ['id'=>'route', 'class' => 'form-control chosen_txt']) !!}
 			</div>
 			<div class = "form-group col-xs-3">
 				<label for = "route">Station</label>
-				{!! Form::select('station', $stations, session('station', 'all'), ['id'=>'station', 'class' => 'form-control']) !!}
+				{!! Form::select('station', $stationsList, session('station', 'all'), ['id'=>'station', 'class' => 'form-control chosen_txt']) !!}
 			</div>
 			<div class = "form-group col-xs-3">
 				<label for = "start_date">Last Scan Start date</label>
@@ -77,11 +80,13 @@
 		<div class = "col-xs-12">
 			@if(count($rows))
 				<h4 class = "page-header">
-					Total ({{ $items->total() }} Batch found / {{$items->currentPage()}} of {{$items->lastPage()}} pages) # of items {{ $total_itemss }}
+					Total# {{ $items->total() }} Batches and {{ $itemsTotalQty }} Liens found out of {{$items->lastPage()}} pages / Page# {{$items->currentPage()}} Total {{ $total_itemss }} Lines found 
 				</h4>
-				<table class = "table">
+				<input type="hidden" name="_token" value="{{ csrf_token() }}">
+				<table id="summary_table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+				<thead>
 					<tr>
-						<th>
+						<th style="width:10px;">
 							<img src = "{{url('/assets/images/spacer.gif')}}"
 							     width = "50" height = "20" border = "0">
 						</th>
@@ -89,15 +94,18 @@
 						<th>MinOrderDate</th>
 						<th>Batch creation date</th>
 						<th>Route</th>
-						<th>Lines</th>
-						<th>Current station</th>
+						<th style="width:30px;">Lines</th>
+						<th style="width:200px;">Current station</th>
 						<th>Last Scan Date</th>
 						<th>Image</th>
 						<th style="width:250px;">Child SKU</th>
 						<th>Status</th>
 						<th>Batch details</th>
 					</tr>
+				</thead>
+				 <tbody>
 					{!! Form::open(['url' => url('prints/batches'), 'method' => 'get', 'id' => 'batch_list_form']) !!}
+					
 					@foreach($rows as $row)
 						<tr>
 							<td>
@@ -109,8 +117,8 @@
 							</td>
 							<td>{{$row['min_order_date']}}</td>
 							<td>{{$row['batch_creation_date']}}</td>
-							<td><span data-toggle = "tooltip" data-placement = "top"
-							          title = "{{$row['route_name']}}">{{$row['route_code']}}</span>
+							<td>
+								<span data-toggle = "tooltip" data-placement = "top" title = "{{$row['route_name']}}">{{$row['route_code']}}</span>
 							</td>
 							<td>
 								@if($row['current_station_item_count'] == $row['lines'])
@@ -121,7 +129,7 @@
 							</td>
 							<td>
 								<span data-toggle = "tooltip" data-placement = "top"
-								      title = "{{ $row['current_station_description'] }}">{{ $row['current_station_name'] }}</span>
+								      title = "{{ $row['current_station_description'] }}">{{ $row['current_station_name'] }}<br>{{ $row['current_station_description'] }}</span>
 							</td>
 							<td>{{ $row['current_station_since'] }}</td>
 							<td>
@@ -139,20 +147,25 @@
 							</td>
 						</tr>
 					@endforeach
+					<tbody>
+					<tfoot>
 					<tr>
-						<td colspan = "11">
+						<td colspan = "12">
 							{!! Form::button('Select / Deselect all', ['id' => 'select_deselect', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Bulk Export', ['id' => 'export_batches', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Print batches', ['id' => 'print_batches', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Packing Slip', ['id' => 'packing_slip', 'class' => 'btn btn-link']) !!}
 							{!! Form::button('Small Packing Slip', ['id' => 'small_packing_slip', 'class' => 'btn btn-link']) !!}
-
+							{!! Form::select('station', $stationsList, 'all', ['id'=>'station_change', 'class' => 'chosen_txt']) !!}
+							{!! Form::button('Change Station', ['id' => 'change_station', 'class' => 'btn btn-link']) !!}
 							@if(auth()->user()->roles->first()->id == 1)
 								{!! Form::button('Release Batch', ['id' => 'release_batch', 'class' => 'btn btn-link']) !!}
 							@endif
 						</td>
 					</tr>
+					</tfoot>
 					{!! Form::close() !!}
+
 				</table>
 			@else
 				<div class = "alert alert-warning">No batch is created.</div>
@@ -162,11 +175,14 @@
 			{!! $items->appends(request()->all())->render() !!}
 		</div>
 	</div>
-	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.12.3.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script type = "text/javascript" src = "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
 	<script type = "text/javascript"
 	        src = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+	<script type = "text/javascript" src = "https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script type = "text/javascript" src = "https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<script type = "text/javascript" src = "/assets/js/chosen.jquery.min.js"></script>	
 	<script type = "text/javascript">
 		var options = {
 			format: "YYYY-MM-DD", maxDate: new Date()
@@ -214,6 +230,18 @@
 			setFormUrlAndSubmit(url);
 		});
 
+		$("button#change_station").on('click', function (event)
+		{
+			event.preventDefault();
+			var url = "{{ url('/stations/bulk') }}";
+			var form = $("form#batch_list_form");
+			$(form).attr('action', url);
+			$(form).attr('method', 'post');
+			$(form).append('<input type="hidden" name="from_batch_list" value="from_batch_list" />');
+			$(form).submit();
+		});
+		
+
 		function setFormUrlAndSubmit (url)
 		{
 			var form = $("form#batch_list_form");
@@ -227,6 +255,11 @@
 			state = !state;
 			$(".checkbox").prop('checked', state);
 		});
+		$('#summary_table').DataTable({
+			"paging":   false,
+		});
+		$(".chosen_txt").chosen();
+
 	</script>
 </body>
 </html>

@@ -11,7 +11,7 @@
 	      href = "/assets/css/bootstrap-horizon.css" />
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-	 <link rel="stylesheet" href="/assets/css/chosen.min.css">
+	<link rel="stylesheet" href="/assets/css/chosen.min.css">
 	 
 	<style>
 		.parent-selector {

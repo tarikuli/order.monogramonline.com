@@ -80,9 +80,10 @@ class Item extends Model
 		// return $this->hasMany('App\Item', 'batch_number', 'batch_number');
 		return $this->hasMany('App\Item', 'batch_number', 'batch_number')
 					->whereNull('tracking_number')
+					->where('batch_number','!=','0')
 					->where('is_deleted', 0);
 	}
-
+	
 	private function commaTrimmer ($string)
 	{
 		return trim($string, ",");
@@ -264,6 +265,7 @@ class Item extends Model
 		if ( !$station ) {
 			return;
 		}
+		
 		$station_name = $station->station_name;
 
 		return $query->where('station_name', $station_name);
@@ -329,6 +331,7 @@ class Item extends Model
 		return $query->where('station_name', $station_name);
 	}
 
+		
 	public function scopeSearchBatchCreationDateBetween ($query, $start_date, $end_date)
 	{
 		if ( !$start_date ) {

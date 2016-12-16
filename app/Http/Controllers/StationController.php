@@ -999,11 +999,33 @@ class StationController extends Controller {
 	}
 
 	public function postBulkChange(Request $request) {
-// return $request->all();		
+// return $request->all();	
 		$posted_station = trim ( $request->get ( 'station' ) );
 		// check if station exists
-		$station = Station::where ( 'is_deleted', 0 )->where ( 'station_name', '=', $posted_station )->first ();
-
+		if($request->has('from_batch_list')){
+			$station = Station::where ( 'is_deleted', 0 )->where ( 'id', '=', $posted_station )->first ();
+			
+			if(!$request->has('batch_number')){
+				return redirect ()->back ()->withInput ()->withErrors ( [
+						'error' => 'Please Select Batchs'
+				] );
+			}
+			
+			$batches_string = '';
+			$current_stations = []; 
+			foreach ( $request->get ( 'batch_number' ) as $batch_number ) {
+			
+				$batch_number = explode('tarikuli', $batch_number);
+				$batches_string = $batches_string.$batch_number[0]."\r\n";
+				$current_stations[] = $batch_number[1];
+			}
+			$posted_batches = substr($batches_string, 0, -4);
+			
+		}else{
+			$station = Station::where ( 'is_deleted', 0 )->where ( 'station_name', '=', $posted_station )->first ();
+			$posted_batches = $request->get ( 'batches' );
+		}
+		
 		if (! $station) {
 			return redirect ()->back ()->withInput ()->withErrors ( [
 					'error' => 'Selected station is not valid'
@@ -1012,7 +1034,6 @@ class StationController extends Controller {
 
 		// station exists
 		// divide the given batches
-		$posted_batches = $request->get ( 'batches' );
 		// remove newlines and spaces
 		$posted_batches = trim ( preg_replace ( '/\s+/', ',', $posted_batches ) );
 
@@ -1061,15 +1082,27 @@ class StationController extends Controller {
 			return true;
 		} );
 
-		$items = Item::with ( 'order' )
+		
+		if($request->has('from_batch_list')){
+			$current_stations = array_unique($current_stations);
+			$items = Item::with ( 'order' )
+						->where('is_deleted', 0)
+						->whereIn('station_name', array_unique($current_stations))
+						->whereNull('tracking_number')
+						->whereIn ( 'batch_number', $batches )
+						->get ();
+		}else{
+			$items = Item::with ( 'order' )
 						->where('is_deleted', 0)
 						->whereNull('tracking_number')
 						->whereIn ( 'batch_number', $batches )
 						->get ();
+		}
 		
 		if ($items->count () == 0) {
 			return redirect ()->back ()->withInput ()->withErrors ( $errors );
 		}
+		
 		$changed = $this->apply_station_change ( $items, $posted_station );
 
 		// redirect with errors if any error found
@@ -1082,6 +1115,7 @@ class StationController extends Controller {
 
 	private function apply_station_change($items, $station_name) {
 		foreach ( $items as $item ) {
+			set_time_limit(0);
 			$item->previous_station = $item->station_name;
 			$item->station_name = $station_name;
 			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));

@@ -13,6 +13,7 @@ get('test', 'HomeController@test');
 // });
 
 get('combination', 'HomeController@combination');
+get('trk_order_status', 'ItemController@getOrderStatus');
 get('update_items', 'HomeController@bulk_item_update');
 get('update_single_item', 'HomeController@update_single_item');
 
@@ -258,7 +259,6 @@ Route::group([ 'middleware' => [ 'guest' ] ], function () {
 	get('login', 'AuthenticationController@getLogin');
 	post('login', 'AuthenticationController@postLogin');
 	post('hook', 'OrderController@hook');
-	get('trk_order_status', 'ItemController@getOrderStatus');
 	get('prints/sendbyscript', 'PrintController@sendShippingConfirmByScript');
 });
 

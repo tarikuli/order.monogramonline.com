@@ -10,6 +10,7 @@
 	      href = "//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.3/css/bootstrap-select.min.css">
 	<link type = "text/css" rel = "stylesheet"
 	      href = "//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="/assets/css/chosen.min.css">
 	<style>
 		td {
 			/*width: 1px;*/
@@ -53,7 +54,11 @@
 					{!! Form::hidden('action', null) !!}
 					{!! Form::close() !!}
 
-					<p>Status: {!! Form::select('status', $statuses, $items[0]->item_order_status, ['disabled' => 'disabled']) !!}</p>
+					<p>Status: {!! Form::
+					select('status', 
+					$statuses, 
+					$items[0]->item_order_status, 
+					['disabled' => 'disabled']) !!}</p>
 					<p>Template:
 						<a href = "{{url(sprintf("/templates/%d", $route->template->id))}}">{!! $route->template->template_name !!}</a>
 					</p>
@@ -65,7 +70,7 @@
 					{!! Form::hidden('current_station_name', $current_batch_station->station_name, ['id' => 'current_station_name']) !!}
 					{!! Form::close() !!}
 
-					<p>Current Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, array('id' => 'station')) !!}</p>
+					<p>Current Station: {!! Form::select('station', $route['stations']->lists('station_description', 'station_name')->prepend('Select a station', ''), $items[0]->station_name, array('id' => 'station', 'class' => 'chosen_txt')) !!}</p>
 
 				</div>
 				<div class = "col-xs-4">
@@ -217,6 +222,7 @@
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script type = "text/javascript" src = "/assets/js/chosen.jquery.min.js"></script>
 	<script type = "text/javascript">
 		var form = null;
 
@@ -383,6 +389,7 @@
 			$("input[name='action']").val(value);
 			$("form#action_changer").submit();
 		})
+		$(".chosen_txt").chosen();
 	</script>
 </body>
 </html>

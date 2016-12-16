@@ -256,17 +256,17 @@ class ItemController extends Controller
 	public function getGroupedBatch (Request $request)
 	{
 // return $request->all();
-		if ( $request->has('station') ) {
-			Session::put('station', $request->get('station'));
-		}
 
 		if ( $request->has('station') && $request->get('station') != 'all' ) {
 			Session::put('searching_in_station', $request->get('station'));
+			Session::put('station', $request->get('station'));
 		} else {
 			Session::forget('searching_in_station');
+			Session::forget('station');
 		}
 
 		$station = Station::find(session('station', 'all'));
+
 		if(!$station){
 			$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
 						->where('is_deleted', 0)
@@ -280,25 +280,36 @@ class ItemController extends Controller
 						->groupBy('batch_number')
 						->latest('batch_number')
 						->paginate(50);
+// dd($items);			
 		}else{
-// dd("RRRR", $request->all(), $station);
 			$items = Item::with('lowest_order_date', 'route.stations_list', 'groupedItems')
 						->where('is_deleted', 0)
 						->where('batch_number', '!=', '0')
 						->whereNull('tracking_number')
 						->searchBatch($request->get('batch'))
 						->searchRoute($request->get('route'))
-						// 					 ->searchStation(session('station', 'all'))
-// 						->searchCutOffOrderDate($station->station_name, $request->get('cutoff_date'))
+						->searchStation(session('station', 'all'))
 						->searchCutOffOrderDate($station->station_name, $request->get('start_date'), $request->get('end_date'))
 						->searchStatus($request->get('status'))
 						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
 						->groupBy('batch_number')
 						->latest('batch_number')
 						->paginate(50);
+// dd("RRRR", $request->all(), $station);			
 
 		}
 
+		$itemsTotalQty = Item::where('is_deleted', 0)
+						->where('batch_number', '!=', '0')
+						->whereNull('tracking_number')
+						->searchBatch($request->get('batch'))
+						->searchRoute($request->get('route'))
+						->searchStation(session('station', 'all'))
+						->searchStatus($request->get('status'))
+						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
+						->count();
+						
+// dd($itemsTotalQty);		
 		$routes = BatchRoute::where('is_deleted', 0)
 							->orderBy('batch_route_name')
 							->latest()
@@ -306,7 +317,7 @@ class ItemController extends Controller
 							->prepend('Select a route', 'all');
 
 		// Get Station List
-		$stations = Station::where('is_deleted', 0)
+		$stationsList = Station::where('is_deleted', 0)
 // 						   ->whereNotIn( 'station_name', Helper::$shippingStations)
 						   ->orderBy('station_description', 'asc')
 						   ->lists('station_description', 'id')
@@ -327,6 +338,7 @@ class ItemController extends Controller
 			$checker = [ ];
 			$working_stations = [ ];
 			$items_on_station = [ ];
+			
 			foreach ( $item->groupedItems as $singleRow ) {
 				if ( $start ) {
 					$start = false;
@@ -336,7 +348,12 @@ class ItemController extends Controller
 				$working_stations[] = $singleRow->station_name;
 				$this_station = $singleRow->station_name;
 				$items_on_station[$this_station] = array_key_exists($this_station, $items_on_station) ? ++$items_on_station[$this_station] : 1;
+				
+// 				if($singleRow->batch_number == "59799"){
+// 					dd($item->groupedItems, $items_on_station[$this_station]);
+// 				}
 			}
+			
 			$current_station_name = '';
 			$current_station_description = '';
 
@@ -371,31 +388,31 @@ class ItemController extends Controller
 			}
 
 			if ( count(array_unique($checker)) == 1 ) {
-				foreach ( $station_list as $station ) {
+				foreach ( $station_list as $stations ) {
 					if ( $grab_next ) {
 						$grab_next = false;
-						$next_station_name = $station->station_name;
-						$next_station_description = $station->station_description;
+						$next_station_name = $stations->station_name;
+						$next_station_description = $stations->station_description;
 						break;
 					}
-					if ( in_array($station->station_name, $working_stations) ) {
-						$current_station_name = $station->station_name;
-						$current_station_description = $station->station_description;
+					if ( in_array($stations->station_name, $working_stations) ) {
+						$current_station_name = $stations->station_name;
+						$current_station_description = $stations->station_description;
 						$grab_next = true;
 					}
 				}
 				#$item->groupedItems[0]->station_name;
 			} else {
-				foreach ( $station_list as $station ) {
+				foreach ( $station_list as $stations ) {
 					if ( $grab_next ) {
 						$grab_next = false;
-						$next_station_name = $station->station_name;
-						$next_station_description = $station->station_description;
+						$next_station_name = $stations->station_name;
+						$next_station_description = $stations->station_description;
 						break;
 					}
-					if ( in_array($station->station_name, $working_stations) ) {
-						$current_station_name = $station->station_name;
-						$current_station_description = $station->station_description;
+					if ( in_array($stations->station_name, $working_stations) ) {
+						$current_station_name = $stations->station_name;
+						$current_station_description = $stations->station_description;
 						$grab_next = true;
 					}
 				}
@@ -411,19 +428,24 @@ class ItemController extends Controller
 			// Sum Total number of Item in batch
 			$current_station_item_count = array_sum($items_on_station);
 			$searched_station_name = null;
+			
 			if ( session('searching_in_station') ) {
-				$x = Station::find(session('searching_in_station'));
-				if ( $x ) {
-					$searched_station_name = $x->station_name;
+// 				$x = Station::find(session('searching_in_station'));
+// 				if ( $x ) {
+// 					$searched_station_name = $x->station_name;
+// 				}
+				if($station){
+					$searched_station_name = $station->station_name;
 				}
 			}
 
 			foreach ( $items_on_station as $station_name => $total_items ) {
-
+				#Helper::jewelDebug($station->station_name."	---	".$searched_station_name ." --- ".$station_name);
 				if ( $searched_station_name && $station_name != $searched_station_name ) {
 					continue;
 				}
-// 				return $item;
+				
+				#return $item;
 				$row['item_thumb'] = $item->item_thumb;
 				$row['child_sku'] = $item->child_sku;
 				$row['batch_number_c_box'] = $item->batch_number."tarikuli".$station_name;
@@ -449,7 +471,7 @@ class ItemController extends Controller
 // 		#return $total_itemss;
 		$statuses = (new Collection(Helper::getBatchStatusList()))->prepend('Select status', 'all');
 
-		return view('routes.index', compact('rows', 'items', 'request', 'routes', 'stations', 'statuses', 'total_itemss'));
+		return view('routes.index', compact('rows', 'items', 'request', 'routes', 'stationsList', 'statuses', 'total_itemss', 'itemsTotalQty'));
 	}
 
 	public function batch_details ($batch_number)
@@ -534,6 +556,7 @@ class ItemController extends Controller
 						->where('order_id', $items[0]->order_id)
 						->latest()
 						->first();
+		
  		if(count($order->notes)>0){
 			$lastupdateby = $order->notes->last()->user->username;
  		}else{
@@ -777,7 +800,6 @@ class ItemController extends Controller
 
 	public function export_bulk (Request $request)
 	{
-
 		$batch_numbers = $request->get('batch_number');
 
 		foreach ( $batch_numbers as $batch_number ) {
@@ -785,7 +807,7 @@ class ItemController extends Controller
 			$batch_number = explode('tarikuli', $batch_number);
 			$batch_id = $batch_number[0];
 			$station = $batch_number[1];
-			echo "<br>".$batch_id." --------> ".$station;
+// 			echo "<br>".$batch_id." --------> ".$station;
 
 			$savepath = '/media/Ji-share/5p_batch_csv_export';
 			$this->export_batch ($batch_id, $station, $savepath);
