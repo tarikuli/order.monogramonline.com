@@ -41,7 +41,8 @@
 </head>
 <body style="border: 1px solid red">
 	<div class="current-batch" style="width:150mm; height: 100mm; border: 1px solid green; "> 
-		<img style="width:175mm; height: auto; overflow: hidden;"  src="data:image/gif;base64,{{ $labelImage}} "/>
+		{{-- <img style="width:175mm; height: auto; overflow: hidden;"  src="data:image/gif;base64,{{ $labelImage}} "/> --}}
+		<img style="width:175mm; height: auto; overflow: hidden;"  src="{{ $labelImage}} "/>
 	</div>
 </body>
 </html>

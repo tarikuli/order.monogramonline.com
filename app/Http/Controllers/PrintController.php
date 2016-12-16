@@ -680,8 +680,9 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 	}
 	
 	public function reprintShippinglabel(Request $request){
-		
-		return view('prints.ups_shipping_lable')->with('labelImage', $request->get('graphicImage'));
+
+// 		dd($request->all());
+		return view('prints.ups_shipping_lable')->with('labelImage', "../".$request->get('graphicImage'));
 	}
 	
 	public function getPackingSlipPrintByOrderId(Request $request) {

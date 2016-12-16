@@ -125,6 +125,21 @@
 				{!! Form::close() !!}
 			</div>
 			
+			@if($graphicImage)	
+			<div class = "form-group col-xs-12">
+				{!! Form::open(['url' => url('/prints/shippinglabel_reprint'), 'method' => 'post']) !!}
+					<div class = "col-md-2">
+						<input type="submit" class="btn btn-primary btn-block" name="reprint" id="reprint" alt="Re Print" value="Re Print" />
+					</div>
+					<div class="current-batch" style="width:150mm; height: 100mm; border: none; ">
+						{!! Form::hidden('graphicImage', $graphicImage, ['id' => 'graphicImage']) !!} 
+						{{-- <img style="width:175mm; height: auto; overflow: hidden;"  src="data:image/gif;base64,{{ $graphicImage }} "/> --}}
+						<img style="width:175mm; height: auto; overflow: hidden;"  src="{{ $graphicImage }}"/>
+					</div>	
+				{!! Form::close() !!}
+			</div>
+			@endif
+			
 			{!! Form::open(['url' => url('/shippinglabel_print'), 'method' => 'post']) !!}
 			{!! Form::hidden('unique_order_id', $ship->unique_order_id, ['id' => 'unique_order_id']) !!}	
 			{!! Form::hidden('order_number', $ship->order_number, ['id' => 'order_number']) !!}			
@@ -258,20 +273,6 @@
 			--}}
 			{!! Form::close() !!}
 			
-			@if($graphicImage)	
-			<div class = "form-group col-xs-12">
-				{!! Form::open(['url' => url('/prints/shippinglabel_reprint'), 'method' => 'post']) !!}
-					<div class = "col-md-2">
-						<input type="submit" class="btn btn-primary btn-block" name="reprint" id="reprint" alt="Re Print" value="Re Print" />
-					</div>
-					<div class="current-batch" style="width:150mm; height: 100mm; border: none; ">
-						{!! Form::hidden('graphicImage', $graphicImage, ['id' => 'graphicImage']) !!} 
-						{{-- <img style="width:175mm; height: auto; overflow: hidden;"  src="data:image/gif;base64,{{ $graphicImage }} "/> --}}
-						<img style="width:175mm; height: auto; overflow: hidden;"  src="{{ $graphicImage }}"/>
-					</div>	
-				{!! Form::close() !!}
-			</div>
-			@endif
 		</div>
 @else
 		<div class = "form-group col-xs-12">
