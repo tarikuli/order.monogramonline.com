@@ -569,7 +569,12 @@ class StationController extends Controller {
 							->where('batch_number', '!=', '0')
 							->get ();
 			
-			foreach ($items as $item){
+			Ship::where ('order_number', $order_id )
+					->delete();
+					
+			Helper::histort("Forced moved", $order_id);
+			
+			foreach ($items as $item){ 
 				$stations_in_route_ids = $item->route->stations_list->lists ( 'station_name' )->toArray ();
 	
 				if(count($stations_in_route_ids)>0){
@@ -584,7 +589,14 @@ class StationController extends Controller {
 							Helper::populateShippingData ( $item );
 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
 						}else{
-							$errors[] = sprintf ("Already in Shipping Station Item# ".$item->id." Batch# ".$item->batch_number." and Route ".$item->route->batch_code." -> ".$item->route->batch_route_name);
+							//$errors[] = sprintf ("Already in Shipping Station Item# ".$item->id." Batch# ".$item->batch_number." and Route ".$item->route->batch_code." -> ".$item->route->batch_route_name);
+								
+							$item->previous_station = $item->station_name;
+							$item->station_name = $common_shipping_station[0];
+							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+							$item->save ();
+							Helper::populateShippingData ( $item );
+							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
 						}
 					}else{
 						$errors[] = sprintf ("Batch# ".$item->batch_number." and Route ".$item->route->batch_route_name." -> ".$item->route->batch_route_name." Need SHP Station.");
