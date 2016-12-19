@@ -782,15 +782,16 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 							if(isset($fileName[$getLast-1])){
 								$file_name =$fileName[$getLast-1];
 								if (strpos($file_name, "soft") !== false) {
-									$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/soft/";
+									#$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/soft/";
+									$move_to_soft_dir = "/media/c_print/Soft2/";
 									$move_to_soft_dir= $move_to_soft_dir.$file_name;
-// 									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									$file_count_in_directory ++;
 								}if (strpos($file_name, "hard") !== false) {
-									$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/hard/";
+									$move_to_soft_dir = "/media/c_print/Hard2/";
 									$move_to_soft_dir= $move_to_soft_dir.$file_name;
-// 									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									$file_count_in_directory ++;
 								}
