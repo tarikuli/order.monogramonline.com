@@ -535,6 +535,14 @@ class PrintController extends Controller
 					'error' => 'No Unique Order Id found',
 			]);
 		}
+		
+		if(!isset($customer['ship_zip'])){
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'No valide zip code found or Remove special charcter from shipping address',
+			]);
+		}
 	
 // 		$customer = Customer::where('order_id', $request->get('order_number'))
 // 					->where('is_deleted', 0)

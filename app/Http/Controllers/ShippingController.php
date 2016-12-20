@@ -357,15 +357,28 @@ class ShippingController extends Controller
 		$tracking_numbers = $request->get('tracking_numbers', [ ]);
 		if ( count($tracking_numbers) ) {
 
-			Ship::whereIn('tracking_number', $tracking_numbers)
-				->update([
-				'tracking_number' => null,
-			]);
+// 			Ship::whereIn('tracking_number', $tracking_numbers)
+// 				->update([
+// 				'tracking_number' => null,
+// 			]);
 
-			Item::whereIn('tracking_number', $tracking_numbers)
+// 			Item::whereIn('tracking_number', $tracking_numbers)
+// 				->update([
+// 				'tracking_number' => null,
+// 			]);
+			
+			Ship::where('order_number', $order_number)
 				->update([
-				'tracking_number' => null,
-			]);
+					'tracking_number' => null,
+					'shipping_unique_id' => null,
+					'full_xml_source' =>"",
+					'shipping_id' => null
+				]);
+			
+			Item::where('order_id', $order_number)
+				->update([
+					'tracking_number' => null,
+				]);
 
 			// Add note history by order id
 			$note = new Note();
