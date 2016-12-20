@@ -795,18 +795,17 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 									#$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/soft/";
 									$move_to_soft_dir = "/media/c_print/Soft/";
 									$move_to_soft_dir= $move_to_soft_dir.$file_name;
-									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
-// 									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+// 									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									$file_count_in_directory ++;
 								}if (strpos($file_name, "hard") !== false) {
 									$move_to_soft_dir = "/media/c_print/Hard/";
 									$move_to_soft_dir= $move_to_soft_dir.$file_name;
-									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
-// 									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+// 									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									$file_count_in_directory ++;
 								}
 							}
-							dd($uniqueBatchArray);
 // 							Helper::jewelDebug($fileName);
 // 							Helper::jewelDebug(($getLast-1)." -- ".$fileName[$getLast-1]);
 							
