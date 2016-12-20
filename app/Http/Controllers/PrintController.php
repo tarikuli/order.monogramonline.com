@@ -738,6 +738,7 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 		$batchNumbers = trim ( preg_replace ( '/\s+/', ',', $batchNumbers ) );
 		$uniqueBatchArray = array_unique(explode ( ",", $batchNumbers )) ;
 		
+		
 		$imageSearchArray = [];
 		$source_image_dir = "";
 		// Set Source file name
@@ -763,8 +764,17 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 // dd($source_image_dir);
 		// Get All  directory from
 		if(file_exists ($source_image_dir)){
-Helper::jewelDebug($uniqueBatchArray);			
+// Helper::jewelDebug($uniqueBatchArray);	
+		
 			foreach ($uniqueBatchArray as $batchNumber){
+				
+				if(empty($batchNumber)){
+					return redirect()
+					->back()
+					->withErrors([ 'error' => 'Please Select Valide Batch number' ]);
+					break;
+				}
+				
 				$retval=[];
 				$last_line = exec("find ".$source_image_dir." -name '".$batchNumber."*'", $retval);
 // 				$last_line = exec("find /home/jewel/Documents/graphics_Done -name '".$batchNumber."*'", $retval);
@@ -785,17 +795,18 @@ Helper::jewelDebug($uniqueBatchArray);
 									#$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/soft/";
 									$move_to_soft_dir = "/media/c_print/Soft/";
 									$move_to_soft_dir= $move_to_soft_dir.$file_name;
-// 									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
-									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+// 									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									$file_count_in_directory ++;
 								}if (strpos($file_name, "hard") !== false) {
 									$move_to_soft_dir = "/media/c_print/Hard/";
 									$move_to_soft_dir= $move_to_soft_dir.$file_name;
-// 									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
-									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
+// 									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									$file_count_in_directory ++;
 								}
 							}
+							dd($uniqueBatchArray);
 // 							Helper::jewelDebug($fileName);
 // 							Helper::jewelDebug(($getLast-1)." -- ".$fileName[$getLast-1]);
 							
