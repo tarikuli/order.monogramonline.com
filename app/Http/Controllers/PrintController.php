@@ -763,7 +763,7 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 // dd($source_image_dir);
 		// Get All  directory from
 		if(file_exists ($source_image_dir)){
-			
+Helper::jewelDebug($uniqueBatchArray);			
 			foreach ($uniqueBatchArray as $batchNumber){
 				$retval=[];
 				$last_line = exec("find ".$source_image_dir." -name '".$batchNumber."*'", $retval);
