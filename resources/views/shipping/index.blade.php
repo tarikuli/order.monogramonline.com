@@ -129,6 +129,8 @@
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">
 							<a href = "{{url(sprintf("orders/details/%s", $ship->order_number))}}"
 							   target = "_blank">{{ $ship->unique_order_id }}</a>
+							<br><br><a href = "{{ url(sprintf("/shippinglabel_print?unique_order_id=%s",$ship->unique_order_id )) }}">Print lable</a>
+							
 						</td>
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->mail_class}}</td>
 					@if($ship->item)
@@ -140,7 +142,13 @@
 								{{ $ship->item->batch_number }}
 							@endif
 						</td>
-						<td>{{ $ship->item->id }}</td>
+						<td>
+							{{ $ship->item->id }}
+							@if($ship->item->tracking_number)
+							<br>
+								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&item_id=%s&order_number=%s", $ship->item->tracking_number,$ship->item->id,$ship->order_number)) }}">Back</a>
+							@endif
+						</td>
 						<td>
 							<a href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $ship->item->item_code)) }}"
 							   target = "_blank">{{ $ship->item->item_code }}
@@ -150,16 +158,16 @@
 						<td>{{ $ship->item->item_description }}</td>
 						<td>{{ $ship->item->item_quantity }}</td>
 						<td>
+						{{-- \Monogram\Helper::jewelDebug($ship->item->tracking_number) --}}	
 							@if($ship->item->tracking_number)
 								{{ $ship->item->tracking_number }}
 								{{ $ship->transaction_datetime }}
 								<br>
-								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&order_number=%s", $ship->item->tracking_number,$ship->order_number )) }}">Back to shipping</a>
+								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&unique_order_id=%s&order_number=%s", $ship->item->tracking_number,$ship->unique_order_id,$ship->order_number)) }}">Back to shipping</a>
 							@else
 								<br>
 								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
 								<a class = "update" href = "#" >Manual Tracking # Update</a>
-								<br><a href = "{{ url(sprintf("/shippinglabel_print?unique_order_id=%s",$ship->unique_order_id )) }}">Print UPS Shipping lable</a>
 								{!! Form::open(['url' => url('/shipping_update'), 'method' => 'put', 'id' => 'shipping_update']) !!}
 								{!! Form::hidden('tracking_number_update', null, ['id' => 'tracking_number_update']) !!} 
 								{!! Form::hidden('order_number_update', $ship->order_number, ['id' => 'order_number_update']) !!}
@@ -211,6 +219,12 @@
 							</td>
 							<td>
 								{{ $ship->item->id }}
+								
+								@if($ship->item->tracking_number)
+								<br>
+									<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&item_id=%s&order_number=%s", $ship->item->tracking_number,$ship->item->id,$ship->order_number  )) }}">Back</a>
+								@endif
+								
 							</td>
 							<td>
 								<a href = "{{ url(sprintf("/products?search_for=%s&search_in=product_model", $ship->item->item_code)) }}"
@@ -227,12 +241,16 @@
 								{{ $ship->item->item_quantity }}
 							</td>
 							<td>
-								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
-								
-								<a href = "{{ url(sprintf("/update_tracking?item_id=%s", $ship->item->id  )) }}">Tracking # Update</a>
 
-								{{ $ship->item->tracking_number ?: "N/A" }}
-
+																
+								@if($ship->item->tracking_number)
+									{{ $ship->item->tracking_number }}
+									{{ $ship->transaction_datetime }}
+								@else
+									{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
+									<a href = "{{ url(sprintf("/update_tracking?item_id=%s", $ship->item->id  )) }}">Tracking # Update</a>
+									{{-- $ship->item->tracking_number ?: "N/A" --}}
+								@endif
 							</td>
 							<td>
 								{{ $ship->length }}

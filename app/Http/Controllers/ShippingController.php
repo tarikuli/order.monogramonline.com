@@ -183,6 +183,7 @@ class ShippingController extends Controller
 			
 		}
 	}
+	
 	public function getShippingLableByOrderId (Request $request){
 		
 		$errorMassage = [];
@@ -345,6 +346,7 @@ class ShippingController extends Controller
 	
 	public function removeTrackingNumber (Request $request)
 	{
+		
 		if(!$request->has('order_number')){
 			return redirect()
 			->back()
@@ -352,40 +354,67 @@ class ShippingController extends Controller
 					'error' => 'No Order Number found',
 			]);
 		}
-
+		$item_ids = [];
+		if($request->has('unique_order_id')){
+			$item_ids =Ship::where('is_deleted', 0)
+						->where('unique_order_id', trim($request->get('unique_order_id')))
+						->orderBy('item_id')
+						->lists('item_id','id')
+						->toArray();
+			
+		}elseif($request->has('item_id')){
+			$item_ids[] = $request->get('item_id');
+		}else {
+			return redirect()
+			->back()
+			->withErrors([
+					'error' => 'No Order Number found',
+			]);
+		}
 		$order_number = $request->get('order_number');
+		
+		
+// dd($request->all(), $item_ids);
+				
 		$tracking_numbers = $request->get('tracking_numbers', [ ]);
 		if ( count($tracking_numbers) ) {
 
-// 			Ship::whereIn('tracking_number', $tracking_numbers)
+			
+// 			Ship::where('order_number', $order_number)
 // 				->update([
-// 				'tracking_number' => null,
+// 					'tracking_number' => null,
+// 					'shipping_unique_id' => null,
+// 					'full_xml_source' =>"",
+// 					'shipping_id' => null
+// 				]);
+			
+// 			Item::where('order_id', $order_number)
+// 				->update([
+// 					'tracking_number' => null,
 // 			]);
 
-// 			Item::whereIn('tracking_number', $tracking_numbers)
-// 				->update([
-// 				'tracking_number' => null,
-// 			]);
-			
-			Ship::where('order_number', $order_number)
-				->update([
-					'tracking_number' => null,
-					'shipping_unique_id' => null,
-					'full_xml_source' =>"",
-					'shipping_id' => null
-				]);
-			
-			Item::where('order_id', $order_number)
-				->update([
-					'tracking_number' => null,
-				]);
+			foreach ($item_ids AS $item_id){
+				Ship::where('item_id', $item_id)
+					->update([
+						'tracking_number' => null,
+						'shipping_unique_id' => null,
+						'full_xml_source' =>"",
+						'shipping_id' => null
+					]);
+		
+// 				Item::where('id', $item_id)
+// 					->update([
+// 						'tracking_number' => null,
+// 				]);
+				Helper::histort("Back ".$item_id." previous Tracking# ".implode(", ",$tracking_numbers), $tracking_numbers);
+			}
 
-			// Add note history by order id
-			$note = new Note();
-			$note->note_text = "Back to Temp Shipping station for Update Tracking# ".implode(", ",$tracking_numbers);
-			$note->order_id = $order_number;
-			$note->user_id = Auth::user()->id;
-			$note->save();
+// 			// Add note history by order id
+// 			$note = new Note();
+// 			$note->note_text = "Back to Temp Shipping station for Update Tracking# ".implode(", ",$tracking_numbers);
+// 			$note->order_id = $order_number;
+// 			$note->user_id = Auth::user()->id;
+// 			$note->save();
 		}
 
 		return redirect()
@@ -500,7 +529,6 @@ class ShippingController extends Controller
 	}
 	
 	// $shipper->setShipperNumber('XX');
-	
     public function getShippingLable(Request $request){	
 // UPS Expedited Mail Innovations   M4 (service label)
 // Irregulars 
