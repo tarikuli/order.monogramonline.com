@@ -361,9 +361,25 @@ class ShippingController extends Controller
 						->orderBy('item_id')
 						->lists('item_id','id')
 						->toArray();
-			
+			$order_number = $request->get('order_number');
+			$tracking_numbers = $request->get('tracking_numbers', [ ]);
 		}elseif($request->has('item_id')){
-			$item_ids[] = $request->get('item_id');
+			$ship =Ship::where('is_deleted', 0)
+						->whereNotNull('tracking_number')
+						->where('item_id', trim($request->get('item_id')))
+						->first();
+			
+			if ( $ship ) {
+				$item_ids[] = $ship->item_id;
+				$order_number = $ship->order_number;
+				$tracking_numbers[] = $ship->tracking_numbers;
+			}else{
+				return redirect()
+				->back()
+				->withErrors([
+						'error' => 'No item_id found',
+				]);
+			}
 		}else {
 			return redirect()
 			->back()
@@ -371,55 +387,32 @@ class ShippingController extends Controller
 					'error' => 'No Order Number found',
 			]);
 		}
-		$order_number = $request->get('order_number');
+		
 		
 		
 // dd($request->all(), $item_ids);
 				
-		$tracking_numbers = $request->get('tracking_numbers', [ ]);
+		
 		if ( count($tracking_numbers) ) {
-
 			
-// 			Ship::where('order_number', $order_number)
-// 				->update([
-// 					'tracking_number' => null,
-// 					'shipping_unique_id' => null,
-// 					'full_xml_source' =>"",
-// 					'shipping_id' => null
-// 				]);
-			
-// 			Item::where('order_id', $order_number)
-// 				->update([
-// 					'tracking_number' => null,
-// 			]);
-
 			foreach ($item_ids AS $item_id){
 				Ship::where('item_id', $item_id)
 					->update([
 						'tracking_number' => null,
 						'shipping_unique_id' => null,
 						'full_xml_source' =>"",
+						'status' => null,
 						'shipping_id' => null
 					]);
 		
-// 				Item::where('id', $item_id)
-// 					->update([
-// 						'tracking_number' => null,
-// 				]);
-				Helper::histort("Back ".$item_id." previous Tracking# ".implode(", ",$tracking_numbers), $tracking_numbers);
+				Helper::histort("Back ".$item_id." previous Tracking# ".implode(", ",$tracking_numbers), $order_number);
 			}
 
-// 			// Add note history by order id
-// 			$note = new Note();
-// 			$note->note_text = "Back to Temp Shipping station for Update Tracking# ".implode(", ",$tracking_numbers);
-// 			$note->order_id = $order_number;
-// 			$note->user_id = Auth::user()->id;
-// 			$note->save();
 		}
 
 		return redirect()
 			->back()
-			->with('success', "Items successfully moved to shipping list");
+			->with('success', "Items# ".implode(", ",$item_ids)." successfully moved to shipping list");
 	}
 
 	public function updateTrackingNumber(Request $request)

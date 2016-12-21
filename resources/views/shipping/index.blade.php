@@ -163,7 +163,7 @@
 								{{ $ship->item->tracking_number }}
 								{{ $ship->transaction_datetime }}
 								<br>
-								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&unique_order_id=%s&order_number=%s", $ship->item->tracking_number,$ship->unique_order_id,$ship->order_number)) }}">Back to shipping</a>
+								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&unique_order_id=%s&order_number=%s", $ship->item->tracking_number,$ship->unique_order_id,$ship->order_number)) }}">Back All to Shipping</a>
 							@else
 								<br>
 								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
