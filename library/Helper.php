@@ -1610,14 +1610,15 @@ APPEND;
 		if ( $trackingInfo['unique_order_id'] ) {
 		
 			Ship::where('unique_order_id', $trackingInfo['unique_order_id'])
-			->update([
-				'tracking_number'      => $trackingInfo['tracking_number'],
-// 				'full_xml_source'      => $trackingInfo['full_xml_source'],
-				'shipping_id'     	   => $trackingInfo['shipping_id'],
-				'mail_class'     	   => $trackingInfo['mail_class'],
-				'postmark_date'        => date("Y-m-d"),
-				'transaction_datetime' => date("Y-m-d H:i:s") 
-			]);
+					->whereNull('tracking_number')
+					->update([
+						'tracking_number'      => $trackingInfo['tracking_number'],
+		// 				'full_xml_source'      => $trackingInfo['full_xml_source'],
+						'shipping_id'     	   => $trackingInfo['shipping_id'],
+						'mail_class'     	   => $trackingInfo['mail_class'],
+						'postmark_date'        => date("Y-m-d"),
+						'transaction_datetime' => date("Y-m-d H:i:s") 
+					]);
 		
 		
 			// Add note history by order id

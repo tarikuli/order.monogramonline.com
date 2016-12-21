@@ -358,6 +358,7 @@ class ShippingController extends Controller
 		if($request->has('unique_order_id')){
 			$item_ids =Ship::where('is_deleted', 0)
 						->where('unique_order_id', trim($request->get('unique_order_id')))
+						->whereNotNull('tracking_number')
 						->orderBy('item_id')
 						->lists('item_id','id')
 						->toArray();
@@ -417,6 +418,12 @@ class ShippingController extends Controller
 
 	public function updateTrackingNumber(Request $request)
 	{
+		return redirect()
+		->back()
+		->withErrors([
+				'error' => 'Need to Update Logic by Item ID',
+		]);
+		
 		$order_number = $request->get('order_number_update');
 		$tracking_number_update = $request->get('tracking_number_update');
 		
