@@ -128,8 +128,8 @@
 					<tr data-id = "{{ $ship->id }}" class = "text-center">
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">
 							<a href = "{{url(sprintf("orders/details/%s", $ship->order_number))}}"
-							   target = "_blank">{{ $ship->unique_order_id }}</a>
-							<br><br><a href = "{{ url(sprintf("/shippinglabel_print?unique_order_id=%s",$ship->unique_order_id )) }}">Print lable</a>
+							   target = "_blank">GO </a> {{ $ship->unique_order_id }}
+							<br><a href = "{{ url(sprintf("/shippinglabel_print?unique_order_id=%s",$ship->unique_order_id )) }}">Print lable</a>
 							
 						</td>
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">{{$ship->mail_class}}</td>
@@ -146,7 +146,7 @@
 							{{ $ship->item->id }}
 							@if($ship->item->tracking_number)
 							<br>
-								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&item_id=%s&order_number=%s", $ship->item->tracking_number,$ship->item->id,$ship->order_number)) }}">Back</a>
+								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&item_id=%s&order_number=%s", $ship->item->tracking_number,$ship->item->id,$ship->order_number)) }}">Back Single</a>
 							@endif
 						</td>
 						<td>
@@ -223,7 +223,7 @@
 								
 								@if($ship->item->tracking_number)
 								<br>
-									<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&item_id=%s&order_number=%s", $ship->item->tracking_number,$ship->item->id,$ship->order_number  )) }}">Back</a>
+									<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&item_id=%s&order_number=%s", $ship->item->tracking_number,$ship->item->id,$ship->order_number  )) }}">Back Single</a>
 								@endif
 								
 							</td>
