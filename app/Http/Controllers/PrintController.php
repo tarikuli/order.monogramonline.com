@@ -731,8 +731,13 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 	}
 
 	public function getPrintImageByBatch(Request $request) {
-	
-		return view ( 'prints.printImageByBatch' );
+		
+		$destination['printer1'] = "Move to Printer#1";
+		$destination['printer2'] = "Move to Printer#2";
+		
+		return view ( 'prints.printImageByBatch' )
+					->with( 'destination', $destination )
+					->with('destinationSelect', "printer1");
 	}
 	
 	public function postPrintImageByBatch(Request $request){
@@ -740,6 +745,9 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 		$batchNumbersNotFound =[];
 		$batchFileNotFound = [];
 		$batchMoveGood = [];
+		
+		$destination['printer1'] = "Move to Printer#1";
+		$destination['printer2'] = "Move to Printer#2";
 		
 		$batchNumbers = $request->get ( 'batch_number' );
 		// remove newlines and spaces
@@ -769,7 +777,14 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 			}
 		
 		}
-// dd($source_image_dir);
+		
+		if($request->get ( 'destination' ) == "printer1"){
+			$printerNumber = "";
+		}else{
+			$printerNumber = 1;
+		}
+// 		Helper::jewelDebug($move_to_soft_dir = "/media/c_print/Soft".$printerNumber."/");
+// dd($request->all());
 		// Get All  directory from
 		if(file_exists ($source_image_dir)){
 // Helper::jewelDebug($uniqueBatchArray);	
@@ -801,13 +816,13 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 								$file_name =$fileName[$getLast-1];
 								if (strpos($file_name, "soft") !== false) {
 									#$move_to_soft_dir = "/media/Ji-share/graphics_Move_Done/sublimation/soft/";
-									$move_to_soft_dir = "/media/c_print/Soft/";
+									$move_to_soft_dir = "/media/c_print/Soft".$printerNumber."/";
 									$move_to_soft_dir= $move_to_soft_dir.$file_name;
 // 									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									$file_count_in_directory ++;
 								}if (strpos($file_name, "hard") !== false) {
-									$move_to_soft_dir = "/media/c_print/Hard/";
+									$move_to_soft_dir = "/media/c_print/Hard".$printerNumber."/";
 									$move_to_soft_dir= $move_to_soft_dir.$file_name;
 // 									Helper::jewelDebug("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
 									shell_exec("cp \"$file_copy_from\" \"$move_to_soft_dir\" > /dev/null 2>/dev/null &");
@@ -849,7 +864,9 @@ $unit->setCode(\Ups\Entity\UnitOfMeasurement::UOM_OZS);
 				->with('success', "File moves")
 				->with('batchNumbersNotFound', $batchNumbersNotFound)
 				->with('batchFileNotFound', $batchFileNotFound)
-				->with('batchMoveGood', $batchMoveGood);
+				->with('batchMoveGood', $batchMoveGood)
+				->with('destination', $destination)
+				->with('destinationSelect', $request->get ( 'destination' ));
 	
 	}
 }

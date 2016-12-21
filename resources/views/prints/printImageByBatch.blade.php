@@ -37,6 +37,12 @@
 				{!! Form::textarea('batch_number', null, ['id' => 'batch_number','class'=>'form-control']) !!}
 			</div>
 		</div>
+		<div class = "form-group">
+			{!!Form::label('destination','Destination',['class'=>'control-label col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::select('destination', $destination, $destinationSelect, ['id' => 'destination','class'=>'form-control']) !!}
+			</div>
+		</div>
 		<div class = "form-group col-xs-6">
 			<label for = "move"></label>
 			<div class = "col-md-offset-2 col-md-2">
