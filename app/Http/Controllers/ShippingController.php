@@ -418,23 +418,27 @@ class ShippingController extends Controller
 
 	public function updateTrackingNumber(Request $request)
 	{
-		return redirect()
-		->back()
-		->withErrors([
-				'error' => 'Need to Update Logic by Item ID',
-		]);
 		
 		$order_number = $request->get('order_number_update');
 		$tracking_number_update = $request->get('tracking_number_update');
+		$item_id = $request->get('item_id');
 		
 		if ( $order_number && $tracking_number_update) {
 
-			Ship::where('order_number', $order_number)
-			->update([
-				'tracking_number' => $tracking_number_update,
-			]);
+// 			Ship::where('order_number', $order_number)
+// 			->update([
+// 				'tracking_number' => $tracking_number_update,
+// 			]);
 
-
+			Ship::where('item_id', $item_id)
+				->update([
+					'tracking_number' => $tracking_number_update,
+					'shipping_id'     	   => $tracking_number_update,
+					'mail_class'     	   => "Manual",
+					'postmark_date'        => date("Y-m-d"),
+					'transaction_datetime' => date("Y-m-d H:i:s")
+				]);
+			
 			// Add note history by order id
 			Helper::histort("Manualy Update Tracking# ".$tracking_number_update, $order_number);
 

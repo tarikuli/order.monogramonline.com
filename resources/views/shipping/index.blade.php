@@ -169,8 +169,9 @@
 								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
 								<a class = "update" href = "#" >Manual Tracking # Update</a>
 								{!! Form::open(['url' => url('/shipping_update'), 'method' => 'put', 'id' => 'shipping_update']) !!}
-								{!! Form::hidden('tracking_number_update', null, ['id' => 'tracking_number_update']) !!} 
-								{!! Form::hidden('order_number_update', $ship->order_number, ['id' => 'order_number_update']) !!}
+									{!! Form::hidden('tracking_number_update', null, ['id' => 'tracking_number_update']) !!} 
+									{!! Form::hidden('order_number_update', $ship->order_number, ['id' => 'order_number_update']) !!}
+									{!! Form::hidden('item_id', $ship->item->id, ['id' => 'item_id']) !!}
 								{!! Form::close() !!}
 							@endif
 
@@ -247,9 +248,20 @@
 									{{ $ship->item->tracking_number }}
 									{{ $ship->transaction_datetime }}
 								@else
+									{{-- 
 									{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
 									<a href = "{{ url(sprintf("/update_tracking?item_id=%s", $ship->item->id  )) }}">Tracking # Update</a>
-									{{-- $ship->item->tracking_number ?: "N/A" --}}
+									$ship->item->tracking_number ?: "N/A" --}}
+									
+																	<br>
+								{!! Form::text('tracking_number', $ship->item->tracking_number, ['class'=> 'form-control', 'id' => 'tracking_number', 'style' => 'min-width: 250px;']) !!}
+								<a class = "update" href = "#" >Manual Tracking # Update</a>
+								{!! Form::open(['url' => url('/shipping_update'), 'method' => 'put', 'id' => 'shipping_update']) !!}
+									{!! Form::hidden('tracking_number_update', null, ['id' => 'tracking_number_update']) !!} 
+									{!! Form::hidden('order_number_update', $ship->order_number, ['id' => 'order_number_update']) !!}
+									{!! Form::hidden('item_id', $ship->item->id, ['id' => 'item_id']) !!}
+								{!! Form::close() !!}
+								
 								@endif
 							</td>
 							<td>
