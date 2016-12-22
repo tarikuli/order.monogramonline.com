@@ -52,6 +52,24 @@
 			</div>
 		</div>
 		{!! Form::close() !!}
+		
+		{!! Form::open(['url' => url('stations/itemshippingstationchange'), 'method' => 'post', 'class'=>'form-horizontal', 'role'=>'form']) !!}
+		<div class = "form-group">
+			{!!Form::label('item_id','Item Id#',['class'=>'control-label col-xs-2'])!!}
+			<div class = "col-xs-5">
+				{!! Form::textarea('item_id', null, ['id' => 'item_id','class'=>'form-control']) !!}
+			</div>
+		</div>
+		<div class = "form-group">
+			<div class = "col-md-offset-2 col-md-2">
+				{!! Form::submit('Move By Item#',['class'=>'btn btn-primary']) !!}
+			</div>
+			
+			<div class = "col-md-offset-2 col-md-2">
+				{!! Form::button('Clear',['id' => 'item_clear', 'class'=>'btn btn-danger']) !!}
+			</div>
+		</div>
+		{!! Form::close() !!}
 	</div>
 	<script type = "text/javascript" src = "//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type = "text/javascript" src = "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
@@ -64,6 +82,12 @@
 		{
 			$("#unique_order_id").val("");
 			$("#unique_order_id").focus();
+		});
+
+		$("#item_clear").on('click', function (event)
+		{
+			$("#item_id").val("");
+			$("#item_id").focus();
 		});
 		
 	</script>

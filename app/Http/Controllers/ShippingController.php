@@ -435,6 +435,7 @@ class ShippingController extends Controller
 					'tracking_number' => $tracking_number_update,
 					'shipping_id'     	   => $tracking_number_update,
 					'mail_class'     	   => "Manual",
+					'shipping_unique_id'   => null,
 					'postmark_date'        => date("Y-m-d"),
 					'transaction_datetime' => date("Y-m-d H:i:s")
 				]);

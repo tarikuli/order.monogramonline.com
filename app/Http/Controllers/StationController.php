@@ -556,24 +556,56 @@ class StationController extends Controller {
 	
 	public function postItemShippingStationchange(Request $request) {
 		$errors = [];
+		$success = [];
 		
-		$unique_order_ids = $request->get ( 'unique_order_id' );
-		$order_id = Helper::getOrderNumber($unique_order_ids);
+		
+		if($request->has('unique_order_id')){
+			$unique_order_ids = $request->get ( 'unique_order_id' );
+			$order_id = Helper::getOrderNumber(trim($unique_order_ids));
+		}elseif($request->has('item_id')){
+			$order_id = true;
+		}else {
+			return redirect ()->back ()->withErrors ( "No valide request found." );
+		}
+		
+		
 		
 		if($order_id){
 			
-			$items = Item::with ( 'route.stations_list' ) 							
-							->where('is_deleted', 0) 							
-							->whereNull('tracking_number') 							
-							->where ('order_id', $order_id ) 
+			if($request->has('unique_order_id')){
+				$items = Item::with ( 'route.stations_list' ) 							
+								->where('is_deleted', 0) 							
+								->whereNull('tracking_number') 							
+								->where ('order_id', $order_id ) 
+								->where('batch_number', '!=', '0')
+								->get ();
+			}elseif($request->has('item_id')){
+				
+				$item_ids = trim ( preg_replace ( '/\s+/', ',', trim($request->get('item_id')) ) );
+				$item_ids = array_unique(explode ( ",", $item_ids ) );
+				
+Helper::jewelDebug($item_ids);				
+				$items = Item::with ( 'route.stations_list' )
+							->where('is_deleted', 0)
+							->whereNull('tracking_number')
+							->whereIn ('id', $item_ids )
 							->where('batch_number', '!=', '0')
 							->get ();
-			
+				
+				if(count($items) == 0){
+					$errors[] = "Item Id not valide";	
+				}
+			}
 // 			Ship::where ('order_number', $order_id )
 // 					->delete();
 					
 // 			Helper::histort("Forced moved", $order_id);
+
+
+			$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
 			
+			
+// dd($items,$unique_order_id);			
 			foreach ($items as $item){ 
 				$stations_in_route_ids = $item->route->stations_list->lists ( 'station_name' )->toArray ();
 	
@@ -586,10 +618,10 @@ class StationController extends Controller {
 							$item->station_name = $common_shipping_station[0];
 							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 							$item->save ();
-							Helper::populateShippingData ( $item );
+							Helper::insertDataIntoShipping($item, $unique_order_id);							
 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
 						}else{
-							$errors[] = sprintf ("Already in Shipping Station Item# ".$item->id." Batch# ".$item->batch_number." and Route ".$item->route->batch_code." -> ".$item->route->batch_route_name);
+							$errors[] = sprintf ("Already in Shipping Station Item# ".$item->id." Batch# ".$item->batch_number." and Route ".$item->route->batch_route_name." -> ".$item->route->batch_code);
 								
 // 							$item->previous_station = $item->station_name;
 // 							$item->station_name = $common_shipping_station[0];
@@ -610,6 +642,7 @@ class StationController extends Controller {
 				return redirect ()->back ()->withErrors ( $errors );
 			}
 			
+			//return redirect ()->back ()->with('success', "Success move to Shipping Station Order# ".$order_id);
 			return redirect ()->back ()->with('success', "Success move to Shipping Station Order# ".$order_id);
 		}
 		

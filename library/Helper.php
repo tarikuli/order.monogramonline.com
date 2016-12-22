@@ -622,8 +622,11 @@ APPEND;
 
 	public static function generateShippingUniqueId ($order)
 	{
-		return sprintf("%s-%s", static::orderNameFormatter($order), Ship::where('order_number', $order->order_id)
-																		->count());
+// 		return sprintf("%s-%s", static::orderNameFormatter($order), Ship::where('order_number', $order->order_id)
+// 																		->groupBy('unique_order_id')
+// 																		->count());
+		return sprintf("%s-%s", static::orderNameFormatter($order), 
+				count(array_unique(Ship::where('order_number', $order->order_id)->lists('unique_order_id', 'id')->toArray ())));
 	}
 
 	public static function itemsMovedToShippingTable ($order_id)
@@ -1616,6 +1619,7 @@ APPEND;
 		// 				'full_xml_source'      => $trackingInfo['full_xml_source'],
 						'shipping_id'     	   => $trackingInfo['shipping_id'],
 						'mail_class'     	   => $trackingInfo['mail_class'],
+						'shipping_unique_id'   => null, 
 						'postmark_date'        => date("Y-m-d"),
 						'transaction_datetime' => date("Y-m-d H:i:s") 
 					]);
