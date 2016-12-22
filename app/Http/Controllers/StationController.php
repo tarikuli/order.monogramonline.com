@@ -584,7 +584,7 @@ class StationController extends Controller {
 				$item_ids = trim ( preg_replace ( '/\s+/', ',', trim($request->get('item_id')) ) );
 				$item_ids = array_unique(explode ( ",", $item_ids ) );
 				
-Helper::jewelDebug($item_ids);				
+// Helper::jewelDebug($item_ids);				
 				$items = Item::with ( 'route.stations_list' )
 							->where('is_deleted', 0)
 							->whereNull('tracking_number')
@@ -621,14 +621,16 @@ Helper::jewelDebug($item_ids);
 							Helper::insertDataIntoShipping($item, $unique_order_id);							
 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
 						}else{
-							$errors[] = sprintf ("Already in Shipping Station Item# ".$item->id." Batch# ".$item->batch_number." and Route ".$item->route->batch_route_name." -> ".$item->route->batch_code);
-								
-// 							$item->previous_station = $item->station_name;
-// 							$item->station_name = $common_shipping_station[0];
-// 							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
-// 							$item->save ();
-// 							Helper::populateShippingData ( $item );
-// 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
+							//$errors[] = sprintf ("Already in Shipping Station Item# ".$item->id." Batch# ".$item->batch_number." and Route ".$item->route->batch_route_name." -> ".$item->route->batch_code);
+							Ship::where ('item_id', $item->id )
+									->delete();
+							
+							$item->previous_station = $item->station_name;
+							$item->station_name = $common_shipping_station[0];
+							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+							$item->save ();
+							Helper::insertDataIntoShipping($item, $unique_order_id);	
+							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
 						}
 					}else{
 						$errors[] = sprintf ("Batch# ".$item->batch_number." and Route ".$item->route->batch_route_name." -> ".$item->route->batch_route_name." Need SHP Station.");
@@ -643,7 +645,7 @@ Helper::jewelDebug($item_ids);
 			}
 			
 			//return redirect ()->back ()->with('success', "Success move to Shipping Station Order# ".$order_id);
-			return redirect ()->back ()->with('success', "Success move to Shipping Station Order# ".$order_id);
+			return redirect ()->back ()->with('success', "Unique Order# ". $unique_order_id);
 		}
 		
 		return redirect ()->back ()->withErrors ( "No Order#".$unique_order_ids." found, Scan correctly." );
