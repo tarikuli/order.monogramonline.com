@@ -636,10 +636,11 @@ APPEND;
 			$lines =array_unique($ships);
 			
 			foreach ($lines as $line){
-				Helper::jewelDebug(substr($line, -1));
 				$lastNumbe[] = substr($line, -1);
 			}
+			Helper::jewelDebug($lastNumbe);
 			$maxLastNumber = max($lastNumbe);
+			Helper::jewelDebug($maxLastNumber);
 			return sprintf("%s-%s", static::orderNameFormatter($order), $maxLastNumber+1);
 		}
 		
