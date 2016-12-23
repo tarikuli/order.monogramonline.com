@@ -626,26 +626,26 @@ APPEND;
 // 																		->groupBy('unique_order_id')
 // 																		->count());
 
-		$ships = Ship::where('order_number', $order->order_id)->lists('unique_order_id', 'id')->toArray ();
-		$lines = count(array_unique($ships));
+// 		$ships = Ship::where('order_number', $order->order_id)->lists('unique_order_id', 'id')->toArray ();
+// 		$lines = count(array_unique($ships));
 		
-		if($lines == 0){
-			return sprintf("%s-%s", static::orderNameFormatter($order), $lines);
-		}else{
-			$lastNumbe = [];
-			$lines =array_unique($ships);
+// 		if($lines == 0){
+// 			return sprintf("%s-%s", static::orderNameFormatter($order), $lines);
+// 		}else{
+// 			$lastNumbe = [];
+// 			$lines =array_unique($ships);
 			
-			foreach ($lines as $line){
-				$lastNumbe[] = substr($line, -1);
-			}
-			Helper::jewelDebug($lastNumbe);
-			$maxLastNumber = max($lastNumbe);
-			Helper::jewelDebug($maxLastNumber);
-			return sprintf("%s-%s", static::orderNameFormatter($order), $maxLastNumber+1);
-		}
+// 			foreach ($lines as $line){
+// 				$lastNumbe[] = substr($line, -1);
+// 			}
+// 			Helper::jewelDebug($lastNumbe);
+// 			$maxLastNumber = max($lastNumbe);
+// 			Helper::jewelDebug($maxLastNumber);
+// 			return sprintf("%s-%s", static::orderNameFormatter($order), $maxLastNumber+1);
+// 		}
 		
-// 		return sprintf("%s-%s", static::orderNameFormatter($order), 
-// 				count(array_unique(Ship::where('order_number', $order->order_id)->lists('unique_order_id', 'id')->toArray ())));
+		return sprintf("%s-%s", static::orderNameFormatter($order), 
+				count(array_unique(Ship::where('order_number', $order->order_id)->lists('unique_order_id', 'id')->toArray ())));
 	}
 
 	public static function itemsMovedToShippingTable ($order_id)
