@@ -634,8 +634,9 @@ APPEND;
 		}else{
 			$lastNumbe = [];
 			$lines =array_unique($ships);
-			Helper::jewelDebug($lines);
+			
 			foreach ($lines as $line){
+				Helper::jewelDebug(substr($line, -1));
 				$lastNumbe[] = substr($line, -1);
 			}
 			$maxLastNumber = max($lastNumbe);
