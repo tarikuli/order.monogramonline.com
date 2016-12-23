@@ -633,6 +633,7 @@ APPEND;
 			return sprintf("%s-%s", static::orderNameFormatter($order), $lines);
 		}else{
 			$lastNumbe = [];
+			Helper::jewelDebug($lines);
 			foreach ($lines as $line){
 				$lastNumbe[] = substr($line, -1);
 			}
