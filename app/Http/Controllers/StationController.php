@@ -584,24 +584,29 @@ class StationController extends Controller {
 				$item_ids = trim ( preg_replace ( '/\s+/', ',', trim($request->get('item_id')) ) );
 				$item_ids = array_unique(explode ( ",", $item_ids ) );
 				
-// Helper::jewelDebug($item_ids);				
 				$items = Item::with ( 'route.stations_list' )
 							->where('is_deleted', 0)
 							->whereNull('tracking_number')
 							->whereIn ('id', $item_ids )
 							->where('batch_number', '!=', '0')
 							->get ();
-				
 			}
-// 			Ship::where ('order_number', $order_id )
-// 					->delete();
-					
-// 			Helper::histort("Forced moved", $order_id);
 
 			if(count($items) == 0){
 				//$errors[] = "Item Id not valide";
-				return redirect ()->back ()->withErrors ( "No valide Item found." );
+				return redirect ()->back ()->withErrors ( "No valide input or Items already has Tracking# or No Batch#." );
 			}
+			
+			// --- Check for mix Order ID
+			$order_ids = [];
+			foreach ($items as $item){
+				$order_ids[] = $item->order_id;
+			}
+// Helper::jewelDebug($order_ids);
+			if(count(array_unique($order_ids)) > 1 ){
+				return redirect ()->back ()->withErrors ( "Can not process mix order#.". implode ( ",", $order_ids ) );
+			}
+			// --- Check for mix Order ID
 			$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
 			
 			
