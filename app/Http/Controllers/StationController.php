@@ -648,7 +648,8 @@ class StationController extends Controller {
 			return redirect ()->back ()->with('success', "Unique Order# ". $unique_order_id);
 		}
 		
-		return redirect ()->back ()->withErrors ( "No Order#".$unique_order_ids." found, Scan correctly." );
+		//return redirect ()->back ()->withErrors ( "No Order#".$unique_order_ids." found, Scan correctly." );
+		return redirect(url('shippinglabel_print?unique_order_id='.$unique_order_id));
 	}
 	
 	
