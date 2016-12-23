@@ -592,16 +592,16 @@ class StationController extends Controller {
 							->where('batch_number', '!=', '0')
 							->get ();
 				
-				if(count($items) == 0){
-					$errors[] = "Item Id not valide";	
-				}
 			}
 // 			Ship::where ('order_number', $order_id )
 // 					->delete();
 					
 // 			Helper::histort("Forced moved", $order_id);
 
-
+			if(count($items) == 0){
+				//$errors[] = "Item Id not valide";
+				return redirect ()->back ()->withErrors ( "No valide Item found." );
+			}
 			$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
 			
 			
