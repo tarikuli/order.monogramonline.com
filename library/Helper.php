@@ -625,8 +625,23 @@ APPEND;
 // 		return sprintf("%s-%s", static::orderNameFormatter($order), Ship::where('order_number', $order->order_id)
 // 																		->groupBy('unique_order_id')
 // 																		->count());
-		return sprintf("%s-%s", static::orderNameFormatter($order), 
-				count(array_unique(Ship::where('order_number', $order->order_id)->lists('unique_order_id', 'id')->toArray ())));
+
+		$ships = Ship::where('order_number', $order->order_id)->lists('unique_order_id', 'id')->toArray ();
+		$lines = count(array_unique($ships));
+		
+		if($lines == 0){
+			return sprintf("%s-%s", static::orderNameFormatter($order), $lines);
+		}else{
+			$lastNumbe = [];
+			foreach ($lines as $line){
+				$lastNumbe[] = substr($line, -1);
+			}
+			$maxLastNumber = max($lastNumbe);
+			return sprintf("%s-%s", static::orderNameFormatter($order), $maxLastNumber+1);
+		}
+		
+// 		return sprintf("%s-%s", static::orderNameFormatter($order), 
+// 				count(array_unique(Ship::where('order_number', $order->order_id)->lists('unique_order_id', 'id')->toArray ())));
 	}
 
 	public static function itemsMovedToShippingTable ($order_id)

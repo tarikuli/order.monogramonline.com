@@ -628,6 +628,7 @@ class StationController extends Controller {
 						}else{
 							//$errors[] = sprintf ("Already in Shipping Station Item# ".$item->id." Batch# ".$item->batch_number." and Route ".$item->route->batch_route_name." -> ".$item->route->batch_code);
 							Ship::where ('item_id', $item->id )
+									//->whereNull('tracking_number')
 									->delete();
 							
 							$item->previous_station = $item->station_name;
