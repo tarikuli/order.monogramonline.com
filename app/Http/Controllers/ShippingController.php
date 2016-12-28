@@ -197,6 +197,7 @@ class ShippingController extends Controller
 					->where('is_deleted', 0)
 					->where('unique_order_id', $request->get('unique_order_id'))
 					->get();
+		
 		$queryLog["after"] = strtotime('now');
 // dd($ships);
 		if(count($ships)>0){
@@ -221,14 +222,14 @@ class ShippingController extends Controller
 			
 			$customer['order_id'] = $ships[0]->order_number;
 			$customer['unique_order_id'] = $request->get('unique_order_id');
-			$customer['ship_full_name'] = $ships[0]->customer->ship_full_name;
-			$customer['ship_company_name'] = $ships[0]->customer->ship_company_name;
-			$customer['ship_address_1'] = $ships[0]->customer->ship_address_1;
-			$customer['ship_address_2'] = $ships[0]->customer->ship_address_2;
-			$customer['ship_state'] = $ships[0]->customer->ship_state;
-			$customer['ship_city'] = $ships[0]->customer->ship_city;
-			$customer['ship_country'] = $ships[0]->customer->ship_country;
-			$customer['ship_zip'] = $ships[0]->customer->ship_zip;
+			$customer['ship_full_name'] = 		Helper::removeSpecial($ships[0]->customer->ship_full_name);
+			$customer['ship_company_name'] = 	Helper::removeSpecial($ships[0]->customer->ship_company_name);
+			$customer['ship_address_1'] = 		Helper::removeSpecial($ships[0]->customer->ship_address_1);
+			$customer['ship_address_2'] = 		Helper::removeSpecial($ships[0]->customer->ship_address_2);
+			$customer['ship_state'] = 			Helper::removeSpecial($ships[0]->customer->ship_state);
+			$customer['ship_city'] = 			Helper::removeSpecial($ships[0]->customer->ship_city);
+			$customer['ship_country'] = 		Helper::removeSpecial($ships[0]->customer->ship_country);
+			$customer['ship_zip'] = 			Helper::removeSpecial($ships[0]->customer->ship_zip);
 			
 		
 // 			$counterWeight = Ship::where('is_deleted', 0)

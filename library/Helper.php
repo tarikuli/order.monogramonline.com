@@ -628,7 +628,7 @@ APPEND;
 
 		$ships = Ship::where('order_number', $order->order_id)->lists('unique_order_id', 'id')->toArray ();
 		$lines = count(array_unique($ships));
-		
+// dd($ships, $lines);		
 		if($lines == 0){
 			return sprintf("%s-%s", static::orderNameFormatter($order), $lines);
 		}else{
@@ -639,7 +639,7 @@ APPEND;
 				$lastNumbe[] = (int)substr($line, -1);
 			}
 			$maxLastNumber = max($lastNumbe);
-Helper::jewelDebug("Max Order: ".$maxLastNumber);
+// Helper::jewelDebug("Max Order: ".$maxLastNumber);
 			return sprintf("%s-%s", static::orderNameFormatter($order), $maxLastNumber+1);
 		}
 		
@@ -1698,6 +1698,11 @@ Helper::jewelDebug("Max Order: ".$maxLastNumber);
 		$xml .= '</' . $node_block . '>' . "\n";
 	
 		return $xml;
+	}
+	
+	public static function removeSpecial($string){
+		//$string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
+		return preg_replace('/[^A-Za-z0-9,\-]/', ' ', $string); // Removes special chars.
 	}
 	
 	public static function getFileName($dir){

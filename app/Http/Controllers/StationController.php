@@ -606,8 +606,8 @@ class StationController extends Controller {
 			if(count(array_unique($order_ids)) > 1 ){
 				return redirect ()->back ()->withErrors ( "Can not process mix order#.". implode ( ",", $order_ids ) );
 			}
-			
-			Ship::where ('item_id', $order_ids[0] )
+// echo $order_ids[0];			
+			Ship::where ('order_number', $order_ids[0] )
 					->whereNull('tracking_number')
 					->delete();
 			
