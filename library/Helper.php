@@ -557,9 +557,9 @@ APPEND;
 		$short_order = explode("-", $unique_order_id);
 
 		if(isset($short_order[0]) && isset($short_order[1])){	
-			if ( $short_order[0] == "M" ) {
+			if ( strtoupper($short_order[0]) == "M" ) {
 				return "yhst-128796189915726-".$short_order[1];
-			} elseif ( $short_order[0] == "S" ) {
+			} elseif ( strtoupper($short_order[0]) == "S" ) {
 				return "yhst-132060549835833-".$short_order[1];
 			}
 		}

@@ -562,6 +562,7 @@ class StationController extends Controller {
 		if($request->has('unique_order_id')){
 			$unique_order_ids = $request->get ( 'unique_order_id' );
 			$order_id = Helper::getOrderNumber(trim($unique_order_ids));
+// dd($unique_order_ids, $order_id);			
 		}elseif($request->has('item_id')){
 			$order_id = true;
 		}else {
