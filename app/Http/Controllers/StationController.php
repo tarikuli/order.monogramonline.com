@@ -562,7 +562,6 @@ class StationController extends Controller {
 		if($request->has('unique_order_id')){
 			$unique_order_ids = $request->get ( 'unique_order_id' );
 			$order_id = Helper::getOrderNumber(trim($unique_order_ids));
-// dd($unique_order_ids, $order_id);			
 		}elseif($request->has('item_id')){
 			$order_id = true;
 		}else {
@@ -607,6 +606,11 @@ class StationController extends Controller {
 			if(count(array_unique($order_ids)) > 1 ){
 				return redirect ()->back ()->withErrors ( "Can not process mix order#.". implode ( ",", $order_ids ) );
 			}
+			
+			Ship::where ('item_id', $order_ids[0] )
+					->whereNull('tracking_number')
+					->delete();
+			
 			// --- Check for mix Order ID
 			$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
 			
@@ -628,9 +632,9 @@ class StationController extends Controller {
 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
 						}else{
 							//$errors[] = sprintf ("Already in Shipping Station Item# ".$item->id." Batch# ".$item->batch_number." and Route ".$item->route->batch_route_name." -> ".$item->route->batch_code);
-							Ship::where ('item_id', $item->id )
+// 							Ship::where ('item_id', $item->id )
 									//->whereNull('tracking_number')
-									->delete();
+// 									->delete();
 							
 							$item->previous_station = $item->station_name;
 							$item->station_name = $common_shipping_station[0];

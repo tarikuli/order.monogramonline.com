@@ -639,7 +639,7 @@ APPEND;
 				$lastNumbe[] = (int)substr($line, -1);
 			}
 			$maxLastNumber = max($lastNumbe);
-			Helper::jewelDebug($maxLastNumber);
+Helper::jewelDebug("Max Order: ".$maxLastNumber);
 			return sprintf("%s-%s", static::orderNameFormatter($order), $maxLastNumber+1);
 		}
 		
