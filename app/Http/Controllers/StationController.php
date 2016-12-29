@@ -304,35 +304,27 @@ class StationController extends Controller {
 // 				$qdc_station = substr($current_route_shp_station[0], 0, 1)."-QCD";
 				$qdc_station = explode("-",$current_route_shp_station[0]);
 				$qdc_station = $qdc_station[0]."-QCD";
-
+// dd($qdc_station,$item, $item_id);
 				if (in_array($qdc_station, $stations)) {
 
-					$items = Item::where('id', $item->id)
-								 ->where('is_deleted',0)
-								 ->whereNull('tracking_number')
-					->update([
-							'station_name'      => $qdc_station,
-							'change_date' => date('Y-m-d H:i:s', strtotime('now')),
-							'previous_station'  => $current_route_shp_station[0],
-							'reached_shipping_station'  => 0,
-							'item_order_status_2' => 2,
-							'item_order_status' => "active",
-					]);
-
 					Ship::where('item_id', $item_id)
-						 ->whereNull('tracking_number')
-						 ->delete();
+							->whereNull('tracking_number')
+							->delete();
+					
+					$items = Item::where('id', $item->id)
+								->where('is_deleted',0)
+								->whereNull('tracking_number')
+								->update([
+										'station_name'      => $qdc_station,
+										'change_date' => date('Y-m-d H:i:s', strtotime('now')),
+										'previous_station'  => $current_route_shp_station[0],
+										'reached_shipping_station'  => 0,
+										'item_order_status_2' => 2,
+										'item_order_status' => "active",
+								]);
 
-//  					$station_log = new StationLog ();
-//  					$station_log->item_id = $item->id;
-//  					$station_log->batch_number = $item->batch_number;
-//  					$station_log->station_id = Station::where ( 'station_name', $current_route_shp_station[0] )->first ()->id;
-//  					$station_log->started_at = date ( 'Y-m-d', strtotime ( "now" ) );
-//  					$station_log->user_id = Auth::user ()->id;
-//  					$station_log->save ();
-
- 					$note->note_text = "Click back_to_qc for Move to ".$qdc_station." Sation";
-
+ 					//$note->note_text = "Click back_to_qc for Move to ".$qdc_station." Sation";
+					Helper::histort("Click back_to_qc for Move to ".$qdc_station." Sation", $item->order_id);
  					return redirect ( url ( 'batches/'.$item->batch_number.'/'.$qdc_station ) );
 				}else{
 					return redirect(url('batches/'.$item->batch_number.'/'.$item->station_name))
@@ -606,11 +598,18 @@ class StationController extends Controller {
 			if(count(array_unique($order_ids)) > 1 ){
 				return redirect ()->back ()->withErrors ( "Can not process mix order#.". implode ( ",", $order_ids ) );
 			}
-// echo $order_ids[0];			
-			Ship::where ('order_number', $order_ids[0] )
-					->whereNull('tracking_number')
-					->delete();
-			
+// echo $order_ids[0];	
+			if($request->has('unique_order_id')){
+				Ship::where ('order_number', $order_ids[0] )
+						->whereNull('tracking_number')
+						->delete();
+			}elseif($request->has('item_id')){
+				foreach ($items as $item){
+						Ship::where ('item_id', $item->id )
+						//->whereNull('tracking_number')
+						->delete();
+				}
+			}
 			// --- Check for mix Order ID
 			$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
 			
