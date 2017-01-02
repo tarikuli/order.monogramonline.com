@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Monogram\Helper;
 use App\Inventory;
 use App\PurchasedInvProducts;
+use Illuminate\Support\Facades\Session;
 
 class InventoryController extends Controller
 {
@@ -74,8 +75,7 @@ class InventoryController extends Controller
 
 	public function updateInventorie(Request $request, $inventorie_id)
 	{
-		
-		
+		$requestUrl = Session::get('_previous', url('inventories#'.$inventorie_id));
 		$inventory = Inventory::find($inventorie_id);
 		$inventory->re_order_qty = $request->re_order_qty;
 		$inventory->min_reorder = $request->min_reorder;
@@ -87,9 +87,13 @@ class InventoryController extends Controller
 		
 // 		return redirect(url('inventories#'.$inventorie_id))
 // 						->with('success', sprintf("Update Success."));
+
+		if(isset($requestUrl['url'])){
+			$requestUrl = $requestUrl['url']."&#".$inventorie_id;
+		}
 		
-		return redirect()
-		->back()
+		return redirect($requestUrl)
+// 		->back()
 		->with('success', "success");
 		
 	}

@@ -136,7 +136,10 @@
 
 								<td><img  border = "0" style="height: auto; width: 85%;" src = "{{ $inventorie['warehouse'] }}" /></td>
 								<td> {{ $inventorie['stock_no_unique'] }} </td>
-								<td> {{ $inventorie['stock_name_discription'] }} </td>
+								<td> 
+									{{ $inventorie['stock_name_discription'] }} <br>
+									{!! \App\Option::where('stock_number', $inventorie['stock_no_unique'])->lists('child_sku','id')->first();  !!}
+								</td>
 								<td> {{ $inventorie['sku_weight'] }} </td>
 							 	<td>
 	 							     {!! Form::open(['url' => url(sprintf("inventoriesupdate/%s", $inventorie['id']))]) !!}  
@@ -148,7 +151,7 @@
 								</td>
 								<td> 
 									{{-- $inventorie['wh_bin'] --}}
-									{!! Form::number('wh_bin', $inventorie['wh_bin'] , ['style'=>'width:70px;margin-right:25px']) !!}
+									{!! Form::text('wh_bin', $inventorie['wh_bin'] , ['style'=>'width:70px;margin-right:25px']) !!}
 								   
 								</td>
 								<td>
