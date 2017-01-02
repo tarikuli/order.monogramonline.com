@@ -115,9 +115,11 @@
 						<th>stock_no_unique</th>
 						<th>stock_name_discription</th>
 						<th>sku_weight</th>
+						<th>Action</th>
+						<th>adjustment</th>
+						<th>wh_bin</th>
 						<th>re_order_qty</th>
 						<th>min_reorder</th>
-						<th>adjustment</th>
 						<th>total<br>purchase</th>
 						<th>total<br>sale</th>
 						<th>qty_on_hand</th>
@@ -125,42 +127,50 @@
 						<th>qty_exp</th>
 						<th>qty_av</th>
 						<th>upc</th>
-						<th>wh_bin</th>
+					
 						{{-- <th>warehouse</th> --}}
-						<th>Action</th>
+						
 					</tr>
 					@foreach($inventories as $inventorie)
 						<tr data-sku = "{{ $inventorie['stock_no_unique'] }}" id = "{{ $inventorie['id'] }}">
-							
+
 								<td><img  border = "0" style="height: auto; width: 85%;" src = "{{ $inventorie['warehouse'] }}" /></td>
 								<td> {{ $inventorie['stock_no_unique'] }} </td>
 								<td> {{ $inventorie['stock_name_discription'] }} </td>
 								<td> {{ $inventorie['sku_weight'] }} </td>
+							 	<td>
+	 							     {!! Form::open(['url' => url(sprintf("inventoriesupdate/%s", $inventorie['id']))]) !!}  
+									 {!! Form::hidden('stock_no_unique', $inventorie['stock_no_unique']) !!}
+									 {!! Form::button('Update', ['id' => 'inventorie_id', 'class' => 'btn btn-success']) !!}
+								</td>
+								<td> 
+									 {!! Form::number('adjustment', $inventorie['adjustment'] , ['style'=>'width:70px;margin-right:25px']) !!}
+								</td>
+								<td> 
+									{{-- $inventorie['wh_bin'] --}}
+									{!! Form::number('wh_bin', $inventorie['wh_bin'] , ['style'=>'width:70px;margin-right:25px']) !!}
+								   
+								</td>
 								<td>
-								     {!! Form::open(['url' => url(sprintf("inventoriesupdate/%s", $inventorie['id']))]) !!} 
 									 {!! Form::number('re_order_qty', $inventorie['re_order_qty'] , ['style'=>'width:70px;margin-right:25px']) !!}
 								</td>
 								<td> 
 									 {!! Form::number('min_reorder', $inventorie['min_reorder'] , ['style'=>'width:70px;margin-right:25px']) !!}
 								</td>
-								<td> 
-									 {!! Form::number('adjustment', $inventorie['adjustment'] , ['style'=>'width:70px;margin-right:25px']) !!}
-								</td>
+
 								<td> {{ $inventorie['total_purchase'] }} </td>	
 								<td> {{ $inventorie['total_sale'] }} </td>	
 								<td> {{ $inventorie['qty_on_hand'] }} </td>																																
 								<td> {{ $inventorie['qty_alloc'] }} </td>
 								<td> {{ $inventorie['qty_exp'] }} </td>
 								<td> {{ $inventorie['qty_av'] }} </td>
-								<td> {{ $inventorie['upc'] }} </td>
-								<td> {{ $inventorie['wh_bin'] }} </td>
-								{{-- <td> {{ $inventorie['warehouse'] }} </td> --}}
-								<td>  
-									 {!! Form::hidden('stock_no_unique', $inventorie['stock_no_unique']) !!}
-									 
-									 {!! Form::button('Update', ['id' => 'inventorie_id', 'class' => 'btn btn-success']) !!}
-									 {!! Form::close() !!}
+								<td> 
+									{{ $inventorie['upc'] }}
+									{!! Form::close() !!}  
 								</td>
+
+								{{-- <td> {{ $inventorie['warehouse'] }} </td> --}}
+
 						
 						</tr>
 					@endforeach
