@@ -147,11 +147,11 @@
 									 {!! Form::button('Update', ['id' => 'inventorie_id', 'class' => 'btn btn-success']) !!}
 								</td>
 								<td> 
-									 {!! Form::number('adjustment', $inventorie['adjustment'] , ['style'=>'width:70px;margin-right:25px']) !!}
+									 {!! Form::number('adjustment', $inventorie['adjustment'] , ['style'=>'width:60px;margin-right:25px']) !!}
 								</td>
 								<td> 
 									{{-- $inventorie['wh_bin'] --}}
-									{!! Form::text('wh_bin', $inventorie['wh_bin'] , ['style'=>'width:70px;margin-right:25px']) !!}
+									{!! Form::text('wh_bin', $inventorie['wh_bin'] , ['style'=>'width:100px;margin-right:25px']) !!}
 								   
 								</td>
 								<td>

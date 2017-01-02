@@ -75,7 +75,7 @@ class InventoryController extends Controller
 
 	public function updateInventorie(Request $request, $inventorie_id)
 	{
-		$requestUrl = Session::get('_previous', url('inventories#'.$inventorie_id));
+		$requestUrl = Session::get('_previous', url('/inventories#'.$inventorie_id));
 		$inventory = Inventory::find($inventorie_id);
 		$inventory->re_order_qty = $request->re_order_qty;
 		$inventory->min_reorder = $request->min_reorder;
@@ -88,8 +88,13 @@ class InventoryController extends Controller
 // 		return redirect(url('inventories#'.$inventorie_id))
 // 						->with('success', sprintf("Update Success."));
 
+// 		dd($requestUrl, url('/inventories#'.$inventorie_id));
 		if(isset($requestUrl['url'])){
-			$requestUrl = $requestUrl['url']."&#".$inventorie_id;
+			if (preg_match('/search_for_first/', $requestUrl['url'])) {
+				$requestUrl = $requestUrl['url']."&#".$inventorie_id;
+			}else{
+				$requestUrl = $requestUrl['url']."#".$inventorie_id;
+			}
 		}
 		
 		return redirect($requestUrl)
