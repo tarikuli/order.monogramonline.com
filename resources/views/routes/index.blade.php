@@ -71,6 +71,26 @@
 				<label for = "status">Status</label>
 				{!! Form::select('status', $statuses, $request->get('status'), ['id'=>'status', 'class' => 'form-control']) !!}
 			</div>
+			
+			
+			<div class = "form-group col-xs-3">
+				<label for = "order_start_date">Order Start date</label>
+				<div class = 'input-group date' id = 'order_start_date'>
+					{!! Form::text('order_start_date', $request->get('order_start_date'), ['id'=>'order_start_date', 'class' => 'form-control', 'placeholder' => 'Order start date']) !!}
+					<span class = "input-group-addon">
+                        <span class = "glyphicon glyphicon-calendar"></span>
+                    </span>
+				</div>
+			</div>
+			<div class = "form-group col-xs-3">
+				<label for = "order_end_date">Order End date</label>
+				<div class = 'input-group date' id = 'order_end_date'>
+					{!! Form::text('order_end_date', $request->get('order_end_date'), ['id'=>'order_end_date', 'class' => 'form-control', 'placeholder' => 'Order end date']) !!}
+					<span class = "input-group-addon">
+                        <span class = "glyphicon glyphicon-calendar"></span>
+                    </span>
+				</div>
+			</div>
 			<div class = "form-group col-xs-2">
 				<label for = "" class = ""></label>
 				{!! Form::submit('Search', ['id'=>'search', 'style' => 'margin-top: 5px;', 'class' => 'btn btn-primary form-control']) !!}
@@ -191,6 +211,9 @@
 			$('#start_date_picker').datetimepicker(options);
 			$('#end_date_picker').datetimepicker(options);
 			$('#tracking_date_picker').datetimepicker(options);
+			$('#order_start_date').datetimepicker(options);
+			$('#order_end_date').datetimepicker(options);
+			
 		});
 	</script>
 	<script type = "text/javascript">

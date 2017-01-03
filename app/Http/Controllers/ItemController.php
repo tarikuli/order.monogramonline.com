@@ -256,7 +256,7 @@ class ItemController extends Controller
 
 	public function getGroupedBatch (Request $request)
 	{
-// return $request->all();
+// 		return $request->all();
 
 		if ( $request->has('station') && $request->get('station') != 'all' ) {
 			Session::put('searching_in_station', $request->get('station'));
@@ -278,6 +278,7 @@ class ItemController extends Controller
 						->searchStation(session('station', 'all'))
 						->searchStatus($request->get('status'))
 						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
+						->searchOrderDate($request->get('order_start_date'), $request->get('order_end_date'))
 						->groupBy('batch_number')
 						->latest('batch_number')
 						->paginate(50);
@@ -293,6 +294,7 @@ class ItemController extends Controller
 						->searchCutOffOrderDate($station->station_name, $request->get('start_date'), $request->get('end_date'))
 						->searchStatus($request->get('status'))
 						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
+						->searchOrderDate($request->get('order_start_date'), $request->get('order_end_date'))
 						->groupBy('batch_number')
 						->latest('batch_number')
 						->paginate(50);
@@ -310,7 +312,6 @@ class ItemController extends Controller
 						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
 						->count();
 						
-// dd($itemsTotalQty);		
 		$routes = BatchRoute::where('is_deleted', 0)
 							->orderBy('batch_route_name')
 							->latest()
@@ -339,7 +340,7 @@ class ItemController extends Controller
 			$checker = [ ];
 			$working_stations = [ ];
 			$items_on_station = [ ];
-			
+#dd($item);			
 			foreach ( $item->groupedItems as $singleRow ) {
 				if ( $start ) {
 					$start = false;

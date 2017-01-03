@@ -351,12 +351,31 @@ class Item extends Model
 
 // 		return $query->where('batch_creation_date', '>=', $starting)
 // 					 ->where('batch_creation_date', '<=', $ending);
-
+// dd($query->where('change_date', '>=', $starting)->where('change_date', '<=', $ending));
 		return $query->where('change_date', '>=', $starting)
 					 ->where('change_date', '<=', $ending);
 
 	}
 
+	public function scopeSearchOrderDate ($query, $start_date, $end_date)
+	{
+		if ( !$start_date ) {
+			return;
+		}
+		$starting = sprintf("%s 00:00:00", $start_date);
+		$ending = sprintf("%s 23:59:59", $end_date ? $end_date : $start_date);
+	
+// 		dd($query->where('change_date', '>=', $starting)->where('change_date', '<=', $ending));	
+// 		return $query->where('order_date', '>=', $starting)
+// 					 ->where('order_date', '<=', $ending);
+		
+		$orders = Order::withinDate($starting, $ending)
+						->get([ 'order_id' ]);
+		
+		return $query->whereIn('order_id', $orders);
+	
+	}
+	
 	public static function getTableColumns ()
 	{
 		return (new static())->tableColumns();
