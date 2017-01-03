@@ -140,7 +140,10 @@
 									{{ $inventorie['stock_name_discription'] }} <br>
 									{!! \App\Option::where('stock_number', $inventorie['stock_no_unique'])->lists('child_sku','id')->first();  !!}
 								</td>
-								<td> {{ $inventorie['sku_weight'] }} </td>
+								<td> 
+									{{ $inventorie['sku_weight'] }} <br>
+									<a href = "{{url(sprintf('prints/stock_no_unique?stock_no_unique=%s',$inventorie['id']))}}" target = "_blank">Print</a>	
+								</td>
 							 	<td>
 	 							     {!! Form::open(['url' => url(sprintf("inventoriesupdate/%s", $inventorie['id']))]) !!}  
 									 {!! Form::hidden('stock_no_unique', $inventorie['stock_no_unique']) !!}
@@ -159,6 +162,7 @@
 								</td>
 								<td> 
 									 {!! Form::number('min_reorder', $inventorie['min_reorder'] , ['style'=>'width:70px;margin-right:25px']) !!}
+									 {!! Form::close() !!}  
 								</td>
 
 								<td> {{ $inventorie['total_purchase'] }} </td>	
@@ -169,7 +173,7 @@
 								<td> {{ $inventorie['qty_av'] }} </td>
 								<td> 
 									{{ $inventorie['upc'] }}
-									{!! Form::close() !!}  
+									
 								</td>
 
 								{{-- <td> {{ $inventorie['warehouse'] }} </td> --}}
@@ -204,12 +208,7 @@
 
 		$("button#inventorie_id").on('click', function (){
 			event.preventDefault();
-// 			var selected = parseInt($(this).closest("tr").find("select#batch_stations").val());
-// 			if ( selected !== 0 ) {
-				$(this).closest("tr").find("form").submit();
-// 			}else if ( selected == 0 ) {
-// 				alert("Please Select station");
-// 			}
+			$(this).closest("tr").find("form").submit();
 		});
 		
 	</script>

@@ -57,6 +57,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		get('prints/batch_packing', 'PrintController@batch_packing_slip');
 		get('prints/batch_packing_small', 'PrintController@batch_packing_slip_small');
 		get('prints/email_packing', 'PrintController@sendShippingConfirm');
+		get('prints/stock_no_unique', 'PrintController@print_stock_no_unique');
 		
 		get('prints/packing_slip/bulk', 'PrintController@getPackingSlipPrintByOrderId');
 		post('prints/packing_slip/bulk', 'PrintController@postPackingSlipPrintByOrderId');

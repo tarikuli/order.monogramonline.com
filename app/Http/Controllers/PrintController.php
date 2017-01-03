@@ -10,6 +10,7 @@ use App\Purchase;
 Use App\Ship;
 use App\SpecificationSheet;
 use App\Setting;
+use App\Inventory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Monogram\AppMailer;
@@ -132,6 +133,13 @@ class PrintController extends Controller
 		return view('prints.batch_printer')->with('modules', $modules);
 	}
 
+	public function print_stock_no_unique (Request $request)
+	{
+		$inventory = Inventory::find($request->get('stock_no_unique'));
+// 		dd($request->all(), $inventory);
+		return view('prints.print_stock_no_unique')->with('inventory', $inventory);
+	}
+	
 	public function batch_packing_slip_small (Request $request)
 	{
 		// 		return $request->all();
