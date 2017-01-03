@@ -129,6 +129,7 @@
 						<td rowspan = "{{ $count }}" style = "vertical-align: middle">
 							<a href = "{{url(sprintf("orders/details/%s", $ship->order_number))}}"
 							   target = "_blank">GO </a> {{ $ship->unique_order_id }}
+							{!! \App\User::where('id', $ship->item->item_taxable)->lists('username','id')->first();  !!}
 							<br><a href = "{{ url(sprintf("/shippinglabel_print?unique_order_id=%s",$ship->unique_order_id )) }}">Print lable</a>
 							
 						</td>
@@ -143,7 +144,6 @@
 							@endif
 						</td>
 						<td>
-							{!! \App\User::where('id', $ship->item->item_taxable)->lists('username','id')->first();  !!}
 							{{ $ship->item->id }}
 							@if($ship->item->tracking_number)
 							<br>
@@ -220,7 +220,6 @@
 								@endif
 							</td>
 							<td>
-								{!! \App\User::where('id', $ship->item->item_taxable)->lists('username','id')->first();  !!}
 								{{ $ship->item->id }}
 								
 								@if($ship->item->tracking_number)
