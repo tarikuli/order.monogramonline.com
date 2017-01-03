@@ -143,6 +143,7 @@
 							@endif
 						</td>
 						<td>
+							{!! \App\User::where('id', $ship->item->item_taxable)->lists('username','id')->first();  !!}
 							{{ $ship->item->id }}
 							@if($ship->item->tracking_number)
 							<br>
@@ -219,6 +220,7 @@
 								@endif
 							</td>
 							<td>
+								{!! \App\User::where('id', $ship->item->item_taxable)->lists('username','id')->first();  !!}
 								{{ $ship->item->id }}
 								
 								@if($ship->item->tracking_number)

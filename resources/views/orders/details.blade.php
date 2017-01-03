@@ -316,6 +316,7 @@
 					</td>
 					<td>
 						Item# {{ $item->id }}{!! \Monogram\Helper::getHtmlBarcode(sprintf("%s", $item->id)) !!}
+						{!! \App\User::where('id', $item->item_taxable)->lists('username','id')->first();  !!}
 					</td>
 				</tr>
 				@if($item->shipInfo && $item->shipInfo->tracking_number)

@@ -221,6 +221,7 @@ class ItemController extends Controller
 				$station_name = $batch->stations_list[0]->station_name;
 				$item->station_name = $station_name;
 				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+				$item->item_taxable = Auth::user()->id;
 				$item->item_order_status = Helper::getBatchStatus();
 				$item->batch_creation_date = date('Y-m-d H:i:s', strtotime('now'));
 				$item->item_order_status_2 = 2;
@@ -643,6 +644,7 @@ class ItemController extends Controller
 				$item->previous_station = $item->station_name;
 				$item->station_name = $toStationName;
 				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+				$item->item_taxable = Auth::user()->id;
 				$item->save();
 
 				// Add note history by order id
@@ -693,6 +695,7 @@ class ItemController extends Controller
 			foreach ( $items as $item ) {
 				$item->station_name = $station_name;
 				$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+				$item->item_taxable = Auth::user()->id;
 				$item->save();
 			}
 		}
@@ -1190,6 +1193,7 @@ class ItemController extends Controller
 		$item->batch_route_id = null;
 		$item->station_name = null;
 		$item->change_date = null;
+		$item->item_taxable = Auth::user()->id;
 		$item->item_order_status = null;
 		$item->batch_creation_date = null;
 		$item->tracking_number = null;
@@ -1961,6 +1965,7 @@ class ItemController extends Controller
 				if (count($current_route_shp_station)>0){
 					$item->station_name = $current_route_shp_station[0];
 					$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+					$item->item_taxable = Auth::user()->id;
 				}
 // Log::error($item_id."	".$item->batch_number);
 

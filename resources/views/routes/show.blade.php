@@ -171,6 +171,8 @@
 								</td -->
 								<td>
 									<a href = "#" class = "btn btn-success complete">Complete</a>
+									<br>Last Move by<br>
+									{!! \App\User::where('id', $item->item_taxable)->lists('username','id')->first();  !!}
 								</td>
 							</tr>
 						@endforeach

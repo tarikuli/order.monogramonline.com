@@ -136,6 +136,7 @@
 						<td>{{substr($item->order->order_date, 0, 10)}}<br>{{substr($item->order->order_date, 11, 18)}}</td>
 						<td>
 							{!! \App\Status::where('is_deleted', 0)->lists('status_name','id')->get($item->order->order_status)  !!}<br>
+							{!! \App\User::where('id', $item->item_taxable)->lists('username','id')->first();  !!}<br>
 							{{ $item->order->coupon_id }}
 							
 						</td>

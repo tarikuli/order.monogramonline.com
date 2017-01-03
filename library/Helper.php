@@ -855,6 +855,7 @@ APPEND;
 		// set reached_shipping_station to 1, as it reaches the shipping station
 		$item->reached_shipping_station = 1;
 		$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+		$item->item_taxable = Auth::user()->id;
 		$item->save();
 		$items = Item::with('order')
 					 ->where('order_id', $order_id)
@@ -1739,6 +1740,7 @@ APPEND;
 		$item->batch_route_id = null;
 		$item->station_name = null;
 		$item->change_date = null;
+		$item->item_taxable = Auth::user()->id;
 		$item->item_order_status = null;
 		$item->batch_creation_date = null;
 		$item->tracking_number = null;

@@ -166,11 +166,12 @@ class TemplateController extends Controller
 
 	public function edit ($id)
 	{
-		//
+		// item_taxable
 	}
 
 	public function update (Request $request, $id)
 	{
+// dd($request->all());		
 		$template = Template::find($id);
 
 		if ( !$template ) {

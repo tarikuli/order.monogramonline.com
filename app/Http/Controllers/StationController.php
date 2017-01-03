@@ -234,6 +234,7 @@ class StationController extends Controller {
 
 			$item->station_name = $current_route_shp_station[0];
 			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+			$item->item_taxable = Auth::user()->id;
 			
 			Item::where ( 'batch_number', $item->batch_number )->update ( [
 					'item_order_status' => 'active'
@@ -266,6 +267,7 @@ class StationController extends Controller {
 			$item->previous_station = $item->station_name;
 			$item->station_name = Helper::getSupervisorStationName ();
 			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+			$item->item_taxable = Auth::user()->id;
 			$item->rejection_reason = $request->get ( 'rejection_reason' );
 			$item->rejection_message = trim ( $request->get ( 'rejection_message' ) );
 			$item->reached_shipping_station = 0;
@@ -427,6 +429,7 @@ class StationController extends Controller {
 			$item->station_name = $station_name;
 			$item->previous_station = $item->station_name;
 			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+			$item->item_taxable = Auth::user()->id;
 			$supervisor_message = trim ( $request->get ( 'supervisor_message' ) );
 			$item->supervisor_message = ! empty ( $supervisor_message ) ? $supervisor_message : null;
 			$item->rejection_message = null;
@@ -626,6 +629,7 @@ class StationController extends Controller {
 							$item->previous_station = $item->station_name;
 							$item->station_name = $common_shipping_station[0];
 							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+							$item->item_taxable = Auth::user()->id;
 							$item->save ();
 							Helper::insertDataIntoShipping($item, $unique_order_id);							
 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
@@ -638,6 +642,7 @@ class StationController extends Controller {
 							$item->previous_station = $item->station_name;
 							$item->station_name = $common_shipping_station[0];
 							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+							$item->item_taxable = Auth::user()->id;
 							$item->save ();
 							Helper::insertDataIntoShipping($item, $unique_order_id);	
 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
@@ -1179,6 +1184,7 @@ class StationController extends Controller {
 			$item->previous_station = $item->station_name;
 			$item->station_name = $station_name;
 			$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+			$item->item_taxable = Auth::user()->id;
 			$item->save ();
 			if (in_array ( $station_name, Helper::$shippingStations )) {
 				Helper::populateShippingData ( $item );
