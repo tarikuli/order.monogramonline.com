@@ -1008,8 +1008,11 @@ class ItemController extends Controller
 		}
 		$fully_specified_path = sprintf("%s%s", $file_path, $file_name);
 		$csv = Writer::createFromFileObject(new \SplFileObject($fully_specified_path, 'w+'), 'w');
-		$csv->insertOne($columns);
-
+	
+		if($template->show_header == 1){
+			$csv->insertOne($columns);
+		}
+		
 		set_time_limit(0);
 		foreach ( $items as $item ) {
 			$row = [ ];
