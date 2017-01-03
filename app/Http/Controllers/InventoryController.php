@@ -103,6 +103,17 @@ class InventoryController extends Controller
 		
 	}
 	
+	
+	public function deleteInventori(Request $request)
+	{
+// 		dd($request->get('stock_no_unique'));
+		#Inventory::delete($request->get('stock_no_unique'));
+		Inventory::where('id', $request->get('stock_no_unique'))
+		->delete();
+		return redirect()
+				->back()
+				->with('success', "Success Deleted ID#".$request->get('stock_no_unique'));
+	}
 	public function create ()
 	{
 		//

@@ -135,14 +135,17 @@
 						<tr data-sku = "{{ $inventorie['stock_no_unique'] }}" id = "{{ $inventorie['id'] }}">
 
 								<td><img  border = "0" style="height: auto; width: 85%;" src = "{{ $inventorie['warehouse'] }}" /></td>
-								<td> {{ $inventorie['stock_no_unique'] }} </td>
+								<td>
+									 {{ $inventorie['stock_no_unique'] }}<br>
+									 <a href = "{{url(sprintf('inventoriesDelete?stock_no_unique=%s',$inventorie['id']))}}" target = "_self">Delete</a>
+								</td>
 								<td> 
 									{{ $inventorie['stock_name_discription'] }} <br>
 									{!! \App\Option::where('stock_number', $inventorie['stock_no_unique'])->lists('child_sku','id')->first();  !!}
 								</td>
 								<td> 
-									{{ $inventorie['sku_weight'] }} <br>
-									<a href = "{{url(sprintf('prints/stock_no_unique?stock_no_unique=%s',$inventorie['id']))}}" target = "_blank">Print</a>	
+									 {{ $inventorie['sku_weight'] }} 
+									<a class = "btn btn-success btn-sm pull-left" href = "{{url(sprintf('prints/stock_no_unique?stock_no_unique=%s',$inventorie['id']))}}" target = "_blank">Print</a>	
 								</td>
 							 	<td>
 	 							     {!! Form::open(['url' => url(sprintf("inventoriesupdate/%s", $inventorie['id']))]) !!}  

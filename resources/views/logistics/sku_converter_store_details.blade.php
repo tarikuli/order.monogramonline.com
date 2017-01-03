@@ -89,7 +89,7 @@
 				@if($parameters && (count($parameters->lists('parameter_value')) > 0))
 					<table class = "table table-bordered">
 						<tr>
-							<th>Delete</th>
+							<th>Edit</th>
 							<th>Allow Mixing</th>
 							<th>Route</th>
 							<th>ID</th>
@@ -101,16 +101,13 @@
 							@foreach($parameters as $parameter)
 								<th>{{$parameter->parameter_value}}</th>
 							@endforeach
-							<th>Edit</th>
+							<th>Delete</th>
 						</tr>
 						@foreach($options as $option)
 							@setvar($decoded = json_decode($option->parameter_option, true))
 							<tr>
 								<td>
-									{!! Form::open(['url' => url('/logistics/delete_sku/'.$option->unique_row_value), 'method' => 'delete']) !!}
-									{!! Form::hidden('return_to', $returnTo) !!}
-									{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
-									{!! Form::close() !!}
+									<a class = "btn btn-success btn-sm pull-left" href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s&return_to=%s", $option->store_id, $option->unique_row_value, $returnTo))}}">Edit</a>
 								</td>
 								<td>
 									{!! Form::open(['url' => url('/logistics/update_parameter_option/'.$option->unique_row_value), 'method' => 'post']) !!}
@@ -166,7 +163,10 @@
 									</td>
 								@endforeach
 								<td>
-									<a href = "{{url(sprintf("/logistics/edit_sku_converter?store_id=%s&row=%s&return_to=%s", $option->store_id, $option->unique_row_value, $returnTo))}}">Edit</a>
+									{!! Form::open(['url' => url('/logistics/delete_sku/'.$option->unique_row_value), 'method' => 'delete']) !!}
+									{!! Form::hidden('return_to', $returnTo) !!}
+									{!! Form::submit('Delete', ['class' => 'btn btn-danger delete-sku_converter']) !!}
+									{!! Form::close() !!}
 								</td>
 							</tr>
 						@endforeach
