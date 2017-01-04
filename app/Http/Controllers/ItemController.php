@@ -311,6 +311,7 @@ class ItemController extends Controller
 						->searchStation(session('station', 'all'))
 						->searchStatus($request->get('status'))
 						->searchBatchCreationDateBetween($request->get('start_date'), $request->get('end_date'))
+						->searchOrderDate($request->get('order_start_date'), $request->get('order_end_date'))
 						->count();
 						
 		$routes = BatchRoute::where('is_deleted', 0)
