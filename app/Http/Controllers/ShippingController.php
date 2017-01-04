@@ -60,6 +60,11 @@ class ShippingController extends Controller
 				
 				if(count($items) > 0){
 					$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
+					
+					Ship::where ('order_number', $items->first()->order )
+							->whereNull('tracking_number')
+							->delete();
+					
 					foreach ($items as $item){
 						$short_order = explode("-", $item->order_id);
 						
@@ -73,7 +78,7 @@ class ShippingController extends Controller
 							$item->item_taxable = Auth::user()->id;
 							$item->save ();
 							
-							Ship::where ('item_id', $item->id )->delete();
+
 							Helper::insertDataIntoShipping($item, $unique_order_id);
 							//Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
 							

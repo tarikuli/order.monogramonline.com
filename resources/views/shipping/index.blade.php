@@ -144,7 +144,7 @@
 							@endif
 						</td>
 						<td>
-							{{ $ship->item->id }}
+							###{{ $ship->item->id }}
 							@if($ship->item->tracking_number)
 							<br>
 								<a href = "{{ url(sprintf("/remove_shipping?tracking_numbers[]=%s&item_id=%s&order_number=%s", $ship->item->tracking_number,$ship->item->id,$ship->order_number)) }}">Back Single</a>
@@ -220,7 +220,7 @@
 								@endif
 							</td>
 							<td>
-								{{ $ship->item->id }}
+								**{{ $ship->item->id }}
 								
 								@if($ship->item->tracking_number)
 								<br>
