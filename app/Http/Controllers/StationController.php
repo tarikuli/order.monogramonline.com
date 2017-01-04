@@ -630,6 +630,7 @@ class StationController extends Controller {
 							$item->station_name = $common_shipping_station[0];
 							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 							$item->item_taxable = Auth::user()->id;
+							$item->reached_shipping_station = 1;
 							$item->save ();
 							Helper::insertDataIntoShipping($item, $unique_order_id);							
 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
@@ -643,6 +644,7 @@ class StationController extends Controller {
 							$item->station_name = $common_shipping_station[0];
 							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 							$item->item_taxable = Auth::user()->id;
+							$item->reached_shipping_station = 1;
 							$item->save ();
 							Helper::insertDataIntoShipping($item, $unique_order_id);	
 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);

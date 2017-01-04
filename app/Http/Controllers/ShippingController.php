@@ -69,10 +69,11 @@ class ShippingController extends Controller
 							
 							$item->previous_station = $item->station_name;
 							$item->station_name = $common_shipping_station[0];
-							//$items->tracking_number =$upsTable->pic_tracking;
 							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 							$item->item_taxable = Auth::user()->id;
 							$item->save ();
+							
+							Ship::where ('item_id', $item->id )->delete();
 							Helper::insertDataIntoShipping($item, $unique_order_id);
 							//Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
 							
@@ -90,6 +91,7 @@ class ShippingController extends Controller
 						
 					}
 				}
+				
 				$upsTable->is_deleted = 1;
 				$upsTable->save ();
 			}
