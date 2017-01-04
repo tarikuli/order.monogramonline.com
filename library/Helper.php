@@ -908,7 +908,7 @@ APPEND;
 	// 		// 	echo "<br>".$row->id;
 	// 		return $items_exist_in_shipping->contains($row->id) ? false : true;
 	// 	}
-	public static function insertDataIntoShipping ($item, $unique_order_id = null, $pic_tracking, $shipping_date)
+	public static function insertDataIntoShipping ($item, $unique_order_id = null)
 	{
 		$post_value = $item->item_quantity * $item->item_unit_price;
 		$sku = $item->item_code;
@@ -992,13 +992,6 @@ APPEND;
 		$ship->package_shape = $package_shape;
 		$ship->tracking_type = $tracking_type;
 		$ship->post_value = $post_value;
-		
-		
-		$ship->tracking_number = $pic_tracking;
-		$ship->shipping_id     	   = $pic_tracking;
-		$ship->mail_class     	   =  "UPS Expedited Mail Innovations";
-		$ship->postmark_date        = $shipping_date;
-		$ship->transaction_datetime = $shipping_date;
 		
 // 		$ship->name = $name;
 // 		$ship->last_name = $last_name;
