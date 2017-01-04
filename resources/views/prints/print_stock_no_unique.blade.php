@@ -7,11 +7,11 @@
 	<link rel = "stylesheet" type = "text/css" href = "{{url("/assets/css/single_batch_print_css.css")}}" />
 	<style type = "text/css">
 		@page {
-			width: 90mm;
-			height: 26mm;
-			margin-top: 1mm;
-			margin-left: 0mm;
-			margin-right: 0mm;
+			width: 5.5cm;
+			height: 2.6mm;
+			margin-top: 1cm;
+			margin-left: 0cm;
+			margin-right: 0cm;
 			font-family: Verdana, Arial, Helvetica, sans-serif;
 			font-size: 10px;
 		}
@@ -23,6 +23,7 @@
 				border-style: solid;
 				border-size: 1px;
 				border-color: black,;
+				overflow: hidden;
 			}
 		}
 		div.current-batch {
@@ -32,35 +33,38 @@
 				border-style: dotted;
 				border-size: 0px;
 				border-color: black,;
+ 				overflow: hidden;
 		}
 	</style>
 </head>
 <body>
-<div class = "current-batch" style="width: 90mm; height: 25mm;">
+<div class = "current-batch" style="width: 5.3cm; height: 2.5cm;">
 
 <table cellpadding = "0" cellspacing = "0" width = "100%" border = "0">
-	<tr valign = "top"  width = "100%">
-		<td>Stock#</td>
-		<td>{{ $inventory->stock_no_unique }}</td>
+	<tr valign = "top">
+		<td>Stock#{{ $inventory->stock_no_unique }}</td>
 		<td rowspan="3">
-		<img style="height:25mm; height: auto; overflow: hidden;" 
-											     src = "{{$inventory->warehouse}}"
-											     border = "0" />
+			<img style="height:1.5cm; width: auto; overflow: hidden;" 
+												     src = "{{$inventory->warehouse}}"
+												     border = "0" />
 		</td>		
 	</tr>
-		<tr valign = "top">
-		<td colspan = "3" align = "left">
-			{!! \Monogram\Helper::getHtmlBarcode($inventory->stock_no_unique, .80) !!}
+	<tr valign = "top">
+		<td colspan = "1" align = "left">
+			{!! \Monogram\Helper::getHtmlBarcode($inventory->stock_no_unique, 1) !!}
 		</td>
 	</tr>
 	<tr>
-		<td>Stock Discription</td>
-		<td>{{ $inventory->stock_name_discription }}</td>
+		<td colspan = "1" align = "left" >
+			Bin#{{ $inventory->wh_bin }}
+		</td>
 	</tr>
-		<tr>
-		<td>Bin#</td>
-		<td>{{ $inventory->wh_bin }}</td>
+	<tr>
+		<td colspan = "2" align = "left" >
+			{{ $inventory->stock_name_discription }}
+		</td>
 	</tr>
+
 </table>
 
 <div>
