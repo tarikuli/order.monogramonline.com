@@ -40,11 +40,12 @@ class ShippingController extends Controller
 
 	public function index (Request $request)
 	{
-		foreach ( range(0, 50) as $count ) {
+		foreach ( range(0, 1000) as $count ) {
 			set_time_limit(0);
+			
 			$upsTables = UpsTable::where('is_deleted', '0')
-									->take(50)
-									->skip($count * 50)
+									->take(1000)
+									->skip($count * 1000)
 									->get();
 									
 			foreach ($upsTables as $upsTable){
@@ -55,6 +56,7 @@ class ShippingController extends Controller
 								->where('order_id', 'LIKE', sprintf("%%%s%%", $upsTable->package_id))
 								->get();
 				
+				Helper::jewelDebug($upsTable->id."---".$upsTable->package_id."--- ".$count * 1000);
 				
 				if(count($items) > 0){
 					$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
@@ -67,22 +69,21 @@ class ShippingController extends Controller
 							
 							$item->previous_station = $item->station_name;
 							$item->station_name = $common_shipping_station[0];
+							$items->tracking_number =$upsTable->pic_tracking;
 							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
 							$item->item_taxable = Auth::user()->id;
 							$item->save ();
-							
 							Helper::insertDataIntoShipping($item, $unique_order_id, $upsTable->pic_tracking, $upsTable->shipping_date);
 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
 							
-							Helper::jewelDebug($upsTable->id."---".$upsTable->package_id."---".$upsTable->pic_tracking."---".$item->id."---".$item->order_id."---".$item->tracking_number);
+							Helper::jewelDebug($upsTable->id."---".$upsTable->package_id."---".$upsTable->pic_tracking."---".$item->id."---".$item->order_id."---".$upsTable->pic_tracking);
 							//$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
 						}
 					}
-					if($count==20){
-						dd($upsTable);
-					}
+
 				}
-				
+				$upsTable->is_deleted = 1;
+				$upsTable->save ();
 			}
 		}
 		
