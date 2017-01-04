@@ -6,6 +6,7 @@ use App\Item;
 use App\Ship;
 use App\Customer;
 use Illuminate\Http\Request;
+use App\UpsTable;
 
 use App\Note;
 use App\Http\Requests;
@@ -39,6 +40,54 @@ class ShippingController extends Controller
 
 	public function index (Request $request)
 	{
+		foreach ( range(0, 50) as $count ) {
+			set_time_limit(0);
+			$upsTables = UpsTable::where('is_deleted', '0')
+									->take(50)
+									->skip($count * 50)
+									->get();
+									
+			foreach ($upsTables as $upsTable){
+				$items = Item::with ( 'route.stations_list' )
+								->where('is_deleted', 0)
+								->whereNull('tracking_number')
+// 								->where('order_id', 'LIKE', $upsTable->package_id)
+								->where('order_id', 'LIKE', sprintf("%%%s%%", $upsTable->package_id))
+								->get();
+				
+				
+				if(count($items) > 0){
+					$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
+					foreach ($items as $item){
+						$short_order = explode("-", $item->order_id);
+						
+						if($upsTable->package_id == $short_order[2]){
+							$stations_in_route_ids = $item->route->stations_list->lists ( 'station_name' )->toArray ();
+							$common_shipping_station = array_values(array_intersect(Helper::$shippingStations,$stations_in_route_ids));
+							
+							$item->previous_station = $item->station_name;
+							$item->station_name = $common_shipping_station[0];
+							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+							$item->item_taxable = Auth::user()->id;
+							$item->save ();
+							
+							Helper::insertDataIntoShipping($item, $unique_order_id, $upsTable->pic_tracking, $upsTable->shipping_date);
+							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
+							
+							Helper::jewelDebug($upsTable->id."---".$upsTable->package_id."---".$upsTable->pic_tracking."---".$item->id."---".$item->order_id."---".$item->tracking_number);
+							//$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
+						}
+					}
+					if($count==20){
+						dd($upsTable);
+					}
+				}
+				
+			}
+		}
+		
+		dd("Test");
+		
 		$ships = Ship::with('item.product')
 					 ->where('is_deleted', 0)
 					 ->searchTrackingNumberAssigned($request->get('shipped'))
