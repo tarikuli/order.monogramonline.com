@@ -79,6 +79,7 @@ class InventoryController extends Controller
 		$inventory = Inventory::find($inventorie_id);
 		$inventory->re_order_qty = $request->re_order_qty;
 		$inventory->min_reorder = $request->min_reorder;
+		$inventory->stock_name_discription = $request->stock_name_discription;
 		$inventory->adjustment = $request->adjustment;
 		$inventory->wh_bin = $request->wh_bin;
 		$inventory->save();

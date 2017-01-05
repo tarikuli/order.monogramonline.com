@@ -11,7 +11,6 @@ get('test', 'HomeController@test');
 
 // 	return json_decode($reader->readCrawledData());
 // });
-resource('shipping', 'ShippingController');
 get('combination', 'HomeController@combination');
 get('trk_order_status', 'ItemController@getOrderStatus');
 get('update_items', 'HomeController@bulk_item_update');
@@ -231,7 +230,7 @@ Route::group([ 'middleware' => [ 'auth' ] ], function () {
 		
 		
 		put('shipping_update', 'ShippingController@updateTrackingNumber');
-		#resource('shipping', 'ShippingController');
+		resource('shipping', 'ShippingController');
 		
 		
 		get('shipping_lbl_print', 'ShippingController@getShippingAddressByOrderId');

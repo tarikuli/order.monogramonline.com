@@ -113,9 +113,9 @@
 					<tr>
 						<th>Image</th>
 						<th>stock_no_unique</th>
+						<th>Action</th>
 						<th>stock_name_discription</th>
 						<th>sku_weight</th>
-						<th>Action</th>
 						<th>adjustment</th>
 						<th>wh_bin</th>
 						<th>re_order_qty</th>
@@ -139,19 +139,23 @@
 									 {{ $inventorie['stock_no_unique'] }}<br>
 									 <a href = "{{url(sprintf('inventoriesDelete?stock_no_unique=%s',$inventorie['id']))}}" target = "_self">Delete</a>
 								</td>
-								<td> 
-									{{ $inventorie['stock_name_discription'] }} <br>
-									{!! \App\Option::where('stock_number', $inventorie['stock_no_unique'])->lists('child_sku','id')->first();  !!}
-								</td>
-								<td> 
-									 {{ $inventorie['sku_weight'] }} 
-									<a class = "btn btn-success btn-sm pull-left" href = "{{url(sprintf('prints/stock_no_unique?stock_no_unique=%s',$inventorie['id']))}}" target = "_blank">Print</a>	
-								</td>
 							 	<td>
 	 							     {!! Form::open(['url' => url(sprintf("inventoriesupdate/%s", $inventorie['id']))]) !!}  
 									 {!! Form::hidden('stock_no_unique', $inventorie['stock_no_unique']) !!}
 									 {!! Form::button('Update', ['id' => 'inventorie_id', 'class' => 'btn btn-success']) !!}
 								</td>
+								
+								<td> 
+									{{-- $inventorie['stock_name_discription'] --}} 
+
+									{!! Form::text('stock_name_discription', $inventorie['stock_name_discription'] , ['style'=>'width:100%;margin-right:25px'] ) !!}
+									<br>{!! \App\Option::where('stock_number', $inventorie['stock_no_unique'])->lists('child_sku','id')->first();  !!}
+								</td>
+								<td> 
+									 {{ $inventorie['sku_weight'] }} 
+									<a class = "btn btn-success btn-sm pull-left" href = "{{url(sprintf('prints/stock_no_unique?stock_no_unique=%s',$inventorie['id']))}}" target = "_blank">Print</a>	
+								</td>
+
 								<td> 
 									 {!! Form::number('adjustment', $inventorie['adjustment'] , ['style'=>'width:60px;margin-right:25px']) !!}
 								</td>
