@@ -1394,7 +1394,7 @@ APPEND;
 		$note = new Note();
 		$note->note_text = $note_text;
 		$note->order_id = $order_id;
-		$note->user_id = Auth::user()->id;
+		$note->user_id = 2;//Auth::user()->id;
 		$note->save();
 	}
 
