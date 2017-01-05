@@ -1394,7 +1394,7 @@ APPEND;
 		$note = new Note();
 		$note->note_text = $note_text;
 		$note->order_id = $order_id;
-		$note->user_id = 2;//Auth::user()->id;
+		$note->user_id = Auth::user()->id;
 		$note->save();
 	}
 
@@ -1657,9 +1657,12 @@ APPEND;
 	public static function getTrackingUrl($trackingNumber) {
 		
 		if(isset($trackingNumber[0])){
-			if($trackingNumber[0] == '9'){
+			if($trackingNumber[0] == '9374'){
 				//DHL
 				return url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $trackingNumber));
+			}elseif($trackingNumber[0] == '9274'){
+				//DHL
+				return url(sprintf("https://tools.usps.com/go/TrackConfirmAction?tLabels=%s", $trackingNumber));
 			}elseif($trackingNumber[0] == '8'){
 				// USPS
 				return url(sprintf("https://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=%s", $trackingNumber));

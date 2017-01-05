@@ -40,71 +40,71 @@ class ShippingController extends Controller
 
 	public function index (Request $request)
 	{
-		foreach ( range(0, 100) as $count ) {
-			set_time_limit(0);
+// 		foreach ( range(0, 1000) as $count ) {
+// 			set_time_limit(0);
 			
-			$upsTables = UpsTable::where('is_deleted', '0')
-								->whereBetween('id', array(20000, 22000))
-								->take(100)
-								->skip($count * 100)
-								->get();
+// 			$upsTables = UpsTable::where('is_deleted', '0')
+// 								->whereBetween('id', array(20000, 22000))
+// 								->take(1000)
+// 								->skip($count * 1000)
+// 								->get();
 									
-			foreach ($upsTables as $upsTable){
-				$items = Item::with ( 'route.stations_list' )
-								->where('is_deleted', 0)
-								->whereNull('tracking_number')
-// 								->where('order_id', 'LIKE', $upsTable->package_id)
-								->where('order_id', 'LIKE', sprintf("%%%s%%", $upsTable->package_id))
-								->get();
+// 			foreach ($upsTables as $upsTable){
+// 				$items = Item::with ( 'route.stations_list' )
+// 								->where('is_deleted', 0)
+// 								->whereNull('tracking_number')
+// // 								->where('order_id', 'LIKE', $upsTable->package_id)
+// 								->where('order_id', 'LIKE', sprintf("%%%s%%", $upsTable->package_id))
+// 								->get();
 				
-				Helper::jewelDebug($upsTable->id."---".$upsTable->package_id."--- ".$count * 1000);
+// 				Helper::jewelDebug($upsTable->id."---".$upsTable->package_id."--- ".$count * 1000);
 				
-				if(count($items) > 0){
-					$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
+// 				if(count($items) > 0){
+// 					$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
 					
-					Ship::where ('order_number', $items->first()->order )
-							->whereNull('tracking_number')
-							->delete();
+// 					Ship::where ('order_number', $items->first()->order )
+// 							->whereNull('tracking_number')
+// 							->delete();
 					
-					foreach ($items as $item){
-						$short_order = explode("-", $item->order_id);
+// 					foreach ($items as $item){
+// 						$short_order = explode("-", $item->order_id);
 						
-						if($upsTable->package_id == $short_order[2]){
-							$stations_in_route_ids = $item->route->stations_list->lists ( 'station_name' )->toArray ();
-							$common_shipping_station = array_values(array_intersect(Helper::$shippingStations,$stations_in_route_ids));
+// 						if($upsTable->package_id == $short_order[2]){
+// 							$stations_in_route_ids = $item->route->stations_list->lists ( 'station_name' )->toArray ();
+// 							$common_shipping_station = array_values(array_intersect(Helper::$shippingStations,$stations_in_route_ids));
 							
-							$item->previous_station = $item->station_name;
-							$item->station_name = $common_shipping_station[0];
-							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
-							$item->item_taxable = 2;
-							$item->reached_shipping_station = 1;
-							$item->save ();
+// 							$item->previous_station = $item->station_name;
+// 							$item->station_name = $common_shipping_station[0];
+// 							$item->change_date = date('Y-m-d H:i:s', strtotime('now'));
+// 							$item->item_taxable = 2;
+// 							$item->reached_shipping_station = 1;
+// 							$item->save ();
 							
 
-							Helper::insertDataIntoShipping($item, $unique_order_id);
-							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
+// 							Helper::insertDataIntoShipping($item, $unique_order_id);
+// 							Helper::histort("Item#".$item->id." from ".$item->station_name." -> ".$common_shipping_station[0], $item->order_id);
 							
-							Helper::jewelDebug($upsTable->id."---".$upsTable->package_id."---".$upsTable->pic_tracking."---".$item->id."---".$item->order_id."---".$upsTable->pic_tracking);
-							//$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
-						}
+// 							Helper::jewelDebug($upsTable->id."---".$upsTable->package_id."---".$upsTable->pic_tracking."---".$item->id."---".$item->order_id."---".$upsTable->pic_tracking);
+// 							//$unique_order_id = Helper::generateShippingUniqueId($items->first()->order);
+// 						}
 
-						$trackingInfo['unique_order_id'] = $unique_order_id;
-						$trackingInfo['order_number'] 	 = $items->first()->order;
-						$trackingInfo['tracking_number'] = $upsTable->pic_tracking;
-						$trackingInfo['shipping_id'] 	 = $upsTable->pic_tracking;
-						$trackingInfo['mail_class'] 	 = "UPS Expedited Mail Innovations";
+// 						$trackingInfo['unique_order_id'] = $unique_order_id;
+// 						$trackingInfo['order_number'] 	 = $items->first()->order;
+// 						$trackingInfo['tracking_number'] = $upsTable->pic_tracking;
+// 						$trackingInfo['shipping_id'] 	 = $upsTable->pic_tracking;
+// 						$trackingInfo['mail_class'] 	 = "UPS Expedited Mail Innovations";
 						
-						Helper::updateTrackingNumber($trackingInfo);
+// 						Helper::updateTrackingNumber($trackingInfo);
 						
-					}
-				}
+// 					}
+// 				}
 				
-				$upsTable->is_deleted = 1;
-				$upsTable->save ();
-			}
-		}
+// 				$upsTable->is_deleted = 1;
+// 				$upsTable->save ();
+// 			}
+// 		}
 		
-		dd("Test");
+// 		dd("Test");
 		
 		$ships = Ship::with('item.product')
 					 ->where('is_deleted', 0)
