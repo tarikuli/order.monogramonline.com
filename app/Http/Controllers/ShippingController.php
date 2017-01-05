@@ -40,13 +40,14 @@ class ShippingController extends Controller
 
 	public function index (Request $request)
 	{
-		foreach ( range(0, 1000) as $count ) {
+		foreach ( range(0, 100) as $count ) {
 			set_time_limit(0);
 			
 			$upsTables = UpsTable::where('is_deleted', '0')
-									->take(1000)
-									->skip($count * 1000)
-									->get();
+								->whereBetween('id', array(20000, 22000))
+								->take(100)
+								->skip($count * 100)
+								->get();
 									
 			foreach ($upsTables as $upsTable){
 				$items = Item::with ( 'route.stations_list' )
