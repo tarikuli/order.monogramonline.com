@@ -1657,10 +1657,10 @@ APPEND;
 	public static function getTrackingUrl($trackingNumber) {
 		
 		if(isset($trackingNumber[0])){
-			if($trackingNumber[0] == '9374'){
+			if($trackingNumber[0] == '937'){
 				//DHL
 				return url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $trackingNumber));
-			}elseif($trackingNumber[0] == '9274'){
+			}elseif($trackingNumber[0] == '927'){
 				//DHL
 				return url(sprintf("https://tools.usps.com/go/TrackConfirmAction?tLabels=%s", $trackingNumber));
 			}elseif($trackingNumber[0] == '8'){

@@ -416,7 +416,7 @@ class PrintController extends Controller
 					->toArray();
 
 		foreach ($ships as $ship){
-			Ship::where('order_number', 'LIKE', $ship)
+			Ship::where('order_number', $ship)
 				->update([
 					'shipping_unique_id' => 'pro',
 				]);
@@ -429,7 +429,7 @@ class PrintController extends Controller
 			set_time_limit(0);
 			if ( !$order->customer->bill_email ) {
 				log::error('No Billing email address fount for order# '.$order->order_id);
-					Ship::where('order_number', 'LIKE', $order->order_id)
+					Ship::where('order_number',  $order->order_id)
 					->update([
 						'shipping_unique_id' => 'No Email',
 					]);
@@ -443,13 +443,13 @@ class PrintController extends Controller
 					Log::info( sprintf("Shipping Confirmation Email sent to %s Order# %s.", $order->customer->bill_email, $order->order_id) );
 
 					// Update numbe of Station assign from items_to_shift
-					Ship::where('order_number', 'LIKE', $order->order_id)
+					Ship::where('order_number', $order->order_id)
 						->update([
 							'shipping_unique_id' => 's',
 						]);
-					sleep(1);
+					#sleep(1);
 				}else{
-					Ship::where('order_number', 'LIKE', $order->order_id)
+					Ship::where('order_number', $order->order_id)
 					->update([
 						'shipping_unique_id' => 'Not',
 					]);
