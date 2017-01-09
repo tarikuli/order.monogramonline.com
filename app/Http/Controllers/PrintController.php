@@ -403,7 +403,7 @@ class PrintController extends Controller
 	
 //	SELECT *  FROM  `shipping` WHERE  `tracking_number` IS NOT NULL AND  `shipping_unique_id` LIKE  'pro'
 							
-//	UPDATE `shipping` SET  `shipping_unique_id` = NULL WHERE  `tracking_number` IS NULL AND  `shipping_unique_id` LIKE  'pro'			
+//	UPDATE `shipping` SET  `shipping_unique_id` = NULL WHERE  `tracking_number` IS NOT NULL AND  `shipping_unique_id` LIKE  'pro'			
 //	UPDATE `shipping` SET  `shipping_unique_id` = 's' WHERE  `tracking_number` IS NOT NULL AND  `shipping_unique_id` LIKE  'pro';
 		
 		$ships = Ship::whereNull('shipping_unique_id')

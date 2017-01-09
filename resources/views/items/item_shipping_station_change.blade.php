@@ -37,6 +37,16 @@
         
 		{!! Form::open(['url' => url('stations/itemshippingstationchange'), 'method' => 'post', 'class'=>'form-horizontal', 'role'=>'form']) !!}
 		<div class = "form-group">
+			<div class = "col-xs-5">
+				<div class = "checkbox">
+					<label>
+						{!! Form::checkbox('redriect', 1, Session::get('redriect')) !!} Check for Directly go to Shipping Label page
+					</label>
+				</div>
+			</div>
+		</div>		
+		
+		<div class = "form-group">
 			{!!Form::label('unique_order_id','Shipping Order#',['class'=>'control-label col-xs-2'])!!}
 			<div class = "col-xs-5">
 				{!! Form::text('unique_order_id', null, ['id' => 'unique_order_id','class'=>'form-control']) !!}
@@ -54,6 +64,16 @@
 		{!! Form::close() !!}
 		
 		{!! Form::open(['url' => url('stations/itemshippingstationchange'), 'method' => 'post', 'class'=>'form-horizontal', 'role'=>'form']) !!}
+
+		<div class = "form-group">
+			<div class = "col-xs-5">
+				<div class = "checkbox">
+					<label>
+						{!! Form::checkbox('redriect', 1, Session::get('redriect')) !!} Check for Directly go to Shipping Label page				
+					</label>
+				</div>
+			</div>
+		</div>
 		<div class = "form-group">
 			{!!Form::label('item_id','Item Id#',['class'=>'control-label col-xs-2'])!!}
 			<div class = "col-xs-5">

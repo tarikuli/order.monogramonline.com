@@ -552,7 +552,7 @@ class StationController extends Controller {
 	public function postItemShippingStationchange(Request $request) {
 		$errors = [];
 		$success = [];
-		
+// dd($request->all());		
 		
 		if($request->has('unique_order_id')){
 			$unique_order_ids = $request->get ( 'unique_order_id' );
@@ -663,10 +663,17 @@ class StationController extends Controller {
 			
 			//return redirect ()->back ()->with('success', "Success move to Shipping Station Order# ".$order_id);
 			//return redirect ()->back ()->with('success', "Unique Order# ". $unique_order_id);
-			return redirect(url('shippinglabel_print?unique_order_id='.$unique_order_id));
+			#Session::forget('redriect');
+			if ($request->has('redriect')) {
+				Session::put('redriect', 1);
+				return redirect(url('shippinglabel_print?unique_order_id='.$unique_order_id));
+			}else{
+				Session::put('redriect', 0);
+				return redirect ()->back ()->withErrors ( "Unique Order#".$unique_order_ids." moved to ".$item->station_name." Station" );
+			}
 		}
-		
-		return redirect ()->back ()->withErrors ( "No Order#".$unique_order_ids." found, Scan correctly." );
+		Session::put('redriect', 0);
+		return redirect ()->back ()->withErrors ( "No Unique Order#".$unique_order_ids." found, Scan correctly." );
 	}
 	
 	

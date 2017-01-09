@@ -137,7 +137,6 @@
 								<td><img  border = "0" style="height: auto; width: 85%;" src = "{{ $inventorie['warehouse'] }}" /></td>
 								<td>
 									 {{ $inventorie['stock_no_unique'] }}<br>
-									 <a href = "{{url(sprintf('inventoriesDelete?stock_no_unique=%s',$inventorie['id']))}}" target = "_self">Delete</a>
 								</td>
 							 	<td>
 	 							     {!! Form::open(['url' => url(sprintf("inventoriesupdate/%s", $inventorie['id']))]) !!}  
@@ -148,7 +147,7 @@
 								<td> 
 									{{-- $inventorie['stock_name_discription'] --}} 
 
-									{!! Form::text('stock_name_discription', $inventorie['stock_name_discription'] , ['style'=>'width:100%;margin-right:25px'] ) !!}
+									{!! Form::text('stock_name_discription', $inventorie['stock_name_discription'] , ['style'=>'width:350px;margin-right:25px'] ) !!}
 									<br>{!! \App\Option::where('stock_number', $inventorie['stock_no_unique'])->lists('child_sku','id')->first();  !!}
 								</td>
 								<td> 
@@ -181,6 +180,9 @@
 								<td> 
 									{{ $inventorie['upc'] }}
 									
+									@if(auth()->user()->roles->first()->id == 1)
+										<a href = "{{url(sprintf('inventoriesDelete?stock_no_unique=%s',$inventorie['id']))}}" target = "_self">Delete</a>
+									@endif
 								</td>
 
 								{{-- <td> {{ $inventorie['warehouse'] }} </td> --}}
