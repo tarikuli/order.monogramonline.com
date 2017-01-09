@@ -179,7 +179,6 @@
 								<td> {{ $inventorie['qty_av'] }} </td>
 								<td> 
 									{{ $inventorie['upc'] }}
-									
 									@if(auth()->user()->roles->first()->id == 1)
 										<a href = "{{url(sprintf('inventoriesDelete?stock_no_unique=%s',$inventorie['id']))}}" target = "_self">Delete</a>
 									@endif
