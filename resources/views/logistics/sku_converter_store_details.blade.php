@@ -98,9 +98,11 @@
 							<th>Stock Number</th>
 							<th>Graphic SKU</th>
 							<th>Image</th>
+							{{--
 							@foreach($parameters as $parameter)
 								<th>{{$parameter->parameter_value}}</th>
 							@endforeach
+							--}}
 							<th>Delete</th>
 						</tr>
 						@foreach($options as $option)
@@ -118,7 +120,7 @@
 								<td>
 									{!! Form::open(['url' => url('/logistics/update_parameter_option/'.$option->unique_row_value), 'method' => 'post']) !!}
 									{!! Form::hidden('return_to', $returnTo) !!}
-									{!! Form::select('batch_route_id', $batch_routes, $option->batch_route_id, ['class' => 'form-control changeable', 'style' => 'width: 150px']) !!}
+									{!! Form::select('batch_route_id', $batch_routes, $option->batch_route_id, ['class' => 'form-control changeable', 'style' => 'width: 325px']) !!}
 									{!! Form::close() !!}
 									<br />
 									@if($option->route && $option->route->template)
@@ -155,6 +157,7 @@
 										N/A
 									@endif
 								</td>
+								{{--
 								@foreach($parameters as $parameter)
 									<td>
 										@if(in_array($parameter->parameter_value, array_keys($decoded)))
@@ -162,6 +165,7 @@
 										@endif
 									</td>
 								@endforeach
+								--}}
 								<td>
 									{!! Form::open(['url' => url('/logistics/delete_sku/'.$option->unique_row_value), 'method' => 'delete']) !!}
 									{!! Form::hidden('return_to', $returnTo) !!}
