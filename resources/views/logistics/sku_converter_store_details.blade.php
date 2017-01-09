@@ -157,7 +157,7 @@
 										N/A
 									@endif
 								</td>
-								{{-- 
+								{{--
 								@foreach($parameters as $parameter)
 									<td>
 										@if(in_array($parameter->parameter_value, array_keys($decoded)))
