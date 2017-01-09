@@ -831,12 +831,12 @@ class LogisticsController extends Controller
 									 ->toArray();
 		$not_available = array_diff($selected_groups, $available_groups);
 
-		foreach ( $not_available as $inserable ) {
-			$parameter = new Parameter();
-			$parameter->store_id = $store->store_id;
-			$parameter->parameter_value = $inserable;
-			$parameter->save();
-		}
+// 		foreach ( $not_available as $inserable ) {
+// 			$parameter = new Parameter();
+// 			$parameter->store_id = $store->store_id;
+// 			$parameter->parameter_value = $inserable;
+// 			$parameter->save();
+// 		}
 
 		$batch_route_id = Helper::getDefaultRouteId();
 		$rows = [ ];
