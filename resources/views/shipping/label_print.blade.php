@@ -11,11 +11,6 @@
 </head>
 <body>
 	@include('includes.header_menu')
-	<div class = "col-xs-12">
-		<div class="alert alert-danger">
-		  <strong>Danger!</strong> Please don't use Endicia until this message delete
-		</div>
-	</div>
 	<div class = "container">
 		<ol class = "breadcrumb">
 			<li><a href = "{{url('/')}}">Home</a></li>

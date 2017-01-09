@@ -1655,12 +1655,11 @@ APPEND;
 	}
 	
 	public static function getTrackingUrl($trackingNumber) {
-		
 		if(isset($trackingNumber[0])){
-			if($trackingNumber[0] == '937'){
+			if(substr($trackingNumber, 0, 3) == '937'){
 				//DHL
 				return url(sprintf("http://webtrack.dhlglobalmail.com/?trackingnumber=%s", $trackingNumber));
-			}elseif($trackingNumber[0] == '927'){
+			}elseif(substr($trackingNumber, 0, 3) == '927'){
 				//DHL
 				return url(sprintf("https://tools.usps.com/go/TrackConfirmAction?tLabels=%s", $trackingNumber));
 			}elseif($trackingNumber[0] == '8'){

@@ -14,10 +14,12 @@
 		@include('includes.error_div')
 		@include('includes.success_div')
 		<div class = "col-xs-12">
-		<b>Notice Board:</b> 
+		<b>Notice Board:</b>
+		{{-- 
 		<div class="alert alert-danger">
 		  <strong>Danger!</strong> Please don't use Endicia until this message delete
 		</div>
+		--}}
 		</div>
 		<div class = "col-xs-6">
 			<div class = "col-xs-12">
